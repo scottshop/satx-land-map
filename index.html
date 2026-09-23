@@ -3851,6 +3851,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             var lyr=L.geoJSON(x.feature,{style:{color:clr,weight:3,fillColor:clr,fillOpacity:.12}});
             lyr.bindPopup("<b>#"+(idx+1)+" CALL THIS WEEK</b><br><b>"+v3esc(x.p.Situs||"Candidate parcel")+"</b><br>"+
               "Owner: "+v3esc(x.p.Owner_name||"—")+"<br>Acres: "+x.acres.toFixed(2)+"<br><b>Call Priority: "+Math.round(x.score)+"</b>"+
+              (x.gates&&x.gates.length?"<br><b style='color:#b30000'>DILIGENCE GATE:</b> "+v3esc(x.gates.join("; ")):"")+
               "<br>Node: "+v3esc(x.nodeResult.node.name)+" · "+x.miles.toFixed(2)+" mi"+
               "<hr style='margin:5px 0'><b>Parcel quality</b><br>"+
               "Access/frontage proxy: "+Math.round(x.access.score)+" — "+v3esc(x.access.desc)+"<br>"+
