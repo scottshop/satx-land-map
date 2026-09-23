@@ -3485,13 +3485,16 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             var now=Date.now(), cutoff=now-180*86400000;
             features.forEach(function(feat){
               var p=feat.properties||{}, ctr=v4featureCenter(feat); if(!ctr)return;
+              if(p.RETIRED_DT) return;
+              var dt=v4dateMs(p,def.dateFields);
+              // Recorded plats are a delivery signal, but not indefinitely. Keep a 5-year buildout window.
+              if(def.id===8 && (!dt || dt < now-5*365.25*86400000)) return;
               var d=v4miles([node.lat,node.lng],ctr); if(d>5)return;
               var rw=d<=1?1:(d<=3?.75:.45);
               var s=v4num(p.NBR_NEW_SINGLE_LOTS), cm=v4num(p.NBR_NEW_COMMERCIAL_LOTS);
               if(d<=1)out.raw1+=s; if(d<=3)out.raw3+=s; out.raw5+=s;
               out.weightedSingle+=s*def.weight*rw;
               out.weightedCommercial+=cm*def.weight*rw;
-              var dt=v4dateMs(p,def.dateFields);
               if(dt>=cutoff)out.recent180+=s*def.weight*rw;
             });
             out.stage=def.name; return out;
@@ -3499,14 +3502,17 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         }
         function v4permitMetric(node){
           return v4queryNearby(v4PermitUrl,node,4828.032,2000).then(function(features){
-            var residential=0,newBuild=0;
+            var residential=0,newBuild=0,residentialNew=0;
             features.forEach(function(feat){
               var p=feat.properties||{};
               var s=[p.permittypemapped,p.workclass,p.permitclass,p.permitclassmapped,p.proposedworkdescription].join(" ").toLowerCase();
-              if(/residen|single.?family|duplex|townhome|multi.?family/.test(s)) residential++;
-              if(/new build|new construction|new building/.test(s)) newBuild++;
+              var isRes=/residen|single.?family|duplex|townhome|multi.?family/.test(s);
+              var isNew=/new build|new construction|new building|new single|new residence|new home/.test(s);
+              if(isRes) residential++;
+              if(isNew) newBuild++;
+              if(isRes&&isNew) residentialNew++;
             });
-            return {all:features.length,residential:residential,newBuild:newBuild};
+            return {all:features.length,residential:residential,newBuild:newBuild,residentialNew:residentialNew};
           });
         }
         function v4trafficMetric(node){
@@ -3541,7 +3547,8 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         function v4buildWhy(r){
           var a=[];
           if(r.recent180>=250)a.push(v4fmt(r.recent180)+" weighted residential lots progressed in last 180 days");
-          if(r.permits.residential>=40)a.push(v4fmt(r.permits.residential)+" residential permits issued within 3 mi / 180 days");
+          if((r.permits.residentialNew||0)>=15)a.push(v4fmt(r.permits.residentialNew)+" new-residential permits issued within 3 mi / 180 days");
+          else if(r.permits.residential>=40)a.push(v4fmt(r.permits.residential)+" residential permits issued within 3 mi / 180 days");
           if(r.traffic.growth5!=null&&r.traffic.growth5>=12)a.push("AADT up "+r.traffic.growth5.toFixed(0)+"% since 2020");
           if(r.catalyst.distance!=null&&r.catalyst.distance<=3)a.push(r.catalyst.name+" "+r.catalyst.distance.toFixed(1)+" mi away");
           if(r.weightedSingle>=700&&r.weightedCommercial<=8)a.push("housing pipeline is materially outrunning mapped commercial-lot pipeline");
@@ -3556,7 +3563,8 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           var weightedSingle=0,weightedCommercial=0,recent180=0,raw1=0,raw3=0,raw5=0;
           parts.forEach(function(x){weightedSingle+=x.weightedSingle;weightedCommercial+=x.weightedCommercial;recent180+=x.recent180;raw1+=x.raw1;raw3+=x.raw3;raw5+=x.raw5;});
           var lotScore=v4clamp(weightedSingle/20,0,100);
-          var permitScore=v4clamp(permits.residential/3,0,100);
+          var permitMomentum=(permits.residentialNew||0)*1.0 + permits.residential*.20;
+          var permitScore=v4clamp(permitMomentum/2.5,0,100);
           var housingScore=.82*lotScore+.18*permitScore;
           var commercialScore=v4clamp(weightedCommercial*4,0,100);
           var retailGap=v4clamp(housingScore*.82+(100-commercialScore)*.18,0,100);
@@ -3583,7 +3591,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
               "<span class='v4Metric'><b>"+v4fmt(r.weightedSingle)+"</b> weighted future lots</span></div>"+
               "<div><span class='v4Metric'><b>"+v4fmt(r.traffic.aadt)+"</b> AADT</span>"+
               "<span class='v4Metric'><b>"+g+"</b> 5yr traffic</span>"+
-              "<span class='v4Metric'><b>"+v4fmt(r.permits.residential)+"</b> res. permits /180d</span></div>"+
+              "<span class='v4Metric'><b>"+v4fmt(r.permits.residentialNew||0)+"</b> new-res permits /180d</span></div>"+
               "<div><span class='v4Metric'>Retail Gap <b>"+Math.round(r.retailGap)+"</b></span>"+
               "<span class='v4Metric'>Why Now <b>"+Math.round(r.whyNow)+"</b></span></div>"+
               "<div class='v4Why'><b>WHY NOW:</b> "+r.why.map(v3esc).join(" · ")+"</div>"+
@@ -3670,7 +3678,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
               var r=await v4analyzeNode(v4Nodes[i]); v4RadarResults.push(r);
             }
             v4RadarResults.sort(function(a,b){return b.score-a.score;});
-            var heat=L.heatLayer(v4RadarResults.map(function(r){return [r.node.lat,r.node.lng,r.score];}),{radius:42,blur:28,minOpacity:.28});
+            var heat=L.heatLayer(v4RadarResults.map(function(r){return [r.node.lat,r.node.lng,r.score];}),{radius:42,blur:28,minOpacity:.28,max:100});
             heat.addTo(v4RadarHeat); v4RadarHeat.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
             v4renderRadar();
             await v4buildCallList();
