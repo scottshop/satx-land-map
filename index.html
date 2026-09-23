@@ -1,0 +1,2928 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_33cc2c2ac68d72d2971fbb7de3650b24 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@main/folium/templates/leaflet_heat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+</head>
+<body>
+    
+    
+<div style="
+position: fixed; top: 12px; left: 55px; z-index:9999; width:430px;
+background:rgba(255,255,255,.95); border:2px solid #17365D; border-radius:8px;
+padding:10px 12px; box-shadow:0 2px 8px rgba(0,0,0,.2); font-family:Arial;">
+<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v2</div>
+<div style="font-size:12px;margin-top:4px;">
+Use the layer control to isolate <b>heat, parcels, developments, anchors, and road projects</b>.
+Click any marker/line for acquisition context and source links.
+</div>
+<div style="font-size:11px;margin-top:5px;color:#666;">
+Updated 2026-09-22. Parcel pins are acquisition-screen locations, not survey boundaries.
+Where precise GIS geometry is not yet verified, the popup says so.
+</div>
+</div>
+    
+<div style="
+position:fixed; bottom:28px; right:18px; z-index:9999;
+background:rgba(255,255,255,.94); border:1px solid #777; border-radius:6px;
+padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
+<b>Parcel pipeline</b><br>
+<span style="color:#d63b2f;">●</span> CALL NOW<br>
+<span style="color:#f39c12;">●</span> RESEARCH<br>
+<span style="color:#7d3c98;">●</span> FOLLOW UP<br>
+<b>Node heat</b>: higher score = hotter<br>
+<b>Road lines</b>: schematic corridor geometry
+</div>
+    
+            <div class="folium-map" id="map_33cc2c2ac68d72d2971fbb7de3650b24" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_33cc2c2ac68d72d2971fbb7de3650b24 = L.map(
+                "map_33cc2c2ac68d72d2971fbb7de3650b24",
+                {
+                    center: [29.49, -98.49],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": true,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+
+            
+
+        
+    
+            var tile_layer_f07a431ff4dc7ff3c822055d0c4ef939 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_f07a431ff4dc7ff3c822055d0c4ef939.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            var tile_layer_aaae3922d3fdbfea43709c0f196149c0 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_aaae3922d3fdbfea43709c0f196149c0.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            var tile_layer_34ebf833fc2ef87725ad85de46958f36 = L.tileLayer(
+                "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "OpenTopoMap",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            var feature_group_8664419a099b0fb300dcdc7bb4f5e31c = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var heat_map_a505fc1f7c6b329b7fe0323283a58be4 = L.heatLayer(
+                [[29.748, -98.079, 90], [29.463, -98.78, 89], [29.514, -98.312, 88], [29.38, -98.8, 86], [29.402, -98.792, 84], [29.501, -98.292, 82], [29.545, -98.247, 81], [29.736, -98.179, 81], [29.514, -98.252, 81], [29.394, -98.682, 81], [29.41, -98.813, 79], [29.318, -98.53, 79], [29.579, -98.233, 78], [29.597, -98.228, 77], [29.496, -98.293, 74], [29.435, -98.797, 73], [29.356, -98.879, 72], [29.346, -98.443, 72], [29.75, -98.27, 71], [29.744, -98.686, 65], [29.297, -98.552, 64], [29.284, -98.529, 61], [29.579, -97.949, 80], [29.414, -98.744, 78]],
+                {
+  "minOpacity": 0.22,
+  "maxZoom": 11,
+  "radius": 38,
+  "blur": 30,
+}
+            );
+        
+    
+            heat_map_a505fc1f7c6b329b7fe0323283a58be4.addTo(feature_group_8664419a099b0fb300dcdc7bb4f5e31c);
+        
+    
+            feature_group_8664419a099b0fb300dcdc7bb4f5e31c.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            var feature_group_faeb81c75b71b2840ca70907d2e58065 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_972919524a111cbd4c3c01db34c3188a = L.circleMarker(
+                [29.748, -98.079],
+                {"bubblingMouseEvents": true, "color": "#b30000", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#b30000", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 11, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_af879876b86fe79fbfbd07522042fb38 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_2fb171a35f99772c492e7060436a59a6 = $(`<div id="html_2fb171a35f99772c492e7060436a59a6" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>I-35 / Kohlenberg Rd (Mayfair)</b><br>       <b>Opportunity Score:</b> 90/100<br>       <b>Corridor:</b> North New Braunfels<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-002     </div>     </div>`)[0];
+                popup_af879876b86fe79fbfbd07522042fb38.setContent(html_2fb171a35f99772c492e7060436a59a6);
+            
+        
+
+        circle_marker_972919524a111cbd4c3c01db34c3188a.bindPopup(popup_af879876b86fe79fbfbd07522042fb38)
+        ;
+
+        
+    
+    
+            circle_marker_972919524a111cbd4c3c01db34c3188a.bindTooltip(
+                `<div>
+                     I-35 / Kohlenberg Rd (Mayfair) — 90
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_13da6aba090244957eb2740638341c79 = L.circleMarker(
+                [29.463, -98.78],
+                {"bubblingMouseEvents": true, "color": "#b30000", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#b30000", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 11, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_62e0e816d2af32cbae6ce1f9cf4bce57 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_b0e52a0072237928799f86b60267dfaf = $(`<div id="html_b0e52a0072237928799f86b60267dfaf" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Culebra Rd / SH 211</b><br>       <b>Opportunity Score:</b> 89/100<br>       <b>Corridor:</b> Far West Bexar<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-001     </div>     </div>`)[0];
+                popup_62e0e816d2af32cbae6ce1f9cf4bce57.setContent(html_b0e52a0072237928799f86b60267dfaf);
+            
+        
+
+        circle_marker_13da6aba090244957eb2740638341c79.bindPopup(popup_62e0e816d2af32cbae6ce1f9cf4bce57)
+        ;
+
+        
+    
+    
+            circle_marker_13da6aba090244957eb2740638341c79.bindTooltip(
+                `<div>
+                     Culebra Rd / SH 211 — 89
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_57253efe04d947ceb1e0d1661f0a4e23 = L.circleMarker(
+                [29.514, -98.312],
+                {"bubblingMouseEvents": true, "color": "#b30000", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#b30000", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 11, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_106a61396792b3f960296bd787c74f6b = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_3493411103989bda636cca2898cc38cc = $(`<div id="html_3493411103989bda636cca2898cc38cc" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>I-10 / Loop 1604 East</b><br>       <b>Opportunity Score:</b> 88/100<br>       <b>Corridor:</b> East Bexar / Converse<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-003     </div>     </div>`)[0];
+                popup_106a61396792b3f960296bd787c74f6b.setContent(html_3493411103989bda636cca2898cc38cc);
+            
+        
+
+        circle_marker_57253efe04d947ceb1e0d1661f0a4e23.bindPopup(popup_106a61396792b3f960296bd787c74f6b)
+        ;
+
+        
+    
+    
+            circle_marker_57253efe04d947ceb1e0d1661f0a4e23.bindTooltip(
+                `<div>
+                     I-10 / Loop 1604 East — 88
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b2038fe8fe41ef2954b09e7b7b888a85 = L.circleMarker(
+                [29.38, -98.8],
+                {"bubblingMouseEvents": true, "color": "#b30000", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#b30000", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 11, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_ba0cddedabcde81829fac19fba2cb3bf = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_6536d83fa69b1af57965aa1bcf818b21 = $(`<div id="html_6536d83fa69b1af57965aa1bcf818b21" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>US 90 / SH 211</b><br>       <b>Opportunity Score:</b> 86/100<br>       <b>Corridor:</b> Far West Bexar<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-004     </div>     </div>`)[0];
+                popup_ba0cddedabcde81829fac19fba2cb3bf.setContent(html_6536d83fa69b1af57965aa1bcf818b21);
+            
+        
+
+        circle_marker_b2038fe8fe41ef2954b09e7b7b888a85.bindPopup(popup_ba0cddedabcde81829fac19fba2cb3bf)
+        ;
+
+        
+    
+    
+            circle_marker_b2038fe8fe41ef2954b09e7b7b888a85.bindTooltip(
+                `<div>
+                     US 90 / SH 211 — 86
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_165dbfcba06c9ab24524718f63f9b7a8 = L.circleMarker(
+                [29.402, -98.792],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_3cfed7adbdf085dedccd100550f7f8c2 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_9cf4cdc80cf4d2bcb526ddfa162f8e6b = $(`<div id="html_9cf4cdc80cf4d2bcb526ddfa162f8e6b" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Potranco Rd / SH 211</b><br>       <b>Opportunity Score:</b> 84/100<br>       <b>Corridor:</b> Far West Bexar<br>       <b>Research confidence:</b> Medium<br>       <b>ID:</b> INT-005     </div>     </div>`)[0];
+                popup_3cfed7adbdf085dedccd100550f7f8c2.setContent(html_9cf4cdc80cf4d2bcb526ddfa162f8e6b);
+            
+        
+
+        circle_marker_165dbfcba06c9ab24524718f63f9b7a8.bindPopup(popup_3cfed7adbdf085dedccd100550f7f8c2)
+        ;
+
+        
+    
+    
+            circle_marker_165dbfcba06c9ab24524718f63f9b7a8.bindTooltip(
+                `<div>
+                     Potranco Rd / SH 211 — 84
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4c4c8bc7b37e01b743e1f672c5b2c077 = L.circleMarker(
+                [29.501, -98.292],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_a059f5668fa893b0f21f153a9831f9e2 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_ed31b8670a5b58e0585a1715a8672a26 = $(`<div id="html_ed31b8670a5b58e0585a1715a8672a26" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Schuwirth Rd / Loop 1604 East</b><br>       <b>Opportunity Score:</b> 82/100<br>       <b>Corridor:</b> East Bexar / Converse<br>       <b>Research confidence:</b> Medium<br>       <b>ID:</b> INT-009     </div>     </div>`)[0];
+                popup_a059f5668fa893b0f21f153a9831f9e2.setContent(html_ed31b8670a5b58e0585a1715a8672a26);
+            
+        
+
+        circle_marker_4c4c8bc7b37e01b743e1f672c5b2c077.bindPopup(popup_a059f5668fa893b0f21f153a9831f9e2)
+        ;
+
+        
+    
+    
+            circle_marker_4c4c8bc7b37e01b743e1f672c5b2c077.bindTooltip(
+                `<div>
+                     Schuwirth Rd / Loop 1604 East — 82
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a75842c8bec3508092be95ad5a4d8e82 = L.circleMarker(
+                [29.545, -98.247],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_daaa4a6dd81f1858c6970fd202507ed5 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_8df5956ba4654e40177247b3547c2b15 = $(`<div id="html_8df5956ba4654e40177247b3547c2b15" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>FM 1518 / I-10</b><br>       <b>Opportunity Score:</b> 81/100<br>       <b>Corridor:</b> Schertz / East Bexar<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-006     </div>     </div>`)[0];
+                popup_daaa4a6dd81f1858c6970fd202507ed5.setContent(html_8df5956ba4654e40177247b3547c2b15);
+            
+        
+
+        circle_marker_a75842c8bec3508092be95ad5a4d8e82.bindPopup(popup_daaa4a6dd81f1858c6970fd202507ed5)
+        ;
+
+        
+    
+    
+            circle_marker_a75842c8bec3508092be95ad5a4d8e82.bindTooltip(
+                `<div>
+                     FM 1518 / I-10 — 81
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7c596f7ea5caba3d867317782f67923b = L.circleMarker(
+                [29.736, -98.179],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_0b94640791f2713ba6aba1187bc004cd = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_b38ef0db59dad9397b5d3adf5d3bb3f9 = $(`<div id="html_b38ef0db59dad9397b5d3adf5d3bb3f9" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Loop 337 / Word Pkwy (Veramendi)</b><br>       <b>Opportunity Score:</b> 81/100<br>       <b>Corridor:</b> New Braunfels West<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-007     </div>     </div>`)[0];
+                popup_0b94640791f2713ba6aba1187bc004cd.setContent(html_b38ef0db59dad9397b5d3adf5d3bb3f9);
+            
+        
+
+        circle_marker_7c596f7ea5caba3d867317782f67923b.bindPopup(popup_0b94640791f2713ba6aba1187bc004cd)
+        ;
+
+        
+    
+    
+            circle_marker_7c596f7ea5caba3d867317782f67923b.bindTooltip(
+                `<div>
+                     Loop 337 / Word Pkwy (Veramendi) — 81
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_da2f58f22a278e8dea98557ecd52a0ba = L.circleMarker(
+                [29.514, -98.252],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_49e60509fb59508b082e52cd42827089 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_d3068610bf0fb37abdb61bcf71289a06 = $(`<div id="html_d3068610bf0fb37abdb61bcf71289a06" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>FM 1516 / I-10 East</b><br>       <b>Opportunity Score:</b> 81/100<br>       <b>Corridor:</b> East Bexar<br>       <b>Research confidence:</b> Medium<br>       <b>ID:</b> INT-012     </div>     </div>`)[0];
+                popup_49e60509fb59508b082e52cd42827089.setContent(html_d3068610bf0fb37abdb61bcf71289a06);
+            
+        
+
+        circle_marker_da2f58f22a278e8dea98557ecd52a0ba.bindPopup(popup_49e60509fb59508b082e52cd42827089)
+        ;
+
+        
+    
+    
+            circle_marker_da2f58f22a278e8dea98557ecd52a0ba.bindTooltip(
+                `<div>
+                     FM 1516 / I-10 East — 81
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0e5546f58081cfd960ede4274a86fc2c = L.circleMarker(
+                [29.394, -98.682],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_f826781726fbb842b50e423529e2611a = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_179139dfa10c73817e93154da5fff0b7 = $(`<div id="html_179139dfa10c73817e93154da5fff0b7" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>US 90 / Loop 1604 West</b><br>       <b>Opportunity Score:</b> 81/100<br>       <b>Corridor:</b> West Bexar<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-016     </div>     </div>`)[0];
+                popup_f826781726fbb842b50e423529e2611a.setContent(html_179139dfa10c73817e93154da5fff0b7);
+            
+        
+
+        circle_marker_0e5546f58081cfd960ede4274a86fc2c.bindPopup(popup_f826781726fbb842b50e423529e2611a)
+        ;
+
+        
+    
+    
+            circle_marker_0e5546f58081cfd960ede4274a86fc2c.bindTooltip(
+                `<div>
+                     US 90 / Loop 1604 West — 81
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8282ea386e1a5525cf932f7f99c12ada = L.circleMarker(
+                [29.41, -98.813],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_08681885554f868c5f218f17c8515608 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_cd82c03b5aba705add63eaa835cb8a16 = $(`<div id="html_cd82c03b5aba705add63eaa835cb8a16" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>SH 211 / Briggs Ranch Rd</b><br>       <b>Opportunity Score:</b> 79/100<br>       <b>Corridor:</b> Far West Bexar<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-008     </div>     </div>`)[0];
+                popup_08681885554f868c5f218f17c8515608.setContent(html_cd82c03b5aba705add63eaa835cb8a16);
+            
+        
+
+        circle_marker_8282ea386e1a5525cf932f7f99c12ada.bindPopup(popup_08681885554f868c5f218f17c8515608)
+        ;
+
+        
+    
+    
+            circle_marker_8282ea386e1a5525cf932f7f99c12ada.bindTooltip(
+                `<div>
+                     SH 211 / Briggs Ranch Rd — 79
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_809834fd015b594d16f3f8d5752b204d = L.circleMarker(
+                [29.318, -98.53],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_90a737aa5b1d2d1df6ccf6fc0bbe70a1 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_4536fbfe0ab52f949f3fe846db16a3ba = $(`<div id="html_4536fbfe0ab52f949f3fe846db16a3ba" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>S Zarzamora / Mitra Way (VIDA)</b><br>       <b>Opportunity Score:</b> 79/100<br>       <b>Corridor:</b> South San Antonio<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-011     </div>     </div>`)[0];
+                popup_90a737aa5b1d2d1df6ccf6fc0bbe70a1.setContent(html_4536fbfe0ab52f949f3fe846db16a3ba);
+            
+        
+
+        circle_marker_809834fd015b594d16f3f8d5752b204d.bindPopup(popup_90a737aa5b1d2d1df6ccf6fc0bbe70a1)
+        ;
+
+        
+    
+    
+            circle_marker_809834fd015b594d16f3f8d5752b204d.bindTooltip(
+                `<div>
+                     S Zarzamora / Mitra Way (VIDA) — 79
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3b1f72a36cea74769ca1a847b5ae5ba1 = L.circleMarker(
+                [29.579, -98.233],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_803358109552e8e77646450a58324f63 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_81fae2dc9a8a0c5c4113182b407ba06f = $(`<div id="html_81fae2dc9a8a0c5c4113182b407ba06f" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>FM 1518 / Lower Seguin Rd</b><br>       <b>Opportunity Score:</b> 78/100<br>       <b>Corridor:</b> South Schertz<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-010     </div>     </div>`)[0];
+                popup_803358109552e8e77646450a58324f63.setContent(html_81fae2dc9a8a0c5c4113182b407ba06f);
+            
+        
+
+        circle_marker_3b1f72a36cea74769ca1a847b5ae5ba1.bindPopup(popup_803358109552e8e77646450a58324f63)
+        ;
+
+        
+    
+    
+            circle_marker_3b1f72a36cea74769ca1a847b5ae5ba1.bindTooltip(
+                `<div>
+                     FM 1518 / Lower Seguin Rd — 78
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6616112aeab0f792d7e21ec55426cd21 = L.circleMarker(
+                [29.597, -98.228],
+                {"bubblingMouseEvents": true, "color": "#6c757d", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6c757d", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_218456c53b93d57ab8d48c7f6d433a1e = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_476171cccd736dc3ffe24096a4c24bee = $(`<div id="html_476171cccd736dc3ffe24096a4c24bee" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>FM 1103 / Orth Rd</b><br>       <b>Opportunity Score:</b> 77/100<br>       <b>Corridor:</b> Cibolo / Guadalupe<br>       <b>Research confidence:</b> Medium<br>       <b>ID:</b> INT-013     </div>     </div>`)[0];
+                popup_218456c53b93d57ab8d48c7f6d433a1e.setContent(html_476171cccd736dc3ffe24096a4c24bee);
+            
+        
+
+        circle_marker_6616112aeab0f792d7e21ec55426cd21.bindPopup(popup_218456c53b93d57ab8d48c7f6d433a1e)
+        ;
+
+        
+    
+    
+            circle_marker_6616112aeab0f792d7e21ec55426cd21.bindTooltip(
+                `<div>
+                     FM 1103 / Orth Rd — 77
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3ae4eac5ad386d6206dcc320c218bb47 = L.circleMarker(
+                [29.496, -98.293],
+                {"bubblingMouseEvents": true, "color": "#6c757d", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6c757d", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_302f5598fe37c3ed3f8d21b765f7fb17 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_1ee446ec6f1563c3c7e57fcff9b80294 = $(`<div id="html_1ee446ec6f1563c3c7e57fcff9b80294" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Loop 1604 / Green Rd</b><br>       <b>Opportunity Score:</b> 74/100<br>       <b>Corridor:</b> East Bexar / Converse<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-015     </div>     </div>`)[0];
+                popup_302f5598fe37c3ed3f8d21b765f7fb17.setContent(html_1ee446ec6f1563c3c7e57fcff9b80294);
+            
+        
+
+        circle_marker_3ae4eac5ad386d6206dcc320c218bb47.bindPopup(popup_302f5598fe37c3ed3f8d21b765f7fb17)
+        ;
+
+        
+    
+    
+            circle_marker_3ae4eac5ad386d6206dcc320c218bb47.bindTooltip(
+                `<div>
+                     Loop 1604 / Green Rd — 74
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fccf6f28909d7fa4d22f4ab62c9c0504 = L.circleMarker(
+                [29.435, -98.797],
+                {"bubblingMouseEvents": true, "color": "#6c757d", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6c757d", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_213e0e6fc4bf1c8be5f05720076cbdc0 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_83f1af2236932b8c4b8ebd7ab8730ce4 = $(`<div id="html_83f1af2236932b8c4b8ebd7ab8730ce4" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Texas Research Pkwy / SH 211</b><br>       <b>Opportunity Score:</b> 73/100<br>       <b>Corridor:</b> West Bexar<br>       <b>Research confidence:</b> Medium<br>       <b>ID:</b> INT-014     </div>     </div>`)[0];
+                popup_213e0e6fc4bf1c8be5f05720076cbdc0.setContent(html_83f1af2236932b8c4b8ebd7ab8730ce4);
+            
+        
+
+        circle_marker_fccf6f28909d7fa4d22f4ab62c9c0504.bindPopup(popup_213e0e6fc4bf1c8be5f05720076cbdc0)
+        ;
+
+        
+    
+    
+            circle_marker_fccf6f28909d7fa4d22f4ab62c9c0504.bindTooltip(
+                `<div>
+                     Texas Research Pkwy / SH 211 — 73
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_78b63645c40fb117f3b014cba0e7bd14 = L.circleMarker(
+                [29.356, -98.879],
+                {"bubblingMouseEvents": true, "color": "#6c757d", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6c757d", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_6f0beafc0c325962fec7681829b1ed40 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_a9145f548ea09d6f38d9a07096acdb25 = $(`<div id="html_a9145f548ea09d6f38d9a07096acdb25" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>US 90 / FM 471 (Castroville)</b><br>       <b>Opportunity Score:</b> 72/100<br>       <b>Corridor:</b> Medina County<br>       <b>Research confidence:</b> Medium<br>       <b>ID:</b> INT-017     </div>     </div>`)[0];
+                popup_6f0beafc0c325962fec7681829b1ed40.setContent(html_a9145f548ea09d6f38d9a07096acdb25);
+            
+        
+
+        circle_marker_78b63645c40fb117f3b014cba0e7bd14.bindPopup(popup_6f0beafc0c325962fec7681829b1ed40)
+        ;
+
+        
+    
+    
+            circle_marker_78b63645c40fb117f3b014cba0e7bd14.bindTooltip(
+                `<div>
+                     US 90 / FM 471 (Castroville) — 72
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_872d79660e7760b9417bcd493d7104d8 = L.circleMarker(
+                [29.346, -98.443],
+                {"bubblingMouseEvents": true, "color": "#6c757d", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6c757d", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_0141edd1778981db4cf84bc8eac0d836 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_27bd486281b2220be8111467fadab66e = $(`<div id="html_27bd486281b2220be8111467fadab66e" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Louis Bauer Dr / Laser Dr (Brooks)</b><br>       <b>Opportunity Score:</b> 72/100<br>       <b>Corridor:</b> Southeast San Antonio<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-018     </div>     </div>`)[0];
+                popup_0141edd1778981db4cf84bc8eac0d836.setContent(html_27bd486281b2220be8111467fadab66e);
+            
+        
+
+        circle_marker_872d79660e7760b9417bcd493d7104d8.bindPopup(popup_0141edd1778981db4cf84bc8eac0d836)
+        ;
+
+        
+    
+    
+            circle_marker_872d79660e7760b9417bcd493d7104d8.bindTooltip(
+                `<div>
+                     Louis Bauer Dr / Laser Dr (Brooks) — 72
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_974615e1d64f8e61844509d7e774372e = L.circleMarker(
+                [29.75, -98.27],
+                {"bubblingMouseEvents": true, "color": "#6c757d", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6c757d", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_23b2a64801227a31b74bbd1f05eb5b47 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_704be1441c255999a6ae18caadd25759 = $(`<div id="html_704be1441c255999a6ae18caadd25759" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>SH 46 / FM 1863</b><br>       <b>Opportunity Score:</b> 71/100<br>       <b>Corridor:</b> Comal County Hill Country<br>       <b>Research confidence:</b> Medium<br>       <b>ID:</b> INT-019     </div>     </div>`)[0];
+                popup_23b2a64801227a31b74bbd1f05eb5b47.setContent(html_704be1441c255999a6ae18caadd25759);
+            
+        
+
+        circle_marker_974615e1d64f8e61844509d7e774372e.bindPopup(popup_23b2a64801227a31b74bbd1f05eb5b47)
+        ;
+
+        
+    
+    
+            circle_marker_974615e1d64f8e61844509d7e774372e.bindTooltip(
+                `<div>
+                     SH 46 / FM 1863 — 71
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1ea6d95219e717972094cabc1b0672bc = L.circleMarker(
+                [29.744, -98.686],
+                {"bubblingMouseEvents": true, "color": "#6c757d", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6c757d", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_66fe489843aedb24f9a20570c4be9057 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_158eb97658e3f43ba83a607fd3a2da57 = $(`<div id="html_158eb97658e3f43ba83a607fd3a2da57" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Old San Antonio Rd / Cascade Caverns Rd</b><br>       <b>Opportunity Score:</b> 65/100<br>       <b>Corridor:</b> South Boerne<br>       <b>Research confidence:</b> Medium<br>       <b>ID:</b> INT-020     </div>     </div>`)[0];
+                popup_66fe489843aedb24f9a20570c4be9057.setContent(html_158eb97658e3f43ba83a607fd3a2da57);
+            
+        
+
+        circle_marker_1ea6d95219e717972094cabc1b0672bc.bindPopup(popup_66fe489843aedb24f9a20570c4be9057)
+        ;
+
+        
+    
+    
+            circle_marker_1ea6d95219e717972094cabc1b0672bc.bindTooltip(
+                `<div>
+                     Old San Antonio Rd / Cascade Caverns Rd — 65
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_30fa541e437a22f4358fa9e229313c56 = L.circleMarker(
+                [29.297, -98.552],
+                {"bubblingMouseEvents": true, "color": "#6c757d", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6c757d", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_bd0654256a5f59f4eec6469db346efd7 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_facfa028fd42e0fd2ce0df80ba74e04a = $(`<div id="html_facfa028fd42e0fd2ce0df80ba74e04a" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Applewhite Rd / Lone Star Pass</b><br>       <b>Opportunity Score:</b> 64/100<br>       <b>Corridor:</b> South San Antonio<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-021     </div>     </div>`)[0];
+                popup_bd0654256a5f59f4eec6469db346efd7.setContent(html_facfa028fd42e0fd2ce0df80ba74e04a);
+            
+        
+
+        circle_marker_30fa541e437a22f4358fa9e229313c56.bindPopup(popup_bd0654256a5f59f4eec6469db346efd7)
+        ;
+
+        
+    
+    
+            circle_marker_30fa541e437a22f4358fa9e229313c56.bindTooltip(
+                `<div>
+                     Applewhite Rd / Lone Star Pass — 64
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_688f16ea47229891c84e56d6c8739547 = L.circleMarker(
+                [29.284, -98.529],
+                {"bubblingMouseEvents": true, "color": "#6c757d", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6c757d", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_e9b5a60dfc8a7b0f917a3c63663d2049 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_187c46ce862132c755d12d04866b71bc = $(`<div id="html_187c46ce862132c755d12d04866b71bc" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Chavaneaux Rd / S Zarzamora</b><br>       <b>Opportunity Score:</b> 61/100<br>       <b>Corridor:</b> South San Antonio<br>       <b>Research confidence:</b> Low<br>       <b>ID:</b> INT-022     </div>     </div>`)[0];
+                popup_e9b5a60dfc8a7b0f917a3c63663d2049.setContent(html_187c46ce862132c755d12d04866b71bc);
+            
+        
+
+        circle_marker_688f16ea47229891c84e56d6c8739547.bindPopup(popup_e9b5a60dfc8a7b0f917a3c63663d2049)
+        ;
+
+        
+    
+    
+            circle_marker_688f16ea47229891c84e56d6c8739547.bindTooltip(
+                `<div>
+                     Chavaneaux Rd / S Zarzamora — 61
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_294dfb9d05b9b1632a2cb719f2e69fcc = L.circleMarker(
+                [29.579, -97.949],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_510899ff5817562c5a2b1f1b3a498010 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_573482db704f5d870943665067fc606a = $(`<div id="html_573482db704f5d870943665067fc606a" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>I-10 / SH 46 (Seguin Exchange)</b><br>       <b>Opportunity Score:</b> 80/100<br>       <b>Corridor:</b> Seguin / Guadalupe<br>       <b>Research confidence:</b> High<br>       <b>ID:</b> INT-023     </div>     </div>`)[0];
+                popup_510899ff5817562c5a2b1f1b3a498010.setContent(html_573482db704f5d870943665067fc606a);
+            
+        
+
+        circle_marker_294dfb9d05b9b1632a2cb719f2e69fcc.bindPopup(popup_510899ff5817562c5a2b1f1b3a498010)
+        ;
+
+        
+    
+    
+            circle_marker_294dfb9d05b9b1632a2cb719f2e69fcc.bindTooltip(
+                `<div>
+                     I-10 / SH 46 (Seguin Exchange) — 80
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6f7786232617f8b43c7818a5a3904c76 = L.circleMarker(
+                [29.414, -98.744],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.88, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(feature_group_faeb81c75b71b2840ca70907d2e58065);
+        
+    
+        var popup_16e0e9ad64f421391e154c4d811b66f0 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_6b2fa6e13475ce22692e284e692f5ee7 = $(`<div id="html_6b2fa6e13475ce22692e284e692f5ee7" style="width: 100.0%; height: 100.0%;">     <div style="width:310px">       <b>Talley Rd / Potranco Rd</b><br>       <b>Opportunity Score:</b> 78/100<br>       <b>Corridor:</b> Far West Bexar<br>       <b>Research confidence:</b> Medium<br>       <b>ID:</b> INT-024     </div>     </div>`)[0];
+                popup_16e0e9ad64f421391e154c4d811b66f0.setContent(html_6b2fa6e13475ce22692e284e692f5ee7);
+            
+        
+
+        circle_marker_6f7786232617f8b43c7818a5a3904c76.bindPopup(popup_16e0e9ad64f421391e154c4d811b66f0)
+        ;
+
+        
+    
+    
+            circle_marker_6f7786232617f8b43c7818a5a3904c76.bindTooltip(
+                `<div>
+                     Talley Rd / Potranco Rd — 78
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_faeb81c75b71b2840ca70907d2e58065.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            var feature_group_a18fc787dc6c2bb3657553293ef9425f = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_1b9f6d8ae9f7e9b4f4a781af30300919 = L.marker(
+                [29.748, -98.079],
+                {
+}
+            ).addTo(feature_group_a18fc787dc6c2bb3657553293ef9425f);
+        
+    
+            var div_icon_21ef131fcbe24e864161147aa39bcb62 = L.divIcon({
+  "html": "\u003cdiv style=\"\n              font-size:11px;font-weight:700;color:#111;background:rgba(255,255,255,.88);\n              border:1px solid #999;border-radius:4px;padding:2px 5px;white-space:nowrap;\"\u003e\n              I-35 / Kohlenberg Rd (Mayfair) \u003cspan style=\"color:#b30000\"\u003e90\u003c/span\u003e\n            \u003c/div\u003e",
+  "iconSize": [230, 36],
+  "iconAnchor": [-8, 14],
+  "className": "empty",
+});
+        
+    
+                marker_1b9f6d8ae9f7e9b4f4a781af30300919.setIcon(div_icon_21ef131fcbe24e864161147aa39bcb62);
+            
+    
+            var marker_d3d60350860e470fc515b5aa1feaf505 = L.marker(
+                [29.463, -98.78],
+                {
+}
+            ).addTo(feature_group_a18fc787dc6c2bb3657553293ef9425f);
+        
+    
+            var div_icon_ecccfa63471abb63794b45d67ec9450a = L.divIcon({
+  "html": "\u003cdiv style=\"\n              font-size:11px;font-weight:700;color:#111;background:rgba(255,255,255,.88);\n              border:1px solid #999;border-radius:4px;padding:2px 5px;white-space:nowrap;\"\u003e\n              Culebra Rd / SH 211 \u003cspan style=\"color:#b30000\"\u003e89\u003c/span\u003e\n            \u003c/div\u003e",
+  "iconSize": [230, 36],
+  "iconAnchor": [-8, 14],
+  "className": "empty",
+});
+        
+    
+                marker_d3d60350860e470fc515b5aa1feaf505.setIcon(div_icon_ecccfa63471abb63794b45d67ec9450a);
+            
+    
+            var marker_6ffe4f542ee0736624c7821442dd23eb = L.marker(
+                [29.514, -98.312],
+                {
+}
+            ).addTo(feature_group_a18fc787dc6c2bb3657553293ef9425f);
+        
+    
+            var div_icon_60fc5aa3720af5f643fca680ae3aa6e4 = L.divIcon({
+  "html": "\u003cdiv style=\"\n              font-size:11px;font-weight:700;color:#111;background:rgba(255,255,255,.88);\n              border:1px solid #999;border-radius:4px;padding:2px 5px;white-space:nowrap;\"\u003e\n              I-10 / Loop 1604 East \u003cspan style=\"color:#b30000\"\u003e88\u003c/span\u003e\n            \u003c/div\u003e",
+  "iconSize": [230, 36],
+  "iconAnchor": [-8, 14],
+  "className": "empty",
+});
+        
+    
+                marker_6ffe4f542ee0736624c7821442dd23eb.setIcon(div_icon_60fc5aa3720af5f643fca680ae3aa6e4);
+            
+    
+            var marker_fc843bc9b699ce82d9edc63e4a0b10b5 = L.marker(
+                [29.38, -98.8],
+                {
+}
+            ).addTo(feature_group_a18fc787dc6c2bb3657553293ef9425f);
+        
+    
+            var div_icon_42884d6ae434bfcc58ccb452091f02cf = L.divIcon({
+  "html": "\u003cdiv style=\"\n              font-size:11px;font-weight:700;color:#111;background:rgba(255,255,255,.88);\n              border:1px solid #999;border-radius:4px;padding:2px 5px;white-space:nowrap;\"\u003e\n              US 90 / SH 211 \u003cspan style=\"color:#b30000\"\u003e86\u003c/span\u003e\n            \u003c/div\u003e",
+  "iconSize": [230, 36],
+  "iconAnchor": [-8, 14],
+  "className": "empty",
+});
+        
+    
+                marker_fc843bc9b699ce82d9edc63e4a0b10b5.setIcon(div_icon_42884d6ae434bfcc58ccb452091f02cf);
+            
+    
+            var marker_caa877d502156cb37bd8ca3a0d4fc8e2 = L.marker(
+                [29.402, -98.792],
+                {
+}
+            ).addTo(feature_group_a18fc787dc6c2bb3657553293ef9425f);
+        
+    
+            var div_icon_2cfec8400c0aef69c80d3339a7d828c5 = L.divIcon({
+  "html": "\u003cdiv style=\"\n              font-size:11px;font-weight:700;color:#111;background:rgba(255,255,255,.88);\n              border:1px solid #999;border-radius:4px;padding:2px 5px;white-space:nowrap;\"\u003e\n              Potranco Rd / SH 211 \u003cspan style=\"color:#b30000\"\u003e84\u003c/span\u003e\n            \u003c/div\u003e",
+  "iconSize": [230, 36],
+  "iconAnchor": [-8, 14],
+  "className": "empty",
+});
+        
+    
+                marker_caa877d502156cb37bd8ca3a0d4fc8e2.setIcon(div_icon_2cfec8400c0aef69c80d3339a7d828c5);
+            
+    
+            feature_group_a18fc787dc6c2bb3657553293ef9425f.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            var feature_group_0c45a8fa797258d406c1e937c6f99c34 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_83fd5e614ad8e9163859a813d260a041 = L.marker(
+                [29.5152, -98.3105],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_db76a84e82d8be7e2bfa1693d6012059 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6f193f863678a848287e923e8f3170c3 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_0492210a5d7607e87d991b4a0f1d8eba = $(`<div id="html_0492210a5d7607e87d991b4a0f1d8eba" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-005 — 10275 Interstate 10 - Shops at Scenic Lake</b><br>       <b>Acres:</b> 12.61<br>       <b>Call Priority:</b> 87/100<br>       <b>Pipeline:</b> CALL NOW<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> Approx. site location<br>       <b>Notes:</b> Prime I-10 / Loop 1604 exposure; shadow-anchored by new H-E-B.<br>       <a href="https://www.showcase.com/10275-interstate-10-converse-tx-78109/39663242/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_6f193f863678a848287e923e8f3170c3.setContent(html_0492210a5d7607e87d991b4a0f1d8eba);
+            
+        
+
+        marker_83fd5e614ad8e9163859a813d260a041.bindPopup(popup_6f193f863678a848287e923e8f3170c3)
+        ;
+
+        
+    
+    
+            marker_83fd5e614ad8e9163859a813d260a041.bindTooltip(
+                `<div>
+                     SA-005 | 87 | CALL NOW
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_83fd5e614ad8e9163859a813d260a041.setIcon(icon_db76a84e82d8be7e2bfa1693d6012059);
+            
+    
+            var marker_9cf5cf71f2cf770ce510f70a69b31f53 = L.marker(
+                [29.5148, -98.3135],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_e00ca8fbc198707edd0323aa318ea98f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8ef4e1ff9ea8e45e30952186f6b4792e = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_3ed640d309d10f1fb4d7e80885e3af22 = $(`<div id="html_3ed640d309d10f1fb4d7e80885e3af22" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-004 — Paloma Commercial - I-10 / N Loop 1604 E</b><br>       <b>Acres:</b> 12.55<br>       <b>Call Priority:</b> 86/100<br>       <b>Pipeline:</b> CALL NOW<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> Approx. site location<br>       <b>Notes:</b> Major interchange; direct H-E-B catalyst adjacency.<br>       <a href="https://www.crexi.com/properties/TX/Converse/Commercial-Land" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_8ef4e1ff9ea8e45e30952186f6b4792e.setContent(html_3ed640d309d10f1fb4d7e80885e3af22);
+            
+        
+
+        marker_9cf5cf71f2cf770ce510f70a69b31f53.bindPopup(popup_8ef4e1ff9ea8e45e30952186f6b4792e)
+        ;
+
+        
+    
+    
+            marker_9cf5cf71f2cf770ce510f70a69b31f53.bindTooltip(
+                `<div>
+                     SA-004 | 86 | CALL NOW
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9cf5cf71f2cf770ce510f70a69b31f53.setIcon(icon_e00ca8fbc198707edd0323aa318ea98f);
+            
+    
+            var marker_0d08141432e06eeadb75452d4e76d7a5 = L.marker(
+                [29.4623, -98.7788],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_62d7762f73bec68a38c7b06e3434bf8c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c03f2cf0a506e4aba3ae415f29388da9 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_10f1d6bc3f87d359af4ce6820b2273fe = $(`<div id="html_10f1d6bc3f87d359af4ce6820b2273fe" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-001 — SEC Culebra Rd & SH 211 - Carimar</b><br>       <b>Acres:</b> 21.08<br>       <b>Call Priority:</b> 85/100<br>       <b>Pipeline:</b> CALL NOW<br>       <b>Owner:</b> Unknown - verify current owner<br>       <b>Map precision:</b> Intersection-level; APNs known<br>       <b>Notes:</b> Signalized intersection shared with new H-E-B; four APNs identified in v1.<br>       <a href="https://www.loopnet.com/Listing/SEC-of-Culebra-Rd-211-hwy-San-Antonio-TX/39294173/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_c03f2cf0a506e4aba3ae415f29388da9.setContent(html_10f1d6bc3f87d359af4ce6820b2273fe);
+            
+        
+
+        marker_0d08141432e06eeadb75452d4e76d7a5.bindPopup(popup_c03f2cf0a506e4aba3ae415f29388da9)
+        ;
+
+        
+    
+    
+            marker_0d08141432e06eeadb75452d4e76d7a5.bindTooltip(
+                `<div>
+                     SA-001 | 85 | CALL NOW
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0d08141432e06eeadb75452d4e76d7a5.setIcon(icon_62d7762f73bec68a38c7b06e3434bf8c);
+            
+    
+            var marker_04580ccafb55161ec72769f9ab464996 = L.marker(
+                [29.501, -98.291],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_4608ae95b0824b2c4bbddea8f71e41a3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ddf73f5c39fa76d4d1c34cb73be079a0 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_17c226872afb0d17cc4cec3994da5310 = $(`<div id="html_17c226872afb0d17cc4cec3994da5310" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-010 — Schuwirth Rd & Loop 1604</b><br>       <b>Acres:</b> 21.18<br>       <b>Call Priority:</b> 84/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> Approx. tract location<br>       <b>Notes:</b> Marketed as ±1.18 to ±21.18 acres; exact tract configuration still needs verification.<br>       <a href="https://www.crexi.com/properties/TX/Converse/Commercial-Land" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_ddf73f5c39fa76d4d1c34cb73be079a0.setContent(html_17c226872afb0d17cc4cec3994da5310);
+            
+        
+
+        marker_04580ccafb55161ec72769f9ab464996.bindPopup(popup_ddf73f5c39fa76d4d1c34cb73be079a0)
+        ;
+
+        
+    
+    
+            marker_04580ccafb55161ec72769f9ab464996.bindTooltip(
+                `<div>
+                     SA-010 | 84 | RESEARCH
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_04580ccafb55161ec72769f9ab464996.setIcon(icon_4608ae95b0824b2c4bbddea8f71e41a3);
+            
+    
+            var marker_4dcb4f4f43149c1e9fd71042014ebab0 = L.marker(
+                [29.5448, -98.2472],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_7dfa34869e27548d2f32a1e6dd9b8aae = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a041ce250a7776455d0efcb3bc54e726 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_3599c17d94dc98ad10fb78be40dc4c29 = $(`<div id="html_3599c17d94dc98ad10fb78be40dc4c29" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-003 — 13183 Interstate 10 E</b><br>       <b>Acres:</b> 9.09<br>       <b>Call Priority:</b> 82/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> NAJDS Property Investments Inc. - verify current<br>       <b>Map precision:</b> Address-level<br>       <b>Notes:</b> Signalized hard corner at FM 1518 / I-10; older owner record needs refreshed title/CAD verification.<br>       <a href="https://www.loopnet.com/Listing/13183-Interstate-10-E-Schertz-TX/41907597/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_a041ce250a7776455d0efcb3bc54e726.setContent(html_3599c17d94dc98ad10fb78be40dc4c29);
+            
+        
+
+        marker_4dcb4f4f43149c1e9fd71042014ebab0.bindPopup(popup_a041ce250a7776455d0efcb3bc54e726)
+        ;
+
+        
+    
+    
+            marker_4dcb4f4f43149c1e9fd71042014ebab0.bindTooltip(
+                `<div>
+                     SA-003 | 82 | RESEARCH
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4dcb4f4f43149c1e9fd71042014ebab0.setIcon(icon_7dfa34869e27548d2f32a1e6dd9b8aae);
+            
+    
+            var marker_4c63bf4d30491e14b1283e1243f72d8a = L.marker(
+                [29.4955, -98.2865],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_8f2c88b3707fa7ac1a4bdd20067d01df = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_dc064c698e5c4dd86e1f9ba65f2cecf7 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_d75c54af5d56745e384c0578b0f05d6e = $(`<div id="html_d75c54af5d56745e384c0578b0f05d6e" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-012 — 4891 Freudenburg Rd</b><br>       <b>Acres:</b> 73.2<br>       <b>Call Priority:</b> 81/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> Approx. address-level<br>       <b>Notes:</b> Strategic scale near I-10 East; screen future road network and retail frontage.<br>       <a href="https://www.crexi.com/properties/TX/I-10_East_Corridor/Land/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_dc064c698e5c4dd86e1f9ba65f2cecf7.setContent(html_d75c54af5d56745e384c0578b0f05d6e);
+            
+        
+
+        marker_4c63bf4d30491e14b1283e1243f72d8a.bindPopup(popup_dc064c698e5c4dd86e1f9ba65f2cecf7)
+        ;
+
+        
+    
+    
+            marker_4c63bf4d30491e14b1283e1243f72d8a.bindTooltip(
+                `<div>
+                     SA-012 | 81 | RESEARCH
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4c63bf4d30491e14b1283e1243f72d8a.setIcon(icon_8f2c88b3707fa7ac1a4bdd20067d01df);
+            
+    
+            var marker_478b4f8b47600350da7d5b0b7bb242db = L.marker(
+                [29.319, -98.527],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_cc9d7fec951ce8f10dc7a8130b1931b5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "purple",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3a4644414f41185de1d7f3975ea33360 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_849e85f890318e180000154777a2bad4 = $(`<div id="html_849e85f890318e180000154777a2bad4" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-007 — VIDA Commercial Tract - S Zarzamora</b><br>       <b>Acres:</b> 5.65<br>       <b>Call Priority:</b> 79/100<br>       <b>Pipeline:</b> FOLLOW UP<br>       <b>Owner:</b> VIDA developer - verify legal owner<br>       <b>Map precision:</b> Approx. development parcel<br>       <b>Notes:</b> Reported under contract; monitor and identify adjacent off-market owners.<br>       <a href="https://www.loopnet.com/Listing/S-Zarzamora-St-San-Antonio-TX/37054431/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_3a4644414f41185de1d7f3975ea33360.setContent(html_849e85f890318e180000154777a2bad4);
+            
+        
+
+        marker_478b4f8b47600350da7d5b0b7bb242db.bindPopup(popup_3a4644414f41185de1d7f3975ea33360)
+        ;
+
+        
+    
+    
+            marker_478b4f8b47600350da7d5b0b7bb242db.bindTooltip(
+                `<div>
+                     SA-007 | 79 | FOLLOW UP
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_478b4f8b47600350da7d5b0b7bb242db.setIcon(icon_cc9d7fec951ce8f10dc7a8130b1931b5);
+            
+    
+            var marker_a579c55392057722125395c3ed1412d0 = L.marker(
+                [29.497, -98.293],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_37c1e6973343615ed552248b65d9fead = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_91734ccef69a7a2fd8ff4cfda7d1ef19 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_e99a11eafa40d05dad84bd191c923962 = $(`<div id="html_e99a11eafa40d05dad84bd191c923962" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-006 — 3065 E Loop 1604 & Green Rd - Punta Verde</b><br>       <b>Acres:</b> 11.67<br>       <b>Call Priority:</b> 77/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify parcel ownership<br>       <b>Map precision:</b> Approx. site location<br>       <b>Notes:</b> Utilities reportedly delivered; exact current sale tract boundaries need verification.<br>       <a href="https://www.crexi.com/properties/2233586/texas-punta-verda-plaza" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_91734ccef69a7a2fd8ff4cfda7d1ef19.setContent(html_e99a11eafa40d05dad84bd191c923962);
+            
+        
+
+        marker_a579c55392057722125395c3ed1412d0.bindPopup(popup_91734ccef69a7a2fd8ff4cfda7d1ef19)
+        ;
+
+        
+    
+    
+            marker_a579c55392057722125395c3ed1412d0.bindTooltip(
+                `<div>
+                     SA-006 | 77 | RESEARCH
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a579c55392057722125395c3ed1412d0.setIcon(icon_37c1e6973343615ed552248b65d9fead);
+            
+    
+            var marker_826de9af047f876c9b6c3397d120d583 = L.marker(
+                [29.589, -98.228],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_4f11c5a600cd5652ad7a5d353bf4c833 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8b1c9d97dc08e0bb25494b6b12965fd6 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_7a777e023843d6fee221780590b255bb = $(`<div id="html_7a777e023843d6fee221780590b255bb" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-009 — 8210 FM 1518</b><br>       <b>Acres:</b> 5.453<br>       <b>Call Priority:</b> 77/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> Address-level<br>       <b>Notes:</b> ~380 ft frontage; utilities reported; partial floodplain to rear needs verification.<br>       <a href="https://www.crexi.com/properties/2502594/texas-8210-farm-to-market-road-1518" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_8b1c9d97dc08e0bb25494b6b12965fd6.setContent(html_7a777e023843d6fee221780590b255bb);
+            
+        
+
+        marker_826de9af047f876c9b6c3397d120d583.bindPopup(popup_8b1c9d97dc08e0bb25494b6b12965fd6)
+        ;
+
+        
+    
+    
+            marker_826de9af047f876c9b6c3397d120d583.bindTooltip(
+                `<div>
+                     SA-009 | 77 | RESEARCH
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_826de9af047f876c9b6c3397d120d583.setIcon(icon_4f11c5a600cd5652ad7a5d353bf4c833);
+            
+    
+            var marker_c1cb9e915ea9ee1bd400f4b92bf7258f = L.marker(
+                [29.566, -98.236],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_e5096033c676b471b6e8f21eeff64169 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f729d876fa382e087e01413f76840731 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_1bb1c9548cc4c77653db13c557d941e4 = $(`<div id="html_1bb1c9548cc4c77653db13c557d941e4" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-011 — 6090 FM 1518</b><br>       <b>Acres:</b> 15.59<br>       <b>Call Priority:</b> 76/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> Approx. address-level<br>       <b>Notes:</b> Large-acreage fit along widening corridor; needs zoning/utilities/flood verification.<br>       <a href="https://www.crexi.com/properties/TX/Converse/Commercial-Land" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_f729d876fa382e087e01413f76840731.setContent(html_1bb1c9548cc4c77653db13c557d941e4);
+            
+        
+
+        marker_c1cb9e915ea9ee1bd400f4b92bf7258f.bindPopup(popup_f729d876fa382e087e01413f76840731)
+        ;
+
+        
+    
+    
+            marker_c1cb9e915ea9ee1bd400f4b92bf7258f.bindTooltip(
+                `<div>
+                     SA-011 | 76 | RESEARCH
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c1cb9e915ea9ee1bd400f4b92bf7258f.setIcon(icon_e5096033c676b471b6e8f21eeff64169);
+            
+    
+            var marker_60cb2118ed7073b095ee94fea09d9e4c = L.marker(
+                [29.3458, -98.4425],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_f10f720eb441c3e145a8fe68f2021070 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9957722b716ab649b4cf67193eccf3b8 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_dc9886439290f69d250c77efc89190aa = $(`<div id="html_dc9886439290f69d250c77efc89190aa" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-002 — Brooks - Louis Bauer / Laser 44.59 AC</b><br>       <b>Acres:</b> 44.59<br>       <b>Call Priority:</b> 72/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Brooks / verify legal owner<br>       <b>Map precision:</b> Development-site location<br>       <b>Notes:</b> Developer-controlled mixed-use tract in Brooks; strategic but not classic off-market owner call.<br>       <a href="https://livebrooks.com/development/available-properties/44-59-acres-mixed-use-development-opportunity/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_9957722b716ab649b4cf67193eccf3b8.setContent(html_dc9886439290f69d250c77efc89190aa);
+            
+        
+
+        marker_60cb2118ed7073b095ee94fea09d9e4c.bindPopup(popup_9957722b716ab649b4cf67193eccf3b8)
+        ;
+
+        
+    
+    
+            marker_60cb2118ed7073b095ee94fea09d9e4c.bindTooltip(
+                `<div>
+                     SA-002 | 72 | RESEARCH
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_60cb2118ed7073b095ee94fea09d9e4c.setIcon(icon_f10f720eb441c3e145a8fe68f2021070);
+            
+    
+            var marker_6b9d2a3588264fc4cf9df57f9cfda4df = L.marker(
+                [29.255, -98.553],
+                {
+}
+            ).addTo(feature_group_0c45a8fa797258d406c1e937c6f99c34);
+        
+    
+            var icon_537986201c927e09c5a06c2b0f455ecf = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "flag",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0f5bbb28716fb1e2746cd8ecb57e9253 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_e8b6608585ecc80bd62cb530ce1b94f6 = $(`<div id="html_e8b6608585ecc80bd62cb530ce1b94f6" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-008 — Applewhite Rd - 226 Acres</b><br>       <b>Acres:</b> 226.0<br>       <b>Call Priority:</b> 65/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Applewhite Land Development LLC - verify current<br>       <b>Map precision:</b> Approx. tract location<br>       <b>Notes:</b> Large strategic tract; current availability, flood, utilities and frontage split potential need verification.<br>       <a href="https://www.crexi.com/properties/597749/texas-226-acres-applewhite-road" target="_blank">Research source</a>     </div>     </div>`)[0];
+                popup_0f5bbb28716fb1e2746cd8ecb57e9253.setContent(html_e8b6608585ecc80bd62cb530ce1b94f6);
+            
+        
+
+        marker_6b9d2a3588264fc4cf9df57f9cfda4df.bindPopup(popup_0f5bbb28716fb1e2746cd8ecb57e9253)
+        ;
+
+        
+    
+    
+            marker_6b9d2a3588264fc4cf9df57f9cfda4df.bindTooltip(
+                `<div>
+                     SA-008 | 65 | RESEARCH
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6b9d2a3588264fc4cf9df57f9cfda4df.setIcon(icon_537986201c927e09c5a06c2b0f455ecf);
+            
+    
+            feature_group_0c45a8fa797258d406c1e937c6f99c34.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            var feature_group_a226874f9972842eec65b43be2a10db9 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_9871e831b359eb1ea9745338fc5ffd62 = L.markerClusterGroup(
+                {
+  "disableClusteringAtZoom": 11,
+}
+            );
+        
+    
+            var marker_f4b27d3c39726c02cdec8ea841a2c094 = L.marker(
+                [29.748, -98.073],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_8826cb1362dfa4ff67ff6ce26607d891 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b7c450d3702890bf2e33b64a682a1242 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_5d53822afc377c2cd46e7b558afafeb6 = $(`<div id="html_5d53822afc377c2cd46e7b558afafeb6" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Mayfair</b><br>       <b>Type:</b> Master-Planned Community<br>       ~1,880-acre mixed-use community; major north New Braunfels growth node.<br>       <a href="https://newbraunfels.legistar.com/LegislationDetail.aspx?GUID=FCCBB2A8-1767-48DA-91C3-EC26FF35C4E3&ID=8129330&Options=&Search=" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_b7c450d3702890bf2e33b64a682a1242.setContent(html_5d53822afc377c2cd46e7b558afafeb6);
+            
+        
+
+        marker_f4b27d3c39726c02cdec8ea841a2c094.bindPopup(popup_b7c450d3702890bf2e33b64a682a1242)
+        ;
+
+        
+    
+    
+            marker_f4b27d3c39726c02cdec8ea841a2c094.bindTooltip(
+                `<div>
+                     Mayfair
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f4b27d3c39726c02cdec8ea841a2c094.setIcon(icon_8826cb1362dfa4ff67ff6ce26607d891);
+            
+    
+            var marker_7d8ebf7bd860f0e14dd58ffc6ab1ddcd = L.marker(
+                [29.735, -98.172],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_1022bf52442482d4b03b5a0ad3fe81a7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6807b29a1c769850e1f2107f4dcbdcce = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_8b849917f0699851cdbdcad04137c316 = $(`<div id="html_8b849917f0699851cdbdcad04137c316" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Veramendi</b><br>       <b>Type:</b> Master-Planned Community<br>       2,400+ acres; long-range plan includes ~6,000 dwellings.<br>       <a href="https://communityimpact.com/san-antonio/new-braunfels/real-estate/2024/06/26/2400-acre-veramendi-development-continues-growth-in-new-braunfels/" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_6807b29a1c769850e1f2107f4dcbdcce.setContent(html_8b849917f0699851cdbdcad04137c316);
+            
+        
+
+        marker_7d8ebf7bd860f0e14dd58ffc6ab1ddcd.bindPopup(popup_6807b29a1c769850e1f2107f4dcbdcce)
+        ;
+
+        
+    
+    
+            marker_7d8ebf7bd860f0e14dd58ffc6ab1ddcd.bindTooltip(
+                `<div>
+                     Veramendi
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7d8ebf7bd860f0e14dd58ffc6ab1ddcd.setIcon(icon_1022bf52442482d4b03b5a0ad3fe81a7);
+            
+    
+            var marker_1c0b37f5560786fb6f95b68e5ef973e4 = L.marker(
+                [29.321, -98.528],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_9f7278c20746314a7f92130ef2ed728f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_adb41e722727d6c677443cb4023e388e = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_5fc42adc506bf881505c8a2d2cec552e = $(`<div id="html_5fc42adc506bf881505c8a2d2cec552e" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>VIDA</b><br>       <b>Type:</b> Master-Planned Community<br>       ~600 acres; 4,000 residential units planned near Texas A&M-SA and University Health.<br>       <a href="https://www.livevida.com/community/commercial/" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_adb41e722727d6c677443cb4023e388e.setContent(html_5fc42adc506bf881505c8a2d2cec552e);
+            
+        
+
+        marker_1c0b37f5560786fb6f95b68e5ef973e4.bindPopup(popup_adb41e722727d6c677443cb4023e388e)
+        ;
+
+        
+    
+    
+            marker_1c0b37f5560786fb6f95b68e5ef973e4.bindTooltip(
+                `<div>
+                     VIDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1c0b37f5560786fb6f95b68e5ef973e4.setIcon(icon_9f7278c20746314a7f92130ef2ed728f);
+            
+    
+            var marker_7c7cbc55d9e2482d6aceec7d7d7dcb91 = L.marker(
+                [29.409, -98.82],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_03819f8586cc2930ade07bb74ccb34ea = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4fc4c123629f2f780f744c5c9cdd5f96 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_4417eb5c2cf0232bf6c2178117b6e160 = $(`<div id="html_4417eb5c2cf0232bf6c2178117b6e160" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Briggs Ranch</b><br>       <b>Type:</b> Master-Planned Community<br>       ~800 acres; more than 2,000 homes planned.<br>       <a href="https://www.bizjournals.com/sanantonio/news/2026/02/05/2-000-home-briggs-ranch-community.html" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_4fc4c123629f2f780f744c5c9cdd5f96.setContent(html_4417eb5c2cf0232bf6c2178117b6e160);
+            
+        
+
+        marker_7c7cbc55d9e2482d6aceec7d7d7dcb91.bindPopup(popup_4fc4c123629f2f780f744c5c9cdd5f96)
+        ;
+
+        
+    
+    
+            marker_7c7cbc55d9e2482d6aceec7d7d7dcb91.bindTooltip(
+                `<div>
+                     Briggs Ranch
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7c7cbc55d9e2482d6aceec7d7d7dcb91.setIcon(icon_03819f8586cc2930ade07bb74ccb34ea);
+            
+    
+            var marker_54fe6de53c6bc4ce9a4a3fee4d25c9d4 = L.marker(
+                [29.4125, -98.808],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_64fe751f844c62cb796abfa8af445c4b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d708ca60da34c34d9fb587887ba3efc7 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_96e9dd8c092b71781bad3fc2dec4e00e = $(`<div id="html_96e9dd8c092b71781bad3fc2dec4e00e" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Prominence</b><br>       <b>Type:</b> Master-Planned Community<br>       384 acres near SH 211 / US 90; more than 1,100 homes planned.<br>       <a href="https://www.bizjournals.com/sanantonio/news/2026/03/26/prominence-expands-builder-lineup-san-antonio.html" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_d708ca60da34c34d9fb587887ba3efc7.setContent(html_96e9dd8c092b71781bad3fc2dec4e00e);
+            
+        
+
+        marker_54fe6de53c6bc4ce9a4a3fee4d25c9d4.bindPopup(popup_d708ca60da34c34d9fb587887ba3efc7)
+        ;
+
+        
+    
+    
+            marker_54fe6de53c6bc4ce9a4a3fee4d25c9d4.bindTooltip(
+                `<div>
+                     Prominence
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_54fe6de53c6bc4ce9a4a3fee4d25c9d4.setIcon(icon_64fe751f844c62cb796abfa8af445c4b);
+            
+    
+            var marker_5cce723740375c9f15815b021d83a958 = L.marker(
+                [29.4145, -98.847],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_63d7c102768d992233ce10a068b6e75c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ce9fccbaac0e14d32622ab9fbc39717e = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_e0e43ebd223d6a1c658664fcdbb6ac56 = $(`<div id="html_e0e43ebd223d6a1c658664fcdbb6ac56" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Viera</b><br>       <b>Type:</b> Master-Planned Community<br>       540 acres in Medina County; 1,047 home sites, first 281 lots expected by end of 2026.<br>       <a href="https://www.mysanantonio.com/realestate/article/medina-county-masonwood-development-21179722.php/" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_ce9fccbaac0e14d32622ab9fbc39717e.setContent(html_e0e43ebd223d6a1c658664fcdbb6ac56);
+            
+        
+
+        marker_5cce723740375c9f15815b021d83a958.bindPopup(popup_ce9fccbaac0e14d32622ab9fbc39717e)
+        ;
+
+        
+    
+    
+            marker_5cce723740375c9f15815b021d83a958.bindTooltip(
+                `<div>
+                     Viera
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5cce723740375c9f15815b021d83a958.setIcon(icon_63d7c102768d992233ce10a068b6e75c);
+            
+    
+            var marker_94b546248fa19cc6624fd185b74f3c89 = L.marker(
+                [29.616, -98.76],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_f563709269fce78cc33cfb241bf7cfda = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_16daa8a3c97257d4234cef2b5a590fa0 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_c38da72c1d503193db788d9502a4883e = $(`<div id="html_c38da72c1d503193db788d9502a4883e" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Guajolote Ranch</b><br>       <b>Type:</b> Master-Planned Community<br>       Planned 2,700-home, 1,160-acre community in northwest Bexar County; subject to environmental controversy and ongoing approvals.<br>       <a href="https://www.mysanantonio.com/news/hill-country/article/lennar-bexar-county-development-22300869.php" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_16daa8a3c97257d4234cef2b5a590fa0.setContent(html_c38da72c1d503193db788d9502a4883e);
+            
+        
+
+        marker_94b546248fa19cc6624fd185b74f3c89.bindPopup(popup_16daa8a3c97257d4234cef2b5a590fa0)
+        ;
+
+        
+    
+    
+            marker_94b546248fa19cc6624fd185b74f3c89.bindTooltip(
+                `<div>
+                     Guajolote Ranch
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_94b546248fa19cc6624fd185b74f3c89.setIcon(icon_f563709269fce78cc33cfb241bf7cfda);
+            
+    
+            var marker_d023da7679c1f4b3c1feefbd294a01b7 = L.marker(
+                [29.584, -98.232],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_6a5d7c89a3ab8baee6c3309cdf111024 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ced0126ac0bd90e25a5b112b255a763a = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_7a23c333c80c5fcc0859a8a0eb6613bd = $(`<div id="html_7a23c333c80c5fcc0859a8a0eb6613bd" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>The Crossvine</b><br>       <b>Type:</b> Master-Planned Community<br>       550+ acres with potential ~1,600 residences and a future town center.<br>       <a href="https://thecrossvine.com/about-us/" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_ced0126ac0bd90e25a5b112b255a763a.setContent(html_7a23c333c80c5fcc0859a8a0eb6613bd);
+            
+        
+
+        marker_d023da7679c1f4b3c1feefbd294a01b7.bindPopup(popup_ced0126ac0bd90e25a5b112b255a763a)
+        ;
+
+        
+    
+    
+            marker_d023da7679c1f4b3c1feefbd294a01b7.bindTooltip(
+                `<div>
+                     The Crossvine
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d023da7679c1f4b3c1feefbd294a01b7.setIcon(icon_6a5d7c89a3ab8baee6c3309cdf111024);
+            
+    
+            var marker_1c2fe202e2b7ecb90d89ae8f3ceb9f5d = L.marker(
+                [29.821, -98.69],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_87f5dbbe1e1d3fc177056e6acec34756 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_72978f058fc9fd0e1c37ca1e5d9cad3b = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_c32fe4eef9dd6e6c8198814df6efc771 = $(`<div id="html_c32fe4eef9dd6e6c8198814df6efc771" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Esperanza</b><br>       <b>Type:</b> Master-Planned Community / Retail<br>       ~1,700-acre Boerne community; retail town center activity reported along SH 46.<br>       <a href="https://www.mysanantonio.com/news/hill-country/article/boerne-esperanza-retail-town-center-22093534.php" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_72978f058fc9fd0e1c37ca1e5d9cad3b.setContent(html_c32fe4eef9dd6e6c8198814df6efc771);
+            
+        
+
+        marker_1c2fe202e2b7ecb90d89ae8f3ceb9f5d.bindPopup(popup_72978f058fc9fd0e1c37ca1e5d9cad3b)
+        ;
+
+        
+    
+    
+            marker_1c2fe202e2b7ecb90d89ae8f3ceb9f5d.bindTooltip(
+                `<div>
+                     Esperanza
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1c2fe202e2b7ecb90d89ae8f3ceb9f5d.setIcon(icon_87f5dbbe1e1d3fc177056e6acec34756);
+            
+    
+            var marker_0f26bd7c248e72b106e8367079e903d7 = L.marker(
+                [29.604, -97.935],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_ba01715e3ed166b3b7c436c25df10862 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_abbb81d01e12288af89e094458332a2b = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_62803f9b0e5d8697d6e99b0e115d63f5 = $(`<div id="html_62803f9b0e5d8697d6e99b0e115d63f5" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Canvas Seguin</b><br>       <b>Type:</b> Master-Planned Community<br>       ~352 acres near SH 123; roughly 1,100–1,300 homes plus neighborhood retail; construction targeted for 2027.<br>       <a href="https://www.bizjournals.com/sanantonio/news/2026/07/24/canvas-seguin-approval-canvas-master-plan.html" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_abbb81d01e12288af89e094458332a2b.setContent(html_62803f9b0e5d8697d6e99b0e115d63f5);
+            
+        
+
+        marker_0f26bd7c248e72b106e8367079e903d7.bindPopup(popup_abbb81d01e12288af89e094458332a2b)
+        ;
+
+        
+    
+    
+            marker_0f26bd7c248e72b106e8367079e903d7.bindTooltip(
+                `<div>
+                     Canvas Seguin
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0f26bd7c248e72b106e8367079e903d7.setIcon(icon_ba01715e3ed166b3b7c436c25df10862);
+            
+    
+            var marker_bfdfb214645986b176d947e7b868b372 = L.marker(
+                [29.348, -98.87],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_9cbec90248dde163f7ddf0b4f3bca43b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f7e9f6687b24d08ca2814cba94eb017c = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_b6a0d95fce0f43a7c6da2b1740a2ead5 = $(`<div id="html_b6a0d95fce0f43a7c6da2b1740a2ead5" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Flat Creek - Castroville</b><br>       <b>Type:</b> Master-Planned Community<br>       Growing Castroville community with multiple builders; important westward housing signal.<br>       <a href="https://www.bizjournals.com/sanantonio/news/2026/05/18/king-fish-development-castroville-flat-creek.html" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_f7e9f6687b24d08ca2814cba94eb017c.setContent(html_b6a0d95fce0f43a7c6da2b1740a2ead5);
+            
+        
+
+        marker_bfdfb214645986b176d947e7b868b372.bindPopup(popup_f7e9f6687b24d08ca2814cba94eb017c)
+        ;
+
+        
+    
+    
+            marker_bfdfb214645986b176d947e7b868b372.bindTooltip(
+                `<div>
+                     Flat Creek - Castroville
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bfdfb214645986b176d947e7b868b372.setIcon(icon_9cbec90248dde163f7ddf0b4f3bca43b);
+            
+    
+            var marker_3e047e5fde9d394bd91f503c0429130d = L.marker(
+                [29.579, -97.949],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_21f82a24cf33e299294311fa69012ed2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5d250b464ab53fae96fb52313ce13adf = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_77711722aa9b323c8a260746c7abb5b2 = $(`<div id="html_77711722aa9b323c8a260746c7abb5b2" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Seguin Exchange</b><br>       <b>Type:</b> Mixed-Use / Retail / Employment<br>       544-acre mixed-use project with 750k+ sf retail plus industrial/manufacturing campus.<br>       <a href="https://www.expressnews.com/business/real-estate/article/seguin-target-opening-seguin-exchange-22437247.php" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_5d250b464ab53fae96fb52313ce13adf.setContent(html_77711722aa9b323c8a260746c7abb5b2);
+            
+        
+
+        marker_3e047e5fde9d394bd91f503c0429130d.bindPopup(popup_5d250b464ab53fae96fb52313ce13adf)
+        ;
+
+        
+    
+    
+            marker_3e047e5fde9d394bd91f503c0429130d.bindTooltip(
+                `<div>
+                     Seguin Exchange
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3e047e5fde9d394bd91f503c0429130d.setIcon(icon_21f82a24cf33e299294311fa69012ed2);
+            
+    
+            var marker_bcacc0305130c1ae92e116539300abaf = L.marker(
+                [29.401, -98.489],
+                {
+}
+            ).addTo(marker_cluster_9871e831b359eb1ea9745338fc5ffd62);
+        
+    
+            var icon_aff7654e45c6ac980d57322dd79d7f74 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "building",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b4ebc973f52c13c0f085fdaab23b28c2 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_8ceab4d3bcf1d50d980e0aae456b5d00 = $(`<div id="html_8ceab4d3bcf1d50d980e0aae456b5d00" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Lone Star Brewery Redevelopment</b><br>       <b>Type:</b> Mixed-Use Redevelopment<br>       57-acre redevelopment vision with housing, shops, restaurants and public space; roadwork targeted to begin in 2027.<br>       <a href="https://www.expressnews.com/news/article/lone-star-brewery-development-progress-22438658.php" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_b4ebc973f52c13c0f085fdaab23b28c2.setContent(html_8ceab4d3bcf1d50d980e0aae456b5d00);
+            
+        
+
+        marker_bcacc0305130c1ae92e116539300abaf.bindPopup(popup_b4ebc973f52c13c0f085fdaab23b28c2)
+        ;
+
+        
+    
+    
+            marker_bcacc0305130c1ae92e116539300abaf.bindTooltip(
+                `<div>
+                     Lone Star Brewery Redevelopment
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bcacc0305130c1ae92e116539300abaf.setIcon(icon_aff7654e45c6ac980d57322dd79d7f74);
+            
+    
+            marker_cluster_9871e831b359eb1ea9745338fc5ffd62.addTo(feature_group_a226874f9972842eec65b43be2a10db9);
+        
+    
+            feature_group_a226874f9972842eec65b43be2a10db9.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            var feature_group_18e326aa803143ba3330a0ba600b718a = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_37e32c773eaf9193c1134ae7a7186b42 = L.marker(
+                [29.4635, -98.7795],
+                {
+}
+            ).addTo(feature_group_18e326aa803143ba3330a0ba600b718a);
+        
+    
+            var icon_60512c559504b5209cf46cc877a700e9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_43f97381ae7a2002d7350211e2168cb6 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_61e2cf7eae84c73b793a9e43e527b6ce = $(`<div id="html_61e2cf7eae84c73b793a9e43e527b6ce" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Culebra / 211 H-E-B</b><br>       <b>Category:</b> H-E-B<br>       <b>Status:</b> OPEN<br>       Opened Jan. 7, 2026; large-format H-E-B at 15489 Culebra Rd.<br>       <a href="https://newsroom.heb.com/culebra-211-h-e-b-opens-in-san-antonio/" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_43f97381ae7a2002d7350211e2168cb6.setContent(html_61e2cf7eae84c73b793a9e43e527b6ce);
+            
+        
+
+        marker_37e32c773eaf9193c1134ae7a7186b42.bindPopup(popup_43f97381ae7a2002d7350211e2168cb6)
+        ;
+
+        
+    
+    
+            marker_37e32c773eaf9193c1134ae7a7186b42.bindTooltip(
+                `<div>
+                     Culebra / 211 H-E-B — OPEN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_37e32c773eaf9193c1134ae7a7186b42.setIcon(icon_60512c559504b5209cf46cc877a700e9);
+            
+    
+            var marker_d0f39ce50d8b9a5538bfd5a0af73101c = L.marker(
+                [29.515, -98.311],
+                {
+}
+            ).addTo(feature_group_18e326aa803143ba3330a0ba600b718a);
+        
+    
+            var icon_fe6801962bc8c5e1da26fcae78f7c5f0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6d904ed536a40a1997cc3da5d49a42a8 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_26be62e8ab2cda993aba5f12c289e46b = $(`<div id="html_26be62e8ab2cda993aba5f12c289e46b" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>I-10 / Loop 1604 East H-E-B</b><br>       <b>Category:</b> H-E-B<br>       <b>Status:</b> UNDER CONSTRUCTION<br>       125,000-sf store; H-E-B says opening expected late 2026.<br>       <a href="https://newsroom.heb.com/h-e-b-announces-new-store-on-san-antonios-east-side/" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_6d904ed536a40a1997cc3da5d49a42a8.setContent(html_26be62e8ab2cda993aba5f12c289e46b);
+            
+        
+
+        marker_d0f39ce50d8b9a5538bfd5a0af73101c.bindPopup(popup_6d904ed536a40a1997cc3da5d49a42a8)
+        ;
+
+        
+    
+    
+            marker_d0f39ce50d8b9a5538bfd5a0af73101c.bindTooltip(
+                `<div>
+                     I-10 / Loop 1604 East H-E-B — UNDER CONSTRUCTION
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d0f39ce50d8b9a5538bfd5a0af73101c.setIcon(icon_fe6801962bc8c5e1da26fcae78f7c5f0);
+            
+    
+            var marker_9e555244fc7a28fb783e1ca9e62ee1c0 = L.marker(
+                [29.734, -98.647],
+                {
+}
+            ).addTo(feature_group_18e326aa803143ba3330a0ba600b718a);
+        
+    
+            var icon_2a7e0ec44d9023de6c801ffeca4a353e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_810b59b5f5ee01934e7b62422098d321 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_5bff6345e893e2b5b398b6c8a827d0fa = $(`<div id="html_5bff6345e893e2b5b398b6c8a827d0fa" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Fair Oaks H-E-B</b><br>       <b>Category:</b> H-E-B<br>       <b>Status:</b> OPEN<br>       Existing anchor at 29388 I-10 West serving the Boerne/Fair Oaks/Lemon Creek growth corridor.<br>       <a href="https://www.heb.com/heb-store/US/tx/boerne/fair-oaks-h-e-b-793" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_810b59b5f5ee01934e7b62422098d321.setContent(html_5bff6345e893e2b5b398b6c8a827d0fa);
+            
+        
+
+        marker_9e555244fc7a28fb783e1ca9e62ee1c0.bindPopup(popup_810b59b5f5ee01934e7b62422098d321)
+        ;
+
+        
+    
+    
+            marker_9e555244fc7a28fb783e1ca9e62ee1c0.bindTooltip(
+                `<div>
+                     Fair Oaks H-E-B — OPEN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9e555244fc7a28fb783e1ca9e62ee1c0.setIcon(icon_2a7e0ec44d9023de6c801ffeca4a353e);
+            
+    
+            var marker_f18c93ac11d084cd06f099445a87eecb = L.marker(
+                [29.7485, -98.083],
+                {
+}
+            ).addTo(feature_group_18e326aa803143ba3330a0ba600b718a);
+        
+    
+            var icon_a66372c64dd827656533d2cec00554cd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "cadetblue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0e4ef64c1274476d387557e0d68458be = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_1f6b15567124dbce6db437852cf619ce = $(`<div id="html_1f6b15567124dbce6db437852cf619ce" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Mayfair Costco</b><br>       <b>Category:</b> Costco<br>       <b>Status:</b> PLANNED / TIMING TO VERIFY<br>       Future Costco identified near Kohlenberg Rd / I-35 in Mayfair.<br>       <a href="https://communityimpact.com/new-braunfels/business/costco-wholesale-eyes-new-braunfels-for-new-location/" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_0e4ef64c1274476d387557e0d68458be.setContent(html_1f6b15567124dbce6db437852cf619ce);
+            
+        
+
+        marker_f18c93ac11d084cd06f099445a87eecb.bindPopup(popup_0e4ef64c1274476d387557e0d68458be)
+        ;
+
+        
+    
+    
+            marker_f18c93ac11d084cd06f099445a87eecb.bindTooltip(
+                `<div>
+                     Mayfair Costco — PLANNED / TIMING TO VERIFY
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f18c93ac11d084cd06f099445a87eecb.setIcon(icon_a66372c64dd827656533d2cec00554cd);
+            
+    
+            var marker_65168f1fb4d06520959cc703c3cd5259 = L.marker(
+                [29.506, -98.73],
+                {
+}
+            ).addTo(feature_group_18e326aa803143ba3330a0ba600b718a);
+        
+    
+            var icon_b1905c2e27ba67a71c7b8266b65be122 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkblue",
+  "iconColor": "white",
+  "icon": "shopping-cart",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cdeebdb52ca676071dd637c11b0d6883 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_f9b06710175b87c7469bc5fd7dfaf0b6 = $(`<div id="html_f9b06710175b87c7469bc5fd7dfaf0b6" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Kallison Ranch Walmart Land Purchase</b><br>       <b>Category:</b> Walmart<br>       <b>Status:</b> LAND ACQUIRED / STORE UNCONFIRMED<br>       Walmart acquired ~34.7 acres off Culebra near Kallison Ranch in July 2026; company has not confirmed a store.<br>       <a href="https://www.mysanantonio.com/business/article/new-walmart-far-westside-22391655.php" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_cdeebdb52ca676071dd637c11b0d6883.setContent(html_f9b06710175b87c7469bc5fd7dfaf0b6);
+            
+        
+
+        marker_65168f1fb4d06520959cc703c3cd5259.bindPopup(popup_cdeebdb52ca676071dd637c11b0d6883)
+        ;
+
+        
+    
+    
+            marker_65168f1fb4d06520959cc703c3cd5259.bindTooltip(
+                `<div>
+                     Kallison Ranch Walmart Land Purchase — LAND ACQUIRED / STORE UNCONFIRMED
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_65168f1fb4d06520959cc703c3cd5259.setIcon(icon_b1905c2e27ba67a71c7b8266b65be122);
+            
+    
+            var marker_1b004c5322fccb715df112aa00c31af6 = L.marker(
+                [29.5795, -97.951],
+                {
+}
+            ).addTo(feature_group_18e326aa803143ba3330a0ba600b718a);
+        
+    
+            var icon_c3ff088147a72c9bbf72bf4a84d95b73 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkred",
+  "iconColor": "white",
+  "icon": "bullseye",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a0ba62d3b23fc2fb393ffacc3946f01f = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_57cdcd032ad9547805b2078d9e4a65b6 = $(`<div id="html_57cdcd032ad9547805b2078d9e4a65b6" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>Seguin Exchange Target</b><br>       <b>Category:</b> Target<br>       <b>Status:</b> PLANNED<br>       123,405-sf Target planned; construction expected Feb. 2027–Jan. 2028.<br>       <a href="https://www.expressnews.com/business/real-estate/article/seguin-target-opening-seguin-exchange-22437247.php" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_a0ba62d3b23fc2fb393ffacc3946f01f.setContent(html_57cdcd032ad9547805b2078d9e4a65b6);
+            
+        
+
+        marker_1b004c5322fccb715df112aa00c31af6.bindPopup(popup_a0ba62d3b23fc2fb393ffacc3946f01f)
+        ;
+
+        
+    
+    
+            marker_1b004c5322fccb715df112aa00c31af6.bindTooltip(
+                `<div>
+                     Seguin Exchange Target — PLANNED
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1b004c5322fccb715df112aa00c31af6.setIcon(icon_c3ff088147a72c9bbf72bf4a84d95b73);
+            
+    
+            var marker_e2bbf31fa9ccde5bfb586db3459d6735 = L.marker(
+                [29.414, -98.367],
+                {
+}
+            ).addTo(feature_group_18e326aa803143ba3330a0ba600b718a);
+        
+    
+            var icon_f356ecbdb36f5865978dc3f3fdc87ad3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "black",
+  "iconColor": "white",
+  "icon": "briefcase",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c4510c640a7ee61e82b390d44b5f4ab3 = L.popup({
+  "maxWidth": 380,
+});
+
+        
+            
+                var html_1f7fe8e02a107be42852fd1510ef424f = $(`<div id="html_1f7fe8e02a107be42852fd1510ef424f" style="width: 100.0%; height: 100.0%;">     <div style="width:340px">       <b>H-E-B Foster Road Supply Chain Expansion</b><br>       <b>Category:</b> Employment / H-E-B<br>       <b>Status:</b> PROPOSED / EXPANSION<br>       $700M supply-chain expansion plan could create 720 jobs by 2028 and 1,200+ over a decade.<br>       <a href="https://newsroom.heb.com/h-e-b-announces-plans-to-invest-700-million-to-expand-its-supply-chain-operations/" target="_blank">Source</a>     </div>     </div>`)[0];
+                popup_c4510c640a7ee61e82b390d44b5f4ab3.setContent(html_1f7fe8e02a107be42852fd1510ef424f);
+            
+        
+
+        marker_e2bbf31fa9ccde5bfb586db3459d6735.bindPopup(popup_c4510c640a7ee61e82b390d44b5f4ab3)
+        ;
+
+        
+    
+    
+            marker_e2bbf31fa9ccde5bfb586db3459d6735.bindTooltip(
+                `<div>
+                     H-E-B Foster Road Supply Chain Expansion — PROPOSED / EXPANSION
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e2bbf31fa9ccde5bfb586db3459d6735.setIcon(icon_f356ecbdb36f5865978dc3f3fdc87ad3);
+            
+    
+            feature_group_18e326aa803143ba3330a0ba600b718a.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            var feature_group_370786adb15c6d6d865f189609798696 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var poly_line_553b793bafae85ab9f4a44c38fe31e93 = L.polyline(
+                [[29.407, -98.624], [29.394, -98.682], [29.383, -98.742], [29.38, -98.8]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
+        
+    
+        var popup_694914cf55f708d01df34706390b30d1 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_2e57d8b4131f474ab4feb1f2c12a748f = $(`<div id="html_2e57d8b4131f474ab4feb1f2c12a748f" style="width: 100.0%; height: 100.0%;"><b>US 90 Expansion - I-410 to SH 211</b><br>7.6-mile TxDOT expansion; Phase I late 2025–2030; Phase II planned 2028–2032 with partial funding.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio/us90/project-phasing.html' target='_blank'>Source</a></div>`)[0];
+                popup_694914cf55f708d01df34706390b30d1.setContent(html_2e57d8b4131f474ab4feb1f2c12a748f);
+            
+        
+
+        poly_line_553b793bafae85ab9f4a44c38fe31e93.bindPopup(popup_694914cf55f708d01df34706390b30d1)
+        ;
+
+        
+    
+    
+            poly_line_553b793bafae85ab9f4a44c38fe31e93.bindTooltip(
+                `<div>
+                     US 90 Expansion - I-410 to SH 211
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_21ea315fa2c68fab588f6254ca11f181 = L.polyline(
+                [[29.6, -98.235], [29.575, -98.235], [29.545, -98.247]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
+        
+    
+        var popup_aefbdcc49835f774eb32c0f992343df0 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_e87af45b330719c63495d29530a524db = $(`<div id="html_e87af45b330719c63495d29530a524db" style="width: 100.0%; height: 100.0%;"><b>FM 1518 Expansion - FM 78 to I-10</b><br>Active TxDOT expansion corridor supporting Schertz/Converse growth.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio.html' target='_blank'>Source</a></div>`)[0];
+                popup_aefbdcc49835f774eb32c0f992343df0.setContent(html_e87af45b330719c63495d29530a524db);
+            
+        
+
+        poly_line_21ea315fa2c68fab588f6254ca11f181.bindPopup(popup_aefbdcc49835f774eb32c0f992343df0)
+        ;
+
+        
+    
+    
+            poly_line_21ea315fa2c68fab588f6254ca11f181.bindTooltip(
+                `<div>
+                     FM 1518 Expansion - FM 78 to I-10
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_6e41d3ed7bcae7497e8e6795dd4d2fed = L.polyline(
+                [[29.553, -98.294], [29.53, -98.275], [29.513, -98.252]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
+        
+    
+        var popup_7508835a65873628a2becbbedc039ed7 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_d71f6faec81d846d9df3c81295e8bedb = $(`<div id="html_d71f6faec81d846d9df3c81295e8bedb" style="width: 100.0%; height: 100.0%;"><b>FM 1516 Expansion - FM 78 to I-10</b><br>Active construction; TxDOT expects project completion in fall 2028.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio/fm1516-expansion-project.html' target='_blank'>Source</a></div>`)[0];
+                popup_7508835a65873628a2becbbedc039ed7.setContent(html_d71f6faec81d846d9df3c81295e8bedb);
+            
+        
+
+        poly_line_6e41d3ed7bcae7497e8e6795dd4d2fed.bindPopup(popup_7508835a65873628a2becbbedc039ed7)
+        ;
+
+        
+    
+    
+            poly_line_6e41d3ed7bcae7497e8e6795dd4d2fed.bindTooltip(
+                `<div>
+                     FM 1516 Expansion - FM 78 to I-10
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_7fce466b95333a74266b9a2f93039617 = L.polyline(
+                [[29.515, -98.391], [29.57, -98.339], [29.615, -98.289], [29.665, -98.221]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
+        
+    
+        var popup_1cbc2f88c76abab06dee0e76f85f63fb = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_45beeeb356bda8d24e6a63cd2d0884e4 = $(`<div id="html_45beeeb356bda8d24e6a63cd2d0884e4" style="width: 100.0%; height: 100.0%;"><b>I-35 Northeast Expansion (NEX)</b><br>Major multi-phase I-35 expansion through northeast San Antonio toward Guadalupe/Comal counties.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio.html' target='_blank'>Source</a></div>`)[0];
+                popup_1cbc2f88c76abab06dee0e76f85f63fb.setContent(html_45beeeb356bda8d24e6a63cd2d0884e4);
+            
+        
+
+        poly_line_7fce466b95333a74266b9a2f93039617.bindPopup(popup_1cbc2f88c76abab06dee0e76f85f63fb)
+        ;
+
+        
+    
+    
+            poly_line_7fce466b95333a74266b9a2f93039617.bindTooltip(
+                `<div>
+                     I-35 Northeast Expansion (NEX)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_b050b1205d10ec18df7c7ec2be66cda5 = L.polyline(
+                [[29.555, -98.665], [29.59, -98.59], [29.61, -98.5], [29.612, -98.43]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
+        
+    
+        var popup_030cd992e721ee7ff6a17f2e305abefe = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_d9ca989d8a4640e1ba94c822079a0eee = $(`<div id="html_d9ca989d8a4640e1ba94c822079a0eee" style="width: 100.0%; height: 100.0%;"><b>Loop 1604 North Expansion</b><br>Large TxDOT mobility program across North San Antonio; useful secondary growth context.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio.html' target='_blank'>Source</a></div>`)[0];
+                popup_030cd992e721ee7ff6a17f2e305abefe.setContent(html_d9ca989d8a4640e1ba94c822079a0eee);
+            
+        
+
+        poly_line_b050b1205d10ec18df7c7ec2be66cda5.bindPopup(popup_030cd992e721ee7ff6a17f2e305abefe)
+        ;
+
+        
+    
+    
+            poly_line_b050b1205d10ec18df7c7ec2be66cda5.bindTooltip(
+                `<div>
+                     Loop 1604 North Expansion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            feature_group_370786adb15c6d6d865f189609798696.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full screen",
+  "titleCancel": "Exit full screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        
+    
+            var measure_control_c087d5751582266476975662e612a035 = new L.Control.Measure(
+                {
+  "position": "topleft",
+  "primaryLengthUnit": "miles",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_33cc2c2ac68d72d2971fbb7de3650b24.addControl(measure_control_c087d5751582266476975662e612a035);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_2f9c59aacac0861ead685684cef81130 = new L.Control.MousePosition(
+                {
+  "position": "bottomleft",
+  "separator": " | ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "Lat/Lon:",
+}
+            );
+            mouse_position_2f9c59aacac0861ead685684cef81130.options["latFormatter"] =
+                undefined;
+            mouse_position_2f9c59aacac0861ead685684cef81130.options["lngFormatter"] =
+                undefined;
+            map_33cc2c2ac68d72d2971fbb7de3650b24.addControl(mouse_position_2f9c59aacac0861ead685684cef81130);
+        
+    
+            var layer_control_b250c1d6f8951aadc14a9860adeeb93d_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_f07a431ff4dc7ff3c822055d0c4ef939,
+                    "Street Map" : tile_layer_aaae3922d3fdbfea43709c0f196149c0,
+                    "Topo" : tile_layer_34ebf833fc2ef87725ad85de46958f36,
+                },
+                overlays :  {
+                    "\ud83d\udd25 Opportunity Heat" : feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
+                    "\ud83c\udfaf Target Intersections" : feature_group_faeb81c75b71b2840ca70907d2e58065,
+                    "\ud83c\udff7\ufe0f Top-Node Labels" : feature_group_a18fc787dc6c2bb3657553293ef9425f,
+                    "\ud83d\udccd Target Parcels / Sites" : feature_group_0c45a8fa797258d406c1e937c6f99c34,
+                    "\ud83c\udfd8\ufe0f Major Developments" : feature_group_a226874f9972842eec65b43be2a10db9,
+                    "\ud83d\uded2 H-E-B / Major Retail / Employment Catalysts" : feature_group_18e326aa803143ba3330a0ba600b718a,
+                    "\ud83d\udee3\ufe0f Infrastructure / Road Projects" : feature_group_370786adb15c6d6d865f189609798696,
+                },
+            };
+            let layer_control_b250c1d6f8951aadc14a9860adeeb93d = L.control.layers(
+                layer_control_b250c1d6f8951aadc14a9860adeeb93d_layers.base_layers,
+                layer_control_b250c1d6f8951aadc14a9860adeeb93d_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": false,
+  "autoZIndex": true,
+}
+            ).addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+
+        
+</script>
+</html>
