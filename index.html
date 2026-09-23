@@ -102,7 +102,7 @@
 position: fixed; top: 12px; left: 55px; z-index:9999; width:430px;
 background:rgba(255,255,255,.95); border:2px solid #17365D; border-radius:8px;
 padding:10px 12px; box-shadow:0 2px 8px rgba(0,0,0,.2); font-family:Arial;">
-<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4.2 Top Sites</div>
+<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4.3 Fast Top 5</div>
 <div style="font-size:12px;margin-top:4px;">
 Use the layer control to isolate <b>heat, parcels, developments, anchors, and road projects</b>.
 Click any marker/line for acquisition context and source links.
@@ -126,7 +126,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 </div>
     
             <div id="v42TopSitesPanel">
-  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">Auto-ranked land opportunities · owner + parcel highlighted</span></div>
+  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">Fast Top 5 first · live GIS refinement follows</span></div>
   <div id="v42TopBody">
     <div id="v42TopStatus" class="v42Loading">Ranking the best 5+ acre sites now…</div>
     <div id="v42TopList"></div>
@@ -3504,10 +3504,30 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         }
         function v4queryNearby(url,node,meters,limit){
           return new Promise(function(resolve){
-            L.esri.query({url:url}).nearby([node.lat,node.lng],meters).limit(limit||2000).run(function(err,fc){
-              resolve(err||!fc?[]:(fc.features||[]));
-            });
+            var done=false,timer;
+            function finish(features){
+              if(done)return;done=true;if(timer)clearTimeout(timer);resolve(features||[]);
+            }
+            timer=setTimeout(function(){finish([]);},4500);
+            try{
+              L.esri.query({url:url}).nearby([node.lat,node.lng],meters).limit(limit||2000).run(function(err,fc){
+                finish(err||!fc?[]:(fc.features||[]));
+              });
+            }catch(e){finish([]);}
           });
+        }
+        async function v4mapLimit(items,limit,fn){
+          var results=new Array(items.length),next=0;
+          async function worker(){
+            while(true){
+              var i=next++; if(i>=items.length)return;
+              try{results[i]=await fn(items[i],i);}catch(e){results[i]=null;}
+            }
+          }
+          var workers=[];
+          for(var w=0;w<Math.min(limit,items.length);w++)workers.push(worker());
+          await Promise.all(workers);
+          return results;
         }
         function v4stageMetric(node,def){
           return v4queryNearby(v4PlatBase+"/"+def.id,node,8046.72,2000).then(function(features){
@@ -3593,9 +3613,12 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         }
         async function v4analyzeNode(node){
           if(v4RadarCache[node.id])return v4RadarCache[node.id];
-          var parts=await Promise.all(v4StageDefs.map(function(d){return v4stageMetric(node,d);}));
-          var permits=await v4permitMetric(node);
-          var traffic=await v4trafficMetric(node);
+          var bundle=await Promise.all([
+            Promise.all(v4StageDefs.map(function(d){return v4stageMetric(node,d);})),
+            v4permitMetric(node),
+            v4trafficMetric(node)
+          ]);
+          var parts=bundle[0],permits=bundle[1],traffic=bundle[2];
           var weightedSingle=0,weightedCommercial=0,recent180=0,raw1=0,raw3=0,raw5=0;
           parts.forEach(function(x){weightedSingle+=x.weightedSingle;weightedCommercial+=x.weightedCommercial;recent180+=x.recent180;raw1+=x.raw1;raw3+=x.raw3;raw5+=x.raw5;});
           var lotScore=v4clamp(weightedSingle/20,0,100);
@@ -3677,20 +3700,26 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         function v4queryIntersect(url,geometry,limit){
           return new Promise(function(resolve){
+            var done=false,timer;
+            function finish(features){if(done)return;done=true;if(timer)clearTimeout(timer);resolve(features||[]);}
+            timer=setTimeout(function(){finish([]);},4000);
             try{
               L.esri.query({url:url}).intersects(geometry).limit(limit||100).run(function(err,fc){
-                resolve(err||!fc?[]:(fc.features||[]));
+                finish(err||!fc?[]:(fc.features||[]));
               });
-            }catch(e){resolve([]);}
+            }catch(e){finish([]);}
           });
         }
         function v4queryNearPoint(url,center,meters,limit){
           return new Promise(function(resolve){
+            var done=false,timer;
+            function finish(features){if(done)return;done=true;if(timer)clearTimeout(timer);resolve(features||[]);}
+            timer=setTimeout(function(){finish([]);},4000);
             try{
               L.esri.query({url:url}).nearby([center.lat,center.lng],meters).limit(limit||100).run(function(err,fc){
-                resolve(err||!fc?[]:(fc.features||[]));
+                finish(err||!fc?[]:(fc.features||[]));
               });
-            }catch(e){resolve([]);}
+            }catch(e){finish([]);}
           });
         }
         function v4uniqueRoadNames(features){
@@ -3855,25 +3884,23 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         async function v4buildCallList(){
           var top=v4RadarResults.slice(0,4),all=[];
-          for(var i=0;i<top.length;i++){
-            v4status("Finding 5+ acre parcels near top node "+(i+1)+" of "+top.length+"…");
-            var feats=await v4queryNearby(v3ParcelUrl+"/0",top[i].node,4828.032,180);
-            feats.forEach(function(feat){var x=v4parcelBaseScore(top[i],feat);if(x)all.push(x);});
-          }
+          v4status("Finding 5+ acre parcels near the top growth nodes…");
+          var groups=await Promise.all(top.map(async function(r){
+            var feats=await v4queryNearby(v3ParcelUrl+"/0",r.node,4828.032,140);
+            var arr=[];feats.forEach(function(feat){var x=v4parcelBaseScore(r,feat);if(x)arr.push(x);});
+            return arr;
+          }));
+          groups.forEach(function(arr){all=all.concat(arr||[]);});
           var byId={};
           all.forEach(function(x){
             var id=String(x.p.Prop_id||x.p.Geo_id||x.p.OBJECTID||"");
             if(!byId[id]||x.preliminaryScore>byId[id].preliminaryScore)byId[id]=x;
           });
-          // Enrich only the strongest preliminary candidates to keep live GIS calls responsive.
           var shortlist=Object.keys(byId).map(function(k){return byId[k];})
-            .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,28);
-          var enriched=[];
-          for(var j=0;j<shortlist.length;j++){
-            v4status("Diligence-screening parcel "+(j+1)+" of "+shortlist.length+
-              ": access, FEMA flood, future land use and utility context…");
-            enriched.push(await v4enrichParcelQuality(shortlist[j]));
-          }
+            .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,16);
+          v4status("Refining "+shortlist.length+" strongest parcels with access, flood, land-use and utility screens…");
+          var enriched=await v4mapLimit(shortlist,4,async function(x){return await v4enrichParcelQuality(x);});
+          enriched=enriched.filter(Boolean);
           v4CallRows=enriched.sort(function(a,b){return b.score-a.score;}).slice(0,12);
           v4CallLayer.clearLayers();
           v4CallRows.forEach(function(x,idx){
@@ -3892,8 +3919,39 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             lyr.addTo(v4CallLayer);
           });
           v4renderCallList();
+          v42renderTopSites();
         }
 
+        async function v42quickTopSites(){
+          var st=document.getElementById("v42TopStatus");
+          if(st)st.innerHTML="Loading fast Top 5 from BCAD parcels…";
+          try{
+            var seeds=v4Nodes.slice().sort(function(a,b){return b.base-a.base;}).slice(0,5);
+            var groups=await Promise.all(seeds.map(async function(n){
+              var nr={node:n,score:n.base};
+              var feats=await v4queryNearby(v3ParcelUrl+"/0",n,4828.032,90);
+              var arr=[];feats.forEach(function(feat){var x=v4parcelBaseScore(nr,feat);if(x)arr.push(x);});
+              return arr;
+            }));
+            var all=[],byId={};
+            groups.forEach(function(a){all=all.concat(a||[]);});
+            all.forEach(function(x){
+              var id=String(x.p.Prop_id||x.p.Geo_id||x.p.OBJECTID||"");
+              if(!byId[id]||x.preliminaryScore>byId[id].preliminaryScore)byId[id]=x;
+            });
+            var quick=Object.keys(byId).map(function(k){return byId[k];})
+              .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,5);
+            if(quick.length){
+              v4CallRows=quick;
+              v42renderTopSites();
+              if(st)st.innerHTML="<b>Preliminary Top 5 shown.</b> Refining live scores now…";
+            }else if(st){
+              st.innerHTML="BCAD quick ranking returned no parcels; running full Land Radar…";
+            }
+          }catch(e){
+            if(st)st.innerHTML="Quick ranking unavailable; running full Land Radar…";
+          }
+        }
 
         function v42whySite(x){
           var a=[];
@@ -4006,11 +4064,9 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           var btn=document.getElementById("v4RunRadar"); if(btn)btn.disabled=true;
           v4RadarResults=[];v4RadarHeat.clearLayers();
           try{
-            for(var i=0;i<v4Nodes.length;i++){
-              v4status("Analyzing node "+(i+1)+" of "+v4Nodes.length+": <b>"+v3esc(v4Nodes[i].name)+"</b>…");
-              var r=await v4analyzeNode(v4Nodes[i]); v4RadarResults.push(r);
-            }
-            v4RadarResults.sort(function(a,b){return b.score-a.score;});
+            v4status("Refining live node scores across "+v4Nodes.length+" growth nodes…");
+            var analyzed=await v4mapLimit(v4Nodes,4,async function(n){return await v4analyzeNode(n);});
+            v4RadarResults=analyzed.filter(Boolean).sort(function(a,b){return b.score-a.score;});
             var heat=L.heatLayer(v4RadarResults.map(function(r){return [r.node.lat,r.node.lng,r.score];}),{radius:42,blur:28,minOpacity:.28,max:100});
             heat.addTo(v4RadarHeat); v4RadarHeat.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
             v4renderRadar();
@@ -4034,8 +4090,11 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             var st=document.getElementById("v42TopStatus");if(st)st.innerHTML="Refreshing live ranking…";
             v4RunLandRadar();
           };
-          // Decision-first default: automatically compute and highlight the Top 5 on first load.
-          setTimeout(function(){v4RunLandRadar();},1200);
+          // Decision-first default: show a fast preliminary Top 5, then refine it live.
+          setTimeout(async function(){
+            await v42quickTopSites();
+            v4RunLandRadar();
+          },500);
         },0);
 
 </script>
