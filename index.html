@@ -121,7 +121,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     <button class="v4Run" id="v4RunRadar">RUN LAND RADAR</button>
     <div id="v4RadarStatus" class="v4Progress">Ready.</div>
     <div id="v4RadarResults"></div>
-    <div class="v4Small" style="margin-top:12px">Screening model only. Scores are not appraisals or investment recommendations. Parcel frontage, utility capacity, title, access and asking price still require diligence.</div>
+    <div class="v4Small" style="margin-top:12px">Screening model only. Scores are not appraisals or investment recommendations. Frontage/access is a GIS adjacency proxy; utility capacity, title, legal access and asking price still require diligence.</div>
   </div>
 </div>
 <div class="folium-map" id="map_33cc2c2ac68d72d2971fbb7de3650b24" ></div>
@@ -3619,6 +3619,14 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           if(!v)return null; var t=new Date(v).getTime(); if(!isFinite(t))return null;
           return (Date.now()-t)/(365.25*86400000);
         }
+
+        // ---- V4 PARCEL QUALITY ENGINE ----
+        var v4StreetsUrl="https://services.arcgis.com/g1fRTDLeMgspWrYp/ArcGIS/rest/services/Streets/FeatureServer/0";
+        var v4CoSAMtpUrl="https://services.arcgis.com/g1fRTDLeMgspWrYp/ArcGIS/rest/services/Major_Thoroughfare_Plan__MTP/FeatureServer/0";
+        var v4CountyRoadsUrl="https://maps.bexar.org/arcgis/rest/services/PW/CountyRoads/MapServer/0";
+        var v4SawsCipPointUrl="https://services.arcgis.com/g7IVOf0Gf9OkqkzV/ArcGIS/rest/services/SSORP_1_25_svc/FeatureServer/0";
+        var v4SawsCipPolyUrl="https://services.arcgis.com/g7IVOf0Gf9OkqkzV/ArcGIS/rest/services/SSORP_1_25_svc/FeatureServer/1";
+
         function v4parcelBaseScore(nodeResult,feat){
           var p=feat.properties||{},ctr=v4featureCenter(feat); if(!ctr)return null;
           var miles=v4miles([nodeResult.node.lat,nodeResult.node.lng],ctr), acres=v4num(p.Land_acres);
@@ -3628,43 +3636,204 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           var held=v4yearsHeld(p.Last_Deed_Date),holdScore=held==null?50:held>=15?100:held>=10?85:held>=5?65:45;
           var market=v4num(p.Market_val),vpa=market&&acres?market/acres:0;
           var valueScore=!vpa?50:vpa<=50000?100:vpa<=100000?85:vpa<=200000?65:vpa<=350000?45:30;
-          var call=.55*nodeResult.score+.18*distScore+.12*acreScore+.10*holdScore+.05*valueScore;
-          return {score:v4clamp(call,0,100),nodeResult:nodeResult,feature:feat,p:p,center:ctr,miles:miles,acres:acres,held:held,vpa:vpa};
+          // Preliminary rank before GIS parcel-quality enrichment.
+          var preliminary=.58*nodeResult.score+.16*distScore+.11*acreScore+.10*holdScore+.05*valueScore;
+          return {
+            score:v4clamp(preliminary,0,100),preliminaryScore:v4clamp(preliminary,0,100),
+            nodeResult:nodeResult,feature:feat,p:p,center:ctr,miles:miles,acres:acres,held:held,vpa:vpa,
+            distScore:distScore,acreScore:acreScore,holdScore:holdScore,valueScore:valueScore
+          };
         }
+
+        function v4queryIntersect(url,geometry,limit){
+          return new Promise(function(resolve){
+            try{
+              L.esri.query({url:url}).intersects(geometry).limit(limit||100).run(function(err,fc){
+                resolve(err||!fc?[]:(fc.features||[]));
+              });
+            }catch(e){resolve([]);}
+          });
+        }
+        function v4queryNearPoint(url,center,meters,limit){
+          return new Promise(function(resolve){
+            try{
+              L.esri.query({url:url}).nearby([center.lat,center.lng],meters).limit(limit||100).run(function(err,fc){
+                resolve(err||!fc?[]:(fc.features||[]));
+              });
+            }catch(e){resolve([]);}
+          });
+        }
+        function v4uniqueRoadNames(features){
+          var seen={},arr=[];
+          features.forEach(function(feat){
+            var p=feat.properties||{};
+            var n=p.MSAG_NAME||p.ST_NM||p.StreetName||p.StreetName1||"";
+            n=String(n).trim();
+            if(n&&!seen[n]){seen[n]=1;arr.push(n);}
+          });
+          return arr;
+        }
+        async function v4accessQuality(x){
+          var geom=x.feature.geometry, ctr=x.center;
+          var results=await Promise.all([
+            v4queryIntersect(v4StreetsUrl,geom,50),
+            v4queryIntersect(v4CountyRoadsUrl,geom,50),
+            v4queryIntersect(v4CoSAMtpUrl,geom,30)
+          ]);
+          var roads=v4uniqueRoadNames(results[0].concat(results[1]));
+          // Road centerlines can sit outside appraisal polygons because ROW is separate; use a tight fallback.
+          if(!roads.length){
+            var near=await Promise.all([
+              v4queryNearPoint(v4StreetsUrl,ctr,120,30),
+              v4queryNearPoint(v4CountyRoadsUrl,ctr,120,30)
+            ]);
+            roads=v4uniqueRoadNames(near[0].concat(near[1]));
+          }
+          var mtp=results[2];
+          if(!mtp.length) mtp=await v4queryNearPoint(v4CoSAMtpUrl,ctr,150,20);
+          var score=roads.length>=2?95:roads.length===1?76:38;
+          if(mtp.length)score=Math.min(100,score+8);
+          var desc=roads.length>=2?"corner-like adjacency to "+roads.slice(0,2).join(" / "):
+                   roads.length===1?"adjacent/near "+roads[0]:"road adjacency not resolved";
+          if(mtp.length)desc+="; major-thoroughfare context";
+          return {score:score,roads:roads.slice(0,4),mtp:mtp.length>0,desc:desc,confidence:roads.length?"MEDIUM":"LOW"};
+        }
+        async function v4floodQuality(x){
+          var hazards=await v4queryIntersect(v3FemaUrl,x.feature.geometry,100);
+          var floodway=false,sfha=false,zones={};
+          hazards.forEach(function(feat){
+            var p=feat.properties||{},z=String(p.FLD_ZONE||"").trim(),sub=String(p.ZONE_SUBTY||"").toLowerCase();
+            if(z)zones[z]=1;
+            if(sub.indexOf("floodway")>=0)floodway=true;
+            if(String(p.SFHA_TF||"").toUpperCase()==="T"||/^(A|AE|AH|AO|A99|VE|V)$/.test(z))sfha=true;
+          });
+          var score=floodway?18:sfha?45:hazards.length?70:100;
+          return {score:score,floodway:floodway,sfha:sfha,zones:Object.keys(zones),desc:floodway?"FEMA floodway intersects parcel":sfha?"FEMA SFHA intersects parcel":hazards.length?"mapped FEMA hazard intersects parcel":"no FEMA NFHL hazard polygon returned",confidence:"HIGH"};
+        }
+        function v4landUseScore(name,tier){
+          var s=(String(name||"")+" "+String(tier||"")).toLowerCase();
+          if(/regional center|regional commercial|community commercial|commercial|mixed use|urban mixed/.test(s))return 100;
+          if(/business park|industrial|specialized center/.test(s))return 82;
+          if(/neighborhood commercial|neighborhood mixed|community mixed/.test(s))return 88;
+          if(/residential/.test(s))return 42;
+          if(/open space|park|agric|rural|natural/.test(s))return 24;
+          return 55;
+        }
+        async function v4fluQuality(x){
+          var uses=await v4queryIntersect(v3FluUrl,x.feature.geometry,30);
+          if(!uses.length)return {score:55,landUse:"No CoSA FLU polygon returned",tier:"",desc:"outside/without mapped CoSA future-land-use coverage",confidence:"LOW"};
+          var best={score:0,landUse:"",tier:"",plan:""};
+          uses.forEach(function(feat){
+            var p=feat.properties||{},s=v4landUseScore(p.LandUse,p.CenterTiers);
+            if(s>best.score)best={score:s,landUse:p.LandUse||"—",tier:p.CenterTiers||"",plan:p.PlanName||""};
+          });
+          best.desc=best.landUse+(best.tier?" / "+best.tier:"");
+          best.confidence="HIGH";
+          return best;
+        }
+        async function v4utilityQuality(x,flu){
+          // SAWS does not publish open, current parcel-level main capacity. This is a readiness/confidence proxy only.
+          var cip=await Promise.all([
+            v4queryNearPoint(v4SawsCipPointUrl,x.center,1609.344,40),
+            v4queryNearPoint(v4SawsCipPolyUrl,x.center,1609.344,40)
+          ]);
+          var activeCip=cip[0].length+cip[1].length;
+          var inUrbanPlan=flu&&flu.confidence==="HIGH";
+          var score=40;
+          if(inUrbanPlan)score=58;
+          if(activeCip)score=Math.max(score,72);
+          if(inUrbanPlan&&activeCip)score=80;
+          return {
+            score:score,
+            cipCount:activeCip,
+            desc:(activeCip?activeCip+" SAWS CIP feature(s) within 1 mi; ":"")+
+                 (inUrbanPlan?"urban planning context; ":"")+
+                 "water/sewer main size and capacity UNVERIFIED",
+            confidence:"LOW",
+            verify:"Request SAWS as-builts and written water/wastewater capacity confirmation"
+          };
+        }
+        async function v4enrichParcelQuality(x){
+          var parts=await Promise.all([v4accessQuality(x),v4floodQuality(x),v4fluQuality(x)]);
+          var access=parts[0],flood=parts[1],flu=parts[2];
+          var utility=await v4utilityQuality(x,flu);
+          var finalScore=
+            .35*x.nodeResult.score+
+            .10*x.distScore+
+            .08*x.acreScore+
+            .06*x.holdScore+
+            .03*x.valueScore+
+            .15*access.score+
+            .13*flood.score+
+            .07*flu.score+
+            .03*utility.score;
+          x.access=access;x.flood=flood;x.flu=flu;x.utility=utility;
+          x.score=v4clamp(finalScore,0,100);
+          x.qualityScore=.39*access.score+.34*flood.score+.19*flu.score+.08*utility.score;
+          return x;
+        }
+
         async function v4buildCallList(){
           var top=v4RadarResults.slice(0,4),all=[];
           for(var i=0;i<top.length;i++){
-            v4status("Ranking 5+ acre parcels near top node "+(i+1)+" of "+top.length+"…");
-            var feats=await v4queryNearby(v3ParcelUrl+"/0",top[i].node,4828.032,150);
+            v4status("Finding 5+ acre parcels near top node "+(i+1)+" of "+top.length+"…");
+            var feats=await v4queryNearby(v3ParcelUrl+"/0",top[i].node,4828.032,180);
             feats.forEach(function(feat){var x=v4parcelBaseScore(top[i],feat);if(x)all.push(x);});
           }
           var byId={};
           all.forEach(function(x){
             var id=String(x.p.Prop_id||x.p.Geo_id||x.p.OBJECTID||"");
-            if(!byId[id]||x.score>byId[id].score)byId[id]=x;
+            if(!byId[id]||x.preliminaryScore>byId[id].preliminaryScore)byId[id]=x;
           });
-          v4CallRows=Object.keys(byId).map(function(k){return byId[k];}).sort(function(a,b){return b.score-a.score;}).slice(0,12);
+          // Enrich only the strongest preliminary candidates to keep live GIS calls responsive.
+          var shortlist=Object.keys(byId).map(function(k){return byId[k];})
+            .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,28);
+          var enriched=[];
+          for(var j=0;j<shortlist.length;j++){
+            v4status("Diligence-screening parcel "+(j+1)+" of "+shortlist.length+
+              ": access, FEMA flood, future land use and utility context…");
+            enriched.push(await v4enrichParcelQuality(shortlist[j]));
+          }
+          v4CallRows=enriched.sort(function(a,b){return b.score-a.score;}).slice(0,12);
           v4CallLayer.clearLayers();
           v4CallRows.forEach(function(x,idx){
-            var lyr=L.geoJSON(x.feature,{style:{color:"#8b0000",weight:3,fillColor:"#ff3b30",fillOpacity:.12}});
+            var clr=x.flood&&x.flood.floodway?"#6a1b9a":x.score>=80?"#8b0000":"#b45f06";
+            var lyr=L.geoJSON(x.feature,{style:{color:clr,weight:3,fillColor:clr,fillOpacity:.12}});
             lyr.bindPopup("<b>#"+(idx+1)+" CALL THIS WEEK</b><br><b>"+v3esc(x.p.Situs||"Candidate parcel")+"</b><br>"+
-              "Owner: "+v3esc(x.p.Owner_name||"—")+"<br>Acres: "+x.acres.toFixed(2)+"<br>Call Priority: "+Math.round(x.score)+
-              "<br>Node: "+v3esc(x.nodeResult.node.name)+"<br>Distance: "+x.miles.toFixed(2)+" mi"+
-              "<br><span style='color:#666'>Screening rank; verify frontage, utilities, flood, title and asking price.</span>");
+              "Owner: "+v3esc(x.p.Owner_name||"—")+"<br>Acres: "+x.acres.toFixed(2)+"<br><b>Call Priority: "+Math.round(x.score)+"</b>"+
+              "<br>Node: "+v3esc(x.nodeResult.node.name)+" · "+x.miles.toFixed(2)+" mi"+
+              "<hr style='margin:5px 0'><b>Parcel quality</b><br>"+
+              "Access/frontage proxy: "+Math.round(x.access.score)+" — "+v3esc(x.access.desc)+"<br>"+
+              "Flood: "+Math.round(x.flood.score)+" — "+v3esc(x.flood.desc)+"<br>"+
+              "Future land use: "+Math.round(x.flu.score)+" — "+v3esc(x.flu.desc)+"<br>"+
+              "Utility readiness: "+Math.round(x.utility.score)+" — "+v3esc(x.utility.desc)+"<br>"+
+              "<span style='color:#666'>Road adjacency is not legal access. Utility score is a low-confidence proxy; SAWS capacity/as-builts remain required.</span>");
             lyr.addTo(v4CallLayer);
           });
           v4renderCallList();
         }
+
         function v4renderCallList(){
           var el=document.getElementById("v4CallThisWeek");if(!el)return;
-          var html="<div class='v4Section'>☎️ CALL THIS WEEK</div>";
+          var html="<div class='v4Section'>☎️ CALL THIS WEEK — PARCEL QUALITY SCREENED</div>";
           if(!v4CallRows.length){el.innerHTML=html+"No qualifying parcels returned.";return;}
           v4CallRows.slice(0,10).forEach(function(x,i){
-            html+="<div class='v4Card' style='border-left-color:#17365D'><div class='v4Score'>"+Math.round(x.score)+"</div>"+
+            var floodLabel=x.flood.floodway?"FLOODWAY":x.flood.sfha?"SFHA":x.flood.zones.length?x.flood.zones.join("/"):"CLEAR SCREEN";
+            html+="<div class='v4Card' style='border-left-color:"+(x.flood.floodway?"#6a1b9a":"#17365D")+"'><div class='v4Score'>"+Math.round(x.score)+"</div>"+
               "<h4>#"+(i+1)+" "+v3esc(x.p.Situs||"Candidate parcel")+"</h4>"+
               "<div><b>"+x.acres.toFixed(2)+" acres</b> · "+x.miles.toFixed(2)+" mi from "+v3esc(x.nodeResult.node.name)+"</div>"+
               "<div>Owner: <b>"+v3esc(x.p.Owner_name||"—")+"</b></div>"+
               "<div>Held: "+(x.held==null?"—":x.held.toFixed(0)+" yrs")+" · Assessed market/acre: "+(x.vpa?v3money(x.vpa):"—")+"</div>"+
+              "<div style='margin-top:5px'>"+
+                "<span class='v4Pill'>Access "+Math.round(x.access.score)+"</span>"+
+                "<span class='v4Pill'>Flood "+Math.round(x.flood.score)+" · "+v3esc(floodLabel)+"</span>"+
+                "<span class='v4Pill'>FLU "+Math.round(x.flu.score)+" · "+v3esc(x.flu.landUse)+"</span>"+
+                "<span class='v4Pill'>Utility "+Math.round(x.utility.score)+"</span>"+
+              "</div>"+
+              "<div class='v4Why'><b>ACCESS:</b> "+v3esc(x.access.desc)+"<br>"+
+                "<b>FLOOD:</b> "+v3esc(x.flood.desc)+"<br>"+
+                "<b>LAND USE:</b> "+v3esc(x.flu.desc)+"<br>"+
+                "<b>UTILITIES:</b> "+v3esc(x.utility.desc)+"</div>"+
               "<button class='v4Btn' onclick='v4ZoomCallParcel("+i+")'>SHOW PARCEL</button></div>";
           });
           el.innerHTML=html;
