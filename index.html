@@ -4003,9 +4003,11 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           if(x.flood&&!x.flood.floodway&&!x.flood.sfha)a.push("clear FEMA screen");
           else if(x.flood&&x.flood.score>=65)a.push("manageable flood screen");
           if(x.flu&&x.flu.score>=80)a.push("commercial/mixed-use FLU");
-          if(x.rawLandScore>=80)a.push("mostly raw / low-improvement land");\n          if(x.held!=null&&x.held>=10)a.push("long-held ownership");
-          if(x.miles<=1)a.push("within 1 mile of top node");
-          else if(x.miles<=2)a.push("within 2 miles of top node");
+          if(x.rawLandScore>=80)a.push("mostly raw / low-improvement land");
+          if(x.held!=null&&x.held>=10)a.push("long-held ownership");
+          if(x.miles<=.5)a.push("within ½ mile of major node");
+          else if(x.miles<=1)a.push("within 1 mile of major node");
+          else a.push("within 1.5 miles of major node");
           if(!a.length)a.push("strong combined node + parcel score");
           return a.slice(0,3).join(" · ");
         }
