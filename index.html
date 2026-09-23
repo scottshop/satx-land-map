@@ -102,7 +102,7 @@
 position: fixed; top: 12px; left: 55px; z-index:9999; width:430px;
 background:rgba(255,255,255,.95); border:2px solid #17365D; border-radius:8px;
 padding:10px 12px; box-shadow:0 2px 8px rgba(0,0,0,.2); font-family:Arial;">
-<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4.3 Fast Top 5</div>
+<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4.4 Commercial Land Top 5</div>
 <div style="font-size:12px;margin-top:4px;">
 Use the layer control to isolate <b>heat, parcels, developments, anchors, and road projects</b>.
 Click any marker/line for acquisition context and source links.
@@ -126,7 +126,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 </div>
     
             <div id="v42TopSitesPanel">
-  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">Fast Top 5 first · live GIS refinement follows</span></div>
+  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">10+ acres · ≤1 mi from major node · strong road exposure · low-improvement land</span></div>
   <div id="v42TopBody">
     <div id="v42TopStatus" class="v42Loading">Ranking the best 5+ acre sites now…</div>
     <div id="v42TopList"></div>
@@ -144,7 +144,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     <div style="font-size:10px;opacity:.85">Future Retail Node Predictor + Parcel Quality + Call This Week</div>
   </div>
   <div id="v4RadarBody">
-    <div><b>What it does:</b> ranks Bexar County growth nodes using live future-lot pipeline, recent permits, TxDOT traffic momentum, commercial-lot supply and mapped anchor catalysts. The top parcels are then screened for road adjacency, FEMA flood exposure, Future Land Use and utility-readiness context.</div><div class='v4Small' style='margin-top:5px'><b>Parcel Call Priority:</b> 35% node · 15% access/frontage proxy · 13% FEMA flood · 10% node distance · 8% acreage fit · 7% future land use · 6% ownership hold · 3% assessed value · 3% utility-readiness proxy.</div>
+    <div><b>What it does:</b> ranks Bexar County growth nodes using live future-lot pipeline, recent permits, TxDOT traffic momentum, commercial-lot supply and mapped anchor catalysts. The top parcels are then screened for road adjacency, FEMA flood exposure, Future Land Use and utility-readiness context.</div><div class='v4Small' style='margin-top:5px'><b>Parcel Call Priority:</b> 30% node · 20% access/frontage · 15% node distance · 12% acreage · 10% raw-land character · 8% FEMA flood · 3% future land use · 1% ownership hold · 1% utility-readiness.</div>
     <button class="v4Run" id="v4RunRadar">RUN LAND RADAR</button>
     <div id="v4RadarStatus" class="v4Progress">Ready.</div>
     <div id="v4RadarResults"></div>
@@ -3680,21 +3680,51 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         var v4SawsCipPointUrl="https://services.arcgis.com/g7IVOf0Gf9OkqkzV/ArcGIS/rest/services/SSORP_1_25_svc/FeatureServer/0";
         var v4SawsCipPolyUrl="https://services.arcgis.com/g7IVOf0Gf9OkqkzV/ArcGIS/rest/services/SSORP_1_25_svc/FeatureServer/1";
 
+        function v4isLikelyResidentialOrImproved(p,acres){
+          var units=v4num(p.Num_Units);
+          var sqft=v4num(p.Sq_ft);
+          var impr=v4num(p.Imprv_hstd_val)+v4num(p.Imprv_non_hstd_val);
+          var market=v4num(p.Market_val);
+          var ratio=market>0?impr/market:0;
+          var owner=String(p.Owner_name||"").toUpperCase();
+          var imprType=String(p.Imprv_Type||"").toUpperCase();
+          var beds=String(p.Bedrooms||"").trim();
+          if(/HOMEOWNERS|HOME OWNER|PROPERTY OWNERS ASSOC|\bHOA\b|\bPOA\b/.test(owner))return true;
+          if(units>=5)return true;
+          if(acres<25 && sqft>18000)return true;
+          if(impr>300000 && ratio>.38)return true;
+          if(/APART|MULTI.?FAMILY|CONDO|TOWNHOME/.test(imprType))return true;
+          if(acres<15 && beds && beds!=="0" && impr>150000)return true;
+          return false;
+        }
+        function v4rawLandScore(p,acres){
+          var impr=v4num(p.Imprv_hstd_val)+v4num(p.Imprv_non_hstd_val);
+          var market=v4num(p.Market_val);
+          var sqft=v4num(p.Sq_ft),units=v4num(p.Num_Units);
+          var ratio=market>0?impr/market:0;
+          var score=100;
+          if(impr>0)score-=Math.min(40,ratio*70);
+          if(sqft>0)score-=Math.min(25,(sqft/Math.max(10,acres))/120);
+          if(units>1)score-=Math.min(25,(units-1)*5);
+          return v4clamp(score,20,100);
+        }
         function v4parcelBaseScore(nodeResult,feat){
           var p=feat.properties||{},ctr=v4featureCenter(feat); if(!ctr)return null;
           var miles=v4miles([nodeResult.node.lat,nodeResult.node.lng],ctr), acres=v4num(p.Land_acres);
-          if(acres<5||miles>3||v3IsPublicOwner(p.Owner_name))return null;
-          var distScore=v4clamp(100-(miles/3)*70,30,100);
-          var acreScore=acres<=25?100:acres<=50?90:acres<=100?75:60;
+          // Top-site thesis: meaningful acreage immediately around major intersections.
+          if(acres<10||miles>1.5||v3IsPublicOwner(p.Owner_name)||v4isLikelyResidentialOrImproved(p,acres))return null;
+          var distScore=miles<=.25?100:miles<=.5?95:miles<=1?82:v4clamp(82-(miles-1)*44,55,82);
+          var acreScore=acres>=15&&acres<=75?100:acres<15?82:acres<=125?92:acres<=250?78:65;
           var held=v4yearsHeld(p.Last_Deed_Date),holdScore=held==null?50:held>=15?100:held>=10?85:held>=5?65:45;
           var market=v4num(p.Market_val),vpa=market&&acres?market/acres:0;
           var valueScore=!vpa?50:vpa<=50000?100:vpa<=100000?85:vpa<=200000?65:vpa<=350000?45:30;
-          // Preliminary rank before GIS parcel-quality enrichment.
-          var preliminary=.58*nodeResult.score+.16*distScore+.11*acreScore+.10*holdScore+.05*valueScore;
+          var rawLandScore=v4rawLandScore(p,acres);
+          // Preliminary score strongly favors proximity, acreage and raw-land character.
+          var preliminary=.42*nodeResult.score+.24*distScore+.17*acreScore+.12*rawLandScore+.03*holdScore+.02*valueScore;
           return {
             score:v4clamp(preliminary,0,100),preliminaryScore:v4clamp(preliminary,0,100),
             nodeResult:nodeResult,feature:feat,p:p,center:ctr,miles:miles,acres:acres,held:held,vpa:vpa,
-            distScore:distScore,acreScore:acreScore,holdScore:holdScore,valueScore:valueScore
+            distScore:distScore,acreScore:acreScore,holdScore:holdScore,valueScore:valueScore,rawLandScore:rawLandScore
           };
         }
 
@@ -3860,33 +3890,34 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           var access=parts[0],flood=parts[1],flu=parts[2];
           var utility=await v4utilityQuality(x,flu);
           var finalScore=
-            .35*x.nodeResult.score+
-            .10*x.distScore+
-            .08*x.acreScore+
-            .06*x.holdScore+
-            .03*x.valueScore+
-            .15*access.score+
-            .13*flood.score+
-            .07*flu.score+
-            .03*utility.score;
+            .30*x.nodeResult.score+
+            .15*x.distScore+
+            .12*x.acreScore+
+            .10*x.rawLandScore+
+            .20*access.score+
+            .08*flood.score+
+            .03*flu.score+
+            .01*x.holdScore+
+            .01*utility.score;
           x.access=access;x.flood=flood;x.flu=flu;x.utility=utility;
           var gated=v4clamp(finalScore,0,100),gates=[];
           if(flood.floodwayPct>=10){gated=Math.min(gated,55);gates.push("material FEMA floodway overlap");}
           else if(flood.floodway){gated=Math.min(gated,64);gates.push("FEMA floodway touches parcel");}
           else if(flood.sfha&&flood.affectedPct>=50){gated=Math.min(gated,68);gates.push("majority SFHA overlap");}
-          if(access.score<45){gated=Math.min(gated,70);gates.push("road/access adjacency unresolved");}
+          if(access.score<70){gated=Math.min(gated,62);gates.push("insufficient major-road/frontage signal");}
           if(flu.score<30){gated=Math.min(gated,72);gates.push("future-land-use conflict/constraint");}
           x.score=gated;
           x.gates=gates;
-          x.qualityScore=.39*access.score+.34*flood.score+.19*flu.score+.08*utility.score;
+          x.topSiteEligible=(x.acres>=10 && x.miles<=1.0 && access.score>=80 && !flood.floodway && !(flood.sfha&&flood.affectedPct>=40) && flu.score>=40 && x.rawLandScore>=65);
+          x.qualityScore=.42*access.score+.22*flood.score+.16*flu.score+.12*x.rawLandScore+.08*utility.score;
           return x;
         }
 
         async function v4buildCallList(){
-          var top=v4RadarResults.slice(0,4),all=[];
+          var top=v4RadarResults.slice(0,6),all=[];
           v4status("Finding 5+ acre parcels near the top growth nodes…");
           var groups=await Promise.all(top.map(async function(r){
-            var feats=await v4queryNearby(v3ParcelUrl+"/0",r.node,4828.032,140);
+            var feats=await v4queryNearby(v3ParcelUrl+"/0",r.node,2414.016,140);
             var arr=[];feats.forEach(function(feat){var x=v4parcelBaseScore(r,feat);if(x)arr.push(x);});
             return arr;
           }));
@@ -3897,11 +3928,14 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             if(!byId[id]||x.preliminaryScore>byId[id].preliminaryScore)byId[id]=x;
           });
           var shortlist=Object.keys(byId).map(function(k){return byId[k];})
-            .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,16);
+            .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,20);
           v4status("Refining "+shortlist.length+" strongest parcels with access, flood, land-use and utility screens…");
           var enriched=await v4mapLimit(shortlist,4,async function(x){return await v4enrichParcelQuality(x);});
           enriched=enriched.filter(Boolean);
-          v4CallRows=enriched.sort(function(a,b){return b.score-a.score;}).slice(0,12);
+          v4CallRows=enriched.sort(function(a,b){
+            if(!!a.topSiteEligible!==!!b.topSiteEligible)return a.topSiteEligible?-1:1;
+            return b.score-a.score;
+          }).slice(0,12);
           v4CallLayer.clearLayers();
           v4CallRows.forEach(function(x,idx){
             var clr=x.flood&&x.flood.floodway?"#6a1b9a":x.score>=80?"#8b0000":"#b45f06";
@@ -3924,12 +3958,12 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         async function v42quickTopSites(){
           var st=document.getElementById("v42TopStatus");
-          if(st)st.innerHTML="Loading fast Top 5 from BCAD parcels…";
+          if(st)st.innerHTML="Finding 10+ acre tracts at major intersections…";
           try{
-            var seeds=v4Nodes.slice().sort(function(a,b){return b.base-a.base;}).slice(0,5);
+            var seeds=v4Nodes.slice().sort(function(a,b){return b.base-a.base;}).slice(0,8);
             var groups=await Promise.all(seeds.map(async function(n){
               var nr={node:n,score:n.base};
-              var feats=await v4queryNearby(v3ParcelUrl+"/0",n,4828.032,90);
+              var feats=await v4queryNearby(v3ParcelUrl+"/0",n,2414.016,100);
               var arr=[];feats.forEach(function(feat){var x=v4parcelBaseScore(nr,feat);if(x)arr.push(x);});
               return arr;
             }));
@@ -3939,17 +3973,26 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
               var id=String(x.p.Prop_id||x.p.Geo_id||x.p.OBJECTID||"");
               if(!byId[id]||x.preliminaryScore>byId[id].preliminaryScore)byId[id]=x;
             });
-            var quick=Object.keys(byId).map(function(k){return byId[k];})
-              .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,5);
+            var candidates=Object.keys(byId).map(function(k){return byId[k];})
+              .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,18);
+            if(st)st.innerHTML="Checking road frontage on the strongest large tracts…";
+            var checked=await v4mapLimit(candidates,5,async function(x){
+              x.access=await v4accessQuality(x);
+              x.score=.48*x.nodeResult.score+.18*x.distScore+.14*x.acreScore+.10*x.rawLandScore+.10*x.access.score;
+              x.topSiteEligible=(x.miles<=1.0 && x.access.score>=80 && x.rawLandScore>=65);
+              return x;
+            });
+            var quick=checked.filter(function(x){return x&&x.topSiteEligible;})
+              .sort(function(a,b){return b.score-a.score;}).slice(0,5);
             if(quick.length){
               v4CallRows=quick;
               v42renderTopSites();
-              if(st)st.innerHTML="<b>Preliminary Top 5 shown.</b> Refining live scores now…";
+              if(st)st.innerHTML="<b>Large-intersection Top 5 shown.</b> Refining flood, FLU and utilities now…";
             }else if(st){
-              st.innerHTML="BCAD quick ranking returned no parcels; running full Land Radar…";
+              st.innerHTML="No 10+ acre frontage-qualified sites returned in the quick pass; running full Land Radar…";
             }
           }catch(e){
-            if(st)st.innerHTML="Quick ranking unavailable; running full Land Radar…";
+            if(st)st.innerHTML="Quick commercial-land screen unavailable; running full Land Radar…";
           }
         }
 
@@ -3960,21 +4003,22 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           if(x.flood&&!x.flood.floodway&&!x.flood.sfha)a.push("clear FEMA screen");
           else if(x.flood&&x.flood.score>=65)a.push("manageable flood screen");
           if(x.flu&&x.flu.score>=80)a.push("commercial/mixed-use FLU");
+          if(x.rawLandScore>=80)a.push("mostly raw / low-improvement land");
           if(x.held!=null&&x.held>=10)a.push("long-held ownership");
-          if(x.miles<=1)a.push("within 1 mile of top node");
-          else if(x.miles<=2)a.push("within 2 miles of top node");
+          if(x.miles<=.5)a.push("within ½ mile of major node");
+          else if(x.miles<=1)a.push("within 1 mile of major node");
+          else a.push("near major node");
           if(!a.length)a.push("strong combined node + parcel score");
           return a.slice(0,3).join(" · ");
         }
         function v42renderTopSites(){
           var list=document.getElementById("v42TopList"),status=document.getElementById("v42TopStatus");
           if(!list)return;
-          var clean=v4CallRows.filter(function(x){return !x.gates||!x.gates.length;});
-          var fallback=v4CallRows.filter(function(x){return x.gates&&x.gates.length;});
-          v42TopRows=clean.concat(fallback).slice(0,5);
+          var eligible=v4CallRows.filter(function(x){return x.topSiteEligible===true;});
+          v42TopRows=eligible.slice(0,5);
           v42TopSitesLayer.clearLayers();
           if(!v42TopRows.length){
-            if(status)status.innerHTML="<b>No top sites returned.</b> Run Deep Land Radar again.";
+            if(status)status.innerHTML="<b>No tract passed the strict Top 5 commercial-land gate yet.</b> Deep Land Radar is checking more nodes.";
             list.innerHTML=""; return;
           }
           if(status)status.innerHTML="<b>"+v42TopRows.length+" highest-priority sites</b> highlighted on the map.";
@@ -4001,7 +4045,8 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
               "<div class='v42Rank'>"+rank+"</div><div class='v42Score'>"+Math.round(x.score)+"</div>"+
               "<div style='font-weight:800;font-size:13px'>"+v3esc(x.p.Situs||"Candidate parcel")+"</div>"+
               "<div><span class='v42Owner'>CALL: "+v3esc(x.p.Owner_name||"OWNER TO VERIFY")+"</span></div>"+
-              "<div>"+x.acres.toFixed(2)+" ac · "+x.miles.toFixed(2)+" mi from "+v3esc(x.nodeResult.node.name)+"</div>"+
+              "<div><b>"+x.acres.toFixed(2)+" ac</b> · "+x.miles.toFixed(2)+" mi from "+v3esc(x.nodeResult.node.name)+"</div>"+
+              "<div>Road/frontage: <b>"+(x.access?Math.round(x.access.score):"—")+"</b> · Raw-land score: <b>"+Math.round(x.rawLandScore||0)+"</b></div>"+
               "<div class='v42Why'>"+v3esc(v42whySite(x))+"</div></div>";
           });
           list.innerHTML=html;
