@@ -3177,12 +3177,14 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
               var p=fc.features[0].properties||{};
               var ac=Number(p.Land_acres);
               var html="<div style='min-width:270px'><b>"+v3esc(p.Situs||"Bexar County parcel")+"</b><br>"+
-                "<b>Owner:</b> "+v3esc(p.Owner||"—")+"<br>"+
-                "<b>Property ID:</b> "+v3esc(p.PropID||p.AcctNumb||"—")+"<br>"+
+                "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br>"+
+                "<b>Property ID:</b> "+v3esc(p.Prop_id||p.Geo_id||"—")+"<br>"+
                 "<b>Acres:</b> "+(isNaN(ac)?"—":ac.toFixed(2))+"<br>"+
-                "<b>Land value:</b> "+v3money(p.LandVal)+"<br>"+
-                "<b>Total value:</b> "+v3money(p.Market_val)+"<br>"+
-                "<b>Legal:</b> "+v3esc(p.Legal_desc||"—")+"<br>"+
+                "<b>Land value:</b> "+v3money((Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0))+"<br>"+
+                "<b>Market value:</b> "+v3money(p.Market_val)+"<br>"+
+                "<b>Last deed:</b> "+v3esc(p.Last_Deed_Date||"—")+"<br>"+
+                "<b>Ownership type:</b> "+v3esc(p.Ownership_Type||"—")+"<br>"+
+                "<b>Legal:</b> "+v3esc(p.Legal_desc||"—")+"<br>"
                 "<span style='color:#666'>BCAD parcel data obtained Dec. 2025 via San Antonio River Authority. Verify current ownership/title and survey before contact or acquisition.</span></div>";
               L.popup({maxWidth:360}).setLatLng(e.latlng).setContent(html).openOn(map_33cc2c2ac68d72d2971fbb7de3650b24);
             });
