@@ -3811,7 +3811,14 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             .07*flu.score+
             .03*utility.score;
           x.access=access;x.flood=flood;x.flu=flu;x.utility=utility;
-          x.score=v4clamp(finalScore,0,100);
+          var gated=v4clamp(finalScore,0,100),gates=[];
+          if(flood.floodwayPct>=10){gated=Math.min(gated,55);gates.push("material FEMA floodway overlap");}
+          else if(flood.floodway){gated=Math.min(gated,64);gates.push("FEMA floodway touches parcel");}
+          else if(flood.sfha&&flood.affectedPct>=50){gated=Math.min(gated,68);gates.push("majority SFHA overlap");}
+          if(access.score<45){gated=Math.min(gated,70);gates.push("road/access adjacency unresolved");}
+          if(flu.score<30){gated=Math.min(gated,72);gates.push("future-land-use conflict/constraint");}
+          x.score=gated;
+          x.gates=gates;
           x.qualityScore=.39*access.score+.34*flood.score+.19*flu.score+.08*utility.score;
           return x;
         }
@@ -3865,6 +3872,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             html+="<div class='v4Card' style='border-left-color:"+(x.flood.floodway?"#6a1b9a":"#17365D")+"'><div class='v4Score'>"+Math.round(x.score)+"</div>"+
               "<h4>#"+(i+1)+" "+v3esc(x.p.Situs||"Candidate parcel")+"</h4>"+
               "<div><b>"+x.acres.toFixed(2)+" acres</b> · "+x.miles.toFixed(2)+" mi from "+v3esc(x.nodeResult.node.name)+"</div>"+
+              (x.gates&&x.gates.length?"<div style='color:#b30000;font-weight:700'>⚠ "+v3esc(x.gates.join(" · "))+"</div>":"<div style='color:#2e7d32;font-weight:700'>✓ No automatic parcel-quality gate triggered</div>")+
               "<div>Owner: <b>"+v3esc(x.p.Owner_name||"—")+"</b></div>"+
               "<div>Held: "+(x.held==null?"—":x.held.toFixed(0)+" yrs")+" · Assessed market/acre: "+(x.vpa?v3money(x.vpa):"—")+"</div>"+
               "<div style='margin-top:5px'>"+
