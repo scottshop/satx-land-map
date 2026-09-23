@@ -60,6 +60,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
     <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+    <script src="https://unpkg.com/esri-leaflet@3.0.15/dist/esri-leaflet.js"></script>
 </head>
 <body>
     
@@ -68,14 +69,14 @@
 position: fixed; top: 12px; left: 55px; z-index:9999; width:430px;
 background:rgba(255,255,255,.95); border:2px solid #17365D; border-radius:8px;
 padding:10px 12px; box-shadow:0 2px 8px rgba(0,0,0,.2); font-family:Arial;">
-<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v2</div>
+<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v3 GIS Preview</div>
 <div style="font-size:12px;margin-top:4px;">
 Use the layer control to isolate <b>heat, parcels, developments, anchors, and road projects</b>.
 Click any marker/line for acquisition context and source links.
 </div>
 <div style="font-size:11px;margin-top:5px;color:#666;">
-Updated 2026-09-22. Parcel pins are acquisition-screen locations, not survey boundaries.
-Where precise GIS geometry is not yet verified, the popup says so.
+Updated 2026-09-23. V3 adds official GIS screening overlays. Zoom in for parcel boundaries.
+Official-source layers are live services; verify title, survey, access, utilities and flood status before acquisition.
 </div>
 </div>
     
@@ -2924,5 +2925,360 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             ).addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
 
         
+
+
+        // ---- V3 OFFICIAL GIS SCREENING OVERLAYS ----
+        // Authoritative screening sources. These layers are intentionally off by default
+        // so the acquisition map stays fast and readable at startup.
+        var v3ParcelUrl = "https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer";
+        var v3PlatUrl = "https://services.arcgis.com/g1fRTDLeMgspWrYp/arcgis/rest/services/PreliminaryPlat/FeatureServer/2";
+        var v3AADTUrl = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_AADT_Annuals_(Public_View)/FeatureServer/0";
+        var v3FloodUrl = "https://maps.bexar.org/arcgis/rest/services/PW/BxCoOpenGov/MapServer";
+        var v3BexarDevUrl = "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer";
+        var v3FemaUrl = "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28";
+        var v3FluUrl = "https://services.arcgis.com/g1fRTDLeMgspWrYp/arcgis/rest/services/Future_Land_Use/FeatureServer/4";
+
+        function v3esc(v){
+          return String(v == null ? "" : v).replace(/[&<>"']/g,function(ch){
+            return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];
+          });
+        }
+        function v3money(v){
+          if(v==null || isNaN(Number(v))) return "—";
+          return "$"+Number(v).toLocaleString();
+        }
+        function v3growth(now,old){
+          now=Number(now); old=Number(old);
+          if(!now || !old) return null;
+          return ((now-old)/old)*100;
+        }
+
+        // Bexar parcel polygons: authoritative county/BCAD screening geometry.
+        var v3Parcels = L.esri.dynamicMapLayer({
+          url:v3ParcelUrl,
+          layers:[0],
+          opacity:0.72,
+          attribution:"BCAD parcels via San Antonio River Authority (Dec. 2025)"
+        });
+
+        // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
+        var v3FloodplainBuffer = L.esri.dynamicMapLayer({
+          url:v3FloodUrl,
+          layers:[11],
+          opacity:0.42,
+          attribution:"Bexar County Public Works / FEMA NFHL"
+        });
+
+        // FEMA National Flood Hazard Layer, regulatory flood hazard polygons (S_FLD_HAZ_AR, layer 28).
+        var v3FemaHazard = L.esri.featureLayer({
+          url:v3FemaUrl,
+          simplifyFactor:0.55,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{};
+            var z=String(p.FLD_ZONE||"");
+            var sub=String(p.ZONE_SUBTY||"").toLowerCase();
+            var floodway=sub.indexOf("floodway")>=0;
+            var color=floodway ? "#5b1a8d" : (z==="AE"||z==="A"||z==="AO"||z==="AH" ? "#0077b6" : "#4aa3df");
+            return {color:color,weight:floodway?2.5:1.2,opacity:.9,fillColor:color,fillOpacity:floodway?.34:.18};
+          },
+          attribution:"FEMA National Flood Hazard Layer"
+        });
+        v3FemaHazard.bindPopup(function(layer){
+          var p=layer.feature.properties||{};
+          return "<div style='min-width:250px'><b>FEMA Flood Hazard</b><br>"+
+            "<b>Zone:</b> "+v3esc(p.FLD_ZONE||"—")+"<br>"+
+            "<b>Subtype:</b> "+v3esc(p.ZONE_SUBTY||"—")+"<br>"+
+            "<b>Special Flood Hazard Area:</b> "+v3esc(p.SFHA_TF||"—")+"<br>"+
+            "<b>Static BFE:</b> "+v3esc(p.STATIC_BFE||"—")+"<br>"+
+            "<span style='color:#666'>Official FEMA NFHL screening. Confirm effective map/LOMR status during diligence.</span></div>";
+        });
+
+        // Bexar County development pipeline: plat applications, working/staff-accepted plats and MDP amendments.
+        var v3BexarDevelopment = L.esri.dynamicMapLayer({
+          url:v3BexarDevUrl,
+          layers:[4,5,6,12],
+          opacity:0.58,
+          attribution:"Bexar County Public Works - Plats / MDPs"
+        });
+        var v3MTP = L.esri.dynamicMapLayer({
+          url:v3BexarDevUrl,
+          layers:[1],
+          opacity:0.62,
+          attribution:"Bexar County Major Thoroughfare Plan"
+        });
+
+        // Current City of San Antonio preliminary plats. Feature service was edited 2026-09-21.
+        var v3PrelimPlats = L.esri.featureLayer({
+          url:v3PlatUrl,
+          simplifyFactor:0.45,
+          precision:5,
+          style:function(){
+            return {color:"#2866b1",weight:2,opacity:0.9,fillColor:"#73b2ff",fillOpacity:0.22};
+          },
+          attribution:"City of San Antonio Development Services"
+        });
+        v3PrelimPlats.bindPopup(function(layer){
+          var p=layer.feature.properties||{};
+          var edited=p.last_edited_date ? new Date(p.last_edited_date).toLocaleDateString() : "—";
+          return "<div style='min-width:245px'><b>"+v3esc(p.PlatName||"Preliminary Plat")+"</b><br>"+
+                 "<b>Plat #:</b> "+v3esc(p.PlatNumber||"—")+"<br>"+
+                 "<b>Last edited:</b> "+v3esc(edited)+"<br>"+
+                 "<b>Source:</b> CoSA Development Services<br>"+
+                 "<span style='color:#666'>Polygon is an official preliminary-plat screening layer; verify current approval/status before underwriting.</span></div>";
+        });
+
+        // City of San Antonio adopted Future Land Use / SA Tomorrow planning context.
+        var v3FutureLandUse = L.esri.featureLayer({
+          url:v3FluUrl,
+          simplifyFactor:0.55,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{}, lu=String(p.LandUse||"").toLowerCase();
+            var color = lu.indexOf("commercial")>=0 ? "#b2182b" :
+                        lu.indexOf("mixed")>=0 ? "#ef8a62" :
+                        lu.indexOf("industrial")>=0 || lu.indexOf("business")>=0 ? "#666" :
+                        lu.indexOf("residential")>=0 ? "#fddbc7" : "#7fbf7b";
+            return {color:color,weight:1,opacity:.65,fillColor:color,fillOpacity:.16};
+          },
+          attribution:"City of San Antonio Future Land Use"
+        });
+        v3FutureLandUse.bindPopup(function(layer){
+          var p=layer.feature.properties||{};
+          return "<div style='min-width:245px'><b>Future Land Use</b><br>"+
+                 "<b>Plan:</b> "+v3esc(p.PlanName||"—")+"<br>"+
+                 "<b>Land use:</b> "+v3esc(p.LandUse||"—")+"<br>"+
+                 "<b>Center tier:</b> "+v3esc(p.CenterTiers||"—")+"<br>"+
+                 "<span style='color:#666'>CoSA adopted planning layer; data last edited July 21, 2026.</span></div>";
+        });
+
+        // TxDOT historical AADT stations. Color emphasizes 2020→2025 traffic growth.
+        var v3AADT = L.esri.featureLayer({
+          url:v3AADTUrl,
+          pointToLayer:function(geojson,latlng){
+            var p=geojson.properties||{};
+            var g=v3growth(p.AADT_RPT_QTY,p.AADT_RPT_HIST_05_QTY);
+            var color = g==null ? "#555" : (g>=35 ? "#b30000" : g>=20 ? "#e67e22" : g>=8 ? "#d4a017" : "#2e7d32");
+            var qty=Number(p.AADT_RPT_QTY)||0;
+            var radius=Math.max(4,Math.min(11,4+Math.sqrt(qty)/45));
+            return L.circleMarker(latlng,{radius:radius,color:"#fff",weight:1,fillColor:color,fillOpacity:.88});
+          },
+          attribution:"TxDOT STARS II / AADT"
+        });
+        v3AADT.bindPopup(function(layer){
+          var p=layer.feature.properties||{};
+          var g5=v3growth(p.AADT_RPT_QTY,p.AADT_RPT_HIST_05_QTY);
+          var g1=v3growth(p.AADT_RPT_QTY,p.AADT_RPT_HIST_01_QTY);
+          return "<div style='min-width:250px'><b>"+v3esc(p.ON_ROAD||"TxDOT count station")+"</b><br>"+
+                 "<b>Station:</b> "+v3esc(p.TRFC_STATN_ID||"—")+"<br>"+
+                 "<b>AADT 2025:</b> "+(Number(p.AADT_RPT_QTY)||0).toLocaleString()+"<br>"+
+                 "<b>AADT 2024:</b> "+(Number(p.AADT_RPT_HIST_01_QTY)||0).toLocaleString()+"<br>"+
+                 "<b>AADT 2020:</b> "+(Number(p.AADT_RPT_HIST_05_QTY)||0).toLocaleString()+"<br>"+
+                 "<b>1-yr growth:</b> "+(g1==null?"—":g1.toFixed(1)+"%")+"<br>"+
+                 "<b>5-yr growth:</b> "+(g5==null?"—":g5.toFixed(1)+"%")+"<br>"+
+                 "<span style='color:#666'>Annual TxDOT STARS II traffic-count series.</span></div>";
+        });
+
+        // Standardized 1/3/5-mile research rings around the highest-priority nodes.
+        var v3Nodes = [
+          {id:"INT-002",name:"I-35 / Kohlenberg Rd (Mayfair)",lat:29.748,lng:-98.079},
+          {id:"INT-001",name:"Culebra Rd / SH 211",lat:29.463,lng:-98.780},
+          {id:"INT-003",name:"I-10 / Loop 1604 East",lat:29.514,lng:-98.312},
+          {id:"INT-004",name:"US 90 / SH 211",lat:29.380,lng:-98.800},
+          {id:"INT-005",name:"Potranco Rd / SH 211",lat:29.402,lng:-98.792},
+          {id:"INT-009",name:"Schuwirth Rd / Loop 1604 East",lat:29.501,lng:-98.292},
+          {id:"INT-006",name:"FM 1518 / I-10",lat:29.545,lng:-98.247},
+          {id:"INT-007",name:"Loop 337 / Word Pkwy (Veramendi)",lat:29.736,lng:-98.179}
+        ];
+        var v3Rings = L.featureGroup();
+        v3Nodes.forEach(function(n){
+          [[1609.344,"1 mi"],[4828.032,"3 mi"],[8046.72,"5 mi"]].forEach(function(r,i){
+            L.circle([n.lat,n.lng],{
+              radius:r[0],color:"#555",weight:i===0?2:1,opacity:.45,fill:false,dashArray:i===0?null:"5,5"
+            }).bindTooltip(n.name+" — "+r[1]).addTo(v3Rings);
+          });
+        });
+
+        // Node-intelligence control: preliminary-plat activity within 1/3/5 miles.
+        // This is deliberately labeled as plat count, NOT future lot count.
+        var v3NodeIntel=L.control({position:"bottomleft"});
+        v3NodeIntel.onAdd=function(){
+          var d=L.DomUtil.create("div","leaflet-bar");
+          d.style.cssText="background:white;padding:8px 10px;width:285px;font:11px/1.35 Arial;color:#222";
+          d.innerHTML="<b>V3 Node Intelligence</b><br>"+
+            "<select id='v3NodeSelect' style='width:100%;margin:5px 0'></select>"+
+            "<div id='v3NodeStats'>Choose a target node.</div>"+
+            "<div style='display:flex;gap:5px;margin-top:6px'>"+
+              "<select id='v3MinAcres' style='width:50%'><option value='5'>5+ acres</option><option value='10'>10+ acres</option><option value='20'>20+ acres</option><option value='50'>50+ acres</option></select>"+
+              "<select id='v3Radius' style='width:50%'><option value='1'>1 mile</option><option value='3' selected>3 miles</option><option value='5'>5 miles</option></select>"+
+            "</div>"+
+            "<label style='display:block;margin:5px 0'><input id='v3ExcludePublic' type='checkbox' checked> Exclude obvious public/government owners</label>"+
+            "<button id='v3FindLand' style='width:100%;margin:3px 0;padding:5px;font-weight:700'>Find Candidate Parcels</button>"+
+            "<button id='v3ExportLand' style='width:100%;margin:0 0 3px;padding:4px' disabled>Export Results CSV</button>"+
+            "<div id='v3FindLandStatus' style='color:#555'></div>"+
+            "<div style='color:#777;margin-top:4px'>Preliminary-plat counts are a live planning-activity signal, not a residential lot count. Parcel results use county appraisal/GIS screening data and must be verified.</div>";
+          L.DomEvent.disableClickPropagation(d);
+          return d;
+        };
+        v3NodeIntel.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+
+        function v3PlatCount(n,miles,cb){
+          L.esri.query({url:v3PlatUrl}).nearby([n.lat,n.lng],miles*1609.344).count(function(err,count){
+            cb(err ? null : count);
+          });
+        }
+        function v3LoadNodeStats(idx){
+          var n=v3Nodes[idx];
+          var out=document.getElementById("v3NodeStats");
+          if(!out) return;
+          out.innerHTML="<b>"+v3esc(n.name)+"</b><br>Loading live preliminary-plat activity…";
+          var vals={};
+          [1,3,5].forEach(function(mi){
+            v3PlatCount(n,mi,function(count){
+              vals[mi]=count;
+              if(Object.keys(vals).length===3){
+                out.innerHTML="<b>"+v3esc(n.name)+"</b><br>"+
+                  "Preliminary plats: <b>"+(vals[1]==null?"—":vals[1])+"</b> within 1 mi · "+
+                  "<b>"+(vals[3]==null?"—":vals[3])+"</b> within 3 mi · "+
+                  "<b>"+(vals[5]==null?"—":vals[5])+"</b> within 5 mi<br>"+
+                  "<span style='color:#666'>Source: live CoSA preliminary-plat GIS.</span>";
+              }
+            });
+          });
+        }
+        setTimeout(function(){
+          var s=document.getElementById("v3NodeSelect");
+          if(!s) return;
+          v3Nodes.forEach(function(n,i){
+            var o=document.createElement("option"); o.value=i; o.textContent=n.id+" — "+n.name; s.appendChild(o);
+          });
+          s.onchange=function(){v3LoadNodeStats(Number(this.value));};
+          var btn=document.getElementById("v3FindLand");
+          if(btn) btn.onclick=function(){
+            var idx=Number(document.getElementById("v3NodeSelect").value||0);
+            v3FindLandNearNode(v3Nodes[idx]);
+          };
+          var exp=document.getElementById("v3ExportLand");
+          if(exp) exp.onclick=v3ExportLandCSV;
+          v3LoadNodeStats(0);
+        },0);
+
+        // Acquisition search result layer. Query is intentionally capped so the browser stays responsive.
+        var v3LandResults=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        var v3LandRows=[];
+        function v3IsPublicOwner(name){
+          var s=String(name||"").toUpperCase();
+          return /(CITY OF|COUNTY OF|STATE OF TEXAS|UNITED STATES|SCHOOL DISTRICT|\bISD\b|SAWS|CPS ENERGY|RIVER AUTHORITY|TXDOT|TEXAS DEPARTMENT)/.test(s);
+        }
+        function v3FindLandNearNode(n){
+          var status=document.getElementById("v3FindLandStatus");
+          var minAcres=Number((document.getElementById("v3MinAcres")||{}).value||5);
+          var miles=Number((document.getElementById("v3Radius")||{}).value||3);
+          var excludePublic=!!((document.getElementById("v3ExcludePublic")||{}).checked);
+          if(status) status.innerHTML="Searching BCAD parcels…";
+          v3LandRows=[];
+          var exp=document.getElementById("v3ExportLand"); if(exp) exp.disabled=true;
+          v3LandResults.clearLayers();
+          L.esri.query({url:v3ParcelUrl+"/0"})
+            .nearby([n.lat,n.lng],miles*1609.344)
+            .where("Land_acres >= "+minAcres)
+            .orderBy("Land_acres","DESC")
+            .limit(100)
+            .run(function(err,fc){
+              if(err || !fc){
+                if(status) status.innerHTML="<b>Parcel search failed.</b> Try again after zooming into Bexar County.";
+                return;
+              }
+              var items=(fc.features||[]).filter(function(feat){
+                return !excludePublic || !v3IsPublicOwner((feat.properties||{}).Owner_name);
+              }).sort(function(a,b){
+                return Number((b.properties||{}).Land_acres||0)-Number((a.properties||{}).Land_acres||0);
+              }).slice(0,40);
+              items.forEach(function(feat){
+                var p=feat.properties||{};
+                var lyr=L.geoJSON(feat,{style:{color:"#d63b2f",weight:3,fillColor:"#d63b2f",fillOpacity:.08}});
+                var ac=Number(p.Land_acres||0);
+                lyr.bindPopup("<div style='min-width:260px'><b>"+v3esc(p.Situs||"Candidate parcel")+"</b><br>"+
+                  "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br><b>Acres:</b> "+(ac?ac.toFixed(2):"—")+"<br>"+
+                  "<b>Property ID:</b> "+v3esc(p.Prop_id||p.Geo_id||"—")+"<br>"+
+                  "<b>Land value:</b> "+v3money((Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0))+"<br>"+
+                  "<b>Market value:</b> "+v3money(p.Market_val)+"<br>"+
+                  "<b>Last deed:</b> "+v3esc(p.Last_Deed_Date||"—")+"<br>"+
+                  "<b>Ownership type:</b> "+v3esc(p.Ownership_Type||"—")+"<br>"+
+                  "<span style='color:#666'>BCAD parcel data obtained Dec. 2025 via SARA. Automated 5+ acre proximity screen; verify current ownership/title, frontage, access, floodplain, utilities, zoning and asking price.</span></div>");
+                lyr.addTo(v3LandResults);
+                v3LandRows.push({
+                  node:n.name, property_id:p.Prop_id||p.Geo_id||"", situs:p.Situs||"",
+                  owner:p.Owner_name||"", acres:ac||"", market_value:p.Market_val||"",
+                  last_deed:p.Last_Deed_Date||"", ownership_type:p.Ownership_Type||"",
+                  legal:p.Legal_desc||""
+                });
+              });
+              if(status) status.innerHTML="<b>"+items.length+" candidate parcels</b> · "+minAcres+"+ acres within "+miles+" mi of "+v3esc(n.name)+".";
+              if(exp) exp.disabled=!v3LandRows.length;
+              if(items.length) map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(v3LandResults.getBounds().pad(.08));
+            });
+        }
+
+        function v3ExportLandCSV(){
+          if(!v3LandRows.length) return;
+          var cols=["node","property_id","situs","owner","acres","market_value","last_deed","ownership_type","legal"];
+          function q(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; }
+          var csv=[cols.join(",")].concat(v3LandRows.map(function(r){return cols.map(function(k){return q(r[k]);}).join(",");})).join("\n");
+          var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+          var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="satx_land_candidates.csv";
+          document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+        }
+
+        // Click a visible official parcel polygon for ownership/acreage/value screening.
+        map_33cc2c2ac68d72d2971fbb7de3650b24.on("click",function(e){
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3Parcels)) return;
+          L.esri.identifyFeatures({url:v3ParcelUrl})
+            .on(map_33cc2c2ac68d72d2971fbb7de3650b24).at(e.latlng).layers("visible:0").run(function(err,fc){
+              if(err || !fc || !fc.features || !fc.features.length) return;
+              var p=fc.features[0].properties||{};
+              var ac=Number(p.Land_acres);
+              var html="<div style='min-width:270px'><b>"+v3esc(p.Situs||"Bexar County parcel")+"</b><br>"+
+                "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br>"+
+                "<b>Property ID:</b> "+v3esc(p.Prop_id||p.Geo_id||"—")+"<br>"+
+                "<b>Acres:</b> "+(isNaN(ac)?"—":ac.toFixed(2))+"<br>"+
+                "<b>Land value:</b> "+v3money((Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0))+"<br>"+
+                "<b>Market value:</b> "+v3money(p.Market_val)+"<br>"+
+                "<b>Last deed:</b> "+v3esc(p.Last_Deed_Date||"—")+"<br>"+
+                "<b>Ownership type:</b> "+v3esc(p.Ownership_Type||"—")+"<br>"+
+                "<b>Legal:</b> "+v3esc(p.Legal_desc||"—")+"<br>"
+                "<span style='color:#666'>BCAD parcel data obtained Dec. 2025 via San Antonio River Authority. Verify current ownership/title and survey before contact or acquisition.</span></div>";
+              L.popup({maxWidth:360}).setLatLng(e.latlng).setContent(html).openOn(map_33cc2c2ac68d72d2971fbb7de3650b24);
+            });
+        });
+
+        var v3Info=L.control({position:"bottomleft"});
+        v3Info.onAdd=function(){
+          var d=L.DomUtil.create("div","leaflet-bar");
+          d.style.cssText="background:white;padding:7px 9px;max-width:285px;font:11px/1.35 Arial;color:#333";
+          d.innerHTML="<b>V3 GIS screening</b><br>"+
+            "Parcel polygons/owner screen: BCAD via SARA (Dec. 2025)<br>"+
+            "Preliminary plats: CoSA Development Services<br>"+
+            "County plats/MDPs + MTP: Bexar Public Works<br>"+
+            "Future Land Use: CoSA (edited Jul. 21, 2026)<br>"+
+            "Traffic: TxDOT historical AADT (2025→2006)<br>"+
+            "Flood hazard: FEMA NFHL layer 28<br>"+
+            "Flood buffer: Bexar Public Works 100-ft screen<br>"+
+            "<span style='color:#777'>Official GIS is still screening data; verify title, survey, access, utilities and flood status before acquisition.</span>";
+          return d;
+        };
+        v3Info.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"🧭 BCAD Parcels + Owner Screen (Dec. 2025)");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"🟦 Live CoSA Preliminary Plats");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"🏗️ Bexar Plat / MDP Pipeline");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"🛣️ Bexar Major Thoroughfare Plan");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"🏙️ CoSA Future Land Use");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"🚗 TxDOT Historical AADT + Growth");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"🌊 FEMA Flood Hazard Zones / Floodway");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"💧 Bexar 100-ft Floodplain Buffer");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Rings,"⭕ 1 / 3 / 5 Mile Node Rings");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3LandResults,"🔎 Find Land Results");
+
 </script>
 </html>
