@@ -126,7 +126,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 </div>
     
             <div id="v42TopSitesPanel">
-  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">10+ acres · ≤1 mi from major node · strong road exposure · low-improvement land</span></div>
+  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">3+ acres · ≤1 mi from major node · strong road exposure · low-improvement land</span></div>
   <div id="v42TopBody">
     <div id="v42TopStatus" class="v42Loading">Ranking the best 5+ acre sites now…</div>
     <div id="v42TopList"></div>
@@ -3712,9 +3712,9 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           var p=feat.properties||{},ctr=v4featureCenter(feat); if(!ctr)return null;
           var miles=v4miles([nodeResult.node.lat,nodeResult.node.lng],ctr), acres=v4num(p.Land_acres);
           // Top-site thesis: meaningful acreage immediately around major intersections.
-          if(acres<10||miles>1.5||v3IsPublicOwner(p.Owner_name)||v4isLikelyResidentialOrImproved(p,acres))return null;
+          if(acres<3||miles>1.5||v3IsPublicOwner(p.Owner_name)||v4isLikelyResidentialOrImproved(p,acres))return null;
           var distScore=miles<=.25?100:miles<=.5?95:miles<=1?82:v4clamp(82-(miles-1)*44,55,82);
-          var acreScore=acres>=15&&acres<=75?100:acres<15?82:acres<=125?92:acres<=250?78:65;
+          var acreScore=acres>=8&&acres<=40?100:acres>=5?92:acres>=3?82:60;
           var held=v4yearsHeld(p.Last_Deed_Date),holdScore=held==null?50:held>=15?100:held>=10?85:held>=5?65:45;
           var market=v4num(p.Market_val),vpa=market&&acres?market/acres:0;
           var valueScore=!vpa?50:vpa<=50000?100:vpa<=100000?85:vpa<=200000?65:vpa<=350000?45:30;
@@ -3908,7 +3908,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           if(flu.score<30){gated=Math.min(gated,72);gates.push("future-land-use conflict/constraint");}
           x.score=gated;
           x.gates=gates;
-          x.topSiteEligible=(x.acres>=10 && x.miles<=1.0 && access.score>=80 && !flood.floodway && !(flood.sfha&&flood.affectedPct>=40) && flu.score>=40 && x.rawLandScore>=65);
+          x.topSiteEligible=(x.acres>=3 && x.miles<=1.0 && access.score>=80 && !flood.floodway && !(flood.sfha&&flood.affectedPct>=40) && flu.score>=40 && x.rawLandScore>=65);
           x.qualityScore=.42*access.score+.22*flood.score+.16*flu.score+.12*x.rawLandScore+.08*utility.score;
           return x;
         }
@@ -3958,7 +3958,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         async function v42quickTopSites(){
           var st=document.getElementById("v42TopStatus");
-          if(st)st.innerHTML="Finding 10+ acre tracts at major intersections…";
+          if(st)st.innerHTML="Finding 3+ acre tracts at major intersections…";
           try{
             var seeds=v4Nodes.slice().sort(function(a,b){return b.base-a.base;}).slice(0,8);
             var groups=await Promise.all(seeds.map(async function(n){
@@ -3989,7 +3989,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
               v42renderTopSites();
               if(st)st.innerHTML="<b>Large-intersection Top 5 shown.</b> Refining flood, FLU and utilities now…";
             }else if(st){
-              st.innerHTML="No 10+ acre frontage-qualified sites returned in the quick pass; running full Land Radar…";
+              st.innerHTML="No 3+ acre frontage-qualified sites returned in the quick pass; running full Land Radar…";
             }
           }catch(e){
             if(st)st.innerHTML="Quick commercial-land screen unavailable; running full Land Radar…";
