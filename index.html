@@ -2930,7 +2930,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         // ---- V3 OFFICIAL GIS SCREENING OVERLAYS ----
         // Authoritative screening sources. These layers are intentionally off by default
         // so the acquisition map stays fast and readable at startup.
-        var v3ParcelUrl = "https://maps.bexar.org/arcgis/rest/services/Parcels/MapServer";
+        var v3ParcelUrl = "https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer";
         var v3PlatUrl = "https://services.arcgis.com/g1fRTDLeMgspWrYp/arcgis/rest/services/PreliminaryPlat/FeatureServer/2";
         var v3AADTUrl = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_AADT_Annuals_(Public_View)/FeatureServer/0";
         var v3FloodUrl = "https://maps.bexar.org/arcgis/rest/services/PW/BxCoOpenGov/MapServer";
@@ -2957,7 +2957,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           url:v3ParcelUrl,
           layers:[0],
           opacity:0.72,
-          attribution:"Bexar County / BCAD parcel GIS"
+          attribution:"BCAD parcels via San Antonio River Authority (Dec. 2025)"
         });
 
         // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
@@ -3138,8 +3138,8 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           v3LandResults.clearLayers();
           L.esri.query({url:v3ParcelUrl+"/0"})
             .nearby([n.lat,n.lng],4828.032)
-            .where("Acres >= 5")
-            .orderBy("Acres","DESC")
+            .where("Land_acres >= 5")
+            .orderBy("Land_acres","DESC")
             .limit(40)
             .run(function(err,fc){
               if(err || !fc){
@@ -3147,17 +3147,20 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
                 return;
               }
               var items=(fc.features||[]).sort(function(a,b){
-                return Number((b.properties||{}).Acres||0)-Number((a.properties||{}).Acres||0);
+                return Number((b.properties||{}).Land_acres||0)-Number((a.properties||{}).Land_acres||0);
               }).slice(0,25);
               items.forEach(function(feat){
                 var p=feat.properties||{};
                 var lyr=L.geoJSON(feat,{style:{color:"#d63b2f",weight:3,fillColor:"#d63b2f",fillOpacity:.08}});
-                var ac=Number(p.Acres||p.LglAcres||0);
+                var ac=Number(p.Land_acres||0);
                 lyr.bindPopup("<div style='min-width:260px'><b>"+v3esc(p.Situs||"Candidate parcel")+"</b><br>"+
-                  "<b>Owner:</b> "+v3esc(p.Owner||"—")+"<br><b>Acres:</b> "+(ac?ac.toFixed(2):"—")+"<br>"+
-                  "<b>Property ID:</b> "+v3esc(p.PropID||p.AcctNumb||"—")+"<br>"+
-                  "<b>Land value:</b> "+v3money(p.LandVal)+"<br>"+
-                  "<span style='color:#666'>Automated 5+ acre proximity screen. Frontage, access, floodplain, utilities, zoning, title and asking price are not yet scored.</span></div>");
+                  "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br><b>Acres:</b> "+(ac?ac.toFixed(2):"—")+"<br>"+
+                  "<b>Property ID:</b> "+v3esc(p.Prop_id||p.Geo_id||"—")+"<br>"+
+                  "<b>Land value:</b> "+v3money((Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0))+"<br>"+
+                  "<b>Market value:</b> "+v3money(p.Market_val)+"<br>"+
+                  "<b>Last deed:</b> "+v3esc(p.Last_Deed_Date||"—")+"<br>"+
+                  "<b>Ownership type:</b> "+v3esc(p.Ownership_Type||"—")+"<br>"+
+                  "<span style='color:#666'>BCAD parcel data obtained Dec. 2025 via SARA. Automated 5+ acre proximity screen; verify current ownership/title, frontage, access, floodplain, utilities, zoning and asking price.</span></div>");
                 lyr.addTo(v3LandResults);
               });
               if(status) status.innerHTML="<b>"+items.length+" candidate parcels</b> highlighted near "+v3esc(n.name)+".";
@@ -3172,15 +3175,15 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             .on(map_33cc2c2ac68d72d2971fbb7de3650b24).at(e.latlng).layers("visible:0").run(function(err,fc){
               if(err || !fc || !fc.features || !fc.features.length) return;
               var p=fc.features[0].properties||{};
-              var ac=(p.Acres!=null?Number(p.Acres):Number(p.LglAcres));
+              var ac=Number(p.Land_acres);
               var html="<div style='min-width:270px'><b>"+v3esc(p.Situs||"Bexar County parcel")+"</b><br>"+
                 "<b>Owner:</b> "+v3esc(p.Owner||"—")+"<br>"+
                 "<b>Property ID:</b> "+v3esc(p.PropID||p.AcctNumb||"—")+"<br>"+
                 "<b>Acres:</b> "+(isNaN(ac)?"—":ac.toFixed(2))+"<br>"+
                 "<b>Land value:</b> "+v3money(p.LandVal)+"<br>"+
-                "<b>Total value:</b> "+v3money(p.TotVal)+"<br>"+
-                "<b>Legal:</b> "+v3esc(p.LglDesc||"—")+"<br>"+
-                "<span style='color:#666'>BCAD/Bexar GIS screening data. Verify current ownership/title and survey before contact or acquisition.</span></div>";
+                "<b>Total value:</b> "+v3money(p.Market_val)+"<br>"+
+                "<b>Legal:</b> "+v3esc(p.Legal_desc||"—")+"<br>"+
+                "<span style='color:#666'>BCAD parcel data obtained Dec. 2025 via San Antonio River Authority. Verify current ownership/title and survey before contact or acquisition.</span></div>";
               L.popup({maxWidth:360}).setLatLng(e.latlng).setContent(html).openOn(map_33cc2c2ac68d72d2971fbb7de3650b24);
             });
         });
@@ -3190,7 +3193,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           var d=L.DomUtil.create("div","leaflet-bar");
           d.style.cssText="background:white;padding:7px 9px;max-width:285px;font:11px/1.35 Arial;color:#333";
           d.innerHTML="<b>V3 GIS screening</b><br>"+
-            "Parcel polygons: Bexar County / BCAD<br>"+
+            "Parcel polygons/owner screen: BCAD via SARA (Dec. 2025)<br>"+
             "Preliminary plats: CoSA Development Services<br>"+
             "County plats/MDPs + MTP: Bexar Public Works<br>"+
             "Traffic: TxDOT historical AADT (2025→2006)<br>"+
@@ -3201,7 +3204,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         };
         v3Info.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
 
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"🧭 Official Bexar Parcel Boundaries");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"🧭 BCAD Parcels + Owner Screen (Dec. 2025)");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"🟦 Live CoSA Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"🏗️ Bexar Plat / MDP Pipeline");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"🛣️ Bexar Major Thoroughfare Plan");
