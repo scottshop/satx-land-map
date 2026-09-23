@@ -126,7 +126,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 </div>
     
             <div id="v42TopSitesPanel">
-  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">10+ acres · ≤1.5 mi from major node · road exposure · low-improvement land</span></div>
+  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">10+ acres · ≤1 mi from major node · strong road exposure · low-improvement land</span></div>
   <div id="v42TopBody">
     <div id="v42TopStatus" class="v42Loading">Ranking the best 5+ acre sites now…</div>
     <div id="v42TopList"></div>
@@ -3908,7 +3908,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           if(flu.score<30){gated=Math.min(gated,72);gates.push("future-land-use conflict/constraint");}
           x.score=gated;
           x.gates=gates;
-          x.topSiteEligible=(x.acres>=10 && x.miles<=1.5 && access.score>=70 && !flood.floodway && !(flood.sfha&&flood.affectedPct>=40) && flu.score>=40 && x.rawLandScore>=55);
+          x.topSiteEligible=(x.acres>=10 && x.miles<=1.0 && access.score>=80 && !flood.floodway && !(flood.sfha&&flood.affectedPct>=40) && flu.score>=40 && x.rawLandScore>=65);
           x.qualityScore=.42*access.score+.22*flood.score+.16*flu.score+.12*x.rawLandScore+.08*utility.score;
           return x;
         }
@@ -3979,7 +3979,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             var checked=await v4mapLimit(candidates,5,async function(x){
               x.access=await v4accessQuality(x);
               x.score=.48*x.nodeResult.score+.18*x.distScore+.14*x.acreScore+.10*x.rawLandScore+.10*x.access.score;
-              x.topSiteEligible=(x.access.score>=70);
+              x.topSiteEligible=(x.miles<=1.0 && x.access.score>=80 && x.rawLandScore>=65);
               return x;
             });
             var quick=checked.filter(function(x){return x&&x.topSiteEligible;})
@@ -4007,7 +4007,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           if(x.held!=null&&x.held>=10)a.push("long-held ownership");
           if(x.miles<=.5)a.push("within ½ mile of major node");
           else if(x.miles<=1)a.push("within 1 mile of major node");
-          else a.push("within 1.5 miles of major node");
+          else a.push("near major node");
           if(!a.length)a.push("strong combined node + parcel score");
           return a.slice(0,3).join(" · ");
         }
