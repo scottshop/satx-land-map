@@ -102,7 +102,7 @@
 position: fixed; top: 12px; left: 55px; z-index:9999; width:430px;
 background:rgba(255,255,255,.95); border:2px solid #17365D; border-radius:8px;
 padding:10px 12px; box-shadow:0 2px 8px rgba(0,0,0,.2); font-family:Arial;">
-<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4.4 Commercial Land Top 5</div>
+<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4.6 Stable Top 5</div>
 <div style="font-size:12px;margin-top:4px;">
 Use the layer control to isolate <b>heat, parcels, developments, anchors, and road projects</b>.
 Click any marker/line for acquisition context and source links.
@@ -126,7 +126,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 </div>
     
             <div id="v42TopSitesPanel">
-  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">3+ acres · ≤1 mi from major node · strong road exposure · low-improvement land</span></div>
+  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">3+ acres · ≤1 mi from major node · road frontage · low-improvement land</span></div>
   <div id="v42TopBody">
     <div id="v42TopStatus" class="v42Loading">Ranking the best 5+ acre sites now…</div>
     <div id="v42TopList"></div>
@@ -3956,14 +3956,26 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           v42renderTopSites();
         }
 
+        async function v42lightAccess(x){
+          var ctr=x.center;
+          var results=await Promise.all([
+            v4queryNearPoint(v4StreetsUrl,ctr,180,18),
+            v4queryNearPoint(v4CountyRoadsUrl,ctr,180,18)
+          ]);
+          var roads=v4uniqueRoadNames((results[0]||[]).concat(results[1]||[]));
+          var score=roads.length>=2?90:roads.length===1?76:35;
+          return {score:score,roads:roads.slice(0,3),desc:roads.length>=2?"two-road/corner frontage signal: "+roads.slice(0,2).join(" / "):
+            roads.length===1?"road frontage signal: "+roads[0]:"frontage not resolved in quick screen"};
+        }
+
         async function v42quickTopSites(){
           var st=document.getElementById("v42TopStatus");
-          if(st)st.innerHTML="Finding 3+ acre tracts at major intersections…";
+          if(st)st.innerHTML="Finding 3+ acre commercial land near major intersections…";
           try{
-            var seeds=v4Nodes.slice().sort(function(a,b){return b.base-a.base;}).slice(0,8);
+            var seeds=v4Nodes.slice().sort(function(a,b){return b.base-a.base;}).slice(0,6);
             var groups=await Promise.all(seeds.map(async function(n){
               var nr={node:n,score:n.base};
-              var feats=await v4queryNearby(v3ParcelUrl+"/0",n,2414.016,100);
+              var feats=await v4queryNearby(v3ParcelUrl+"/0",n,1609.344,60);
               var arr=[];feats.forEach(function(feat){var x=v4parcelBaseScore(nr,feat);if(x)arr.push(x);});
               return arr;
             }));
@@ -3974,12 +3986,12 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
               if(!byId[id]||x.preliminaryScore>byId[id].preliminaryScore)byId[id]=x;
             });
             var candidates=Object.keys(byId).map(function(k){return byId[k];})
-              .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,18);
-            if(st)st.innerHTML="Checking road frontage on the strongest large tracts…";
-            var checked=await v4mapLimit(candidates,5,async function(x){
-              x.access=await v4accessQuality(x);
-              x.score=.48*x.nodeResult.score+.18*x.distScore+.14*x.acreScore+.10*x.rawLandScore+.10*x.access.score;
-              x.topSiteEligible=(x.miles<=1.0 && x.access.score>=80 && x.rawLandScore>=65);
+              .sort(function(a,b){return b.preliminaryScore-a.preliminaryScore;}).slice(0,10);
+            if(st)st.innerHTML="Checking frontage on the strongest tracts…";
+            var checked=await v4mapLimit(candidates,2,async function(x){
+              x.access=await v42lightAccess(x);
+              x.score=.50*x.nodeResult.score+.20*x.distScore+.12*x.acreScore+.10*x.rawLandScore+.08*x.access.score;
+              x.topSiteEligible=(x.miles<=1.0 && x.access.score>=76 && x.rawLandScore>=65);
               return x;
             });
             var quick=checked.filter(function(x){return x&&x.topSiteEligible;})
@@ -3987,12 +3999,12 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             if(quick.length){
               v4CallRows=quick;
               v42renderTopSites();
-              if(st)st.innerHTML="<b>Large-intersection Top 5 shown.</b> Refining flood, FLU and utilities now…";
+              if(st)st.innerHTML="<b>Top commercial-land sites shown.</b> Deep flood/FLU/utility analysis is available from DEEP LAND RADAR.";
             }else if(st){
-              st.innerHTML="No 3+ acre frontage-qualified sites returned in the quick pass; running full Land Radar…";
+              st.innerHTML="<b>No tract passed the quick commercial-land gate.</b> Use DEEP LAND RADAR to search more broadly.";
             }
           }catch(e){
-            if(st)st.innerHTML="Quick commercial-land screen unavailable; running full Land Radar…";
+            if(st)st.innerHTML="<b>Quick Top 5 could not finish.</b> The map is still usable; try REFRESH RANKING.";
           }
         }
 
@@ -4132,14 +4144,11 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           if(show)show.onclick=v42showAll;
           if(refresh)refresh.onclick=function(){
             v4RadarCache={};
-            var st=document.getElementById("v42TopStatus");if(st)st.innerHTML="Refreshing live ranking…";
-            v4RunLandRadar();
+            var st=document.getElementById("v42TopStatus");if(st)st.innerHTML="Refreshing lightweight Top 5…";
+            v42quickTopSites();
           };
-          // Decision-first default: show a fast preliminary Top 5, then refine it live.
-          setTimeout(async function(){
-            await v42quickTopSites();
-            v4RunLandRadar();
-          },500);
+          // Stable default: lightweight Top 5 only. Deep Land Radar runs only on explicit click.
+          setTimeout(function(){v42quickTopSites();},700);
         },0);
 
 </script>
