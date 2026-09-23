@@ -2936,6 +2936,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         var v3FloodUrl = "https://maps.bexar.org/arcgis/rest/services/PW/BxCoOpenGov/MapServer";
         var v3BexarDevUrl = "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer";
         var v3FemaUrl = "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28";
+        var v3FluUrl = "https://services.arcgis.com/g1fRTDLeMgspWrYp/arcgis/rest/services/Future_Land_Use/FeatureServer/4";
 
         function v3esc(v){
           return String(v == null ? "" : v).replace(/[&<>"']/g,function(ch){
@@ -3025,6 +3026,30 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
                  "<b>Last edited:</b> "+v3esc(edited)+"<br>"+
                  "<b>Source:</b> CoSA Development Services<br>"+
                  "<span style='color:#666'>Polygon is an official preliminary-plat screening layer; verify current approval/status before underwriting.</span></div>";
+        });
+
+        // City of San Antonio adopted Future Land Use / SA Tomorrow planning context.
+        var v3FutureLandUse = L.esri.featureLayer({
+          url:v3FluUrl,
+          simplifyFactor:0.55,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{}, lu=String(p.LandUse||"").toLowerCase();
+            var color = lu.indexOf("commercial")>=0 ? "#b2182b" :
+                        lu.indexOf("mixed")>=0 ? "#ef8a62" :
+                        lu.indexOf("industrial")>=0 || lu.indexOf("business")>=0 ? "#666" :
+                        lu.indexOf("residential")>=0 ? "#fddbc7" : "#7fbf7b";
+            return {color:color,weight:1,opacity:.65,fillColor:color,fillOpacity:.16};
+          },
+          attribution:"City of San Antonio Future Land Use"
+        });
+        v3FutureLandUse.bindPopup(function(layer){
+          var p=layer.feature.properties||{};
+          return "<div style='min-width:245px'><b>Future Land Use</b><br>"+
+                 "<b>Plan:</b> "+v3esc(p.PlanName||"—")+"<br>"+
+                 "<b>Land use:</b> "+v3esc(p.LandUse||"—")+"<br>"+
+                 "<b>Center tier:</b> "+v3esc(p.CenterTiers||"—")+"<br>"+
+                 "<span style='color:#666'>CoSA adopted planning layer; data last edited July 21, 2026.</span></div>";
         });
 
         // TxDOT historical AADT stations. Color emphasizes 2020→2025 traffic growth.
@@ -3235,6 +3260,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             "Parcel polygons/owner screen: BCAD via SARA (Dec. 2025)<br>"+
             "Preliminary plats: CoSA Development Services<br>"+
             "County plats/MDPs + MTP: Bexar Public Works<br>"+
+            "Future Land Use: CoSA (edited Jul. 21, 2026)<br>"+
             "Traffic: TxDOT historical AADT (2025→2006)<br>"+
             "Flood hazard: FEMA NFHL layer 28<br>"+
             "Flood buffer: Bexar Public Works 100-ft screen<br>"+
@@ -3247,6 +3273,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"🟦 Live CoSA Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"🏗️ Bexar Plat / MDP Pipeline");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"🛣️ Bexar Major Thoroughfare Plan");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"🏙️ CoSA Future Land Use");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"🚗 TxDOT Historical AADT + Growth");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"🌊 FEMA Flood Hazard Zones / Floodway");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"💧 Bexar 100-ft Floodplain Buffer");
