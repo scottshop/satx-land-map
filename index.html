@@ -61,6 +61,24 @@
     <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
     <script src="https://unpkg.com/esri-leaflet@3.0.15/dist/esri-leaflet.js"></script>
+<style id="v4-land-radar-css">
+#v4RadarLaunch{position:fixed;top:112px;left:55px;z-index:10005;background:#111;color:#fff;border:0;border-radius:7px;padding:9px 13px;font:700 12px Arial;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+#v4RadarPanel{display:none;position:fixed;top:18px;right:18px;bottom:18px;width:410px;z-index:11000;background:rgba(255,255,255,.985);border:2px solid #17365D;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.3);font:12px/1.4 Arial;color:#222;overflow:hidden}
+#v4RadarHead{padding:12px 14px;background:#17365D;color:#fff;position:sticky;top:0;z-index:2}
+#v4RadarBody{padding:12px 14px 30px;overflow:auto;height:calc(100% - 64px)}
+.v4Close{float:right;background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer}
+.v4Run{width:100%;background:#b30000;color:#fff;border:0;border-radius:6px;padding:10px;font-weight:700;cursor:pointer;margin:7px 0}
+.v4Card{border:1px solid #ccc;border-left:5px solid #b30000;border-radius:7px;padding:9px 10px;margin:8px 0;background:#fff}
+.v4Card h4{margin:0 0 4px;font-size:13px;color:#17365D}
+.v4Score{float:right;font-size:20px;font-weight:800;color:#b30000}
+.v4Metric{display:inline-block;margin:2px 7px 2px 0;color:#444}
+.v4Why{margin-top:5px;padding-top:5px;border-top:1px solid #eee;color:#333}
+.v4Small{font-size:10px;color:#777}
+.v4Btn{border:1px solid #17365D;background:#fff;color:#17365D;border-radius:4px;padding:4px 7px;font-weight:700;cursor:pointer;margin-top:5px}
+.v4Section{font-size:14px;font-weight:800;color:#17365D;margin:14px 0 5px;border-bottom:2px solid #17365D;padding-bottom:3px}
+.v4Progress{padding:6px 0;color:#555}
+.v4Pill{display:inline-block;border-radius:10px;background:#eee;padding:2px 6px;margin:2px 3px 2px 0;font-size:10px}
+</style>
 </head>
 <body>
     
@@ -92,7 +110,21 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 <b>Road lines</b>: schematic corridor geometry
 </div>
     
-            <div class="folium-map" id="map_33cc2c2ac68d72d2971fbb7de3650b24" ></div>
+            <button id="v4RadarLaunch">⚡ FIND THE NEXT RETAIL NODE</button>
+<div id="v4RadarPanel">
+  <div id="v4RadarHead"><button class="v4Close" id="v4RadarClose">×</button>
+    <div style="font-size:17px;font-weight:800">⚡ V4 LAND RADAR</div>
+    <div style="font-size:10px;opacity:.85">Future Retail Node Predictor + Call This Week</div>
+  </div>
+  <div id="v4RadarBody">
+    <div><b>What it does:</b> ranks Bexar County growth nodes using live future-lot pipeline, recent permits, TxDOT traffic momentum, commercial-lot supply and mapped anchor catalysts.</div>
+    <button class="v4Run" id="v4RunRadar">RUN LAND RADAR</button>
+    <div id="v4RadarStatus" class="v4Progress">Ready.</div>
+    <div id="v4RadarResults"></div>
+    <div class="v4Small" style="margin-top:12px">Screening model only. Scores are not appraisals or investment recommendations. Parcel frontage, utility capacity, title, access and asking price still require diligence.</div>
+  </div>
+</div>
+<div class="folium-map" id="map_33cc2c2ac68d72d2971fbb7de3650b24" ></div>
         
 </body>
 <script>
@@ -3386,6 +3418,275 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(
           v3VerifiedTargetGeometry,"✅ Audited / Verified Target Parcel Geometry"
         );
+
+
+        // ---- V4 LAND RADAR: FUTURE RETAIL NODE PREDICTOR ----
+        var v4PlatBase="https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer";
+        var v4PermitUrl="https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Building_Permits_Issued_Past_180_Days/FeatureServer/0";
+        var v4StageDefs=[
+          {id:4,name:"Application",weight:.35,dateFields:["INIT_SUBMIT_DT","created_date","last_edited_date"]},
+          {id:5,name:"Working",weight:.55,dateFields:["START_REVW_DT","INIT_SUBMIT_DT","last_edited_date"]},
+          {id:6,name:"Staff Accepted",weight:.75,dateFields:["LETR_CERTIF_DT","last_edited_date","INIT_SUBMIT_DT"]},
+          {id:7,name:"CC Approved",weight:.90,dateFields:["ACEP_COMMISS_CRT_DT","last_edited_date","INIT_SUBMIT_DT"]},
+          {id:8,name:"Recorded",weight:1.00,dateFields:["PLAT_RCRD_DT","last_edited_date","INIT_SUBMIT_DT"]}
+        ];
+        var v4Nodes=[
+          {id:"INT-001",name:"Culebra Rd / SH 211",lat:29.524162,lng:-98.802373,base:89,precision:"verified"},
+          {id:"INT-003",name:"I-10 / Loop 1604 East",lat:29.514,lng:-98.312,base:88,precision:"proxy"},
+          {id:"INT-004",name:"US 90 / SH 211",lat:29.380,lng:-98.800,base:86,precision:"proxy"},
+          {id:"INT-005",name:"Potranco Rd / SH 211",lat:29.4214,lng:-98.7826,base:84,precision:"verified"},
+          {id:"INT-009",name:"Schuwirth Rd / Loop 1604 East",lat:29.456,lng:-98.2879,base:82,precision:"verified"},
+          {id:"INT-006",name:"FM 1518 / I-10",lat:29.489044,lng:-98.223251,base:81,precision:"verified"},
+          {id:"INT-010",name:"FM 1516 / I-10 East",lat:29.514,lng:-98.252,base:81,precision:"proxy"},
+          {id:"INT-011",name:"US 90 / Loop 1604 West",lat:29.394,lng:-98.682,base:81,precision:"proxy"},
+          {id:"INT-012",name:"SH 211 / Briggs Ranch Rd",lat:29.410,lng:-98.813,base:79,precision:"proxy"},
+          {id:"INT-013",name:"S Zarzamora / Mitra Way (VIDA)",lat:29.318,lng:-98.530,base:79,precision:"proxy"},
+          {id:"INT-014",name:"FM 1518 / Lower Seguin Rd",lat:29.5237,lng:-98.2462,base:78,precision:"verified"},
+          {id:"INT-015",name:"FM 1103 / Orth Rd",lat:29.597,lng:-98.228,base:77,precision:"proxy"},
+          {id:"INT-016",name:"Loop 1604 / Green Rd",lat:29.496,lng:-98.293,base:74,precision:"proxy"},
+          {id:"INT-017",name:"Texas Research Pkwy / SH 211",lat:29.435,lng:-98.797,base:73,precision:"proxy"},
+          {id:"INT-018",name:"Louis Bauer / Laser (Brooks)",lat:29.346,lng:-98.443,base:72,precision:"proxy"},
+          {id:"INT-020",name:"Applewhite Rd / Lone Star Pass",lat:29.297,lng:-98.552,base:64,precision:"proxy"},
+          {id:"INT-021",name:"Chavaneaux Rd / S Zarzamora",lat:29.284,lng:-98.529,base:61,precision:"proxy"},
+          {id:"INT-024",name:"Talley Rd / Potranco Rd",lat:29.414,lng:-98.744,base:78,precision:"proxy"}
+        ];
+        var v4RadarCache={};
+        var v4RadarResults=[];
+        var v4CallRows=[];
+        var v4CallLayer=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        var v4RadarHeat=L.featureGroup();
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v4RadarHeat,"⚡ V4 Land Radar Scores");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v4CallLayer,"☎️ V4 Call This Week Parcels");
+
+        function v4clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+        function v4num(v){v=Number(v);return isFinite(v)?v:0;}
+        function v4fmt(v){return Math.round(v4num(v)).toLocaleString();}
+        function v4miles(a,b){return map_33cc2c2ac68d72d2971fbb7de3650b24.distance(a,b)/1609.344;}
+        function v4dateMs(p,fields){
+          var best=0; (fields||[]).forEach(function(k){
+            var v=p[k]; if(v==null) return;
+            var t=(typeof v==="number")?v:new Date(v).getTime();
+            if(isFinite(t)&&t>best) best=t;
+          }); return best;
+        }
+        function v4featureCenter(feature){
+          try{var l=L.geoJSON(feature),b=l.getBounds();return b.isValid()?b.getCenter():null;}catch(e){return null;}
+        }
+        function v4queryNearby(url,node,meters,limit){
+          return new Promise(function(resolve){
+            L.esri.query({url:url}).nearby([node.lat,node.lng],meters).limit(limit||2000).run(function(err,fc){
+              resolve(err||!fc?[]:(fc.features||[]));
+            });
+          });
+        }
+        function v4stageMetric(node,def){
+          return v4queryNearby(v4PlatBase+"/"+def.id,node,8046.72,2000).then(function(features){
+            var out={raw1:0,raw3:0,raw5:0,weightedSingle:0,weightedCommercial:0,recent180:0,count:features.length};
+            var now=Date.now(), cutoff=now-180*86400000;
+            features.forEach(function(feat){
+              var p=feat.properties||{}, ctr=v4featureCenter(feat); if(!ctr)return;
+              var d=v4miles([node.lat,node.lng],ctr); if(d>5)return;
+              var rw=d<=1?1:(d<=3?.75:.45);
+              var s=v4num(p.NBR_NEW_SINGLE_LOTS), cm=v4num(p.NBR_NEW_COMMERCIAL_LOTS);
+              if(d<=1)out.raw1+=s; if(d<=3)out.raw3+=s; out.raw5+=s;
+              out.weightedSingle+=s*def.weight*rw;
+              out.weightedCommercial+=cm*def.weight*rw;
+              var dt=v4dateMs(p,def.dateFields);
+              if(dt>=cutoff)out.recent180+=s*def.weight*rw;
+            });
+            out.stage=def.name; return out;
+          });
+        }
+        function v4permitMetric(node){
+          return v4queryNearby(v4PermitUrl,node,4828.032,2000).then(function(features){
+            var residential=0,newBuild=0;
+            features.forEach(function(feat){
+              var p=feat.properties||{};
+              var s=[p.permittypemapped,p.workclass,p.permitclass,p.permitclassmapped,p.proposedworkdescription].join(" ").toLowerCase();
+              if(/residen|single.?family|duplex|townhome|multi.?family/.test(s)) residential++;
+              if(/new build|new construction|new building/.test(s)) newBuild++;
+            });
+            return {all:features.length,residential:residential,newBuild:newBuild};
+          });
+        }
+        function v4trafficMetric(node){
+          return v4queryNearby(v3AADTUrl,node,3218.688,250).then(function(features){
+            if(!features.length)return {aadt:0,growth5:null,road:"No nearby TxDOT station"};
+            var best=null;
+            features.forEach(function(feat){
+              var p=feat.properties||{};
+              if(!best||v4num(p.AADT_RPT_QTY)>v4num(best.AADT_RPT_QTY))best=p;
+            });
+            var now=v4num(best.AADT_RPT_QTY), old=v4num(best.AADT_RPT_HIST_05_QTY);
+            return {aadt:now,growth5:(now&&old)?((now-old)/old*100):null,road:best.ON_ROAD||"TxDOT station"};
+          });
+        }
+        function v4catalystMetric(node){
+          var defs=[
+            {name:"Culebra / 211 H-E-B",marker:marker_37e32c773eaf9193c1134ae7a7186b42,w:1},
+            {name:"I-10 / 1604 East H-E-B",marker:marker_d0f39ce50d8b9a5538bfd5a0af73101c,w:1},
+            {name:"Kallison Walmart land",marker:marker_65168f1fb4d06520959cc703c3cd5259,w:.8},
+            {name:"H-E-B Foster campus",marker:marker_e2bbf31fa9ccde5bfb586db3459d6735,w:.55}
+          ];
+          var best={score:0,name:"None mapped within 5 mi",distance:null};
+          defs.forEach(function(d){
+            if(!d.marker||!d.marker.getLatLng)return;
+            var miles=v4miles([node.lat,node.lng],d.marker.getLatLng());
+            var prox=miles<=.5?100:miles<=1?92:miles<=2?78:miles<=3?58:miles<=5?30:0;
+            var score=prox*d.w;
+            if(score>best.score)best={score:score,name:d.name,distance:miles};
+          });
+          return best;
+        }
+        function v4buildWhy(r){
+          var a=[];
+          if(r.recent180>=250)a.push(v4fmt(r.recent180)+" weighted residential lots progressed in last 180 days");
+          if(r.permits.residential>=40)a.push(v4fmt(r.permits.residential)+" residential permits issued within 3 mi / 180 days");
+          if(r.traffic.growth5!=null&&r.traffic.growth5>=12)a.push("AADT up "+r.traffic.growth5.toFixed(0)+"% since 2020");
+          if(r.catalyst.distance!=null&&r.catalyst.distance<=3)a.push(r.catalyst.name+" "+r.catalyst.distance.toFixed(1)+" mi away");
+          if(r.weightedSingle>=700&&r.weightedCommercial<=8)a.push("housing pipeline is materially outrunning mapped commercial-lot pipeline");
+          if(!a.length)a.push("No single recent acceleration signal dominates; score is driven by cumulative growth fundamentals");
+          return a.slice(0,3);
+        }
+        async function v4analyzeNode(node){
+          if(v4RadarCache[node.id])return v4RadarCache[node.id];
+          var parts=await Promise.all(v4StageDefs.map(function(d){return v4stageMetric(node,d);}));
+          var permits=await v4permitMetric(node);
+          var traffic=await v4trafficMetric(node);
+          var weightedSingle=0,weightedCommercial=0,recent180=0,raw1=0,raw3=0,raw5=0;
+          parts.forEach(function(x){weightedSingle+=x.weightedSingle;weightedCommercial+=x.weightedCommercial;recent180+=x.recent180;raw1+=x.raw1;raw3+=x.raw3;raw5+=x.raw5;});
+          var lotScore=v4clamp(weightedSingle/20,0,100);
+          var permitScore=v4clamp(permits.residential/3,0,100);
+          var housingScore=.82*lotScore+.18*permitScore;
+          var commercialScore=v4clamp(weightedCommercial*4,0,100);
+          var retailGap=v4clamp(housingScore*.82+(100-commercialScore)*.18,0,100);
+          var volumeScore=v4clamp(traffic.aadt/400,0,100);
+          var growthScore=traffic.growth5==null?35:v4clamp((traffic.growth5+5)*2,0,100);
+          var trafficScore=.68*volumeScore+.32*growthScore;
+          var recentScore=v4clamp(recent180/10,0,100);
+          var whyNow=.55*recentScore+.25*permitScore+.20*growthScore;
+          var catalyst=v4catalystMetric(node);
+          var score=v4clamp(.15*node.base+.27*housingScore+.18*trafficScore+.14*retailGap+.14*whyNow+.12*catalyst.score,0,100);
+          var r={node:node,score:score,weightedSingle:weightedSingle,weightedCommercial:weightedCommercial,recent180:recent180,raw1:raw1,raw3:raw3,raw5:raw5,permits:permits,traffic:traffic,catalyst:catalyst,housingScore:housingScore,retailGap:retailGap,whyNow:whyNow,stages:parts};
+          r.why=v4buildWhy(r); v4RadarCache[node.id]=r; return r;
+        }
+        function v4status(msg){var el=document.getElementById("v4RadarStatus");if(el)el.innerHTML=msg;}
+        function v4renderRadar(){
+          var root=document.getElementById("v4RadarResults"); if(!root)return;
+          var top=v4RadarResults.slice(0,10);
+          var html="<div class='v4Section'>TOP FUTURE RETAIL NODES</div>";
+          top.forEach(function(r,i){
+            var g=r.traffic.growth5==null?"—":(r.traffic.growth5>=0?"+":"")+r.traffic.growth5.toFixed(0)+"%";
+            html+="<div class='v4Card'><div class='v4Score'>"+Math.round(r.score)+"</div><h4>#"+(i+1)+" "+v3esc(r.node.name)+"</h4>"+
+              "<span class='v4Pill'>"+v3esc(r.node.precision==="verified"?"verified node":"intersection proxy")+"</span>"+
+              "<div><span class='v4Metric'><b>"+v4fmt(r.raw3)+"</b> raw res. lots ≤3mi</span>"+
+              "<span class='v4Metric'><b>"+v4fmt(r.weightedSingle)+"</b> weighted future lots</span></div>"+
+              "<div><span class='v4Metric'><b>"+v4fmt(r.traffic.aadt)+"</b> AADT</span>"+
+              "<span class='v4Metric'><b>"+g+"</b> 5yr traffic</span>"+
+              "<span class='v4Metric'><b>"+v4fmt(r.permits.residential)+"</b> res. permits /180d</span></div>"+
+              "<div><span class='v4Metric'>Retail Gap <b>"+Math.round(r.retailGap)+"</b></span>"+
+              "<span class='v4Metric'>Why Now <b>"+Math.round(r.whyNow)+"</b></span></div>"+
+              "<div class='v4Why'><b>WHY NOW:</b> "+r.why.map(v3esc).join(" · ")+"</div>"+
+              "<button class='v4Btn' onclick=\"v4FocusNode('"+r.node.id+"')\">ZOOM + FIND LAND</button></div>";
+          });
+          root.innerHTML=html+"<div id='v4CallThisWeek'></div>";
+        }
+        function v4FocusNode(id){
+          var r=v4RadarResults.find(function(x){return x.node.id===id;}); if(!r)return;
+          map_33cc2c2ac68d72d2971fbb7de3650b24.setView([r.node.lat,r.node.lng],13);
+          var ix=v3Nodes.findIndex(function(n){return n.id===id;});
+          if(ix>=0){
+            var sel=document.getElementById("v3NodeSelect"); if(sel){sel.value=ix;v3LoadNodeStats(ix);}
+            v3FindLandNearNode(v3Nodes[ix]);
+          }
+          document.getElementById("v4RadarPanel").style.display="none";
+        }
+        function v4yearsHeld(v){
+          if(!v)return null; var t=new Date(v).getTime(); if(!isFinite(t))return null;
+          return (Date.now()-t)/(365.25*86400000);
+        }
+        function v4parcelBaseScore(nodeResult,feat){
+          var p=feat.properties||{},ctr=v4featureCenter(feat); if(!ctr)return null;
+          var miles=v4miles([nodeResult.node.lat,nodeResult.node.lng],ctr), acres=v4num(p.Land_acres);
+          if(acres<5||miles>3||v3IsPublicOwner(p.Owner_name))return null;
+          var distScore=v4clamp(100-(miles/3)*70,30,100);
+          var acreScore=acres<=25?100:acres<=50?90:acres<=100?75:60;
+          var held=v4yearsHeld(p.Last_Deed_Date),holdScore=held==null?50:held>=15?100:held>=10?85:held>=5?65:45;
+          var market=v4num(p.Market_val),vpa=market&&acres?market/acres:0;
+          var valueScore=!vpa?50:vpa<=50000?100:vpa<=100000?85:vpa<=200000?65:vpa<=350000?45:30;
+          var call=.55*nodeResult.score+.18*distScore+.12*acreScore+.10*holdScore+.05*valueScore;
+          return {score:v4clamp(call,0,100),nodeResult:nodeResult,feature:feat,p:p,center:ctr,miles:miles,acres:acres,held:held,vpa:vpa};
+        }
+        async function v4buildCallList(){
+          var top=v4RadarResults.slice(0,4),all=[];
+          for(var i=0;i<top.length;i++){
+            v4status("Ranking 5+ acre parcels near top node "+(i+1)+" of "+top.length+"…");
+            var feats=await v4queryNearby(v3ParcelUrl+"/0",top[i].node,4828.032,150);
+            feats.forEach(function(feat){var x=v4parcelBaseScore(top[i],feat);if(x)all.push(x);});
+          }
+          var byId={};
+          all.forEach(function(x){
+            var id=String(x.p.Prop_id||x.p.Geo_id||x.p.OBJECTID||"");
+            if(!byId[id]||x.score>byId[id].score)byId[id]=x;
+          });
+          v4CallRows=Object.keys(byId).map(function(k){return byId[k];}).sort(function(a,b){return b.score-a.score;}).slice(0,12);
+          v4CallLayer.clearLayers();
+          v4CallRows.forEach(function(x,idx){
+            var lyr=L.geoJSON(x.feature,{style:{color:"#8b0000",weight:3,fillColor:"#ff3b30",fillOpacity:.12}});
+            lyr.bindPopup("<b>#"+(idx+1)+" CALL THIS WEEK</b><br><b>"+v3esc(x.p.Situs||"Candidate parcel")+"</b><br>"+
+              "Owner: "+v3esc(x.p.Owner_name||"—")+"<br>Acres: "+x.acres.toFixed(2)+"<br>Call Priority: "+Math.round(x.score)+
+              "<br>Node: "+v3esc(x.nodeResult.node.name)+"<br>Distance: "+x.miles.toFixed(2)+" mi"+
+              "<br><span style='color:#666'>Screening rank; verify frontage, utilities, flood, title and asking price.</span>");
+            lyr.addTo(v4CallLayer);
+          });
+          v4renderCallList();
+        }
+        function v4renderCallList(){
+          var el=document.getElementById("v4CallThisWeek");if(!el)return;
+          var html="<div class='v4Section'>☎️ CALL THIS WEEK</div>";
+          if(!v4CallRows.length){el.innerHTML=html+"No qualifying parcels returned.";return;}
+          v4CallRows.slice(0,10).forEach(function(x,i){
+            html+="<div class='v4Card' style='border-left-color:#17365D'><div class='v4Score'>"+Math.round(x.score)+"</div>"+
+              "<h4>#"+(i+1)+" "+v3esc(x.p.Situs||"Candidate parcel")+"</h4>"+
+              "<div><b>"+x.acres.toFixed(2)+" acres</b> · "+x.miles.toFixed(2)+" mi from "+v3esc(x.nodeResult.node.name)+"</div>"+
+              "<div>Owner: <b>"+v3esc(x.p.Owner_name||"—")+"</b></div>"+
+              "<div>Held: "+(x.held==null?"—":x.held.toFixed(0)+" yrs")+" · Assessed market/acre: "+(x.vpa?v3money(x.vpa):"—")+"</div>"+
+              "<button class='v4Btn' onclick='v4ZoomCallParcel("+i+")'>SHOW PARCEL</button></div>";
+          });
+          el.innerHTML=html;
+        }
+        function v4ZoomCallParcel(i){
+          var x=v4CallRows[i];if(!x)return;
+          var lyr=L.geoJSON(x.feature);var b=lyr.getBounds();
+          if(b.isValid())map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(b.pad(.4));
+          document.getElementById("v4RadarPanel").style.display="none";
+        }
+        async function v4RunLandRadar(){
+          var btn=document.getElementById("v4RunRadar"); if(btn)btn.disabled=true;
+          v4RadarResults=[];v4RadarHeat.clearLayers();
+          try{
+            for(var i=0;i<v4Nodes.length;i++){
+              v4status("Analyzing node "+(i+1)+" of "+v4Nodes.length+": <b>"+v3esc(v4Nodes[i].name)+"</b>…");
+              var r=await v4analyzeNode(v4Nodes[i]); v4RadarResults.push(r);
+            }
+            v4RadarResults.sort(function(a,b){return b.score-a.score;});
+            var heat=L.heatLayer(v4RadarResults.map(function(r){return [r.node.lat,r.node.lng,r.score];}),{radius:42,blur:28,minOpacity:.28});
+            heat.addTo(v4RadarHeat); v4RadarHeat.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+            v4renderRadar();
+            await v4buildCallList();
+            v4status("<b>Land Radar complete.</b> Ranked "+v4RadarResults.length+" Bexar growth nodes and "+v4CallRows.length+" high-priority parcels.");
+          }catch(e){
+            v4status("<b>Land Radar error:</b> "+v3esc(e&&e.message?e.message:String(e)));
+          }finally{if(btn)btn.disabled=false;}
+        }
+
+        setTimeout(function(){
+          var launch=document.getElementById("v4RadarLaunch"),panel=document.getElementById("v4RadarPanel");
+          var close=document.getElementById("v4RadarClose"),run=document.getElementById("v4RunRadar");
+          if(launch)launch.onclick=function(){panel.style.display="block";};
+          if(close)close.onclick=function(){panel.style.display="none";};
+          if(run)run.onclick=v4RunLandRadar;
+        },0);
 
 </script>
 </html>
