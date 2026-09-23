@@ -3083,7 +3083,13 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           d.innerHTML="<b>V3 Node Intelligence</b><br>"+
             "<select id='v3NodeSelect' style='width:100%;margin:5px 0'></select>"+
             "<div id='v3NodeStats'>Choose a target node.</div>"+
-            "<button id='v3FindLand' style='width:100%;margin:6px 0 3px;padding:5px;font-weight:700'>Find 5+ Acre Parcels Within 3 Miles</button>"+
+            "<div style='display:flex;gap:5px;margin-top:6px'>"+
+              "<select id='v3MinAcres' style='width:50%'><option value='5'>5+ acres</option><option value='10'>10+ acres</option><option value='20'>20+ acres</option><option value='50'>50+ acres</option></select>"+
+              "<select id='v3Radius' style='width:50%'><option value='1'>1 mile</option><option value='3' selected>3 miles</option><option value='5'>5 miles</option></select>"+
+            "</div>"+
+            "<label style='display:block;margin:5px 0'><input id='v3ExcludePublic' type='checkbox' checked> Exclude obvious public/government owners</label>"+
+            "<button id='v3FindLand' style='width:100%;margin:3px 0;padding:5px;font-weight:700'>Find Candidate Parcels</button>"+
+            "<button id='v3ExportLand' style='width:100%;margin:0 0 3px;padding:4px' disabled>Export Results CSV</button>"+
             "<div id='v3FindLandStatus' style='color:#555'></div>"+
             "<div style='color:#777;margin-top:4px'>Preliminary-plat counts are a live planning-activity signal, not a residential lot count. Parcel results use county appraisal/GIS screening data and must be verified.</div>";
           L.DomEvent.disableClickPropagation(d);
@@ -3127,28 +3133,42 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             var idx=Number(document.getElementById("v3NodeSelect").value||0);
             v3FindLandNearNode(v3Nodes[idx]);
           };
+          var exp=document.getElementById("v3ExportLand");
+          if(exp) exp.onclick=v3ExportLandCSV;
           v3LoadNodeStats(0);
         },0);
 
         // Acquisition search result layer. Query is intentionally capped so the browser stays responsive.
         var v3LandResults=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        var v3LandRows=[];
+        function v3IsPublicOwner(name){
+          var s=String(name||"").toUpperCase();
+          return /(CITY OF|COUNTY OF|STATE OF TEXAS|UNITED STATES|SCHOOL DISTRICT|\bISD\b|SAWS|CPS ENERGY|RIVER AUTHORITY|TXDOT|TEXAS DEPARTMENT)/.test(s);
+        }
         function v3FindLandNearNode(n){
           var status=document.getElementById("v3FindLandStatus");
-          if(status) status.innerHTML="Searching BCAD/Bexar parcels…";
+          var minAcres=Number((document.getElementById("v3MinAcres")||{}).value||5);
+          var miles=Number((document.getElementById("v3Radius")||{}).value||3);
+          var excludePublic=!!((document.getElementById("v3ExcludePublic")||{}).checked);
+          if(status) status.innerHTML="Searching BCAD parcels…";
+          v3LandRows=[];
+          var exp=document.getElementById("v3ExportLand"); if(exp) exp.disabled=true;
           v3LandResults.clearLayers();
           L.esri.query({url:v3ParcelUrl+"/0"})
-            .nearby([n.lat,n.lng],4828.032)
-            .where("Land_acres >= 5")
+            .nearby([n.lat,n.lng],miles*1609.344)
+            .where("Land_acres >= "+minAcres)
             .orderBy("Land_acres","DESC")
-            .limit(40)
+            .limit(100)
             .run(function(err,fc){
               if(err || !fc){
                 if(status) status.innerHTML="<b>Parcel search failed.</b> Try again after zooming into Bexar County.";
                 return;
               }
-              var items=(fc.features||[]).sort(function(a,b){
+              var items=(fc.features||[]).filter(function(feat){
+                return !excludePublic || !v3IsPublicOwner((feat.properties||{}).Owner_name);
+              }).sort(function(a,b){
                 return Number((b.properties||{}).Land_acres||0)-Number((a.properties||{}).Land_acres||0);
-              }).slice(0,25);
+              }).slice(0,40);
               items.forEach(function(feat){
                 var p=feat.properties||{};
                 var lyr=L.geoJSON(feat,{style:{color:"#d63b2f",weight:3,fillColor:"#d63b2f",fillOpacity:.08}});
@@ -3162,10 +3182,27 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
                   "<b>Ownership type:</b> "+v3esc(p.Ownership_Type||"—")+"<br>"+
                   "<span style='color:#666'>BCAD parcel data obtained Dec. 2025 via SARA. Automated 5+ acre proximity screen; verify current ownership/title, frontage, access, floodplain, utilities, zoning and asking price.</span></div>");
                 lyr.addTo(v3LandResults);
+                v3LandRows.push({
+                  node:n.name, property_id:p.Prop_id||p.Geo_id||"", situs:p.Situs||"",
+                  owner:p.Owner_name||"", acres:ac||"", market_value:p.Market_val||"",
+                  last_deed:p.Last_Deed_Date||"", ownership_type:p.Ownership_Type||"",
+                  legal:p.Legal_desc||""
+                });
               });
-              if(status) status.innerHTML="<b>"+items.length+" candidate parcels</b> highlighted near "+v3esc(n.name)+".";
+              if(status) status.innerHTML="<b>"+items.length+" candidate parcels</b> · "+minAcres+"+ acres within "+miles+" mi of "+v3esc(n.name)+".";
+              if(exp) exp.disabled=!v3LandRows.length;
               if(items.length) map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(v3LandResults.getBounds().pad(.08));
             });
+        }
+
+        function v3ExportLandCSV(){
+          if(!v3LandRows.length) return;
+          var cols=["node","property_id","situs","owner","acres","market_value","last_deed","ownership_type","legal"];
+          function q(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; }
+          var csv=[cols.join(",")].concat(v3LandRows.map(function(r){return cols.map(function(k){return q(r[k]);}).join(",");})).join("\n");
+          var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+          var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="satx_land_candidates.csv";
+          document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
         }
 
         // Click a visible official parcel polygon for ownership/acreage/value screening.
