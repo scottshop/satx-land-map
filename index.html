@@ -2935,6 +2935,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         var v3AADTUrl = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_AADT_Annuals_(Public_View)/FeatureServer/0";
         var v3FloodUrl = "https://maps.bexar.org/arcgis/rest/services/PW/BxCoOpenGov/MapServer";
         var v3BexarDevUrl = "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer";
+        var v3FemaUrl = "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28";
 
         function v3esc(v){
           return String(v == null ? "" : v).replace(/[&<>"']/g,function(ch){
@@ -2959,12 +2960,37 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           attribution:"Bexar County / BCAD parcel GIS"
         });
 
-        // Bexar County FEMA/NFHL-derived floodplain + 100-ft screening buffer.
-        var v3Floodplain = L.esri.dynamicMapLayer({
+        // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
+        var v3FloodplainBuffer = L.esri.dynamicMapLayer({
           url:v3FloodUrl,
           layers:[11],
-          opacity:0.52,
+          opacity:0.42,
           attribution:"Bexar County Public Works / FEMA NFHL"
+        });
+
+        // FEMA National Flood Hazard Layer, regulatory flood hazard polygons (S_FLD_HAZ_AR, layer 28).
+        var v3FemaHazard = L.esri.featureLayer({
+          url:v3FemaUrl,
+          simplifyFactor:0.55,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{};
+            var z=String(p.FLD_ZONE||"");
+            var sub=String(p.ZONE_SUBTY||"").toLowerCase();
+            var floodway=sub.indexOf("floodway")>=0;
+            var color=floodway ? "#5b1a8d" : (z==="AE"||z==="A"||z==="AO"||z==="AH" ? "#0077b6" : "#4aa3df");
+            return {color:color,weight:floodway?2.5:1.2,opacity:.9,fillColor:color,fillOpacity:floodway?.34:.18};
+          },
+          attribution:"FEMA National Flood Hazard Layer"
+        });
+        v3FemaHazard.bindPopup(function(layer){
+          var p=layer.feature.properties||{};
+          return "<div style='min-width:250px'><b>FEMA Flood Hazard</b><br>"+
+            "<b>Zone:</b> "+v3esc(p.FLD_ZONE||"—")+"<br>"+
+            "<b>Subtype:</b> "+v3esc(p.ZONE_SUBTY||"—")+"<br>"+
+            "<b>Special Flood Hazard Area:</b> "+v3esc(p.SFHA_TF||"—")+"<br>"+
+            "<b>Static BFE:</b> "+v3esc(p.STATIC_BFE||"—")+"<br>"+
+            "<span style='color:#666'>Official FEMA NFHL screening. Confirm effective map/LOMR status during diligence.</span></div>";
         });
 
         // Bexar County development pipeline: plat applications, working/staff-accepted plats and MDP amendments.
@@ -3168,7 +3194,8 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             "Preliminary plats: CoSA Development Services<br>"+
             "County plats/MDPs + MTP: Bexar Public Works<br>"+
             "Traffic: TxDOT historical AADT (2025→2006)<br>"+
-            "Flood screening: Bexar Public Works / FEMA NFHL<br>"+
+            "Flood hazard: FEMA NFHL layer 28<br>"+
+            "Flood buffer: Bexar Public Works 100-ft screen<br>"+
             "<span style='color:#777'>Official GIS is still screening data; verify title, survey, access, utilities and flood status before acquisition.</span>";
           return d;
         };
@@ -3179,7 +3206,8 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"🏗️ Bexar Plat / MDP Pipeline");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"🛣️ Bexar Major Thoroughfare Plan");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"🚗 TxDOT Historical AADT + Growth");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Floodplain,"🌊 FEMA/Bexar Floodplain Screening");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"🌊 FEMA Flood Hazard Zones / Floodway");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"💧 Bexar 100-ft Floodplain Buffer");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Rings,"⭕ 1 / 3 / 5 Mile Node Rings");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3LandResults,"🔎 Find Land Results");
 
