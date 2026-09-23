@@ -78,6 +78,21 @@
 .v4Section{font-size:14px;font-weight:800;color:#17365D;margin:14px 0 5px;border-bottom:2px solid #17365D;padding-bottom:3px}
 .v4Progress{padding:6px 0;color:#555}
 .v4Pill{display:inline-block;border-radius:10px;background:#eee;padding:2px 6px;margin:2px 3px 2px 0;font-size:10px}
+
+#v42TopSitesPanel{position:fixed;top:16px;right:18px;width:355px;max-height:calc(100vh - 32px);overflow:auto;z-index:10950;background:rgba(255,255,255,.985);border:3px solid #8b0000;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.3);font:12px/1.35 Arial;color:#222}
+#v42TopHead{background:#8b0000;color:#fff;padding:10px 12px;position:sticky;top:0;z-index:2}
+#v42TopHead b{font-size:17px}
+#v42TopBody{padding:8px 10px 12px}
+.v42Site{border:1px solid #ddd;border-left:6px solid #8b0000;border-radius:7px;padding:8px;margin:7px 0;background:#fff;cursor:pointer}
+.v42Site:hover{background:#fff8f6}
+.v42Rank{float:left;width:30px;height:30px;border-radius:50%;background:#8b0000;color:#fff;font:bold 17px/30px Arial;text-align:center;margin-right:8px}
+.v42Score{float:right;font-size:18px;font-weight:800;color:#8b0000}
+.v42Owner{font-weight:800;color:#111}
+.v42Why{clear:both;padding-top:4px;color:#444}
+.v42Controls{display:flex;gap:5px;margin-top:7px}
+.v42Controls button{flex:1;border:1px solid #17365D;background:#fff;color:#17365D;border-radius:5px;padding:6px;font-weight:700;cursor:pointer}
+.v42Loading{padding:12px 4px;color:#555}
+.v42NumIcon{background:#8b0000;color:#fff;border:3px solid #fff;border-radius:50%;width:32px;height:32px;text-align:center;font:bold 17px/27px Arial;box-shadow:0 2px 8px rgba(0,0,0,.45)}
 </style>
 </head>
 <body>
@@ -87,7 +102,7 @@
 position: fixed; top: 12px; left: 55px; z-index:9999; width:430px;
 background:rgba(255,255,255,.95); border:2px solid #17365D; border-radius:8px;
 padding:10px 12px; box-shadow:0 2px 8px rgba(0,0,0,.2); font-family:Arial;">
-<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4.1 Land Radar</div>
+<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4.2 Top Sites</div>
 <div style="font-size:12px;margin-top:4px;">
 Use the layer control to isolate <b>heat, parcels, developments, anchors, and road projects</b>.
 Click any marker/line for acquisition context and source links.
@@ -110,7 +125,19 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 <b>Road lines</b>: schematic corridor geometry
 </div>
     
-            <button id="v4RadarLaunch">⚡ FIND THE NEXT RETAIL NODE</button>
+            <div id="v42TopSitesPanel">
+  <div id="v42TopHead"><b>☎ TOP 5 SITES TO CALL</b><br><span style="font-size:10px;opacity:.9">Auto-ranked land opportunities · owner + parcel highlighted</span></div>
+  <div id="v42TopBody">
+    <div id="v42TopStatus" class="v42Loading">Ranking the best 5+ acre sites now…</div>
+    <div id="v42TopList"></div>
+    <div class="v42Controls">
+      <button id="v42ShowAll">SHOW TOP 5</button>
+      <button id="v42Refresh">REFRESH RANKING</button>
+    </div>
+    <div style="font-size:9px;color:#777;margin-top:6px">Owner names are from BCAD screening data. Verify current title, legal access, utilities and asking price before outreach.</div>
+  </div>
+</div>
+<button id="v4RadarLaunch" style="top:152px">⚡ DEEP LAND RADAR</button>
 <div id="v4RadarPanel">
   <div id="v4RadarHead"><button class="v4Close" id="v4RadarClose">×</button>
     <div style="font-size:17px;font-weight:800">⚡ V4 LAND RADAR</div>
@@ -3454,9 +3481,12 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         var v4RadarResults=[];
         var v4CallRows=[];
         var v4CallLayer=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        var v42TopSitesLayer=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        var v42TopRows=[];
         var v4RadarHeat=L.featureGroup();
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v4RadarHeat,"⚡ V4 Land Radar Scores");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v4CallLayer,"☎️ V4 Call This Week Parcels");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v42TopSitesLayer,"🏆 TOP 5 SITES TO CALL");
 
         function v4clamp(v,a,b){return Math.max(a,Math.min(b,v));}
         function v4num(v){v=Number(v);return isFinite(v)?v:0;}
@@ -3864,6 +3894,79 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           v4renderCallList();
         }
 
+
+        function v42whySite(x){
+          var a=[];
+          if(x.access&&x.access.score>=85)a.push("strong corner/frontage signal");
+          else if(x.access&&x.access.score>=70)a.push("good road adjacency");
+          if(x.flood&&!x.flood.floodway&&!x.flood.sfha)a.push("clear FEMA screen");
+          else if(x.flood&&x.flood.score>=65)a.push("manageable flood screen");
+          if(x.flu&&x.flu.score>=80)a.push("commercial/mixed-use FLU");
+          if(x.held!=null&&x.held>=10)a.push("long-held ownership");
+          if(x.miles<=1)a.push("within 1 mile of top node");
+          else if(x.miles<=2)a.push("within 2 miles of top node");
+          if(!a.length)a.push("strong combined node + parcel score");
+          return a.slice(0,3).join(" · ");
+        }
+        function v42renderTopSites(){
+          var list=document.getElementById("v42TopList"),status=document.getElementById("v42TopStatus");
+          if(!list)return;
+          var clean=v4CallRows.filter(function(x){return !x.gates||!x.gates.length;});
+          var fallback=v4CallRows.filter(function(x){return x.gates&&x.gates.length;});
+          v42TopRows=clean.concat(fallback).slice(0,5);
+          v42TopSitesLayer.clearLayers();
+          if(!v42TopRows.length){
+            if(status)status.innerHTML="<b>No top sites returned.</b> Run Deep Land Radar again.";
+            list.innerHTML=""; return;
+          }
+          if(status)status.innerHTML="<b>"+v42TopRows.length+" highest-priority sites</b> highlighted on the map.";
+          var html="",bounds=L.latLngBounds([]);
+          v42TopRows.forEach(function(x,i){
+            var rank=i+1, clr=rank===1?"#8b0000":"#c0392b";
+            var poly=L.geoJSON(x.feature,{style:{color:clr,weight:6,fillColor:"#ffcc80",fillOpacity:.28}});
+            poly.bindPopup("<div style='min-width:290px'><b style='font-size:16px'>#"+rank+" TOP SITE TO CALL</b><br>"+
+              "<b>"+v3esc(x.p.Situs||"Candidate parcel")+"</b><br>"+
+              "<b>CALL OWNER:</b> "+v3esc(x.p.Owner_name||"—")+"<br>"+
+              "<b>Acres:</b> "+x.acres.toFixed(2)+" &nbsp; <b>Priority:</b> "+Math.round(x.score)+"/100<br>"+
+              "<b>Why:</b> "+v3esc(v42whySite(x))+"<br>"+
+              "<b>Node:</b> "+v3esc(x.nodeResult.node.name)+" ("+x.miles.toFixed(2)+" mi)<br>"+
+              "<span style='color:#666'>Owner/title must be re-verified before contact.</span></div>");
+            poly.addTo(v42TopSitesLayer);
+            try{var b=poly.getBounds();if(b.isValid())bounds.extend(b);}catch(e){}
+            var ctr=x.center||v4featureCenter(x.feature);
+            if(ctr){
+              var icon=L.divIcon({className:"",html:"<div class='v42NumIcon'>"+rank+"</div>",iconSize:[36,36],iconAnchor:[18,18]});
+              L.marker(ctr,{icon:icon,zIndexOffset:2000-rank}).bindTooltip("#"+rank+" "+v3esc(x.p.Owner_name||x.p.Situs||"Top Site"),{direction:"top"}).addTo(v42TopSitesLayer);
+              bounds.extend(ctr);
+            }
+            html+="<div class='v42Site' onclick='v42ZoomTopSite(" + i + ")'>"+
+              "<div class='v42Rank'>"+rank+"</div><div class='v42Score'>"+Math.round(x.score)+"</div>"+
+              "<div style='font-weight:800;font-size:13px'>"+v3esc(x.p.Situs||"Candidate parcel")+"</div>"+
+              "<div><span class='v42Owner'>CALL: "+v3esc(x.p.Owner_name||"OWNER TO VERIFY")+"</span></div>"+
+              "<div>"+x.acres.toFixed(2)+" ac · "+x.miles.toFixed(2)+" mi from "+v3esc(x.nodeResult.node.name)+"</div>"+
+              "<div class='v42Why'>"+v3esc(v42whySite(x))+"</div></div>";
+          });
+          list.innerHTML=html;
+          if(bounds.isValid())map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(bounds.pad(.12));
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v42TopSitesLayer))v42TopSitesLayer.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        }
+        function v42ZoomTopSite(i){
+          var x=v42TopRows[i];if(!x)return;
+          var lyr=L.geoJSON(x.feature),b=lyr.getBounds();
+          if(b.isValid())map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(b.pad(.45));
+          var ctr=x.center||v4featureCenter(x.feature);
+          if(ctr)L.popup({maxWidth:340}).setLatLng(ctr).setContent(
+            "<b>#"+(i+1)+" TOP SITE TO CALL</b><br><b>Owner:</b> "+v3esc(x.p.Owner_name||"—")+
+            "<br><b>Acres:</b> "+x.acres.toFixed(2)+"<br><b>Call Priority:</b> "+Math.round(x.score)+"/100"+
+            "<br><b>Why:</b> "+v3esc(v42whySite(x))+
+            "<br><span style='color:#666'>Verify current ownership/title before outreach.</span>"
+          ).openOn(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        }
+        function v42showAll(){
+          var b=v42TopSitesLayer.getBounds();
+          if(b&&b.isValid())map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(b.pad(.12));
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v42TopSitesLayer))v42TopSitesLayer.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        }
         function v4renderCallList(){
           var el=document.getElementById("v4CallThisWeek");if(!el)return;
           var html="<div class='v4Section'>☎️ CALL THIS WEEK — PARCEL QUALITY SCREENED</div>";
@@ -3896,7 +3999,10 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           if(b.isValid())map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(b.pad(.4));
           document.getElementById("v4RadarPanel").style.display="none";
         }
+        var v42RadarRunning=false;
         async function v4RunLandRadar(){
+          if(v42RadarRunning)return;
+          v42RadarRunning=true;
           var btn=document.getElementById("v4RunRadar"); if(btn)btn.disabled=true;
           v4RadarResults=[];v4RadarHeat.clearLayers();
           try{
@@ -3912,7 +4018,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             v4status("<b>Land Radar complete.</b> Ranked "+v4RadarResults.length+" Bexar growth nodes and "+v4CallRows.length+" high-priority parcels.");
           }catch(e){
             v4status("<b>Land Radar error:</b> "+v3esc(e&&e.message?e.message:String(e)));
-          }finally{if(btn)btn.disabled=false;}
+          }finally{if(btn)btn.disabled=false;v42RadarRunning=false;}
         }
 
         setTimeout(function(){
@@ -3921,6 +4027,15 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           if(launch)launch.onclick=function(){panel.style.display="block";};
           if(close)close.onclick=function(){panel.style.display="none";};
           if(run)run.onclick=v4RunLandRadar;
+          var show=document.getElementById("v42ShowAll"),refresh=document.getElementById("v42Refresh");
+          if(show)show.onclick=v42showAll;
+          if(refresh)refresh.onclick=function(){
+            v4RadarCache={};
+            var st=document.getElementById("v42TopStatus");if(st)st.innerHTML="Refreshing live ranking…";
+            v4RunLandRadar();
+          };
+          // Decision-first default: automatically compute and highlight the Top 5 on first load.
+          setTimeout(function(){v4RunLandRadar();},1200);
         },0);
 
 </script>
