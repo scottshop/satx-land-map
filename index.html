@@ -87,7 +87,7 @@
 position: fixed; top: 12px; left: 55px; z-index:9999; width:430px;
 background:rgba(255,255,255,.95); border:2px solid #17365D; border-radius:8px;
 padding:10px 12px; box-shadow:0 2px 8px rgba(0,0,0,.2); font-family:Arial;">
-<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4 Land Radar</div>
+<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v4.1 Land Radar</div>
 <div style="font-size:12px;margin-top:4px;">
 Use the layer control to isolate <b>heat, parcels, developments, anchors, and road projects</b>.
 Click any marker/line for acquisition context and source links.
@@ -114,10 +114,10 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 <div id="v4RadarPanel">
   <div id="v4RadarHead"><button class="v4Close" id="v4RadarClose">×</button>
     <div style="font-size:17px;font-weight:800">⚡ V4 LAND RADAR</div>
-    <div style="font-size:10px;opacity:.85">Future Retail Node Predictor + Call This Week</div>
+    <div style="font-size:10px;opacity:.85">Future Retail Node Predictor + Parcel Quality + Call This Week</div>
   </div>
   <div id="v4RadarBody">
-    <div><b>What it does:</b> ranks Bexar County growth nodes using live future-lot pipeline, recent permits, TxDOT traffic momentum, commercial-lot supply and mapped anchor catalysts.</div>
+    <div><b>What it does:</b> ranks Bexar County growth nodes using live future-lot pipeline, recent permits, TxDOT traffic momentum, commercial-lot supply and mapped anchor catalysts. The top parcels are then screened for road adjacency, FEMA flood exposure, Future Land Use and utility-readiness context.</div><div class='v4Small' style='margin-top:5px'><b>Parcel Call Priority:</b> 35% node · 15% access/frontage proxy · 13% FEMA flood · 10% node distance · 8% acreage fit · 7% future land use · 6% ownership hold · 3% assessed value · 3% utility-readiness proxy.</div>
     <button class="v4Run" id="v4RunRadar">RUN LAND RADAR</button>
     <div id="v4RadarStatus" class="v4Progress">Ready.</div>
     <div id="v4RadarResults"></div>
