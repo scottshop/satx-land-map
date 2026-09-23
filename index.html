@@ -3502,17 +3502,22 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         }
         function v4permitMetric(node){
           return v4queryNearby(v4PermitUrl,node,4828.032,2000).then(function(features){
-            var residential=0,newBuild=0,residentialNew=0;
+            var residential=0,newBuild=0,residentialNew=0,netHousingUnits=0;
             features.forEach(function(feat){
               var p=feat.properties||{};
-              var s=[p.permittypemapped,p.workclass,p.permitclass,p.permitclassmapped,p.proposedworkdescription].join(" ").toLowerCase();
-              var isRes=/residen|single.?family|duplex|townhome|multi.?family/.test(s);
-              var isNew=/new build|new construction|new building|new single|new residence|new home/.test(s);
+              var s=[p.permittypemapped,p.workclass,p.workclassmapped,p.permitclass,p.permitclassmapped,p.proposedworkdescription,p.proposeduse,p.landusedescription].join(" ").toLowerCase();
+              var isRes=/residen|single.?family|duplex|townhome|multi.?family|apartment/.test(s);
+              var isNew=/new build|new construction|new building|new single|new residence|new home|new structure/.test(s);
               if(isRes) residential++;
               if(isNew) newBuild++;
               if(isRes&&isNew) residentialNew++;
+              if(isRes){
+                var total=v4num(p.housingunitstotal), existing=v4num(p.housingunitsexist);
+                var net=Math.max(0,total-existing);
+                if(net>0) netHousingUnits+=net;
+              }
             });
-            return {all:features.length,residential:residential,newBuild:newBuild,residentialNew:residentialNew};
+            return {all:features.length,residential:residential,newBuild:newBuild,residentialNew:residentialNew,netHousingUnits:netHousingUnits};
           });
         }
         function v4trafficMetric(node){
@@ -3547,7 +3552,8 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         function v4buildWhy(r){
           var a=[];
           if(r.recent180>=250)a.push(v4fmt(r.recent180)+" weighted residential lots progressed in last 180 days");
-          if((r.permits.residentialNew||0)>=15)a.push(v4fmt(r.permits.residentialNew)+" new-residential permits issued within 3 mi / 180 days");
+          if((r.permits.netHousingUnits||0)>=50)a.push(v4fmt(r.permits.netHousingUnits)+" net new housing units represented by issued permits / 180 days");
+          else if((r.permits.residentialNew||0)>=15)a.push(v4fmt(r.permits.residentialNew)+" new-residential permits issued within 3 mi / 180 days");
           else if(r.permits.residential>=40)a.push(v4fmt(r.permits.residential)+" residential permits issued within 3 mi / 180 days");
           if(r.traffic.growth5!=null&&r.traffic.growth5>=12)a.push("AADT up "+r.traffic.growth5.toFixed(0)+"% since 2020");
           if(r.catalyst.distance!=null&&r.catalyst.distance<=3)a.push(r.catalyst.name+" "+r.catalyst.distance.toFixed(1)+" mi away");
@@ -3563,8 +3569,8 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           var weightedSingle=0,weightedCommercial=0,recent180=0,raw1=0,raw3=0,raw5=0;
           parts.forEach(function(x){weightedSingle+=x.weightedSingle;weightedCommercial+=x.weightedCommercial;recent180+=x.recent180;raw1+=x.raw1;raw3+=x.raw3;raw5+=x.raw5;});
           var lotScore=v4clamp(weightedSingle/20,0,100);
-          var permitMomentum=(permits.residentialNew||0)*1.0 + permits.residential*.20;
-          var permitScore=v4clamp(permitMomentum/2.5,0,100);
+          var permitMomentum=(permits.netHousingUnits||0)*1.0 + (permits.residentialNew||0)*.75 + permits.residential*.10;
+          var permitScore=v4clamp(permitMomentum/5,0,100);
           var housingScore=.82*lotScore+.18*permitScore;
           var commercialScore=v4clamp(weightedCommercial*4,0,100);
           var retailGap=v4clamp(housingScore*.82+(100-commercialScore)*.18,0,100);
@@ -3591,7 +3597,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
               "<span class='v4Metric'><b>"+v4fmt(r.weightedSingle)+"</b> weighted future lots</span></div>"+
               "<div><span class='v4Metric'><b>"+v4fmt(r.traffic.aadt)+"</b> AADT</span>"+
               "<span class='v4Metric'><b>"+g+"</b> 5yr traffic</span>"+
-              "<span class='v4Metric'><b>"+v4fmt(r.permits.residentialNew||0)+"</b> new-res permits /180d</span></div>"+
+              "<span class='v4Metric'><b>"+v4fmt(r.permits.netHousingUnits||0)+"</b> net new units /180d</span></div>"+
               "<div><span class='v4Metric'>Retail Gap <b>"+Math.round(r.retailGap)+"</b></span>"+
               "<span class='v4Metric'>Why Now <b>"+Math.round(r.whyNow)+"</b></span></div>"+
               "<div class='v4Why'><b>WHY NOW:</b> "+r.why.map(v3esc).join(" · ")+"</div>"+
