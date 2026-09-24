@@ -77,10 +77,10 @@ background:rgba(255,255,255,.96);border:1px solid #d8d8d8;border-radius:10px;
 padding:10px 12px;box-shadow:0 3px 14px rgba(0,0,0,.14);font-family:Arial;">
 <div style="font-size:16px;font-weight:800;color:#17365D;">San Antonio Land Opportunity Map</div>
 <div style="font-size:11px;margin-top:4px;color:#444;">
-<b>Heat + circles</b> = priority areas to hunt. <b>Bright yellow</b> = land to focus on.
+<b>Heat + circles</b> = priority areas to hunt. <b>Bright yellow parcels</b> = land to focus on.
 </div>
 <div style="font-size:10px;margin-top:4px;color:#777;">
-Yellow halo = target location. Thick yellow parcel outline = verified BCAD geometry.
+Thick bright-yellow outline = actual BCAD parcel boundary for target land.
 </div>
 </div>
     
@@ -3379,46 +3379,70 @@ Yellow halo = target location. Thick yellow parcel outline = verified BCAD geome
         );
 
 
-        // ---- V5.1 VISIBLE TARGET LAND HIGHLIGHTS ----
-        // Pixel-sized yellow halos stay visible at metro zoom; exact BCAD parcel polygons remain thick yellow.
-        var v51TargetHalos=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
-        var v51HaloLinks=[];
-        feature_group_0c45a8fa797258d406c1e937c6f99c34.eachLayer(function(layer){
-          if(!layer || !layer.getLatLng) return;
-          var halo=L.circleMarker(layer.getLatLng(),{
-            radius:14,
-            color:"#E6B800",
-            weight:5,
-            opacity:1,
-            fillColor:"#FFF200",
-            fillOpacity:.62,
-            interactive:false
-          }).addTo(v51TargetHalos);
-          if(halo.bringToFront) halo.bringToFront();
-          v51HaloLinks.push({marker:layer,halo:halo});
-          if(layer.on){
-            layer.on("move",function(e){ if(e&&e.latlng) halo.setLatLng(e.latlng); });
-          }
-        });
-        function v51RefreshHaloScale(){
-          var z=map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom();
-          v51HaloLinks.forEach(function(x){
-            x.halo.setRadius(z<=9?15:z<=11?13:z<=13?10:7);
-            x.halo.setStyle({fillOpacity:z>=14?.14:.62,opacity:z>=14?.55:1});
-          });
+        // ---- V5.2 DIRECT BCAD TARGET PARCEL LAYER ----
+        // Draw the actual BCAD polygons for known target tracts with an unmistakable yellow border.
+        if(!map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("targetParcelsPane")){
+          map_33cc2c2ac68d72d2971fbb7de3650b24.createPane("targetParcelsPane");
+          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("targetParcelsPane").style.zIndex=690;
+          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("targetParcelsPane").style.pointerEvents="auto";
         }
-        map_33cc2c2ac68d72d2971fbb7de3650b24.on("zoomend",v51RefreshHaloScale);
-        v51RefreshHaloScale();
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v51TargetHalos,"Highlighted Land");
 
-        // Start framed around the highlighted land opportunities rather than the whole metro.
-        setTimeout(function(){
+        var v52TargetWhere=[
+          "(Situs_num='10275' AND Situs LIKE '%INTERSTATE 10%')",
+          "(Situs_num='13183' AND Situs LIKE '%10%')",
+          "(Situs_num='4891' AND Situs LIKE '%FREUDENBURG%')",
+          "Geo_id='05088-400-0290'",
+          "(Situs_num='8210' AND Situs LIKE '%1518%')",
+          "(Situs_num='6090' AND Situs LIKE '%1518%')",
+          "Geo_id='18088-010-0010'",
+          "Geo_id='04285-000-0060'",
+          "Geo_id='04285-000-0041'",
+          "Geo_id='04182-000-0016'",
+          "Geo_id='04183-000-0021'"
+        ].join(" OR ");
+
+        var v52BCADTargetParcels=L.esri.featureLayer({
+          url:v3ParcelUrl+"/0",
+          where:v52TargetWhere,
+          pane:"targetParcelsPane",
+          simplifyFactor:0.2,
+          precision:6,
+          style:function(){
+            return {
+              color:"#FFD600",
+              weight:8,
+              opacity:1,
+              fillColor:"#FFF200",
+              fillOpacity:.16,
+              lineCap:"round",
+              lineJoin:"round"
+            };
+          },
+          attribution:"BCAD parcels via San Antonio River Authority"
+        }).addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+
+        v52BCADTargetParcels.bindPopup(function(layer){
+          var p=layer.feature.properties||{};
+          return "<div style='min-width:245px'>"+
+            "<b style='font-size:14px'>Highlighted BCAD Parcel</b><br>"+
+            "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br>"+
+            "<b>Acres:</b> "+(Number(p.Land_acres)||0).toFixed(2)+"<br>"+
+            "<b>Address:</b> "+v3esc(p.Situs||"—")+"<br>"+
+            "<b>Property ID:</b> "+v3esc(p.Prop_id||p.Geo_id||"—")+"<br>"+
+            "<span style='color:#666'>Bright yellow line is the BCAD appraisal parcel boundary; verify survey/title before acquisition.</span></div>";
+        });
+
+        v52BCADTargetParcels.on("load",function(){
           try{
-            var b=feature_group_0c45a8fa797258d406c1e937c6f99c34.getBounds();
-            if(b&&b.isValid()) map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(b.pad(.08),{maxZoom:10});
-            if(v3VerifiedTargetGeometry&&v3VerifiedTargetGeometry.bringToFront) v3VerifiedTargetGeometry.bringToFront();
+            v52BCADTargetParcels.eachFeature(function(layer){
+              if(layer&&layer.bringToFront) layer.bringToFront();
+            });
           }catch(e){}
-        },650);
+        });
+
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(
+          v52BCADTargetParcels,"BCAD Target Parcels — Yellow"
+        );
 
 </script>
 </html>
