@@ -62,7 +62,8 @@ CATALYSTS = [
  {"name":"H-E-B Foster campus","lat":29.41984,"lng":-98.36083},
 ]
 
-PUBLIC_OWNER = re.compile(r"(CITY OF|COUNTY OF|STATE OF TEXAS|UNITED STATES|SCHOOL DISTRICT|\bISD\b|SAWS|CPS ENERGY|RIVER AUTHORITY|TXDOT|TEXAS DEPARTMENT|HOUSING AUTHORITY|HOMEOWNERS|HOME OWNER|PROPERTY OWNERS| HOA\b| POA\b)", re.I)
+PUBLIC_OWNER = re.compile(r"(CITY OF|COUNTY OF|STATE OF TEXAS|UNITED STATES|US GOVERNMENT|U S GOVERNMENT|SCHOOL DISTRICT|\bISD\b|\bI S D\b|SAWS|CPS ENERGY|RIVER AUTHORITY|TXDOT|TEXAS DEPARTMENT|HOUSING AUTHORITY|DEVELOPMENT AUTHORITY|UNIVERSITY SYSTEM|UNIVERSITY OF|TEXAS A\s*&?\s*M|HOMEOWNERS|HOME OWNER|PROPERTY OWNERS| HOA\b| POA\b)", re.I)
+ANCHOR_OWNER = re.compile(r"(HEB GROCERY|H E B GROCERY|WAL.?MART|WALMART|COSTCO|TARGET CORPORATION|LOWE.?S|HOME DEPOT)", re.I)
 
 T4326_2278 = Transformer.from_crs("EPSG:4326","EPSG:2278",always_xy=True).transform
 
@@ -303,7 +304,7 @@ def score_node(node,support):
     best_aadt=best_growth=0
     for f in support["traffic"]:
         p=props(f)
-        cur=nval(p,"AADT_RPT_CURR_QTY","AADT_2025","AADT")
+        cur=nval(p,"AADT_RPT_QTY","AADT_RPT_CURR_QTY","AADT_2025","AADT")
         old=nval(p,"AADT_RPT_HIST_05_QTY","AADT_2020")
         if cur>best_aadt:
             best_aadt=cur
@@ -334,7 +335,7 @@ def query_parcels(node):
 def make_candidate(feature,node_result):
     p=props(feature)
     owner=sval(p,"Owner")
-    if PUBLIC_OWNER.search(owner): return None
+    if PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner): return None
     a=nval(p,"Acres","LglAcres")
     if a<3: return None
     g=feature_shape(feature)
@@ -447,7 +448,8 @@ def traffic_for_parcel(c,support):
         if not g: continue
         ctr=g.centroid
         d=haversine(c["centroid_lat"],c["centroid_lng"],ctr.y,ctr.x)
-        p=props(f); cur=nval(p,"AADT_RPT_CURR_QTY","AADT_2025","AADT"); old=nval(p,"AADT_RPT_HIST_05_QTY","AADT_2020")
+        p=props(f); cur=nval(p,"AADT_RPT_QTY","AADT_RPT_CURR_QTY","AADT_2025","AADT"); old=nval(p,"AADT_RPT_HIST_05_QTY","AADT_2020")
+        if cur<=0: continue
         if best is None or d<best[0]:
             growth=((cur-old)/old*100) if old else 0
             best=(d,cur,growth)
@@ -468,7 +470,12 @@ def value_score(c):
 
 def enrich_candidate(c,support,node_result):
     road_score,roads,frontage,corner,major,mtp=road_quality(c,support)
-    flood_score,flood_pct,fw_pct,zones=flood_quality(c,support)
+    if support["fema"]:
+        flood_score,flood_pct,fw_pct,zones=flood_quality(c,support)
+        flood_confidence="SCREENED"
+    else:
+        flood_score,flood_pct,fw_pct,zones=55,None,None,[]
+        flood_confidence="UNKNOWN"
     flu,flu_names=land_use_quality(c,support)
     aadt,growth,aadt_dist=traffic_for_parcel(c,support)
     val=value_score(c)
@@ -476,8 +483,9 @@ def enrich_candidate(c,support,node_result):
     traffic_score=clamp(aadt/500*.7 + clamp((growth+5)*4)*.3)
     score=(.22*c["node_score"]+.18*c["dist_score"]+.18*road_score+.10*c["acre_score"]+
            .10*c["raw_score"]+.08*flood_score+.05*c["shape_score"]+.04*flu+.03*traffic_score+.02*val)
+    flood_gate=((fw_pct is None or fw_pct<10) and (flood_pct is None or flood_pct<50))
     eligible=(c["acres"]>=3 and c["node_edge_miles"]<=1.0 and road_score>=65 and c["raw_score"]>=55
-              and fw_pct<10 and flood_pct<50 and flu>=35 and c["shape_score"]>=25)
+              and flood_gate and flu>=35 and c["shape_score"]>=25)
     reasons=[]
     if corner and major: reasons.append("corner exposure on a major road")
     elif major: reasons.append("major-road frontage")
@@ -488,12 +496,13 @@ def enrich_candidate(c,support,node_result):
     if node_result["weighted_future_res_lots"]>=800: reasons.append(f"{int(node_result['weighted_future_res_lots'])} weighted future residential lots nearby")
     if catalyst_d<=2.5: reasons.append(f"{catalyst_d:.1f} mi from {catalyst_name}")
     if c["raw_score"]>=80: reasons.append("mostly raw / low-improvement land")
-    if flood_pct==0: reasons.append("no mapped FEMA SFHA overlap returned")
+    if flood_confidence=="SCREENED" and flood_pct==0: reasons.append("no mapped FEMA SFHA overlap returned")
+    elif flood_confidence=="UNKNOWN": reasons.append("FEMA screen requires verification")
     c.update({
         "road_score":road_score,"frontage_roads":roads,"frontage_ft_proxy":frontage,
         "corner_signal":"STRONG" if corner and major else "YES" if corner else "NO",
         "major_road_signal":major,"mtp_row_flag":mtp,
-        "flood_score":flood_score,"flood_pct":flood_pct,"floodway_pct":fw_pct,"flood_zones":zones,
+        "flood_score":flood_score,"flood_pct":flood_pct,"floodway_pct":fw_pct,"flood_zones":zones,"flood_confidence":flood_confidence,
         "future_land_use_score":flu,"future_land_use":flu_names,
         "aadt":aadt,"aadt_5yr_growth_pct":growth,"aadt_station_miles":aadt_dist,
         "nearest_retail_catalyst":catalyst_name,"retail_catalyst_miles":round(catalyst_d,2),
@@ -573,7 +582,7 @@ def public_props(c,rank=None):
       "prop_id","owner","situs","acres","land_value","assessed_value","improvement_value","improvement_ratio","gba",
       "prop_use","legal","node_id","node_name","node_score","node_edge_miles","dist_score","acre_score","raw_score",
       "shape_score","compactness","aspect_ratio","road_score","frontage_roads","frontage_ft_proxy","corner_signal",
-      "major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","future_land_use_score",
+      "major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","flood_confidence","future_land_use_score",
       "future_land_use","aadt","aadt_5yr_growth_pct","aadt_station_miles","nearest_retail_catalyst","retail_catalyst_miles",
       "future_residential_lots_nearby","recent_housing_units_180d","utility_confidence","utility_context",
       "assessed_value_per_acre","land_value_per_acre","parcel_opportunity_score","eligible","why_this_tract",
@@ -679,7 +688,7 @@ def main():
       "methodology":{
         "parcel_query_radius_miles":1.5,"hard_highlight_distance_miles":1.0,"min_acres":3,
         "top_limit":30,"per_node_cap":4,
-        "yellow_gate":"3+ ac; <=1 mi by parcel-edge distance; road signal >=65; raw-land >=55; <10% floodway; <50% SFHA; FLU >=35; shape >=25"
+        "yellow_gate":"3+ ac; <=1 mi by parcel-edge distance; road signal >=65; raw-land >=55; no known >=10% floodway; no known >=50% SFHA; FLU >=35; shape >=25; public/institutional/major-anchor owners excluded"
       }
     }
     (DATA/"opportunity_metadata.json").write_text(json.dumps(meta,indent=2))
