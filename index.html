@@ -77,10 +77,10 @@ background:rgba(255,255,255,.96);border:1px solid #d8d8d8;border-radius:10px;
 padding:10px 12px;box-shadow:0 3px 14px rgba(0,0,0,.14);font-family:Arial;">
 <div style="font-size:16px;font-weight:800;color:#17365D;">San Antonio Land Opportunity Map</div>
 <div style="font-size:11px;margin-top:4px;color:#444;">
-<b>Heat + circles</b> = priority areas to hunt. <b>Bright yellow parcels</b> = land to focus on.
+<b>Heat + circles</b> = priority areas to hunt. <b>Bright yellow</b> = land to focus on.
 </div>
 <div style="font-size:10px;margin-top:4px;color:#777;">
-Open Layers for growth, retail anchors, roads, parcels, traffic, land use and flood diligence.
+Yellow halo = target location. Thick yellow parcel outline = verified BCAD geometry.
 </div>
 </div>
     
@@ -3294,7 +3294,7 @@ Open Layers for growth, retail anchors, roads, parcels, traffic, land use and fl
           } catch(e){}
         }
 
-        function v3SnapByBCAD(marker, where, label, extraMarkers, onSnap){
+        function v3SnapByBCAD(marker, where, label, extraMarkers, onSnap, drawGeometry){
           L.esri.query({url:v3ParcelUrl+"/0"}).where(where).limit(25).run(function(err,fc){
             if(err || !fc || !fc.features || !fc.features.length) return;
             var feature=fc.features[0];
@@ -3302,7 +3302,7 @@ Open Layers for growth, retail anchors, roads, parcels, traffic, land use and fl
             if(!center) return;
             marker.setLatLng(center);
             (extraMarkers||[]).forEach(function(m){ if(m && m.setLatLng) m.setLatLng(center); });
-            v3DrawVerifiedGeometry(feature,label);
+            if(drawGeometry!==false) v3DrawVerifiedGeometry(feature,label);
             if(onSnap) onSnap(center,feature);
           });
         }
@@ -3368,15 +3368,57 @@ Open Layers for growth, retail anchors, roads, parcels, traffic, land use and fl
 
         // New I-10 / Loop 1604 East H-E-B at 10137 Interstate 10 E.
         v3SnapByBCAD(marker_d0f39ce50d8b9a5538bfd5a0af73101c,
-          "Situs_num='10137' AND Situs LIKE '%10%'","I-10 / Loop 1604 East H-E-B");
+          "Situs_num='10137' AND Situs LIKE '%10%'","I-10 / Loop 1604 East H-E-B",null,null,false);
 
         // Foster Road campus: 711 S Foster is the bakery/distribution project address.
         v3SnapByBCAD(marker_e2bbf31fa9ccde5bfb586db3459d6735,
-          "Situs_num='711' AND Situs LIKE '%FOSTER%'","H-E-B Foster Road campus");
+          "Situs_num='711' AND Situs LIKE '%FOSTER%'","H-E-B Foster Road campus",null,null,false);
 
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(
           v3VerifiedTargetGeometry,"Highlighted Parcels"
         );
+
+
+        // ---- V5.1 VISIBLE TARGET LAND HIGHLIGHTS ----
+        // Pixel-sized yellow halos stay visible at metro zoom; exact BCAD parcel polygons remain thick yellow.
+        var v51TargetHalos=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        var v51HaloLinks=[];
+        feature_group_0c45a8fa797258d406c1e937c6f99c34.eachLayer(function(layer){
+          if(!layer || !layer.getLatLng) return;
+          var halo=L.circleMarker(layer.getLatLng(),{
+            radius:14,
+            color:"#E6B800",
+            weight:5,
+            opacity:1,
+            fillColor:"#FFF200",
+            fillOpacity:.62,
+            interactive:false
+          }).addTo(v51TargetHalos);
+          if(halo.bringToFront) halo.bringToFront();
+          v51HaloLinks.push({marker:layer,halo:halo});
+          if(layer.on){
+            layer.on("move",function(e){ if(e&&e.latlng) halo.setLatLng(e.latlng); });
+          }
+        });
+        function v51RefreshHaloScale(){
+          var z=map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom();
+          v51HaloLinks.forEach(function(x){
+            x.halo.setRadius(z<=9?15:z<=11?13:z<=13?10:7);
+            x.halo.setStyle({fillOpacity:z>=14?.14:.62,opacity:z>=14?.55:1});
+          });
+        }
+        map_33cc2c2ac68d72d2971fbb7de3650b24.on("zoomend",v51RefreshHaloScale);
+        v51RefreshHaloScale();
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v51TargetHalos,"Highlighted Land");
+
+        // Start framed around the highlighted land opportunities rather than the whole metro.
+        setTimeout(function(){
+          try{
+            var b=feature_group_0c45a8fa797258d406c1e937c6f99c34.getBounds();
+            if(b&&b.isValid()) map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(b.pad(.08),{maxZoom:10});
+            if(v3VerifiedTargetGeometry&&v3VerifiedTargetGeometry.bringToFront) v3VerifiedTargetGeometry.bringToFront();
+          }catch(e){}
+        },650);
 
 </script>
 </html>
