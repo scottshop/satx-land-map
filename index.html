@@ -107,7 +107,7 @@ Parcel analysis is precomputed and loaded from static GeoJSON for speed and stab
 <div id="v6TopPanel">
   <div id="v6TopHead">
     <b>TOP LAND OPPORTUNITIES</b>
-    <div style="font-size:10px;color:#ddd;margin-top:2px">Static parcel analysis — click a tract to zoom.</div>
+    <div style="font-size:10px;color:#ddd;margin-top:2px">Ranked acquisition candidates — click a tract to zoom.</div>
     <div id="v6Filters">
       <select id="v6AcresFilter"><option value="3">3+ ac</option><option value="5">5+ ac</option><option value="10">10+ ac</option><option value="20">20+ ac</option></select>
       <select id="v6ScoreFilter"><option value="0">Any score</option><option value="70">70+</option><option value="75">75+</option><option value="80">80+</option><option value="85">85+</option></select>
@@ -3307,7 +3307,7 @@ Parcel analysis is precomputed and loaded from static GeoJSON for speed and stab
 
 
         // ---- V3 COORDINATE ACCURACY / PARCEL SNAP AUDIT ----
-        var v3VerifiedTargetGeometry = L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        var v3VerifiedTargetGeometry = L.featureGroup();
 
         function v3FeatureCenter(feature){
           try {
@@ -3453,7 +3453,7 @@ Parcel analysis is precomputed and loaded from static GeoJSON for speed and stab
               (Number(p.aadt_5yr_growth_pct||0)?", "+Number(p.aadt_5yr_growth_pct).toFixed(1)+"% 5-yr growth":"")+"<br>"+
             "<b>Retail catalyst:</b> "+v6h(p.nearest_retail_catalyst||"—")+
               (isFinite(Number(p.retail_catalyst_miles))?" — "+Number(p.retail_catalyst_miles).toFixed(1)+" mi":"")+"<br>"+
-            "<b>FEMA:</b> "+Number(p.flood_pct||0).toFixed(1)+"% SFHA; "+Number(p.floodway_pct||0).toFixed(1)+"% floodway<br>"+
+            "<b>FEMA:</b> "+(p.flood_confidence==="UNKNOWN"?"UNKNOWN — verify FEMA screen":Number(p.flood_pct||0).toFixed(1)+"% SFHA; "+Number(p.floodway_pct||0).toFixed(1)+"% floodway")+"<br>"+
             "<b>Future land use:</b> "+v6h(v6arr(p.future_land_use))+"<br>"+
             "<b>Assessed value:</b> "+v6money(p.assessed_value)+" ("+v6money(p.assessed_value_per_acre)+"/ac)<br>"+
             "<b>Last deed:</b> "+v6h(p.last_deed_date||"—")+(p.hold_years!=null?" — "+v6h(p.hold_years)+" yr hold":"")+"<br>"+
