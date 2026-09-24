@@ -77,7 +77,7 @@ background:rgba(255,255,255,.96);border:1px solid #d8d8d8;border-radius:10px;
 padding:10px 12px;box-shadow:0 3px 14px rgba(0,0,0,.14);font-family:Arial;">
 <div style="font-size:16px;font-weight:800;color:#17365D;">San Antonio Land Opportunity Map</div>
 <div style="font-size:11px;margin-top:4px;color:#444;">
-<b>Heat + circles</b> = priority areas to hunt. <b>Red flags</b> = highlighted sites.
+<b>Heat + circles</b> = priority areas to hunt. <b>Bright yellow parcels</b> = land to focus on.
 </div>
 <div style="font-size:10px;margin-top:4px;color:#777;">
 Open Layers for growth, retail anchors, roads, parcels, traffic, land use and flood diligence.
@@ -3187,7 +3187,7 @@ Open Layers for growth, retail anchors, roads, parcels, traffic, land use and fl
               }).slice(0,40);
               items.forEach(function(feat){
                 var p=feat.properties||{};
-                var lyr=L.geoJSON(feat,{style:{color:"#d63b2f",weight:3,fillColor:"#d63b2f",fillOpacity:.08}});
+                var lyr=L.geoJSON(feat,{style:{color:"#FFD400",weight:5,opacity:1,fillColor:"#FFEB3B",fillOpacity:.34}});
                 var ac=Number(p.Land_acres||0);
                 lyr.bindPopup("<div style='min-width:260px'><b>"+v3esc(p.Situs||"Candidate parcel")+"</b><br>"+
                   "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br><b>Acres:</b> "+(ac?ac.toFixed(2):"—")+"<br>"+
@@ -3287,9 +3287,9 @@ Open Layers for growth, retail anchors, roads, parcels, traffic, land use and fl
           try {
             var p=feature.properties||{};
             var lyr=L.geoJSON(feature,{
-              style:{color:"#1f7a1f",weight:3,fillColor:"#4caf50",fillOpacity:.08}
+              style:{color:"#FFD400",weight:5,opacity:1,fillColor:"#FFEB3B",fillOpacity:.34}
             });
-            lyr.bindTooltip("Verified BCAD parcel: "+label);
+            lyr.bindTooltip("Highlighted parcel: "+label); if(lyr.bringToFront) lyr.bringToFront();
             lyr.addTo(v3VerifiedTargetGeometry);
           } catch(e){}
         }
@@ -3314,8 +3314,8 @@ Open Layers for growth, retail anchors, roads, parcels, traffic, land use and fl
             var bounds=L.latLngBounds([]);
             fc.features.forEach(function(feature){
               try {
-                var lyr=L.geoJSON(feature,{style:{color:"#1f7a1f",weight:3,fillColor:"#4caf50",fillOpacity:.08}});
-                lyr.bindTooltip("Verified BCAD tract geometry: "+label).addTo(v3VerifiedTargetGeometry);
+                var lyr=L.geoJSON(feature,{style:{color:"#FFD400",weight:5,opacity:1,fillColor:"#FFEB3B",fillOpacity:.34}});
+                lyr.bindTooltip("Highlighted parcel: "+label).addTo(v3VerifiedTargetGeometry); if(lyr.bringToFront) lyr.bringToFront();
                 var b=lyr.getBounds(); if(b.isValid()) bounds.extend(b);
               } catch(e){}
             });
@@ -3375,7 +3375,7 @@ Open Layers for growth, retail anchors, roads, parcels, traffic, land use and fl
           "Situs_num='711' AND Situs LIKE '%FOSTER%'","H-E-B Foster Road campus");
 
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(
-          v3VerifiedTargetGeometry,"Verified Site Parcels"
+          v3VerifiedTargetGeometry,"Highlighted Parcels"
         );
 
 </script>
