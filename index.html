@@ -61,38 +61,30 @@
     <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
     <script src="https://unpkg.com/esri-leaflet@3.0.15/dist/esri-leaflet.js"></script>
+<style id="v5-clean-ui">
+.leaflet-control-layers{border:0!important;border-radius:9px!important;box-shadow:0 3px 14px rgba(0,0,0,.18)!important;font:12px/1.35 Arial!important}
+.leaflet-control-layers-expanded{padding:9px 11px!important;max-height:70vh;overflow:auto}
+.leaflet-popup-content{font:12px/1.45 Arial;margin:12px 14px}
+.leaflet-tooltip{font:600 11px/1.2 Arial;border:0;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,.16)}
+</style>
 </head>
 <body>
     
     
 <div style="
-position: fixed; top: 12px; left: 55px; z-index:9999; width:430px;
-background:rgba(255,255,255,.95); border:2px solid #17365D; border-radius:8px;
-padding:10px 12px; box-shadow:0 2px 8px rgba(0,0,0,.2); font-family:Arial;">
-<div style="font-size:16px;font-weight:700;color:#17365D;">San Antonio Land Acquisition Intelligence Map — v3</div>
-<div style="font-size:12px;margin-top:4px;">
-Use the layer control to isolate <b>heat, parcels, developments, anchors, and road projects</b>.
-Click any marker/line for acquisition context and source links.
+position:fixed;top:12px;left:55px;z-index:9999;width:365px;
+background:rgba(255,255,255,.96);border:1px solid #d8d8d8;border-radius:10px;
+padding:10px 12px;box-shadow:0 3px 14px rgba(0,0,0,.14);font-family:Arial;">
+<div style="font-size:16px;font-weight:800;color:#17365D;">San Antonio Land Opportunity Map</div>
+<div style="font-size:11px;margin-top:4px;color:#444;">
+<b>Heat + circles</b> = priority areas to hunt. <b>Red flags</b> = highlighted sites.
 </div>
-<div style="font-size:11px;margin-top:5px;color:#666;">
-Updated 2026-09-23. V3 adds official GIS screening overlays. Zoom in for parcel boundaries.
-Coordinate audit 2026-09-23: verified addresses/hard corners corrected; address-based Bexar targets snap to BCAD parcel geometry. Project-area centroids remain explicitly labeled approximate. Verify title, survey, access, utilities and flood status before acquisition.
+<div style="font-size:10px;margin-top:4px;color:#777;">
+Open Layers for growth, retail anchors, roads, parcels, traffic, land use and flood diligence.
 </div>
 </div>
     
-<div style="
-position:fixed; bottom:28px; right:18px; z-index:9999;
-background:rgba(255,255,255,.94); border:1px solid #777; border-radius:6px;
-padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
-<b>Parcel pipeline</b><br>
-<span style="color:#d63b2f;">●</span> CALL NOW<br>
-<span style="color:#f39c12;">●</span> RESEARCH<br>
-<span style="color:#7d3c98;">●</span> FOLLOW UP<br>
-<b>Node heat</b>: higher score = hotter<br>
-<b>Road lines</b>: schematic corridor geometry
-</div>
-    
-            <div class="folium-map" id="map_33cc2c2ac68d72d2971fbb7de3650b24" ></div>
+<div class="folium-map" id="map_33cc2c2ac68d72d2971fbb7de3650b24" ></div>
         
 </body>
 <script>
@@ -1094,7 +1086,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
                 marker_caa877d502156cb37bd8ca3a0d4fc8e2.setIcon(div_icon_2cfec8400c0aef69c80d3339a7d828c5);
             
     
-            feature_group_a18fc787dc6c2bb3657553293ef9425f.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+            // Clean UI: top-node labels available conceptually via priority intersections; hidden by default.
         
     
             var feature_group_0c45a8fa797258d406c1e937c6f99c34 = L.featureGroup(
@@ -1127,7 +1119,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_0492210a5d7607e87d991b4a0f1d8eba = $(`<div id="html_0492210a5d7607e87d991b4a0f1d8eba" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-005 — 10275 Interstate 10 - Shops at Scenic Lake</b><br>       <b>Acres:</b> 12.61<br>       <b>Call Priority:</b> 87/100<br>       <b>Pipeline:</b> CALL NOW<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> BCAD parcel snap at load (address 10275 Interstate 10)<br>       <b>Notes:</b> Prime I-10 / Loop 1604 exposure; shadow-anchored by new H-E-B.<br>       <a href="https://www.showcase.com/10275-interstate-10-converse-tx-78109/39663242/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_0492210a5d7607e87d991b4a0f1d8eba = $(`<div id="html_0492210a5d7607e87d991b4a0f1d8eba" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-005 — 10275 Interstate 10 - Shops at Scenic Lake</b><br>       <b>Acres:</b> 12.61<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Notes:</b> Prime I-10 / Loop 1604 exposure; shadow-anchored by new H-E-B.<br>       <a href="https://www.showcase.com/10275-interstate-10-converse-tx-78109/39663242/" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_6f193f863678a848287e923e8f3170c3.setContent(html_0492210a5d7607e87d991b4a0f1d8eba);
             
         
@@ -1140,7 +1132,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_83fd5e614ad8e9163859a813d260a041.bindTooltip(
                 `<div>
-                     SA-005 | 87 | CALL NOW
+                     SA-005 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1175,7 +1167,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_3ed640d309d10f1fb4d7e80885e3af22 = $(`<div id="html_3ed640d309d10f1fb4d7e80885e3af22" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-004 — Paloma Commercial - I-10 / N Loop 1604 E</b><br>       <b>Acres:</b> 12.55<br>       <b>Call Priority:</b> 86/100<br>       <b>Pipeline:</b> CALL NOW<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> Approx. site location<br>       <b>Notes:</b> Major interchange; direct H-E-B catalyst adjacency.<br>       <a href="https://www.crexi.com/properties/TX/Converse/Commercial-Land" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_3ed640d309d10f1fb4d7e80885e3af22 = $(`<div id="html_3ed640d309d10f1fb4d7e80885e3af22" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-004 — Paloma Commercial - I-10 / N Loop 1604 E</b><br>       <b>Acres:</b> 12.55<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Notes:</b> Major interchange; direct H-E-B catalyst adjacency.<br>       <a href="https://www.crexi.com/properties/TX/Converse/Commercial-Land" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_8ef4e1ff9ea8e45e30952186f6b4792e.setContent(html_3ed640d309d10f1fb4d7e80885e3af22);
             
         
@@ -1188,7 +1180,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_9cf5cf71f2cf770ce510f70a69b31f53.bindTooltip(
                 `<div>
-                     SA-004 | 86 | CALL NOW
+                     SA-004 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1223,7 +1215,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_10f1d6bc3f87d359af4ce6820b2273fe = $(`<div id="html_10f1d6bc3f87d359af4ce6820b2273fe" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-001 — SEC Culebra Rd & SH 211 - Carimar</b><br>       <b>Acres:</b> 21.08<br>       <b>Call Priority:</b> 85/100<br>       <b>Pipeline:</b> CALL NOW<br>       <b>Owner:</b> Unknown - verify current owner<br>       <b>Map precision:</b> Verified Culebra/211 node proxy; APNs known, parcel polygons pending<br>       <b>Notes:</b> Signalized intersection shared with new H-E-B; four APNs identified in v1.<br>       <a href="https://www.loopnet.com/Listing/SEC-of-Culebra-Rd-211-hwy-San-Antonio-TX/39294173/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_10f1d6bc3f87d359af4ce6820b2273fe = $(`<div id="html_10f1d6bc3f87d359af4ce6820b2273fe" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-001 — SEC Culebra Rd & SH 211 - Carimar</b><br>       <b>Acres:</b> 21.08<br>       <b>Owner:</b> Unknown - verify current owner<br>       <b>Notes:</b> Signalized intersection shared with new H-E-B; four APNs identified in v1.<br>       <a href="https://www.loopnet.com/Listing/SEC-of-Culebra-Rd-211-hwy-San-Antonio-TX/39294173/" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_c03f2cf0a506e4aba3ae415f29388da9.setContent(html_10f1d6bc3f87d359af4ce6820b2273fe);
             
         
@@ -1236,7 +1228,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_0d08141432e06eeadb75452d4e76d7a5.bindTooltip(
                 `<div>
-                     SA-001 | 85 | CALL NOW
+                     SA-001 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1256,7 +1248,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             var icon_4608ae95b0824b2c4bbddea8f71e41a3 = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "red",
   "iconColor": "white",
   "icon": "flag",
   "prefix": "fa",
@@ -1271,7 +1263,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_17c226872afb0d17cc4cec3994da5310 = $(`<div id="html_17c226872afb0d17cc4cec3994da5310" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-010 — Schuwirth Rd & Loop 1604</b><br>       <b>Acres:</b> 21.18<br>       <b>Call Priority:</b> 84/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> Verified NEC hard-corner listing coordinate (29.456, -98.2879)<br>       <b>Notes:</b> Marketed as ±1.18 to ±21.18 acres; exact tract configuration still needs verification.<br>       <a href="https://www.crexi.com/properties/TX/Converse/Commercial-Land" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_17c226872afb0d17cc4cec3994da5310 = $(`<div id="html_17c226872afb0d17cc4cec3994da5310" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-010 — Schuwirth Rd & Loop 1604</b><br>       <b>Acres:</b> 21.18<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Notes:</b> Marketed as ±1.18 to ±21.18 acres; exact tract configuration still needs verification.<br>       <a href="https://www.crexi.com/properties/TX/Converse/Commercial-Land" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_ddf73f5c39fa76d4d1c34cb73be079a0.setContent(html_17c226872afb0d17cc4cec3994da5310);
             
         
@@ -1284,7 +1276,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_04580ccafb55161ec72769f9ab464996.bindTooltip(
                 `<div>
-                     SA-010 | 84 | RESEARCH
+                     SA-010 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1304,7 +1296,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             var icon_7dfa34869e27548d2f32a1e6dd9b8aae = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "red",
   "iconColor": "white",
   "icon": "flag",
   "prefix": "fa",
@@ -1319,7 +1311,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_3599c17d94dc98ad10fb78be40dc4c29 = $(`<div id="html_3599c17d94dc98ad10fb78be40dc4c29" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-003 — 13183 Interstate 10 E</b><br>       <b>Acres:</b> 9.09<br>       <b>Call Priority:</b> 82/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> NAJDS Property Investments Inc. - verify current<br>       <b>Map precision:</b> Verified address; BCAD parcel geometry snapped at load<br>       <b>Notes:</b> Signalized hard corner at FM 1518 / I-10; older owner record needs refreshed title/CAD verification.<br>       <a href="https://www.loopnet.com/Listing/13183-Interstate-10-E-Schertz-TX/41907597/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_3599c17d94dc98ad10fb78be40dc4c29 = $(`<div id="html_3599c17d94dc98ad10fb78be40dc4c29" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-003 — 13183 Interstate 10 E</b><br>       <b>Acres:</b> 9.09<br>       <b>Owner:</b> NAJDS Property Investments Inc. - verify current<br>       <b>Notes:</b> Signalized hard corner at FM 1518 / I-10; older owner record needs refreshed title/CAD verification.<br>       <a href="https://www.loopnet.com/Listing/13183-Interstate-10-E-Schertz-TX/41907597/" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_a041ce250a7776455d0efcb3bc54e726.setContent(html_3599c17d94dc98ad10fb78be40dc4c29);
             
         
@@ -1332,7 +1324,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_4dcb4f4f43149c1e9fd71042014ebab0.bindTooltip(
                 `<div>
-                     SA-003 | 82 | RESEARCH
+                     SA-003 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1352,7 +1344,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             var icon_8f2c88b3707fa7ac1a4bdd20067d01df = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "red",
   "iconColor": "white",
   "icon": "flag",
   "prefix": "fa",
@@ -1367,7 +1359,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_d75c54af5d56745e384c0578b0f05d6e = $(`<div id="html_d75c54af5d56745e384c0578b0f05d6e" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-012 — 4891 Freudenburg Rd</b><br>       <b>Acres:</b> 73.2<br>       <b>Call Priority:</b> 81/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> BCAD parcel snap at load (address 4891 Freudenburg Rd)<br>       <b>Notes:</b> Strategic scale near I-10 East; screen future road network and retail frontage.<br>       <a href="https://www.crexi.com/properties/TX/I-10_East_Corridor/Land/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_d75c54af5d56745e384c0578b0f05d6e = $(`<div id="html_d75c54af5d56745e384c0578b0f05d6e" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-012 — 4891 Freudenburg Rd</b><br>       <b>Acres:</b> 73.2<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Notes:</b> Strategic scale near I-10 East; screen future road network and retail frontage.<br>       <a href="https://www.crexi.com/properties/TX/I-10_East_Corridor/Land/" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_dc064c698e5c4dd86e1f9ba65f2cecf7.setContent(html_d75c54af5d56745e384c0578b0f05d6e);
             
         
@@ -1380,7 +1372,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_4c63bf4d30491e14b1283e1243f72d8a.bindTooltip(
                 `<div>
-                     SA-012 | 81 | RESEARCH
+                     SA-012 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1400,7 +1392,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             var icon_cc9d7fec951ce8f10dc7a8130b1931b5 = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "purple",
+  "markerColor": "red",
   "iconColor": "white",
   "icon": "flag",
   "prefix": "fa",
@@ -1415,7 +1407,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_849e85f890318e180000154777a2bad4 = $(`<div id="html_849e85f890318e180000154777a2bad4" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-007 — VIDA Commercial Tract - S Zarzamora</b><br>       <b>Acres:</b> 5.65<br>       <b>Call Priority:</b> 79/100<br>       <b>Pipeline:</b> FOLLOW UP<br>       <b>Owner:</b> VIDA developer - verify legal owner<br>       <b>Map precision:</b> BCAD APN geometry snap at load; multi-parcel development<br>       <b>Notes:</b> Reported under contract; monitor and identify adjacent off-market owners.<br>       <a href="https://www.loopnet.com/Listing/S-Zarzamora-St-San-Antonio-TX/37054431/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_849e85f890318e180000154777a2bad4 = $(`<div id="html_849e85f890318e180000154777a2bad4" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-007 — VIDA Commercial Tract - S Zarzamora</b><br>       <b>Acres:</b> 5.65<br>       <b>Owner:</b> VIDA developer - verify legal owner<br>       <b>Notes:</b> Reported under contract; monitor and identify adjacent off-market owners.<br>       <a href="https://www.loopnet.com/Listing/S-Zarzamora-St-San-Antonio-TX/37054431/" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_3a4644414f41185de1d7f3975ea33360.setContent(html_849e85f890318e180000154777a2bad4);
             
         
@@ -1428,7 +1420,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_478b4f8b47600350da7d5b0b7bb242db.bindTooltip(
                 `<div>
-                     SA-007 | 79 | FOLLOW UP
+                     SA-007 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1448,7 +1440,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             var icon_37c1e6973343615ed552248b65d9fead = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "red",
   "iconColor": "white",
   "icon": "flag",
   "prefix": "fa",
@@ -1463,7 +1455,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_e99a11eafa40d05dad84bd191c923962 = $(`<div id="html_e99a11eafa40d05dad84bd191c923962" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-006 — 3065 E Loop 1604 & Green Rd - Punta Verde</b><br>       <b>Acres:</b> 11.67<br>       <b>Call Priority:</b> 77/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify parcel ownership<br>       <b>Map precision:</b> BCAD APN geometry snap at load<br>       <b>Notes:</b> Utilities reportedly delivered; exact current sale tract boundaries need verification.<br>       <a href="https://www.crexi.com/properties/2233586/texas-punta-verda-plaza" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_e99a11eafa40d05dad84bd191c923962 = $(`<div id="html_e99a11eafa40d05dad84bd191c923962" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-006 — 3065 E Loop 1604 & Green Rd - Punta Verde</b><br>       <b>Acres:</b> 11.67<br>       <b>Owner:</b> Unknown - verify parcel ownership<br>       <b>Notes:</b> Utilities reportedly delivered; exact current sale tract boundaries need verification.<br>       <a href="https://www.crexi.com/properties/2233586/texas-punta-verda-plaza" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_91734ccef69a7a2fd8ff4cfda7d1ef19.setContent(html_e99a11eafa40d05dad84bd191c923962);
             
         
@@ -1476,7 +1468,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_a579c55392057722125395c3ed1412d0.bindTooltip(
                 `<div>
-                     SA-006 | 77 | RESEARCH
+                     SA-006 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1496,7 +1488,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             var icon_4f11c5a600cd5652ad7a5d353bf4c833 = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "red",
   "iconColor": "white",
   "icon": "flag",
   "prefix": "fa",
@@ -1511,7 +1503,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_7a777e023843d6fee221780590b255bb = $(`<div id="html_7a777e023843d6fee221780590b255bb" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-009 — 8210 FM 1518</b><br>       <b>Acres:</b> 5.453<br>       <b>Call Priority:</b> 77/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> BCAD parcel snap at load (address-level)<br>       <b>Notes:</b> ~380 ft frontage; utilities reported; partial floodplain to rear needs verification.<br>       <a href="https://www.crexi.com/properties/2502594/texas-8210-farm-to-market-road-1518" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_7a777e023843d6fee221780590b255bb = $(`<div id="html_7a777e023843d6fee221780590b255bb" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-009 — 8210 FM 1518</b><br>       <b>Acres:</b> 5.453<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Notes:</b> ~380 ft frontage; utilities reported; partial floodplain to rear needs verification.<br>       <a href="https://www.crexi.com/properties/2502594/texas-8210-farm-to-market-road-1518" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_8b1c9d97dc08e0bb25494b6b12965fd6.setContent(html_7a777e023843d6fee221780590b255bb);
             
         
@@ -1524,7 +1516,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_826de9af047f876c9b6c3397d120d583.bindTooltip(
                 `<div>
-                     SA-009 | 77 | RESEARCH
+                     SA-009 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1544,7 +1536,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             var icon_e5096033c676b471b6e8f21eeff64169 = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "red",
   "iconColor": "white",
   "icon": "flag",
   "prefix": "fa",
@@ -1559,7 +1551,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_1bb1c9548cc4c77653db13c557d941e4 = $(`<div id="html_1bb1c9548cc4c77653db13c557d941e4" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-011 — 6090 FM 1518</b><br>       <b>Acres:</b> 15.59<br>       <b>Call Priority:</b> 76/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Map precision:</b> Verified address coordinate + BCAD parcel snap at load<br>       <b>Notes:</b> Large-acreage fit along widening corridor; needs zoning/utilities/flood verification.<br>       <a href="https://www.crexi.com/properties/TX/Converse/Commercial-Land" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_1bb1c9548cc4c77653db13c557d941e4 = $(`<div id="html_1bb1c9548cc4c77653db13c557d941e4" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-011 — 6090 FM 1518</b><br>       <b>Acres:</b> 15.59<br>       <b>Owner:</b> Unknown - verify owner<br>       <b>Notes:</b> Large-acreage fit along widening corridor; needs zoning/utilities/flood verification.<br>       <a href="https://www.crexi.com/properties/TX/Converse/Commercial-Land" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_f729d876fa382e087e01413f76840731.setContent(html_1bb1c9548cc4c77653db13c557d941e4);
             
         
@@ -1572,7 +1564,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_c1cb9e915ea9ee1bd400f4b92bf7258f.bindTooltip(
                 `<div>
-                     SA-011 | 76 | RESEARCH
+                     SA-011 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1592,7 +1584,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             var icon_f10f720eb441c3e145a8fe68f2021070 = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "red",
   "iconColor": "white",
   "icon": "flag",
   "prefix": "fa",
@@ -1607,7 +1599,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_dc9886439290f69d250c77efc89190aa = $(`<div id="html_dc9886439290f69d250c77efc89190aa" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-002 — Brooks - Louis Bauer / Laser 44.59 AC</b><br>       <b>Acres:</b> 44.59<br>       <b>Call Priority:</b> 72/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Brooks / verify legal owner<br>       <b>Map precision:</b> OFFICIAL BROOKS INTERSECTION PROXY — tract boundary not yet loaded<br>       <b>Notes:</b> Developer-controlled mixed-use tract in Brooks; strategic but not classic off-market owner call.<br>       <a href="https://livebrooks.com/development/available-properties/44-59-acres-mixed-use-development-opportunity/" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_dc9886439290f69d250c77efc89190aa = $(`<div id="html_dc9886439290f69d250c77efc89190aa" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-002 — Brooks - Louis Bauer / Laser 44.59 AC</b><br>       <b>Acres:</b> 44.59<br>       <b>Owner:</b> Brooks / verify legal owner<br>       <b>Notes:</b> Developer-controlled mixed-use tract in Brooks; strategic but not classic off-market owner call.<br>       <a href="https://livebrooks.com/development/available-properties/44-59-acres-mixed-use-development-opportunity/" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_9957722b716ab649b4cf67193eccf3b8.setContent(html_dc9886439290f69d250c77efc89190aa);
             
         
@@ -1620,7 +1612,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_60cb2118ed7073b095ee94fea09d9e4c.bindTooltip(
                 `<div>
-                     SA-002 | 72 | RESEARCH
+                     SA-002 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -1640,7 +1632,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             var icon_537986201c927e09c5a06c2b0f455ecf = L.AwesomeMarkers.icon(
                 {
-  "markerColor": "orange",
+  "markerColor": "red",
   "iconColor": "white",
   "icon": "flag",
   "prefix": "fa",
@@ -1655,7 +1647,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
 
         
             
-                var html_e8b6608585ecc80bd62cb530ce1b94f6 = $(`<div id="html_e8b6608585ecc80bd62cb530ce1b94f6" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-008 — Applewhite Rd - 226 Acres</b><br>       <b>Acres:</b> 226.0<br>       <b>Call Priority:</b> 65/100<br>       <b>Pipeline:</b> RESEARCH<br>       <b>Owner:</b> Applewhite Land Development LLC - verify current<br>       <b>Map precision:</b> BCAD APN geometry snap at load; multi-parcel tract<br>       <b>Notes:</b> Large strategic tract; current availability, flood, utilities and frontage split potential need verification.<br>       <a href="https://www.crexi.com/properties/597749/texas-226-acres-applewhite-road" target="_blank">Research source</a>     </div>     </div>`)[0];
+                var html_e8b6608585ecc80bd62cb530ce1b94f6 = $(`<div id="html_e8b6608585ecc80bd62cb530ce1b94f6" style="width: 100.0%; height: 100.0%;">     <div style="width:345px">       <b>SA-008 — Applewhite Rd - 226 Acres</b><br>       <b>Acres:</b> 226.0<br>       <b>Owner:</b> Applewhite Land Development LLC - verify current<br>       <b>Notes:</b> Large strategic tract; current availability, flood, utilities and frontage split potential need verification.<br>       <a href="https://www.crexi.com/properties/597749/texas-226-acres-applewhite-road" target="_blank">Source</a>     </div>     </div>`)[0];
                 popup_0f5bbb28716fb1e2746cd8ecb57e9253.setContent(html_e8b6608585ecc80bd62cb530ce1b94f6);
             
         
@@ -1668,7 +1660,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
     
             marker_6b9d2a3588264fc4cf9df57f9cfda4df.bindTooltip(
                 `<div>
-                     SA-008 | 65 | RESEARCH
+                     SA-008 — Highlighted Site
                  </div>`,
                 {
   "sticky": true,
@@ -2322,7 +2314,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             marker_cluster_9871e831b359eb1ea9745338fc5ffd62.addTo(feature_group_a226874f9972842eec65b43be2a10db9);
         
     
-            feature_group_a226874f9972842eec65b43be2a10db9.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+            // Clean UI: growth developments are available in Layers but hidden by default.
         
     
             var feature_group_18e326aa803143ba3330a0ba600b718a = L.featureGroup(
@@ -2667,7 +2659,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
                 marker_e2bbf31fa9ccde5bfb586db3459d6735.setIcon(icon_f356ecbdb36f5865978dc3f3fdc87ad3);
             
     
-            feature_group_18e326aa803143ba3330a0ba600b718a.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+            // Clean UI: retail / employment anchors are available in Layers but hidden by default.
         
     
             var feature_group_370786adb15c6d6d865f189609798696 = L.featureGroup(
@@ -2841,7 +2833,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
             );
         
     
-            feature_group_370786adb15c6d6d865f189609798696.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+            // Clean UI: road projects remain available in Layers but are hidden by default.
         
     
             L.control.fullscreen(
@@ -2895,23 +2887,22 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
                 undefined;
             mouse_position_2f9c59aacac0861ead685684cef81130.options["lngFormatter"] =
                 undefined;
-            map_33cc2c2ac68d72d2971fbb7de3650b24.addControl(mouse_position_2f9c59aacac0861ead685684cef81130);
+            // Clean UI: mouse coordinate readout hidden.
         
     
             var layer_control_b250c1d6f8951aadc14a9860adeeb93d_layers = {
                 base_layers : {
-                    "cartodbpositron" : tile_layer_f07a431ff4dc7ff3c822055d0c4ef939,
-                    "Street Map" : tile_layer_aaae3922d3fdbfea43709c0f196149c0,
+                    "Light" : tile_layer_f07a431ff4dc7ff3c822055d0c4ef939,
+                    "Street" : tile_layer_aaae3922d3fdbfea43709c0f196149c0,
                     "Topo" : tile_layer_34ebf833fc2ef87725ad85de46958f36,
                 },
                 overlays :  {
-                    "\ud83d\udd25 Opportunity Heat" : feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
-                    "\ud83c\udfaf Target Intersections" : feature_group_faeb81c75b71b2840ca70907d2e58065,
-                    "\ud83c\udff7\ufe0f Top-Node Labels" : feature_group_a18fc787dc6c2bb3657553293ef9425f,
-                    "\ud83d\udccd Target Parcels / Sites" : feature_group_0c45a8fa797258d406c1e937c6f99c34,
-                    "\ud83c\udfd8\ufe0f Major Developments" : feature_group_a226874f9972842eec65b43be2a10db9,
-                    "\ud83d\uded2 H-E-B / Major Retail / Employment Catalysts" : feature_group_18e326aa803143ba3330a0ba600b718a,
-                    "\ud83d\udee3\ufe0f Infrastructure / Road Projects" : feature_group_370786adb15c6d6d865f189609798696,
+                    "\ud83d\udd25 Priority Areas" : feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
+                    "\ud83c\udfaf Priority Intersections" : feature_group_faeb81c75b71b2840ca70907d2e58065,
+                    "\ud83d\udccd Highlighted Sites" : feature_group_0c45a8fa797258d406c1e937c6f99c34,
+                    "\ud83c\udfd8\ufe0f Growth / Major Developments" : feature_group_a226874f9972842eec65b43be2a10db9,
+                    "\ud83d\uded2 Retail / Employment Anchors" : feature_group_18e326aa803143ba3330a0ba600b718a,
+                    "\ud83d\udee3\ufe0f Road / Infrastructure Projects" : feature_group_370786adb15c6d6d865f189609798696,
                 },
             };
             let layer_control_b250c1d6f8951aadc14a9860adeeb93d = L.control.layers(
@@ -2919,7 +2910,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
                 layer_control_b250c1d6f8951aadc14a9860adeeb93d_layers.overlays,
                 {
   "position": "topright",
-  "collapsed": false,
+  "collapsed": true,
   "autoZIndex": true,
 }
             ).addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
@@ -3105,7 +3096,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         v3NodeIntel.onAdd=function(){
           var d=L.DomUtil.create("div","leaflet-bar");
           d.style.cssText="background:white;padding:8px 10px;width:285px;font:11px/1.35 Arial;color:#222";
-          d.innerHTML="<b>V3 Node Intelligence</b><br>"+
+          d.innerHTML="<b>Land Finder</b><br>"+
             "<select id='v3NodeSelect' style='width:100%;margin:5px 0'></select>"+
             "<div id='v3NodeStats'>Choose a target node.</div>"+
             "<div style='display:flex;gap:5px;margin-top:6px'>"+
@@ -3113,14 +3104,14 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
               "<select id='v3Radius' style='width:50%'><option value='1'>1 mile</option><option value='3' selected>3 miles</option><option value='5'>5 miles</option></select>"+
             "</div>"+
             "<label style='display:block;margin:5px 0'><input id='v3ExcludePublic' type='checkbox' checked> Exclude obvious public/government owners</label>"+
-            "<button id='v3FindLand' style='width:100%;margin:3px 0;padding:5px;font-weight:700'>Find Candidate Parcels</button>"+
+            "<button id='v3FindLand' style='width:100%;margin:3px 0;padding:5px;font-weight:700'>Find Parcels</button>"+
             "<button id='v3ExportLand' style='width:100%;margin:0 0 3px;padding:4px' disabled>Export Results CSV</button>"+
             "<div id='v3FindLandStatus' style='color:#555'></div>"+
             "<div style='color:#777;margin-top:4px'>Preliminary-plat counts are a live planning-activity signal, not a residential lot count. Parcel results use county appraisal/GIS screening data and must be verified.</div>";
           L.DomEvent.disableClickPropagation(d);
           return d;
         };
-        v3NodeIntel.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        // Clean UI: advanced parcel finder panel hidden by default.
 
         function v3PlatCount(n,miles,cb){
           L.esri.query({url:v3PlatUrl}).nearby([n.lat,n.lng],miles*1609.344).count(function(err,count){
@@ -3269,16 +3260,16 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
         };
         v3Info.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
 
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"🧭 BCAD Parcels + Owner Screen (Dec. 2025)");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"🟦 Live CoSA Preliminary Plats");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"🏗️ Bexar Plat / MDP Pipeline");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"🛣️ Bexar Major Thoroughfare Plan");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"🏙️ CoSA Future Land Use");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"🚗 TxDOT Historical AADT + Growth");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"🌊 FEMA Flood Hazard Zones / Floodway");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"💧 Bexar 100-ft Floodplain Buffer");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Rings,"⭕ 1 / 3 / 5 Mile Node Rings");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3LandResults,"🔎 Find Land Results");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"Parcels / Owners");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"Growth — Preliminary Plats");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"Growth — Bexar Plats / MDPs");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"Road Plan — Major Thoroughfares");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"Future Land Use");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"Traffic Counts / Growth");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"Flood Zones");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"Flood Buffer");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Rings,"1 / 3 / 5 Mile Rings");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3LandResults,"Parcel Search Results");
 
 
         // ---- V3 COORDINATE ACCURACY / PARCEL SNAP AUDIT ----
@@ -3384,7 +3375,7 @@ padding:8px 10px; font-size:11px; font-family:Arial; line-height:1.6;">
           "Situs_num='711' AND Situs LIKE '%FOSTER%'","H-E-B Foster Road campus");
 
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(
-          v3VerifiedTargetGeometry,"✅ Audited / Verified Target Parcel Geometry"
+          v3VerifiedTargetGeometry,"Verified Site Parcels"
         );
 
 </script>
