@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import csv, json, math, os, re, sys, time
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -86,7 +87,7 @@ def point_geom(node):
 
 def arc_query(url, *, where="1=1", geom=None, geom_type="esriGeometryPoint",
               distance=None, units="esriSRUnit_Meter", out_fields="*",
-              return_geometry=True, page_size=2000, timeout=50):
+              return_geometry=True, page_size=2000, timeout=18):
     params={
         "f":"geojson","where":where,"outFields":out_fields,
         "returnGeometry":"true" if return_geometry else "false",
@@ -583,51 +584,64 @@ def public_props(c,rank=None):
     return p
 
 def main():
-    print("Analyzing nodes...")
+    print("Analyzing nodes in parallel...")
     supports={}; node_results=[]
-    for idx,node in enumerate(NODES,1):
-        print(f"[{idx}/{len(NODES)}] {node['name']}")
-        sup=node_support(node); supports[node["id"]]=sup
-        node_results.append(score_node(node,sup))
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        futs={ex.submit(node_support,node):node for node in NODES}
+        for idx,fut in enumerate(as_completed(futs),1):
+            node=futs[fut]
+            try:
+                sup=fut.result()
+            except Exception as e:
+                errors.append(f"node-support {node['name']}: {e}")
+                sup={"plats":[],"permits":[],"traffic":[],"roads":[],"mtp":[],"fema":[],"flu":[],"cip":[]}
+            supports[node["id"]]=sup
+            node_results.append(score_node(node,sup))
+            print(f"[{idx}/{len(NODES)}] {node['name']}")
     node_results.sort(key=lambda x:x["score"],reverse=True)
     node_by={x["id"]:x for x in node_results}
 
-    print("Querying parcel universe...")
+    print("Querying parcel universe in parallel...")
     by_pid={}
-    for node in node_results:
-        feats=query_parcels(node)
-        for f in feats:
-            c=make_candidate(f,node)
-            if not c: continue
-            old=by_pid.get(c["prop_id"])
-            if old is None or c["preliminary_score"]>old["preliminary_score"]:
-                by_pid[c["prop_id"]]=c
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        futs={ex.submit(query_parcels,node):node for node in node_results}
+        for fut in as_completed(futs):
+            node=futs[fut]
+            try: feats=fut.result()
+            except Exception as e:
+                errors.append(f"parcel-query {node['name']}: {e}"); feats=[]
+            for feat in feats:
+                cand=make_candidate(feat,node)
+                if not cand: continue
+                old=by_pid.get(cand["prop_id"])
+                if old is None or cand["preliminary_score"]>old["preliminary_score"]:
+                    by_pid[cand["prop_id"]]=cand
     candidates=sorted(by_pid.values(),key=lambda x:x["preliminary_score"],reverse=True)[:180]
     print(f"Base candidates: {len(candidates)}")
 
     print("Enriching parcel quality...")
     enriched=[]
-    for i,c in enumerate(candidates,1):
+    for i,cand in enumerate(candidates,1):
         if i%20==0: print(f"  {i}/{len(candidates)}")
-        enriched.append(enrich_candidate(c,supports[c["node_id"]],node_by[c["node_id"]]))
+        enriched.append(enrich_candidate(cand,supports[cand["node_id"]],node_by[cand["node_id"]]))
 
     top=select_top(enriched,30,4)
     print(f"Eligible highlighted parcels: {len(top)}")
-    for c in top:
-        sara_enrich(c)
+    with ThreadPoolExecutor(max_workers=5) as ex:
+        list(ex.map(sara_enrich,top))
 
     # Stable rank after SARA enrichment.
     top.sort(key=lambda x:x["parcel_opportunity_score"],reverse=True)
-    for i,c in enumerate(top,1): c["rank"]=i
+    for i,cand in enumerate(top,1): cand["rank"]=i
 
     fc={"type":"FeatureCollection","features":[
-        {"type":"Feature","geometry":c["feature"]["geometry"],"properties":public_props(c,i)}
-        for i,c in enumerate(top,1)
+        {"type":"Feature","geometry":cand["feature"]["geometry"],"properties":public_props(cand,i)}
+        for i,cand in enumerate(top,1)
     ]}
     (DATA/"opportunity_parcels.geojson").write_text(json.dumps(fc,indent=2))
     all_fc={"type":"FeatureCollection","features":[
-        {"type":"Feature","geometry":c["feature"]["geometry"],"properties":public_props(c)}
-        for c in sorted(enriched,key=lambda x:x["parcel_opportunity_score"],reverse=True)[:120]
+        {"type":"Feature","geometry":cand["feature"]["geometry"],"properties":public_props(cand)}
+        for cand in sorted(enriched,key=lambda x:x["parcel_opportunity_score"],reverse=True)[:120]
     ]}
     (DATA/"opportunity_parcels_all.geojson").write_text(json.dumps(all_fc,indent=2))
     (DATA/"opportunity_nodes.json").write_text(json.dumps(node_results,indent=2))
@@ -640,8 +654,8 @@ def main():
           "land_value_per_acre","last_deed_date","hold_years","utility_confidence","why_this_tract","verification_notes"]
     with (DATA/"tracts_to_review.csv").open("w",newline="") as fh:
         w=csv.DictWriter(fh,fieldnames=cols); w.writeheader()
-        for c in top:
-            row={k:c.get(k,"") for k in cols}
+        for cand in top:
+            row={k:cand.get(k,"") for k in cols}
             for k in ("frontage_roads","future_land_use"):
                 if isinstance(row[k],list): row[k]=" | ".join(map(str,row[k]))
             w.writerow(row)
