@@ -1,0 +1,66 @@
+name: Generate Land Opportunities
+
+on:
+  push:
+    branches:
+      - v6-exact-parcel-engine
+    paths:
+      - "scripts/generate_opportunities.py"
+      - ".github/workflows/generate-opportunities.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install GIS dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests shapely pyproj
+
+      - name: Generate static opportunity datasets
+        run: python scripts/generate_opportunities.py
+
+      - name: Validate generated files
+        run: |
+          python - <<'PY'
+          import json, csv
+          from pathlib import Path
+          p=Path("data/opportunity_parcels.geojson")
+          d=json.loads(p.read_text())
+          assert d["type"]=="FeatureCollection"
+          assert len(d["features"])>=5, f"Only {len(d['features'])} highlighted parcels"
+          for f in d["features"]:
+              pr=f["properties"]
+              assert pr["acres"] >= 3
+              assert pr["node_edge_miles"] <= 1.0
+              assert f.get("geometry")
+          rows=list(csv.DictReader(open("data/tracts_to_review.csv")))
+          assert len(rows)==len(d["features"])
+          print("Validated",len(rows),"highlighted parcels")
+          PY
+
+      - name: Commit generated datasets
+        run: |
+          git config user.name "land-opportunity-bot"
+          git config user.email "land-opportunity-bot@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No generated changes."
+          else
+            git commit -m "Generate static land opportunity datasets [skip ci]"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
