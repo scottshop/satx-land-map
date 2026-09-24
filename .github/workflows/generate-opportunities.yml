@@ -3,7 +3,7 @@ name: Generate Land Opportunities
 on:
   push:
     branches:
-      - v6-exact-parcel-engine
+      - v6-exact-parcel-engine-fast
     paths:
       - "scripts/generate_opportunities.py"
       - ".github/workflows/generate-opportunities.yml"
