@@ -62,7 +62,7 @@ CATALYSTS = [
  {"name":"H-E-B Foster campus","lat":29.41984,"lng":-98.36083},
 ]
 
-PUBLIC_OWNER = re.compile(r"(CITY OF|COUNTY OF|STATE OF TEXAS|UNITED STATES|US GOVERNMENT|U S GOVERNMENT|SCHOOL DISTRICT|\bISD\b|\bI S D\b|SAWS|CPS ENERGY|RIVER AUTHORITY|TXDOT|TEXAS DEPARTMENT|HOUSING AUTHORITY|DEVELOPMENT AUTHORITY|UNIVERSITY SYSTEM|UNIVERSITY OF|TEXAS A\s*&?\s*M|HOMEOWNERS|HOME OWNER|PROPERTY OWNERS| HOA\b| POA\b)", re.I)
+PUBLIC_OWNER = re.compile(r"(CITY OF|COUNTY OF|(BEXAR|COMAL|GUADALUPE|MEDINA|KENDALL|WILSON|ATASCOSA) COUNTY|STATE OF TEXAS|UNITED STATES|US GOVERNMENT|U S GOVERNMENT|SCHOOL DISTRICT|\\bISD\\b|\\bI S D\\b|\\bSCHOOL\\b|MONTESSORI|ACADEMY|SAWS|CPS ENERGY|RIVER AUTHORITY|TXDOT|TEXAS DEPARTMENT|HOUSING AUTHORITY|HOUSING TRUST|PUBLIC FACILITY CORPORATION|PUBLIC FACILITY CORP|DEVELOPMENT AUTHORITY|FIRE AND RESCUE|EMERGENCY SERVICES DISTRICT|\\bESD\\b|UNIVERSITY SYSTEM|UNIVERSITY OF|TEXAS A\\s*&?\\s*M|HOMEOWNERS|HOME OWNER|PROPERTY OWNERS|OWNERS ASSN|OWNERS ASSOCIATION|PLACE ASSOCIATION|MASTER COMMUNITY|LAND TRUST|HOSPITAL|HEALTHCARE SYSTEM|MEDICAL CENTER| HOA\\b| POA\\b)", re.I)
 ANCHOR_OWNER = re.compile(r"(HEB GROCERY|H E B GROCERY|WAL.?MART|WALMART|COSTCO|TARGET CORPORATION|LOWE.?S|HOME DEPOT)", re.I)
 
 T4326_2278 = Transformer.from_crs("EPSG:4326","EPSG:2278",always_xy=True).transform
@@ -282,12 +282,16 @@ def node_support(node):
 def fetch_recent_permits():
     fields="housingunitstotal,housingunitsexist,permittypemapped,permitclassmapped,workclass,proposeduse,landusedescription,latitude_perm,longitude_perm"
     return safe_query("permits-citywide",PERMITS_URL,where="1=1",out_fields=fields,
-                      return_geometry=False,page_size=2000,timeout=25)
+                      return_geometry=True,page_size=2000,timeout=25)
 
 def assign_permits_to_nodes(permits,supports):
     for feat in permits:
         p=props(feat)
         lat=nval(p,"latitude_perm"); lng=nval(p,"longitude_perm")
+        g=feature_shape(feat)
+        if g and not g.is_empty:
+            cc=g.centroid
+            lat=cc.y; lng=cc.x
         if not lat or not lng: continue
         for node in NODES:
             if haversine(node["lat"],node["lng"],lat,lng)<=3.0:
