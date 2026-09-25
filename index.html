@@ -3028,6 +3028,9 @@
         // from active TxDOT road-improvement projects (orange).
         var v3MTP = L.esri.featureLayer({
           url:v3BexarDevUrl+"/1",
+          // Future/new alignments only: no current ROW recorded, but proposed ROW exists.
+          // This intentionally excludes existing thoroughfares that are merely part of the MTP network.
+          where:"(CurrentRow IS NULL OR CurrentRow = '' OR CurrentRow = '0') AND PropRow IS NOT NULL AND PropRow <> ''",
           simplifyFactor:0.45,
           precision:5,
           style:function(){
@@ -3040,16 +3043,17 @@
               lineJoin:"round"
             };
           },
-          attribution:"Bexar County Major Thoroughfare Plan"
+          attribution:"Bexar County Major Thoroughfare Plan — future alignments only"
         });
         v3MTP.bindTooltip(function(layer){
           var p=layer.feature&&layer.feature.properties||{};
-          return (p.StreetName||"Future Road")+" — Future Roads";
+          return (p.StreetName||"Future Road")+" — Planned / New Road";
         },{sticky:true});
         v3MTP.bindPopup(function(layer){
           var p=layer.feature&&layer.feature.properties||{};
           return "<div style='min-width:245px'>"+
                  "<b>"+v3esc(p.StreetName||"Future Road")+"</b><br>"+
+                 "<b>Status:</b> Planned / new alignment<br>"+
                  "<b>Plan:</b> Bexar County Major Thoroughfare Plan<br>"+
                  "<b>Road type:</b> "+v3esc(p.Type||"—")+"<br>"+
                  "<b>Current ROW:</b> "+v3esc(p.CurrentRow||"—")+"<br>"+
@@ -3322,7 +3326,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"DUE DILIGENCE — Parcels / Owners");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"GROWTH — Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Major Thoroughfare Plan");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — New Alignments Only");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"DUE DILIGENCE — Future Land Use");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"DUE DILIGENCE — Traffic Counts");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"DUE DILIGENCE — Flood Zones");
