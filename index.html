@@ -3097,6 +3097,77 @@
                  "</div>";
         });
 
+        // H-E-B ownership — Comal + Guadalupe CAD screening.
+        // Multiple legal-name patterns are included because appraisal districts may abbreviate H-E-B differently.
+        var v3HEBComalParcels = L.esri.featureLayer({
+          url:v3ComalCadUrl,
+          where:"PY_OWNER_N LIKE '%HEB%' OR PY_OWNER_N LIKE '%H E B%' OR PY_OWNER_N LIKE '%H-E-B%' OR PY_OWNER_N LIKE '%H E BUTT%' OR PY_OWNER_N LIKE '%BUTT%GROC%'",
+          simplifyFactor:0.35,
+          precision:5,
+          style:function(){
+            return {color:"#e31b23",weight:4,opacity:1,fillColor:"#e31b23",fillOpacity:.20};
+          },
+          attribution:"Comal CAD ownership screening"
+        });
+        v3HEBComalParcels.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.LEGAL_ACRE);
+          return "H-E-B Owned · Comal"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
+        },{sticky:true});
+        v3HEBComalParcels.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.LEGAL_ACRE);
+          return "<div style='min-width:285px'>"+
+                 "<div style='font-size:15px;font-weight:900;color:#e31b23;margin-bottom:5px'>H-E-B OWNED PARCEL — COMAL</div>"+
+                 "<b>Owner:</b> "+v3esc(p.PY_OWNER_N||"—")+"<br>"+
+                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
+                 "<b>Property ID:</b> "+v3esc(p.PROP_ID||"—")+"<br>"+
+                 "<b>Situs:</b> "+v3esc(p.SITUS_ADDR||"—")+"<br>"+
+                 "<b>Appraised:</b> "+v3money(p.APPRAISED)+"<br>"+
+                 "<b>Assessed:</b> "+v3money(p.ASSESSED)+"<br>"+
+                 "<b>Legal:</b> "+v3esc(p.LEGAL_DESC||"—")+"<br>"+
+                 (p.CADLINK?"<a href='"+v3esc(p.CADLINK)+"' target='_blank'>Open CAD record</a><br>":"")+
+                 "<span style='font-size:10px;color:#666'>Comal CAD screening snapshot. Verify current ownership in the live appraisal record before relying on it.</span>"+
+                 "</div>";
+        });
+
+        var v3HEBGuadalupeParcels = L.esri.featureLayer({
+          url:v3GuadalupeCadUrl,
+          where:"OWNER_NAME LIKE '%HEB%' OR OWNER_NAME LIKE '%H E B%' OR OWNER_NAME LIKE '%H-E-B%' OR OWNER_NAME LIKE '%H E BUTT%' OR OWNER_NAME LIKE '%BUTT%GROC%'",
+          simplifyFactor:0.35,
+          precision:5,
+          style:function(){
+            return {color:"#e31b23",weight:4,opacity:1,fillColor:"#e31b23",fillOpacity:.20};
+          },
+          attribution:"Guadalupe CAD ownership screening"
+        });
+        v3HEBGuadalupeParcels.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.LEGAL_AREA);
+          return "H-E-B Owned · Guadalupe"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
+        },{sticky:true});
+        v3HEBGuadalupeParcels.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.LEGAL_AREA);
+          return "<div style='min-width:285px'>"+
+                 "<div style='font-size:15px;font-weight:900;color:#e31b23;margin-bottom:5px'>H-E-B OWNED PARCEL — GUADALUPE</div>"+
+                 "<b>Owner:</b> "+v3esc(p.OWNER_NAME||"—")+"<br>"+
+                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
+                 "<b>Property ID:</b> "+v3esc(p.PROP_ID||"—")+"<br>"+
+                 "<b>Situs:</b> "+v3esc(p.SITUS_ADDR||"—")+"<br>"+
+                 "<b>Market value:</b> "+v3money(p.MKT_VALUE)+"<br>"+
+                 "<b>Land value:</b> "+v3money(p.LAND_VALUE)+"<br>"+
+                 "<b>Improvement value:</b> "+v3money(p.IMP_VALUE)+"<br>"+
+                 "<span style='font-size:10px;color:#666'>Guadalupe CAD public screening extract. Verify current ownership in the live appraisal district portal.</span>"+
+                 "</div>";
+        });
+
+        var v3HEBOwnedAllCounties = L.layerGroup([
+          v3HEBOwnedParcels,
+          v3HEBComalParcels,
+          v3HEBGuadalupeParcels
+        ]);
+
         // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
         var v3FloodplainBuffer = L.esri.dynamicMapLayer({
           url:v3FloodUrl,
@@ -3456,7 +3527,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"DUE DILIGENCE — Parcels / Owners");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"CAD — Comal Parcels / Owners");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"CAD — Guadalupe Parcels / Owners");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedParcels,"OWNER — H-E-B Grocery Company LP");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"OWNER — H-E-B Owned Parcels (Bexar / Comal / Guadalupe)");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"GROWTH — Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Major New Corridors");
@@ -3745,7 +3816,7 @@
             feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
             feature_group_0c45a8fa797258d406c1e937c6f99c34,
             feature_group_370786adb15c6d6d865f189609798696,
-            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3PrelimPlats,v3BexarDevelopment,v3MTP,v3FutureLandUse,
+            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v3PrelimPlats,v3BexarDevelopment,v3MTP,v3FutureLandUse,
             v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings,v3LandResults
           ];
 
