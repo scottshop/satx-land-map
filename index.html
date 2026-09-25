@@ -3168,6 +3168,47 @@
           v3HEBGuadalupeParcels
         ]);
 
+        // Existing sewer service areas — Texas PUC sewer CCN polygons.
+        // This is a legal utility-service territory screen, not proof of a nearby main or available capacity.
+        var v3SewerServiceUrl = "https://services3.arcgis.com/65cjxRz7QPkb5HMT/arcgis/rest/services/PUC_CCN_SEWER_TSMS/FeatureServer/1";
+        var v3SewerService = L.esri.featureLayer({
+          url:v3SewerServiceUrl,
+          simplifyFactor:0.45,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{};
+            var isSAWS=String(p.UTILITY||"").toUpperCase().indexOf("SAN ANTONIO")>=0;
+            return {
+              color:isSAWS?"#0077b6":"#0096c7",
+              weight:isSAWS?3:2,
+              opacity:.92,
+              fillColor:isSAWS?"#48cae4":"#90e0ef",
+              fillOpacity:isSAWS?.14:.08
+            };
+          },
+          attribution:"Texas PUC sewer CCN service areas"
+        });
+
+        v3SewerService.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return (p.UTILITY||"Sewer Utility")+" · CCN "+(p.CCN_NO||"—");
+        },{sticky:true});
+
+        v3SewerService.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return "<div style='min-width:285px'>"+
+                 "<div style='font-size:14px;font-weight:900;color:#0077b6;margin-bottom:4px'>EXISTING SEWER SERVICE AREA</div>"+
+                 "<b>Utility:</b> "+v3esc(p.UTILITY||"—")+"<br>"+
+                 "<b>CCN:</b> "+v3esc(p.CCN_NO||"—")+"<br>"+
+                 "<b>County:</b> "+v3esc(p.COUNTY||"—")+"<br>"+
+                 "<b>CCN type:</b> "+v3esc(p.CCN_TYPE||"—")+"<br>"+
+                 "<b>Status:</b> "+v3esc(p.STATUS||"—")+"<br>"+
+                 "<div style='margin-top:6px;padding:6px 7px;background:#eef8fc;border-left:4px solid #0077b6'>"+
+                 "<b>Screening note:</b> Inside a sewer CCN means the utility has the legal service territory. It does <u>not</u> confirm a sewer main at the site, available capacity, gravity service, lift-station requirements, or extension cost."+
+                 "</div>"+
+                 "</div>";
+        });
+
         // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
         var v3FloodplainBuffer = L.esri.dynamicMapLayer({
           url:v3FloodUrl,
@@ -3532,6 +3573,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Major New Corridors");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"DUE DILIGENCE — Future Land Use");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"UTILITIES — Existing Sewer Service Areas");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"DUE DILIGENCE — Traffic Counts");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"DUE DILIGENCE — Flood Zones");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"DUE DILIGENCE — Flood Buffer");
@@ -3816,7 +3858,7 @@
             feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
             feature_group_0c45a8fa797258d406c1e937c6f99c34,
             feature_group_370786adb15c6d6d865f189609798696,
-            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v3PrelimPlats,v3BexarDevelopment,v3MTP,v3FutureLandUse,
+            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v3PrelimPlats,v3BexarDevelopment,v3MTP,v3FutureLandUse,v3SewerService,
             v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings,v3LandResults
           ];
 
