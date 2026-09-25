@@ -3861,12 +3861,10 @@
         if(!map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane")){
           map_33cc2c2ac68d72d2971fbb7de3650b24.createPane("v6ExactParcelPane");
           map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane").style.zIndex=695;
-          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane").style.pointerEvents="auto";
         }
         if(!map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane")){
           map_33cc2c2ac68d72d2971fbb7de3650b24.createPane("v6AssemblagePane");
           map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane").style.zIndex=680;
-          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane").style.pointerEvents="auto";
         }
 
         window.v6OpportunityData=[];
@@ -3881,6 +3879,50 @@
           var n=Number(v); return isFinite(n)&&n?("$"+Math.round(n).toLocaleString()):"—";
         }
         function v6arr(v){return Array.isArray(v)?v.join(" / "):(v||"—");}
+
+        // Robust parcel hit-testing independent of Leaflet/SVG pointer targeting.
+        // This is the fallback that keeps target parcels clickable even if a browser
+        // reports the draggable map canvas as the event target.
+        function v6PointInRing(lat,lng,ring){
+          if(!ring||ring.length<3)return false;
+          var x=lng,y=lat,inside=false;
+          for(var i=0,j=ring.length-1;i<ring.length;j=i++){
+            var xi=Number(ring[i][0]), yi=Number(ring[i][1]);
+            var xj=Number(ring[j][0]), yj=Number(ring[j][1]);
+            var crosses=((yi>y)!=(yj>y)) &&
+              (x < (xj-xi)*(y-yi)/((yj-yi)||1e-12)+xi);
+            if(crosses)inside=!inside;
+          }
+          return inside;
+        }
+        function v6PointInPolygon(lat,lng,rings){
+          if(!rings||!rings.length||!v6PointInRing(lat,lng,rings[0]))return false;
+          for(var h=1;h<rings.length;h++)if(v6PointInRing(lat,lng,rings[h]))return false;
+          return true;
+        }
+        function v6GeometryContains(geom,latlng){
+          if(!geom||!latlng)return false;
+          var c=geom.coordinates||[];
+          if(geom.type==="Polygon")return v6PointInPolygon(latlng.lat,latlng.lng,c);
+          if(geom.type==="MultiPolygon"){
+            for(var i=0;i<c.length;i++)if(v6PointInPolygon(latlng.lat,latlng.lng,c[i]))return true;
+          }
+          return false;
+        }
+        function v6HitOpportunity(latlng){
+          if(!window.v6OpportunityData||!window.v6OpportunityData.length)return null;
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v6OpportunityLayer))return null;
+          for(var i=0;i<window.v6OpportunityData.length;i++){
+            var f=window.v6OpportunityData[i], p=f.properties||{};
+            var rec=window.v6OpportunityById[String(p.prop_id)];
+            if(rec&&rec.layer){
+              try{if(!rec.layer.getBounds().contains(latlng))continue;}catch(e){}
+            }
+            if(v6GeometryContains(f.geometry,latlng))return rec||{feature:f};
+          }
+          return null;
+        }
+
         function v6popup(p){
           var geom=p.bcad_geometry_verified ? "BCAD geometry verified through SARA parcel service" : (p.geometry_source||"Bexar County parcel geometry; current BCAD title/geometry should be re-verified");
           var situs=(p.situs&&p.situs!=="—")?p.situs:(p.node_name||"San Antonio");
@@ -4016,6 +4058,37 @@
             layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v6AssemblageLayer,"LAND — Assemblage Opportunities");
           }).catch(function(){});
         }
+
+        // Hard interaction fallback: map-level click + hover hit-test for exact target parcels.
+        // This bypasses SVG/canvas event targeting entirely.
+        (function(){
+          var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
+          var container=map.getContainer();
+          var movePending=false,lastMove=null;
+
+          map.on("click",function(e){
+            var rec=v6HitOpportunity(e.latlng);
+            if(rec&&rec.layer){
+              try{
+                rec.layer.openPopup(e.latlng);
+                if(rec.layer.bringToFront)rec.layer.bringToFront();
+              }catch(err){}
+            }
+          });
+
+          map.on("mousemove",function(e){
+            lastMove=e.latlng;
+            if(movePending)return;
+            movePending=true;
+            requestAnimationFrame(function(){
+              movePending=false;
+              var rec=v6HitOpportunity(lastMove);
+              container.style.cursor=rec?"pointer":"grab";
+            });
+          });
+
+          map.on("mouseout",function(){container.style.cursor="";});
+        })();
 
         setTimeout(function(){
           var toggle=document.getElementById("v6TopToggle"), panel=document.getElementById("v6TopPanel");
