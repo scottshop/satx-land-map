@@ -200,6 +200,22 @@ Parcel analysis is precomputed and loaded from static GeoJSON for speed and stab
             );
         
     
+            // Satellite basemap — Esri World Imagery. Kept off by default; select from the layer control.
+            var tile_layer_satellite = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+            );
+        
+    
             var feature_group_8664419a099b0fb300dcdc7bb4f5e31c = L.featureGroup(
                 {
 }
@@ -2929,6 +2945,7 @@ Parcel analysis is precomputed and loaded from static GeoJSON for speed and stab
                     "Light" : tile_layer_f07a431ff4dc7ff3c822055d0c4ef939,
                     "Street" : tile_layer_aaae3922d3fdbfea43709c0f196149c0,
                     "Topo" : tile_layer_34ebf833fc2ef87725ad85de46958f36,
+                    "Satellite" : tile_layer_satellite,
                 },
                 overlays :  {
                     "\ud83d\udd25 Priority Areas" : feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
