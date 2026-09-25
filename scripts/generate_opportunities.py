@@ -260,15 +260,7 @@ def node_support(node):
                          out_fields="*",return_geometry=True)
         for f in feats: f["_stage_weight"]=stage_w
         support["plats"].extend(feats)
-    permit_box=safe_query("permits",PERMITS_URL,geom=envelope_geom(node,3.0),
-                          geom_type="esriGeometryEnvelope",out_fields="*",return_geometry=True)
-    support["permits"]=[]
-    for feat in permit_box:
-        g=feature_shape(feat)
-        if g and not g.is_empty:
-            cc=g.centroid
-            if haversine(node["lat"],node["lng"],cc.y,cc.x)<=3.0:
-                support["permits"].append(feat)
+    # Permits are fetched once citywide in main() and assigned locally to nodes.
     support["traffic"]=safe_query("aadt",AADT_URL,geom=point_geom(node),distance=3218.688,
                                   out_fields="*",return_geometry=True)
     support["roads"]=safe_query("cosa-streets",STREETS_URL,geom=point_geom(node),distance=3218.688,
@@ -286,6 +278,20 @@ def node_support(node):
     support["cip"]+=safe_query("saws-cip-polys",SAWS_CIP_POLY,geom=point_geom(node),distance=1609.344,
                                out_fields="*",return_geometry=True)
     return support
+
+def fetch_recent_permits():
+    fields="housingunitstotal,housingunitsexist,permittypemapped,permitclassmapped,workclass,proposeduse,landusedescription,latitude_perm,longitude_perm"
+    return safe_query("permits-citywide",PERMITS_URL,where="1=1",out_fields=fields,
+                      return_geometry=False,page_size=2000,timeout=25)
+
+def assign_permits_to_nodes(permits,supports):
+    for feat in permits:
+        p=props(feat)
+        lat=nval(p,"latitude_perm"); lng=nval(p,"longitude_perm")
+        if not lat or not lng: continue
+        for node in NODES:
+            if haversine(node["lat"],node["lng"],lat,lng)<=3.0:
+                supports[node["id"]]["permits"].append(feat)
 
 def score_node(node,support):
     now=datetime.now(timezone.utc)
@@ -621,6 +627,11 @@ def main():
             supports[node["id"]]=sup
             node_results.append(score_node(node,sup))
             print(f"[{idx}/{len(NODES)}] {node['name']}")
+    print("Fetching recent permits once and assigning to nodes...")
+    recent_permits=fetch_recent_permits()
+    assign_permits_to_nodes(recent_permits,supports)
+    # Re-score nodes now that permit momentum has been assigned.
+    node_results=[score_node(node,supports[node["id"]]) for node in NODES]
     node_results.sort(key=lambda x:x["score"],reverse=True)
     node_by={x["id"]:x for x in node_results}
 
