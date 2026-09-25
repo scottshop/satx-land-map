@@ -3168,52 +3168,212 @@
           v3HEBGuadalupeParcels
         ]);
 
-        // Existing SAWS sewer mains — physical wastewater pipe alignments.
-        // Public SAWS-sourced snapshot received July 21, 2021; screening only.
-        var v3SewerServiceUrl = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__GreaterSATX/MapServer/28";
-        var v3SewerService = L.esri.featureLayer({
-          url:v3SewerServiceUrl,
+        // Existing sewer mains — physical wastewater pipe alignments across Bexar, Comal and Guadalupe.
+        // Sources are public utility/municipal GIS line datasets; no CCN/service-territory polygons are used.
+        function v3SewerWeight(d){
+          d=parseFloat(String(d==null?"":d).replace(/[^0-9.]/g,""));
+          return isFinite(d)?(d>=36?6:d>=18?5:d>=12?4:3):3;
+        }
+        function v3SewerDate(v){
+          if(!v) return "—";
+          try{return new Date(v).toLocaleDateString();}catch(e){return "—";}
+        }
+        function v3SewerStyle(d,color,dashed){
+          return {
+            color:color||"#00c8ff",
+            weight:v3SewerWeight(d),
+            opacity:.95,
+            dashArray:dashed?"9,6":null,
+            lineCap:"round",
+            lineJoin:"round"
+          };
+        }
+
+        // Bexar — SAWS existing sewer mains. Public SAWS-sourced snapshot received July 21, 2021.
+        var v3SewerSAWSUrl = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__GreaterSATX/MapServer/28";
+        var v3SewerSAWS = L.esri.featureLayer({
+          url:v3SewerSAWSUrl,
           simplifyFactor:0.25,
           precision:5,
           style:function(feature){
             var p=feature.properties||{};
-            var dia=parseFloat(String(p.PIPEDIAM||"").replace(/[^0-9.]/g,""));
-            var w=isFinite(dia)?(dia>=36?6:dia>=18?5:dia>=12?4:3):3;
-            return {
-              color:"#00c8ff",
-              weight:w,
-              opacity:.95,
-              lineCap:"round",
-              lineJoin:"round"
-            };
+            return v3SewerStyle(p.PIPEDIAM,"#00c8ff",false);
           },
           attribution:"SAWS existing sewer mains — July 2021 public GIS snapshot"
         });
-
-        v3SewerService.bindTooltip(function(layer){
+        v3SewerSAWS.bindTooltip(function(layer){
           var p=layer.feature&&layer.feature.properties||{};
-          var d=p.PIPEDIAM||"—";
-          return "Existing SAWS Sewer Main · "+d+(String(d).indexOf('"')>=0?"":" in");
+          return "SAWS Sewer Main · "+v3esc(p.PIPEDIAM||"—");
         },{sticky:true});
-
-        v3SewerService.bindPopup(function(layer){
+        v3SewerSAWS.bindPopup(function(layer){
           var p=layer.feature&&layer.feature.properties||{};
-          var inst=p.INSTDATE?new Date(p.INSTDATE).toLocaleDateString():"—";
           var len=Number(p.PIPELEN);
           return "<div style='min-width:285px'>"+
-                 "<div style='font-size:14px;font-weight:900;color:#009bc4;margin-bottom:4px'>EXISTING SAWS SEWER MAIN</div>"+
-                 "<b>Pipe diameter:</b> "+v3esc(p.PIPEDIAM||"—")+"<br>"+
+                 "<div style='font-size:14px;font-weight:900;color:#009bc4;margin-bottom:4px'>EXISTING SEWER MAIN — SAWS</div>"+
+                 "<b>Diameter:</b> "+v3esc(p.PIPEDIAM||"—")+"<br>"+
                  "<b>Pipe type:</b> "+v3esc(p.PIPETYPE||"—")+"<br>"+
-                 "<b>Install date:</b> "+v3esc(inst)+"<br>"+
+                 "<b>Install date:</b> "+v3esc(v3SewerDate(p.INSTDATE))+"<br>"+
                  "<b>Length:</b> "+(isFinite(len)?Math.round(len).toLocaleString()+" ft":"—")+"<br>"+
                  "<b>Slope:</b> "+v3esc(p.SLOPE||"—")+"<br>"+
                  "<b>As-built:</b> "+v3esc(p.ASBLT||"—")+"<br>"+
                  "<b>Map #:</b> "+v3esc(p.MAPNO||"—")+"<br>"+
-                 "<div style='margin-top:6px;padding:6px 7px;background:#eefcff;border-left:4px solid #00c8ff'>"+
-                 "<b>Screening note:</b> This is actual sewer-main alignment data from a public SAWS-sourced July 2021 GIS snapshot. Verify current location, depth, capacity, tie-in feasibility and as-builts with SAWS before acquisition or design."+
-                 "</div>"+
+                 "<span style='font-size:10px;color:#666'>SAWS-sourced July 2021 public GIS snapshot. Verify current location, depth, capacity and tie-in feasibility with SAWS.</span>"+
                  "</div>";
         });
+
+        // Comal / New Braunfels — NBU wastewater mains.
+        // Public NBU-sourced utility snapshot retrieved January 17, 2024.
+        var v3SewerNBUUrl = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Hines_SiteSelection/MapServer/512";
+        var v3SewerNBU = L.esri.featureLayer({
+          url:v3SewerNBUUrl,
+          where:"ENABLED=1 AND (ARCHIVEDFA IS NULL OR ARCHIVEDFA='')",
+          simplifyFactor:0.25,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{};
+            return v3SewerStyle(p.DIAMETER,"#18b7ff",false);
+          },
+          attribution:"New Braunfels Utilities wastewater mains — 2024 public GIS snapshot"
+        });
+        v3SewerNBU.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return "NBU Wastewater Main · "+(p.DIAMETER!=null?p.DIAMETER+" in":"diameter —");
+        },{sticky:true});
+        v3SewerNBU.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var len=Number(p.MEASUREDLE);
+          return "<div style='min-width:285px'>"+
+                 "<div style='font-size:14px;font-weight:900;color:#118bc2;margin-bottom:4px'>EXISTING SEWER MAIN — NBU</div>"+
+                 "<b>Diameter:</b> "+v3esc(p.DIAMETER!=null?p.DIAMETER+" in":"—")+"<br>"+
+                 "<b>Material:</b> "+v3esc(p.MATERIAL||"—")+"<br>"+
+                 "<b>Install date:</b> "+v3esc(v3SewerDate(p.INSTALLDAT))+"<br>"+
+                 "<b>Length:</b> "+(isFinite(len)?Math.round(len).toLocaleString()+" ft":"—")+"<br>"+
+                 "<b>Slope:</b> "+v3esc(p.PERCENTSLO||p.NBUPERCENT||"—")+"<br>"+
+                 "<b>Facility ID:</b> "+v3esc(p.FACILITYID||"—")+"<br>"+
+                 "<b>Drawing #:</b> "+v3esc(p.DRAWINGNUM||"—")+"<br>"+
+                 "<span style='font-size:10px;color:#666'>NBU-sourced public GIS snapshot retrieved Jan. 17, 2024. Verify current infrastructure in NBU's Infrastructure Information Portal before design.</span>"+
+                 "</div>";
+        });
+
+        // Guadalupe — GBRA Stein Falls existing gravity mains.
+        var v3SewerGBRAGravityUrl = "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/170";
+        var v3SewerGBRAGravity = L.esri.featureLayer({
+          url:v3SewerGBRAGravityUrl,
+          simplifyFactor:0.25,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{};
+            return v3SewerStyle(p.Diameter,"#00d4d4",false);
+          },
+          attribution:"GBRA Stein Falls existing wastewater mains"
+        });
+        v3SewerGBRAGravity.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return "GBRA Stein Falls Sewer Main · "+(p.Diameter!=null?p.Diameter+" in":"diameter —");
+        },{sticky:true});
+        v3SewerGBRAGravity.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return "<div style='min-width:270px'><b>EXISTING SEWER MAIN — GBRA STEIN FALLS</b><br>"+
+                 "<b>Diameter:</b> "+v3esc(p.Diameter!=null?p.Diameter+" in":"—")+"<br>"+
+                 "<b>System:</b> "+v3esc(p.System||"—")+"<br>"+
+                 "<b>Asset type:</b> "+v3esc(p.AssetType||"Gravity Main")+"<br>"+
+                 "<span style='font-size:10px;color:#666'>Existing line layer; proposed Stein Falls mains are intentionally excluded.</span></div>";
+        });
+
+        // Guadalupe — GBRA Stein Falls existing force mains.
+        var v3SewerGBRAForceUrl = "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/172";
+        var v3SewerGBRAForce = L.esri.featureLayer({
+          url:v3SewerGBRAForceUrl,
+          simplifyFactor:0.25,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{};
+            return v3SewerStyle(p.Diameter,"#00d4d4",true);
+          },
+          attribution:"GBRA Stein Falls existing wastewater force mains"
+        });
+        v3SewerGBRAForce.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return "GBRA Stein Falls Force Main · "+(p.Diameter!=null?p.Diameter+" in":"diameter —");
+        },{sticky:true});
+        v3SewerGBRAForce.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return "<div style='min-width:270px'><b>EXISTING SEWER FORCE MAIN — GBRA STEIN FALLS</b><br>"+
+                 "<b>Diameter:</b> "+v3esc(p.Diameter!=null?p.Diameter+" in":"—")+"<br>"+
+                 "<b>System:</b> "+v3esc(p.System||"—")+"<br>"+
+                 "<b>Asset type:</b> "+v3esc(p.AssetType||"Force Main")+"<br>"+
+                 "<span style='font-size:10px;color:#666'>Dashed cyan = force main. Proposed Stein Falls force mains are intentionally excluded.</span></div>";
+        });
+
+        // Guadalupe — Green Valley SUD wastewater mains.
+        var v3SewerGVSUDUrl = "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/176";
+        var v3SewerGVSUD = L.esri.featureLayer({
+          url:v3SewerGVSUDUrl,
+          simplifyFactor:0.25,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{};
+            return v3SewerStyle(p.Diam,"#38bdf8",false);
+          },
+          attribution:"Green Valley SUD wastewater mains"
+        });
+        v3SewerGVSUD.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return "GVSUD Sewer Main · "+(p.Diam!=null?p.Diam+" in":"diameter —");
+        },{sticky:true});
+        v3SewerGVSUD.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return "<div style='min-width:270px'><b>EXISTING SEWER MAIN — GVSUD</b><br>"+
+                 "<b>Diameter:</b> "+v3esc(p.Diam!=null?p.Diam+" in":"—")+"<br>"+
+                 "<b>Material:</b> "+v3esc(p.Material||"—")+"<br>"+
+                 "<b>Type:</b> "+v3esc(p.Type||"—")+"<br>"+
+                 "<b>Notes:</b> "+v3esc(p.Notes||"—")+"<br>"+
+                 "<span style='font-size:10px;color:#666'>Public wastewater-main screening layer. Verify current field conditions with Green Valley SUD.</span></div>";
+        });
+
+        // Guadalupe / southern Comal — City of Schertz and neighboring active sewer mains.
+        // Live public Schertz utility layer; proposed and abandoned segments are excluded.
+        var v3SewerSchertzUrl = "https://maps.schertz.com/hosting/rest/services/PublicFolder/SchertzSewerUtilities/MapServer/10";
+        var v3SewerSchertz = L.esri.featureLayer({
+          url:v3SewerSchertzUrl,
+          where:"LifecycleStatus='Active'",
+          simplifyFactor:0.25,
+          precision:5,
+          style:function(feature){
+            var p=feature.properties||{};
+            return v3SewerStyle(p.Diameter,"#0ea5e9",Number(p.Type)===1);
+          },
+          attribution:"City of Schertz active sewer mains"
+        });
+        v3SewerSchertz.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return (p.OwnerName||"Schertz-area")+" Sewer Main · "+(p.Diameter!=null?p.Diameter+" in":"diameter —");
+        },{sticky:true});
+        v3SewerSchertz.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var typ=Number(p.Type)===1?"Pressure / Force Main":"Gravity Main";
+          return "<div style='min-width:285px'>"+
+                 "<div style='font-size:14px;font-weight:900;color:#087fae;margin-bottom:4px'>EXISTING SEWER MAIN — SCHERTZ AREA</div>"+
+                 "<b>Owner / agency:</b> "+v3esc(p.OwnerName||"—")+"<br>"+
+                 "<b>Status:</b> "+v3esc(p.LifecycleStatus||"Active")+"<br>"+
+                 "<b>Main type:</b> "+v3esc(typ)+"<br>"+
+                 "<b>Diameter:</b> "+v3esc(p.Diameter!=null?p.Diameter+" in":"—")+"<br>"+
+                 "<b>Material:</b> "+v3esc(p.Material||"—")+"<br>"+
+                 "<b>Install date:</b> "+v3esc(v3SewerDate(p.InstallDate))+"<br>"+
+                 "<b>Slope:</b> "+v3esc(p.Slope||"—")+"<br>"+
+                 "<span style='font-size:10px;color:#666'>Live public City of Schertz utility layer filtered to Active only. It also contains neighboring-agency mains where maintained in the Schertz GIS.</span>"+
+                 "</div>";
+        });
+
+        // One manual toggle for all available physical sewer-main datasets.
+        var v3SewerService = L.layerGroup([
+          v3SewerSAWS,
+          v3SewerNBU,
+          v3SewerGBRAGravity,
+          v3SewerGBRAForce,
+          v3SewerGVSUD,
+          v3SewerSchertz
+        ]);
 
         // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
         var v3FloodplainBuffer = L.esri.dynamicMapLayer({
@@ -3579,7 +3739,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Major New Corridors");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"DUE DILIGENCE — Future Land Use");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"UTILITIES — Existing SAWS Sewer Mains");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"UTILITIES — Existing Sewer Mains (Bexar / Comal / Guadalupe)");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"DUE DILIGENCE — Traffic Counts");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"DUE DILIGENCE — Flood Zones");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"DUE DILIGENCE — Flood Buffer");
