@@ -1,0 +1,5964 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.28969399149736,
+              29.456727709846273
+            ],
+            [
+              -98.28970455633551,
+              29.456725167343567
+            ],
+            [
+              -98.29044567807436,
+              29.456546784330456
+            ],
+            [
+              -98.29076433831074,
+              29.456470086710812
+            ],
+            [
+              -98.29081617383974,
+              29.456459126904225
+            ],
+            [
+              -98.2908689913853,
+              29.456454962014092
+            ],
+            [
+              -98.2909219040457,
+              29.45645766197642
+            ],
+            [
+              -98.29097402332214,
+              29.456467181453977
+            ],
+            [
+              -98.29124353360629,
+              29.456535403956654
+            ],
+            [
+              -98.29125969434892,
+              29.456539459845242
+            ],
+            [
+              -98.2914358057925,
+              29.456010553251
+            ],
+            [
+              -98.29146133387229,
+              29.45573092753895
+            ],
+            [
+              -98.29163328593626,
+              29.455201870434422
+            ],
+            [
+              -98.29178451890732,
+              29.454952885759862
+            ],
+            [
+              -98.29204849573105,
+              29.454149842163297
+            ],
+            [
+              -98.28897104408145,
+              29.4535075831983
+            ],
+            [
+              -98.28849128242314,
+              29.453403919899817
+            ],
+            [
+              -98.28885650592727,
+              29.454344791961432
+            ],
+            [
+              -98.28919916616249,
+              29.455116498136434
+            ],
+            [
+              -98.28969399149736,
+              29.456727709846273
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "1113105",
+        "owner": "GREEN ROAD 1604 PARTNERS LLC",
+        "situs": "E LOOP 1604 N",
+        "acres": 18.5,
+        "land_value": 825000.0,
+        "assessed_value": 825000.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB 5088 P-29 ABS 308 2023 REMAINS PER DEED 20220127912//  2008-NEW PER SPLIT PER DEED 13178/1366 EXE 10-16-07",
+        "node_id": "INT-009",
+        "node_name": "Schuwirth Rd / Loop 1604 East",
+        "node_score": 68.1,
+        "node_edge_miles": 0.091,
+        "dist_score": 100,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.681,
+        "aspect_ratio": 1.07,
+        "road_score": 100,
+        "frontage_roads": [
+          "GREEN RD",
+          "E LOOP 1604 N"
+        ],
+        "frontage_ft_proxy": 961.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Urban Living / I-10 East Corridor"
+        ],
+        "aadt": 20632,
+        "aadt_5yr_growth_pct": 90.2,
+        "aadt_station_miles": 0.52,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 4.28,
+        "future_residential_lots_nearby": 5845.3,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 44595.0,
+        "land_value_per_acre": 44595.0,
+        "parcel_opportunity_score": 89.7,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 5845 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05088-000-0290",
+        "ownership_type": "Private",
+        "last_deed_date": "2008-12-22",
+        "hold_years": 17.8,
+        "rank": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.79800478759839,
+              29.37909786594609
+            ],
+            [
+              -98.79797656071968,
+              29.380889593746762
+            ],
+            [
+              -98.79797774347475,
+              29.38120923672559
+            ],
+            [
+              -98.79819530032555,
+              29.38120956570095
+            ],
+            [
+              -98.79956619471415,
+              29.381211630524554
+            ],
+            [
+              -98.79957111981425,
+              29.380913852466197
+            ],
+            [
+              -98.79965336930347,
+              29.375942054117782
+            ],
+            [
+              -98.79881053843349,
+              29.37598185995044
+            ],
+            [
+              -98.7980116353855,
+              29.375975842664317
+            ],
+            [
+              -98.79800478759839,
+              29.37909786594609
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "338011",
+        "owner": "TSCHIRHART B & L PROP LTD",
+        "situs": "5725  MECHLER RD",
+        "acres": 22.11,
+        "land_value": 376810.0,
+        "assessed_value": 376810.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 5172  ABS 1009  P-6   RESURVEY ACREAGE PER DEED 13003/1905",
+        "node_id": "INT-004",
+        "node_name": "US 90 / SH 211",
+        "node_score": 66.7,
+        "node_edge_miles": 0.025,
+        "dist_score": 100,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 83.5,
+        "compactness": 0.522,
+        "aspect_ratio": 3.67,
+        "road_score": 100,
+        "frontage_roads": [
+          "Unnamed road",
+          "MECHLER RD"
+        ],
+        "frontage_ft_proxy": 2213.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Country Tier / West"
+        ],
+        "aadt": 31896,
+        "aadt_5yr_growth_pct": 46.6,
+        "aadt_station_miles": 0.93,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 10.06,
+        "future_residential_lots_nearby": 9259.4,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_context": "1 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
+        "assessed_value_per_acre": 17043.0,
+        "land_value_per_acre": 17043.0,
+        "parcel_opportunity_score": 89.1,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 9259 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05172-000-0060",
+        "ownership_type": "Private",
+        "last_deed_date": "2007-07-17",
+        "hold_years": 19.2,
+        "rank": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.22605461150462,
+              29.48781189031619
+            ],
+            [
+              -98.22543426390673,
+              29.488016598991596
+            ],
+            [
+              -98.22475762353628,
+              29.488254032654414
+            ],
+            [
+              -98.22430899378674,
+              29.48840696752194
+            ],
+            [
+              -98.22422745414144,
+              29.48861082514951
+            ],
+            [
+              -98.22486449283447,
+              29.489572506820185
+            ],
+            [
+              -98.22497800064701,
+              29.48980417795043
+            ],
+            [
+              -98.22585347436892,
+              29.491125764086767
+            ],
+            [
+              -98.2297370840833,
+              29.48915033837685
+            ],
+            [
+              -98.2287047250718,
+              29.486777383862297
+            ],
+            [
+              -98.22869032961562,
+              29.486750347889913
+            ],
+            [
+              -98.22759570041597,
+              29.487124082826313
+            ],
+            [
+              -98.22735887930969,
+              29.487204938068814
+            ],
+            [
+              -98.22660801920033,
+              29.48757082359552
+            ],
+            [
+              -98.22624999088735,
+              29.487745284089808
+            ],
+            [
+              -98.22605461150462,
+              29.48781189031619
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "339373",
+        "owner": "MILLER BALOUS T & JULIE",
+        "situs": "13085 E IH 10",
+        "acres": 34.91,
+        "land_value": 2800000.0,
+        "assessed_value": 2800000.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB 5193  P-23E  ABS 5   2021-SPLIT PER DEED 20200033876 EXE 1-22-2020.  SPLIT OUT 1.242 AC TOTAL FROM PIDS 339310,339311,339312,339313,339314,339373.  UPDATE LEGAL/LAND SIZE ONLY.  NO NEW ACCOUNT CREATED, TXDoT/CoSA ROW DEED.  CR # 50212.   JLF/GIS/4-12-2021.",
+        "node_id": "INT-006",
+        "node_name": "FM 1518 / I-10",
+        "node_score": 67.6,
+        "node_edge_miles": 0.066,
+        "dist_score": 100,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.761,
+        "aspect_ratio": 1.42,
+        "road_score": 100,
+        "frontage_roads": [
+          "IH 10 E ACCESS RD",
+          "E FM 1518 N"
+        ],
+        "frontage_ft_proxy": 1405.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 10714,
+        "aadt_5yr_growth_pct": 33.6,
+        "aadt_station_miles": 0.16,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 5.4,
+        "future_residential_lots_nearby": 4332.7,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 80206.0,
+        "land_value_per_acre": 80206.0,
+        "parcel_opportunity_score": 89.0,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 4332 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05193-000-0235",
+        "ownership_type": "Private",
+        "last_deed_date": "2024-08-02",
+        "hold_years": 2.1,
+        "rank": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.2220791286031,
+              29.48401554142742
+            ],
+            [
+              -98.22294056393102,
+              29.48601017265154
+            ],
+            [
+              -98.22300702217953,
+              29.486137845227375
+            ],
+            [
+              -98.22303449496269,
+              29.48612374480366
+            ],
+            [
+              -98.22375861147538,
+              29.48575230014043
+            ],
+            [
+              -98.22390824470247,
+              29.485675543234496
+            ],
+            [
+              -98.22422332469101,
+              29.485519955154388
+            ],
+            [
+              -98.22589195645516,
+              29.48469322058847
+            ],
+            [
+              -98.2279107253408,
+              29.4837020271796
+            ],
+            [
+              -98.22864750518261,
+              29.48333588516488
+            ],
+            [
+              -98.2296876947248,
+              29.48281895055973
+            ],
+            [
+              -98.22918597504282,
+              29.48207605766148
+            ],
+            [
+              -98.228455055837,
+              29.48095738978847
+            ],
+            [
+              -98.2283688069353,
+              29.480823779337328
+            ],
+            [
+              -98.2220791286031,
+              29.48401554142742
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "694750",
+        "owner": "BORGFELD ARROW LLC &",
+        "situs": "6152 E FM 1518 N",
+        "acres": 44.85,
+        "land_value": 1771580.0,
+        "assessed_value": 1771580.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "NCB 18229 P-390 (.029AC) CB 5193 P-390 ABS 5 (44.821) FORMERLY P-28A 2009-RESURVEY PER DEEDS 13451/1531 & 1537 EX 12-31-07",
+        "node_id": "INT-006",
+        "node_name": "FM 1518 / I-10",
+        "node_score": 67.6,
+        "node_edge_miles": 0.201,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 95.7,
+        "compactness": 0.598,
+        "aspect_ratio": 2.92,
+        "road_score": 92,
+        "frontage_roads": [
+          "E FM 1518 N"
+        ],
+        "frontage_ft_proxy": 848.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Community Commercial / I-10 East Corridor",
+          "Urban Living / I-10 East Corridor",
+          "Rural Living / I-10 East Corridor"
+        ],
+        "aadt": 11696,
+        "aadt_5yr_growth_pct": 98.6,
+        "aadt_station_miles": 0.23,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 5.6,
+        "future_residential_lots_nearby": 4332.7,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 39500.0,
+        "land_value_per_acre": 39500.0,
+        "parcel_opportunity_score": 88.9,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of priority intersection \u00b7 4332 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "18229-000-3900",
+        "ownership_type": "Private",
+        "last_deed_date": "2007-12-31",
+        "hold_years": 18.7,
+        "rank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.79798801537686,
+              29.37229845202923
+            ],
+            [
+              -98.79795878319297,
+              29.375177282508822
+            ],
+            [
+              -98.79880945214504,
+              29.37517070609206
+            ],
+            [
+              -98.79881053843349,
+              29.37598185995044
+            ],
+            [
+              -98.79965336930347,
+              29.375942054117782
+            ],
+            [
+              -98.80127991239237,
+              29.375940009348838
+            ],
+            [
+              -98.8018867068634,
+              29.37593924178787
+            ],
+            [
+              -98.80190456858045,
+              29.373626009934995
+            ],
+            [
+              -98.801886064684,
+              29.37226206387686
+            ],
+            [
+              -98.80124667293848,
+              29.372271180684866
+            ],
+            [
+              -98.79798801537686,
+              29.37229845202923
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "338017",
+        "owner": "MECHLER DONALD  ET AL",
+        "situs": "5845  MECHLER LN N",
+        "acres": 36.42,
+        "land_value": 761790.0,
+        "assessed_value": 761790.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB: 5172  P-9  ABS: 1009",
+        "node_id": "INT-004",
+        "node_name": "US 90 / SH 211",
+        "node_score": 66.7,
+        "node_edge_miles": 0.279,
+        "dist_score": 90,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.747,
+        "aspect_ratio": 1.06,
+        "road_score": 100,
+        "frontage_roads": [
+          "Unnamed road",
+          "MECHLER RD"
+        ],
+        "frontage_ft_proxy": 2245.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Country Tier / West"
+        ],
+        "aadt": 31896,
+        "aadt_5yr_growth_pct": 46.6,
+        "aadt_station_miles": 0.62,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 10.37,
+        "future_residential_lots_nearby": 9259.4,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_context": "1 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
+        "assessed_value_per_acre": 20917.0,
+        "land_value_per_acre": 20917.0,
+        "parcel_opportunity_score": 88.1,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of priority intersection \u00b7 9259 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05172-000-0093",
+        "ownership_type": "Private",
+        "last_deed_date": "2022-05-16",
+        "hold_years": 4.4,
+        "rank": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.74707011924365,
+              29.41472793942449
+            ],
+            [
+              -98.74737859614964,
+              29.414518478379996
+            ],
+            [
+              -98.74766132797893,
+              29.413149540533638
+            ],
+            [
+              -98.74765409445416,
+              29.413112359122675
+            ],
+            [
+              -98.74755549689522,
+              29.412605588112278
+            ],
+            [
+              -98.74757027025505,
+              29.41249628192624
+            ],
+            [
+              -98.74743979202032,
+              29.412482416877214
+            ],
+            [
+              -98.74731011506633,
+              29.41246239946166
+            ],
+            [
+              -98.74718152932722,
+              29.41243627443488
+            ],
+            [
+              -98.74705432229743,
+              29.412404100207713
+            ],
+            [
+              -98.74692877838879,
+              29.41236594871589
+            ],
+            [
+              -98.74680517829474,
+              29.412321905259233
+            ],
+            [
+              -98.74668379836268,
+              29.412272068310923
+            ],
+            [
+              -98.74656490997614,
+              29.41221654929735
+            ],
+            [
+              -98.746448778948,
+              29.41215547234896
+            ],
+            [
+              -98.74633566492616,
+              29.412088974022737
+            ],
+            [
+              -98.74595418231975,
+              29.411855251250685
+            ],
+            [
+              -98.74584784825558,
+              29.411794702312427
+            ],
+            [
+              -98.74573861892851,
+              29.411739547428386
+            ],
+            [
+              -98.74562676774451,
+              29.411689924653746
+            ],
+            [
+              -98.74551257467218,
+              29.411645958196573
+            ],
+            [
+              -98.74539632554196,
+              29.411607758106904
+            ],
+            [
+              -98.74527831133074,
+              29.411575420001302
+            ],
+            [
+              -98.74515882743343,
+              29.411549024823522
+            ],
+            [
+              -98.74503817292367,
+              29.411528638641887
+            ],
+            [
+              -98.74491664980519,
+              29.411514312483938
+            ],
+            [
+              -98.74479456225589,
+              29.411506082208703
+            ],
+            [
+              -98.74467221586644,
+              29.411503968416934
+            ],
+            [
+              -98.74405924154557,
+              29.41150608145964
+            ],
+            [
+              -98.74392787358171,
+              29.411503719710154
+            ],
+            [
+              -98.74379673523791,
+              29.411495604627063
+            ],
+            [
+              -98.74366607836346,
+              29.411481751795268
+            ],
+            [
+              -98.74353615388301,
+              29.411462187818934
+            ],
+            [
+              -98.74340721131468,
+              29.411436950270392
+            ],
+            [
+              -98.74327949829076,
+              29.411406087617998
+            ],
+            [
+              -98.7423637059834,
+              29.411162611161867
+            ],
+            [
+              -98.74224355326672,
+              29.41113413120877
+            ],
+            [
+              -98.7421220695925,
+              29.41111200656303
+            ],
+            [
+              -98.74199959087312,
+              29.41109629840112
+            ],
+            [
+              -98.74187645577236,
+              29.411087050157406
+            ],
+            [
+              -98.74175300476894,
+              29.411084287404044
+            ],
+            [
+              -98.74162978218088,
+              29.41108470959144
+            ],
+            [
+              -98.74418027693493,
+              29.413308614570315
+            ],
+            [
+              -98.7444595823432,
+              29.41355724066488
+            ],
+            [
+              -98.74448655302902,
+              29.413503126894994
+            ],
+            [
+              -98.74548601383673,
+              29.413491832525857
+            ],
+            [
+              -98.74657438025994,
+              29.41393026196565
+            ],
+            [
+              -98.74655386225687,
+              29.41402960108527
+            ],
+            [
+              -98.74684009003633,
+              29.41408582240205
+            ],
+            [
+              -98.74681322080197,
+              29.414088359625335
+            ],
+            [
+              -98.74678716406915,
+              29.414095390978815
+            ],
+            [
+              -98.74676266596612,
+              29.414106715121378
+            ],
+            [
+              -98.74674042799013,
+              29.414122007788936
+            ],
+            [
+              -98.74672108692026,
+              29.414140831079653
+            ],
+            [
+              -98.74670519658336,
+              29.41416264599314
+            ],
+            [
+              -98.74669321199542,
+              29.41418682786463
+            ],
+            [
+              -98.74668547633217,
+              29.414212684252064
+            ],
+            [
+              -98.74668221110251,
+              29.414239474764045
+            ],
+            [
+              -98.74668350980546,
+              29.414266432260735
+            ],
+            [
+              -98.746689335253,
+              29.414292784820724
+            ],
+            [
+              -98.74669952063483,
+              29.41431777784483
+            ],
+            [
+              -98.74671377429502,
+              29.414340695663842
+            ],
+            [
+              -98.74673168808344,
+              29.414360882031552
+            ],
+            [
+              -98.7467527490431,
+              29.4143777589162
+            ],
+            [
+              -98.7467763540985,
+              29.414390843052267
+            ],
+            [
+              -98.74680182732459,
+              29.414399759778682
+            ],
+            [
+              -98.74682843930168,
+              29.414404253767138
+            ],
+            [
+              -98.74685542800225,
+              29.414404196333365
+            ],
+            [
+              -98.74688202061137,
+              29.414399589121956
+            ],
+            [
+              -98.74690745565611,
+              29.414390564059307
+            ],
+            [
+              -98.74693100481012,
+              29.4143773795759
+            ],
+            [
+              -98.74707011924365,
+              29.41472793942449
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "1401059",
+        "owner": "ARCADIA 75 LLC",
+        "situs": "FM 1957",
+        "acres": 23.17,
+        "land_value": 1550000.0,
+        "assessed_value": 1550000.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 4350  P-1H  ABS 444 2024 NEW ACCT PER DEED 20230015881//  2024 SPLIT PER DEED 20230008456 // 2022-RMS PER SPLIT PER DEED 20210344002, EXE 12-09-2021///2022- NON ADJ PER PLAT 20002/1079, FILED 09-10-2021",
+        "node_id": "INT-024",
+        "node_name": "Talley Rd / Potranco Rd",
+        "node_score": 65.7,
+        "node_edge_miles": 0.041,
+        "dist_score": 100,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 72.3,
+        "compactness": 0.452,
+        "aspect_ratio": 2.77,
+        "road_score": 100,
+        "frontage_roads": [
+          "Unnamed road",
+          "W GROSENBACHER RD"
+        ],
+        "frontage_ft_proxy": 325.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Suburban Tier / West"
+        ],
+        "aadt": 39506,
+        "aadt_5yr_growth_pct": 0,
+        "aadt_station_miles": 1.06,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 8.44,
+        "future_residential_lots_nearby": 11439.6,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 66897.0,
+        "land_value_per_acre": 66897.0,
+        "parcel_opportunity_score": 87.7,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 11439 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04350-000-0014",
+        "ownership_type": "Private",
+        "last_deed_date": "2023-01-26",
+        "hold_years": 3.7,
+        "rank": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.28333474593718,
+              29.4438133964634
+            ],
+            [
+              -98.28300695861962,
+              29.44434493030084
+            ],
+            [
+              -98.28307207030079,
+              29.44471656415664
+            ],
+            [
+              -98.28405998835298,
+              29.44574790674099
+            ],
+            [
+              -98.28415329009842,
+              29.445742527161407
+            ],
+            [
+              -98.287284889559,
+              29.44556191127009
+            ],
+            [
+              -98.28743968196373,
+              29.44524890650435
+            ],
+            [
+              -98.2882920676901,
+              29.44352527993598
+            ],
+            [
+              -98.28333474593718,
+              29.4438133964634
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "323261",
+        "owner": "JIMENEZ FRED",
+        "situs": "1973  SCHUWIRTH RD",
+        "acres": 23.48,
+        "land_value": 1922960.0,
+        "assessed_value": 1931260.0,
+        "improvement_value": 8300.0,
+        "improvement_ratio": 0.004,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 5088  P-26  ABS 308",
+        "node_id": "INT-009",
+        "node_name": "Schuwirth Rd / Loop 1604 East",
+        "node_score": 68.1,
+        "node_edge_miles": 0.72,
+        "dist_score": 78,
+        "acre_score": 100,
+        "raw_score": 99.5,
+        "shape_score": 100,
+        "compactness": 0.7,
+        "aspect_ratio": 2.37,
+        "road_score": 100,
+        "frontage_roads": [
+          "SCHUWIRTH RD",
+          "Unnamed road",
+          "E LOOP 1604 N"
+        ],
+        "frontage_ft_proxy": 530.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Community Commercial / I-10 East Corridor",
+          "Low Density Residential / I-10 East Corridor"
+        ],
+        "aadt": 20632,
+        "aadt_5yr_growth_pct": 90.2,
+        "aadt_station_miles": 1.28,
+        "nearest_retail_catalyst": "H-E-B Foster campus",
+        "retail_catalyst_miles": 4.84,
+        "future_residential_lots_nearby": 5845.3,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 82251.0,
+        "land_value_per_acre": 81898.0,
+        "parcel_opportunity_score": 87.3,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of priority intersection \u00b7 5845 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05088-000-0260",
+        "ownership_type": "Private",
+        "last_deed_date": "2025-04-28",
+        "hold_years": 1.4,
+        "rank": 7
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.79782291729029,
+              29.378707752425303
+            ],
+            [
+              -98.797944960495,
+              29.378909788289274
+            ],
+            [
+              -98.79794110512937,
+              29.379097444762014
+            ],
+            [
+              -98.79800478759839,
+              29.37909786594609
+            ],
+            [
+              -98.7980116353855,
+              29.375975842664317
+            ],
+            [
+              -98.79795878319297,
+              29.375177282508822
+            ],
+            [
+              -98.79798801537686,
+              29.37229845202923
+            ],
+            [
+              -98.79799804227294,
+              29.371003160823985
+            ],
+            [
+              -98.79799944675322,
+              29.37078145260795
+            ],
+            [
+              -98.79788446511948,
+              29.370781057531612
+            ],
+            [
+              -98.7961926385229,
+              29.370775233789786
+            ],
+            [
+              -98.79618853665511,
+              29.370825931068634
+            ],
+            [
+              -98.79618460749083,
+              29.371171402649843
+            ],
+            [
+              -98.79619002223934,
+              29.371525867367264
+            ],
+            [
+              -98.79618636503155,
+              29.371805055598077
+            ],
+            [
+              -98.79617826518567,
+              29.372104770912756
+            ],
+            [
+              -98.7961876093192,
+              29.372262805897098
+            ],
+            [
+              -98.79618443451453,
+              29.372568751040202
+            ],
+            [
+              -98.79619137275242,
+              29.372845118534215
+            ],
+            [
+              -98.7961881343689,
+              29.373128133140572
+            ],
+            [
+              -98.79618547736652,
+              29.373399041422708
+            ],
+            [
+              -98.79617331056883,
+              29.373680007664497
+            ],
+            [
+              -98.79616160143208,
+              29.373950450045637
+            ],
+            [
+              -98.7961522946598,
+              29.37422602030085
+            ],
+            [
+              -98.79615263935068,
+              29.37449800054989
+            ],
+            [
+              -98.7961529259648,
+              29.37476655282242
+            ],
+            [
+              -98.79615083381168,
+              29.375050174540092
+            ],
+            [
+              -98.79614393805647,
+              29.37532546871064
+            ],
+            [
+              -98.79614185272777,
+              29.375601501986484
+            ],
+            [
+              -98.79614938936972,
+              29.37587539071289
+            ],
+            [
+              -98.79614499709614,
+              29.376151097415125
+            ],
+            [
+              -98.79614515195685,
+              29.37643045728119
+            ],
+            [
+              -98.7961384537471,
+              29.376675282495682
+            ],
+            [
+              -98.79612780284526,
+              29.377445390269475
+            ],
+            [
+              -98.79612038147553,
+              29.378729445731764
+            ],
+            [
+              -98.79612910628822,
+              29.37908192457613
+            ],
+            [
+              -98.79641816381101,
+              29.379084560922664
+            ],
+            [
+              -98.79641820285399,
+              29.379084095390525
+            ],
+            [
+              -98.7964465460066,
+              29.378750193883985
+            ],
+            [
+              -98.79710010864603,
+              29.378792714695464
+            ],
+            [
+              -98.79707485151648,
+              29.379089966511057
+            ],
+            [
+              -98.7970747702852,
+              29.379090928249393
+            ],
+            [
+              -98.79711424369034,
+              29.37909197806645
+            ],
+            [
+              -98.79723968638494,
+              29.379092231772848
+            ],
+            [
+              -98.7972396953093,
+              29.37909136647172
+            ],
+            [
+              -98.79724374401482,
+              29.378679176022796
+            ],
+            [
+              -98.79782405212546,
+              29.37859210875143
+            ],
+            [
+              -98.79782291729029,
+              29.378707752425303
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "163835",
+        "owner": "MECHLER LAND LLC",
+        "situs": "15155 W US HIGHWAY 90",
+        "acres": 37.09,
+        "land_value": 974330.0,
+        "assessed_value": 974330.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 4016   P-24   ABS 1003   2020-RMS PER SPLIT PER DEED 20190264761 EXE 12-17-2019. AS\\GIS\\3-10-2020.\\\\2011 SPLIT/MERGE PER DEED 14042/787 EXEC 06/17/2009.",
+        "node_id": "INT-004",
+        "node_name": "US 90 / SH 211",
+        "node_score": 66.7,
+        "node_edge_miles": 0.135,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 56.8,
+        "compactness": 0.357,
+        "aspect_ratio": 5.04,
+        "road_score": 100,
+        "frontage_roads": [
+          "MECHLER RD",
+          "Unnamed road",
+          "PIONEER MEADOW"
+        ],
+        "frontage_ft_proxy": 6686.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Country Tier / West"
+        ],
+        "aadt": 31896,
+        "aadt_5yr_growth_pct": 46.6,
+        "aadt_station_miles": 0.75,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 10.32,
+        "future_residential_lots_nearby": 9259.4,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_context": "1 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
+        "assessed_value_per_acre": 26269.0,
+        "land_value_per_acre": 26269.0,
+        "parcel_opportunity_score": 87.2,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 9259 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04016-000-0245",
+        "ownership_type": "Private",
+        "last_deed_date": "2009-04-28",
+        "hold_years": 17.4,
+        "rank": 8
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.53084466242076,
+              29.31829942117447
+            ],
+            [
+              -98.53084241065733,
+              29.318299425890437
+            ],
+            [
+              -98.53083919620582,
+              29.318299432635822
+            ],
+            [
+              -98.52850642551748,
+              29.31830414476053
+            ],
+            [
+              -98.52834951460461,
+              29.318304460108905
+            ],
+            [
+              -98.52649964957952,
+              29.31830816586175
+            ],
+            [
+              -98.52643161276852,
+              29.318308301604205
+            ],
+            [
+              -98.52641553498349,
+              29.319598349220396
+            ],
+            [
+              -98.53088362386966,
+              29.31958764051436
+            ],
+            [
+              -98.53088296334974,
+              29.319569312000475
+            ],
+            [
+              -98.53088292576224,
+              29.31956762632788
+            ],
+            [
+              -98.5308828366623,
+              29.31956302326209
+            ],
+            [
+              -98.53086994276613,
+              29.31892397129252
+            ],
+            [
+              -98.53085734106226,
+              29.31829939717141
+            ],
+            [
+              -98.53084466242076,
+              29.31829942117447
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "1338594",
+        "owner": "SOUTHSTAR AT VERANO DEVELOPER LLC",
+        "situs": "LOOP 410 SOUTH",
+        "acres": 15.2,
+        "land_value": 497410.0,
+        "assessed_value": 497410.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "NCB 18088  P-3 (4.109 AC), P-1F (14.091 AC)  ((AKA PARCEL 1) 2021- NEW (9)ACCTS  CREATED TO MATCH DEEDED TRACTS PER 20200290003/20200290862/20200290004/20210023627 FILED 11-2020 AND 1-28-2021.  ((587.82 TOTAL  ACRES))  PER CR 51192.  VERIFIED PER TOMMY/KEITH\u2026\u2026JF/GIS/2-5-2021.",
+        "node_id": "INT-013",
+        "node_name": "S Zarzamora / Mitra Way (VIDA)",
+        "node_score": 49.4,
+        "node_edge_miles": 0.021,
+        "dist_score": 100,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 93.9,
+        "compactness": 0.587,
+        "aspect_ratio": 3.04,
+        "road_score": 100,
+        "frontage_roads": [
+          "ANA HTS",
+          "SW LOOP 410 ACCESS RD",
+          "AZUL WAY"
+        ],
+        "frontage_ft_proxy": 1566.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Urban Mixed-Use / Texas A&M San Antonio Area Regional Center Plan",
+          "Urban Mixed-Use / Texas A&M San Antonio Area Regional Center Plan",
+          "City/State/Federal Government / Texas A&M San Antonio Area Regional Center Plan"
+        ],
+        "aadt": 21950,
+        "aadt_5yr_growth_pct": 22.4,
+        "aadt_station_miles": 0.31,
+        "nearest_retail_catalyst": "H-E-B Foster campus",
+        "retail_catalyst_miles": 12.28,
+        "future_residential_lots_nearby": 1179.3,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_context": "2 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
+        "assessed_value_per_acre": 32724.0,
+        "land_value_per_acre": 32724.0,
+        "parcel_opportunity_score": 87.2,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 1179 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "18088-000-0031",
+        "ownership_type": "Private",
+        "last_deed_date": "2020-11-24",
+        "hold_years": 5.8,
+        "rank": 9
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.22346308042665,
+              29.488716348682093
+            ],
+            [
+              -98.22147947210561,
+              29.489381660495116
+            ],
+            [
+              -98.22124387636181,
+              29.48946238573969
+            ],
+            [
+              -98.22000642904271,
+              29.489718657105715
+            ],
+            [
+              -98.22220433894833,
+              29.4929923345415
+            ],
+            [
+              -98.22550454822816,
+              29.491316881358784
+            ],
+            [
+              -98.2255585659023,
+              29.49128945642245
+            ],
+            [
+              -98.22487810174148,
+              29.490313461480653
+            ],
+            [
+              -98.2239191869595,
+              29.488854787103495
+            ],
+            [
+              -98.22346308042665,
+              29.488716348682093
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "339374",
+        "owner": "NAJDS PROPERTY I INVESTMENTS INC",
+        "situs": "13183  INTERSTATE 10 E",
+        "acres": 34.98,
+        "land_value": 4510280.0,
+        "assessed_value": 6291890.0,
+        "improvement_value": 1781610.0,
+        "improvement_ratio": 0.283,
+        "gba": 22210.0,
+        "prop_use": "375",
+        "legal": "CB 5193  P-23  ABS 5   2019-MERGE/RSVY FROM 34.964 AC TO 34.982 AC PER DEED 20180101812 EXE 05-29-18 \\\\\\REMAINS - SPLIT FOR 2008 (WD 12656/1496)",
+        "node_id": "INT-006",
+        "node_name": "FM 1518 / I-10",
+        "node_score": 67.6,
+        "node_edge_miles": 0.0,
+        "dist_score": 100,
+        "acre_score": 100,
+        "raw_score": 65.0,
+        "shape_score": 100,
+        "compactness": 0.775,
+        "aspect_ratio": 1.12,
+        "road_score": 100,
+        "frontage_roads": [
+          "IH 10 E ACCESS RD",
+          "E FM 1518 N"
+        ],
+        "frontage_ft_proxy": 2440.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Community Commercial / I-10 East Corridor",
+          "Low Density Residential / I-10 East Corridor"
+        ],
+        "aadt": 10714,
+        "aadt_5yr_growth_pct": 33.6,
+        "aadt_station_miles": 0.13,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 5.6,
+        "future_residential_lots_nearby": 4332.7,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 179871.0,
+        "land_value_per_acre": 128939.0,
+        "parcel_opportunity_score": 87.0,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 4332 weighted future residential lots nearby \u00b7 no mapped FEMA SFHA overlap returned",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05193-000-0236",
+        "ownership_type": "Private",
+        "last_deed_date": "2019-11-26",
+        "hold_years": 6.8,
+        "rank": 10
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.29316166614315,
+              29.463689895105748
+            ],
+            [
+              -98.29430930821128,
+              29.464133459268755
+            ],
+            [
+              -98.29445409952042,
+              29.464130951992335
+            ],
+            [
+              -98.29479352224008,
+              29.464125074800457
+            ],
+            [
+              -98.29527484717637,
+              29.463997036845686
+            ],
+            [
+              -98.29527049466652,
+              29.4639845060597
+            ],
+            [
+              -98.2949895326594,
+              29.46317567417854
+            ],
+            [
+              -98.29367717741775,
+              29.462668448918354
+            ],
+            [
+              -98.29316166614315,
+              29.463689895105748
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "1227561",
+        "owner": "JUNIPER VENTURES OF TEXAS LLC",
+        "situs": "E INTERSTATE 10",
+        "acres": 5.17,
+        "land_value": 1601100.0,
+        "assessed_value": 1601100.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "NCB 16567  P-14A(5.17AC)",
+        "node_id": "INT-009",
+        "node_name": "Schuwirth Rd / Loop 1604 East",
+        "node_score": 68.1,
+        "node_edge_miles": 0.576,
+        "dist_score": 78,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.794,
+        "aspect_ratio": 1.63,
+        "road_score": 100,
+        "frontage_roads": [
+          "SPEEDWAY LOOP",
+          "IH 10 E ACCESS RD"
+        ],
+        "frontage_ft_proxy": 628.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Regional Commercial / I-10 East Corridor"
+        ],
+        "aadt": 20632,
+        "aadt_5yr_growth_pct": 90.2,
+        "aadt_station_miles": 0.19,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 3.65,
+        "future_residential_lots_nearby": 5845.3,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 309691.0,
+        "land_value_per_acre": 309691.0,
+        "parcel_opportunity_score": 86.8,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of priority intersection \u00b7 5845 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "16567-000-0142",
+        "ownership_type": "Private",
+        "last_deed_date": "2018-12-06",
+        "hold_years": 7.8,
+        "rank": 11
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.78581339729689,
+              29.417072823379083
+            ],
+            [
+              -98.78576924854549,
+              29.41699122492522
+            ],
+            [
+              -98.78573679058904,
+              29.416934378257107
+            ],
+            [
+              -98.78570320931621,
+              29.416878029654686
+            ],
+            [
+              -98.78566850569847,
+              29.416822207992354
+            ],
+            [
+              -98.78563269414458,
+              29.416766923217736
+            ],
+            [
+              -98.78559578595245,
+              29.416712194296387
+            ],
+            [
+              -98.78555779345245,
+              29.41665803929336
+            ],
+            [
+              -98.78551872280269,
+              29.41660447084993
+            ],
+            [
+              -98.7854785945704,
+              29.416551510653324
+            ],
+            [
+              -98.7854374190359,
+              29.416499171351543
+            ],
+            [
+              -98.78539519719465,
+              29.41644747008895
+            ],
+            [
+              -98.78535195478736,
+              29.41639641863588
+            ],
+            [
+              -98.78530770310763,
+              29.416346037762438
+            ],
+            [
+              -98.78525990683579,
+              29.41629194721809
+            ],
+            [
+              -98.78521438723428,
+              29.416247651216327
+            ],
+            [
+              -98.78518739215873,
+              29.41622261128179
+            ],
+            [
+              -98.78515990566117,
+              29.4161979901226
+            ],
+            [
+              -98.78513193082016,
+              29.416173794059468
+            ],
+            [
+              -98.78510348102367,
+              29.416150027625275
+            ],
+            [
+              -98.78507455626041,
+              29.416126696233402
+            ],
+            [
+              -98.78504517195476,
+              29.41610381614995
+            ],
+            [
+              -98.78501533841629,
+              29.416081385586462
+            ],
+            [
+              -98.78498505871192,
+              29.41605941627768
+            ],
+            [
+              -98.7849543493194,
+              29.416037913663587
+            ],
+            [
+              -98.78492321538204,
+              29.416016882263687
+            ],
+            [
+              -98.78489166306782,
+              29.415996329306072
+            ],
+            [
+              -98.78485970988132,
+              29.415976262037045
+            ],
+            [
+              -98.78482736095995,
+              29.415956687683085
+            ],
+            [
+              -98.78479462248309,
+              29.415937608058428
+            ],
+            [
+              -98.78476151401063,
+              29.41591903311964
+            ],
+            [
+              -98.78472803656328,
+              29.41590096737973
+            ],
+            [
+              -98.78469420352494,
+              29.415883417176012
+            ],
+            [
+              -98.78466002724704,
+              29.415866389746505
+            ],
+            [
+              -98.78462551599083,
+              29.415849876983714
+            ],
+            [
+              -98.7845906831022,
+              29.415833903271054
+            ],
+            [
+              -98.78455553684627,
+              29.415818458696155
+            ],
+            [
+              -98.7845200864635,
+              29.41580355951532
+            ],
+            [
+              -98.78448434638726,
+              29.415789203044522
+            ],
+            [
+              -98.78444831866686,
+              29.415775394700766
+            ],
+            [
+              -98.78441202803367,
+              29.41576213542602
+            ],
+            [
+              -98.7843754744587,
+              29.4157494387546
+            ],
+            [
+              -98.78433867547638,
+              29.415737297496175
+            ],
+            [
+              -98.78430164034042,
+              29.41572572159081
+            ],
+            [
+              -98.78426437831786,
+              29.415714714662478
+            ],
+            [
+              -98.78422690692229,
+              29.41570427944625
+            ],
+            [
+              -98.78418922923514,
+              29.415694420458443
+            ],
+            [
+              -98.78415135968399,
+              29.41568513772217
+            ],
+            [
+              -98.78411331475357,
+              29.4156764330685
+            ],
+            [
+              -98.78407509649487,
+              29.41566831101223
+            ],
+            [
+              -98.78403672859721,
+              29.415660777907497
+            ],
+            [
+              -98.78399821106558,
+              29.4156538310474
+            ],
+            [
+              -98.78395956347455,
+              29.41564747317031
+            ],
+            [
+              -98.7839207940623,
+              29.415641706996382
+            ],
+            [
+              -98.78388191519316,
+              29.41563653344783
+            ],
+            [
+              -98.78384294128684,
+              29.41563195615706
+            ],
+            [
+              -98.78380387852806,
+              29.415627974231786
+            ],
+            [
+              -98.78376474545875,
+              29.4156245913111
+            ],
+            [
+              -98.7837255503209,
+              29.415621808310576
+            ],
+            [
+              -98.78368630445206,
+              29.415619624346313
+            ],
+            [
+              -98.783647023312,
+              29.415618038540856
+            ],
+            [
+              -98.78360771513314,
+              29.415617056321476
+            ],
+            [
+              -98.78356839332179,
+              29.4156166731982
+            ],
+            [
+              -98.7835290692212,
+              29.41561688558039
+            ],
+            [
+              -98.78348975206953,
+              29.41561771062668
+            ],
+            [
+              -98.78345046458062,
+              29.415619128523193
+            ],
+            [
+              -98.78341121085512,
+              29.415621149201932
+            ],
+            [
+              -98.78337199605282,
+              29.415623769062147
+            ],
+            [
+              -98.7833328459373,
+              29.415626988145686
+            ],
+            [
+              -98.78329376256143,
+              29.415630810065057
+            ],
+            [
+              -98.78325475728941,
+              29.415635221304218
+            ],
+            [
+              -98.78321585793267,
+              29.415640228224575
+            ],
+            [
+              -98.78317705212181,
+              29.415645831708378
+            ],
+            [
+              -98.78313837490317,
+              29.415652028203432
+            ],
+            [
+              -98.78309982113096,
+              29.415658814092247
+            ],
+            [
+              -98.78306141038541,
+              29.415666189406714
+            ],
+            [
+              -98.7830231498875,
+              29.415674150549528
+            ],
+            [
+              -98.78298505304554,
+              29.415682692128698
+            ],
+            [
+              -98.782947137369,
+              29.415691818684444
+            ],
+            [
+              -98.78290940699699,
+              29.415701522102765
+            ],
+            [
+              -98.78287187636438,
+              29.415711798798192
+            ],
+            [
+              -98.78276058908133,
+              29.415746052479662
+            ],
+            [
+              -98.78193044857102,
+              29.415949735749116
+            ],
+            [
+              -98.7823775788,
+              29.41749636229529
+            ],
+            [
+              -98.78333714706866,
+              29.4174799221116
+            ],
+            [
+              -98.78610002886845,
+              29.417440424643118
+            ],
+            [
+              -98.78597199493075,
+              29.417225079678143
+            ],
+            [
+              -98.78581339729689,
+              29.417072823379083
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "201209",
+        "owner": "RANCHO COACHELLA PROPERTIES",
+        "situs": "STATE HWY 211",
+        "acres": 16.08,
+        "land_value": 4022450.0,
+        "assessed_value": 4022450.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB 4348 P-7A ABS 1001",
+        "node_id": "INT-005",
+        "node_name": "Potranco Rd / SH 211",
+        "node_score": 64.4,
+        "node_edge_miles": 0.269,
+        "dist_score": 90,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.722,
+        "aspect_ratio": 1.95,
+        "road_score": 100,
+        "frontage_roads": [
+          "ZETA DR",
+          "THETA DR",
+          "STATE HWY 211 S"
+        ],
+        "frontage_ft_proxy": 856.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "General Urban Tier / West"
+        ],
+        "aadt": 26938,
+        "aadt_5yr_growth_pct": 85.8,
+        "aadt_station_miles": 0.18,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 7.51,
+        "future_residential_lots_nearby": 11269.7,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 250152.0,
+        "land_value_per_acre": 250152.0,
+        "parcel_opportunity_score": 86.6,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of priority intersection \u00b7 11269 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04348-000-0072",
+        "ownership_type": "Private",
+        "last_deed_date": "2001-04-02",
+        "hold_years": 25.5,
+        "rank": 12
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.22080440531677,
+              29.48674552816468
+            ],
+            [
+              -98.21782113091264,
+              29.487438891577114
+            ],
+            [
+              -98.21831697879487,
+              29.488542526119552
+            ],
+            [
+              -98.22100675983242,
+              29.487171602916302
+            ],
+            [
+              -98.22104499588038,
+              29.487152098527186
+            ],
+            [
+              -98.22273566678923,
+              29.486289646864016
+            ],
+            [
+              -98.22254100550198,
+              29.485860045381948
+            ],
+            [
+              -98.22080440531677,
+              29.48674552816468
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "339719",
+        "owner": "1518 LAND INVESTMENTS LP",
+        "situs": "6250 E FM 1518 N",
+        "acres": 9.34,
+        "land_value": 750000.0,
+        "assessed_value": 750000.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB  5193  P-117  ABS 5 2019-SPLIT PER DEED 20180089309 EXE 05-09-2018||||",
+        "node_id": "INT-006",
+        "node_name": "FM 1518 / I-10",
+        "node_score": 67.6,
+        "node_edge_miles": 0.18,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 54.1,
+        "compactness": 0.338,
+        "aspect_ratio": 3.73,
+        "road_score": 92,
+        "frontage_roads": [
+          "E FM 1518 N"
+        ],
+        "frontage_ft_proxy": 207.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Community Commercial / I-10 East Corridor",
+          "Rural Living / I-10 East Corridor"
+        ],
+        "aadt": 11696,
+        "aadt_5yr_growth_pct": 98.6,
+        "aadt_station_miles": 0.23,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 5.84,
+        "future_residential_lots_nearby": 4332.7,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 80300.0,
+        "land_value_per_acre": 80300.0,
+        "parcel_opportunity_score": 86.6,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of priority intersection \u00b7 4332 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05193-000-1170",
+        "ownership_type": "Private",
+        "last_deed_date": "2011-06-01",
+        "hold_years": 15.3,
+        "rank": 13
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.77435904800042,
+              29.421241423763885
+            ],
+            [
+              -98.77435911320511,
+              29.421254393580853
+            ],
+            [
+              -98.77446008701527,
+              29.421254526206397
+            ],
+            [
+              -98.77445999298185,
+              29.421240601704014
+            ],
+            [
+              -98.77445504532497,
+              29.420511958169246
+            ],
+            [
+              -98.77500617496499,
+              29.420509088889936
+            ],
+            [
+              -98.77542896576414,
+              29.420506358050275
+            ],
+            [
+              -98.77543000761025,
+              29.420506880430867
+            ],
+            [
+              -98.77595118868464,
+              29.420503352358075
+            ],
+            [
+              -98.77609953914768,
+              29.420501314659774
+            ],
+            [
+              -98.77708201821106,
+              29.420482212962824
+            ],
+            [
+              -98.77759025766449,
+              29.42047246078111
+            ],
+            [
+              -98.77772283353501,
+              29.42043329230236
+            ],
+            [
+              -98.77767866770266,
+              29.42033131088666
+            ],
+            [
+              -98.77762881824674,
+              29.420231983842807
+            ],
+            [
+              -98.7775734439857,
+              29.420135627622923
+            ],
+            [
+              -98.7775127213398,
+              29.420042549214198
+            ],
+            [
+              -98.77744684376904,
+              29.41995304516085
+            ],
+            [
+              -98.77737602115681,
+              29.419867400619328
+            ],
+            [
+              -98.77730047914122,
+              29.419785888449834
+            ],
+            [
+              -98.7772204583962,
+              29.41970876834699
+            ],
+            [
+              -98.77713621386476,
+              29.419636286012462
+            ],
+            [
+              -98.77704801394673,
+              29.419568672372165
+            ],
+            [
+              -98.77765145943471,
+              29.419218025257752
+            ],
+            [
+              -98.77765427552715,
+              29.41921638865517
+            ],
+            [
+              -98.77765896350866,
+              29.419213665185538
+            ],
+            [
+              -98.77625191633653,
+              29.4172988388766
+            ],
+            [
+              -98.77624947080028,
+              29.417295510692842
+            ],
+            [
+              -98.77624325330513,
+              29.417300667772054
+            ],
+            [
+              -98.77624127304011,
+              29.417302310257092
+            ],
+            [
+              -98.77623845648009,
+              29.417304646115063
+            ],
+            [
+              -98.77592249288793,
+              29.417566722057465
+            ],
+            [
+              -98.77429428906868,
+              29.41897307693681
+            ],
+            [
+              -98.77391533179002,
+              29.419303666315848
+            ],
+            [
+              -98.77390269481398,
+              29.419314690024898
+            ],
+            [
+              -98.77378502805789,
+              29.419415768067385
+            ],
+            [
+              -98.77378547857869,
+              29.419939089522718
+            ],
+            [
+              -98.77379096539076,
+              29.420517158595022
+            ],
+            [
+              -98.77435538089927,
+              29.42051240251771
+            ],
+            [
+              -98.77435904800042,
+              29.421241423763885
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "201245",
+        "owner": "RANCH ON POTRANCO LLC",
+        "situs": "13620  FM 1957",
+        "acres": 21.61,
+        "land_value": 4800000.0,
+        "assessed_value": 4800000.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB 4349  P-4 ABS 1018 2021- RMS PER PLAT 20002/83-84, FILED 11-13-2020///2020- RMS PER SPLIT PER DEED 20190213909 & 20190213959 EXE 10-15-2019. AS\\GIS\\5-8-2020.\\2020-SPLIT PER DEED 20190021304 EXE 02-05-2019\\ 2018 RESURVEYED PER DEED 18816/1109 EXEC 10/27/2017. 2015 LEG/MAP CO",
+        "node_id": "INT-005",
+        "node_name": "Potranco Rd / SH 211",
+        "node_score": 64.4,
+        "node_edge_miles": 0.301,
+        "dist_score": 90,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 85.3,
+        "compactness": 0.533,
+        "aspect_ratio": 1.06,
+        "road_score": 100,
+        "frontage_roads": [
+          "Unnamed road",
+          "POTRANCO RD"
+        ],
+        "frontage_ft_proxy": 264.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Suburban Tier / West"
+        ],
+        "aadt": 31370,
+        "aadt_5yr_growth_pct": 77.1,
+        "aadt_station_miles": 0.31,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 7.42,
+        "future_residential_lots_nearby": 11269.7,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 222119.0,
+        "land_value_per_acre": 222119.0,
+        "parcel_opportunity_score": 86.1,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of priority intersection \u00b7 11269 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04349-000-0040",
+        "ownership_type": "Private",
+        "last_deed_date": "2017-10-27",
+        "hold_years": 8.9,
+        "rank": 14
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.28721923359689,
+              29.448260857272324
+            ],
+            [
+              -98.28713618265915,
+              29.448299039565665
+            ],
+            [
+              -98.28646535396093,
+              29.448631917374193
+            ],
+            [
+              -98.28645489738996,
+              29.44863796182971
+            ],
+            [
+              -98.28644562866019,
+              29.44864570559929
+            ],
+            [
+              -98.28643782090133,
+              29.44865492049053
+            ],
+            [
+              -98.2864317041914,
+              29.448665334960207
+            ],
+            [
+              -98.28642745877684,
+              29.44867664211609
+            ],
+            [
+              -98.28642583519448,
+              29.448685933781405
+            ],
+            [
+              -98.28642566163741,
+              29.44869536463195
+            ],
+            [
+              -98.28642694224496,
+              29.448704709743414
+            ],
+            [
+              -98.28642964647482,
+              29.448713746236365
+            ],
+            [
+              -98.28643370983154,
+              29.448722258591864
+            ],
+            [
+              -98.28695212453589,
+              29.44963783829433
+            ],
+            [
+              -98.28775596891163,
+              29.44944957808658
+            ],
+            [
+              -98.28783880343632,
+              29.44918833238156
+            ],
+            [
+              -98.2872317790303,
+              29.448279637283406
+            ],
+            [
+              -98.28721923359689,
+              29.448260857272324
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "1341389",
+        "owner": "APPS EULALIA THERESA",
+        "situs": "E LOOP 1604 N",
+        "acres": 3.12,
+        "land_value": 563670.0,
+        "assessed_value": 563670.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 5088 P-27 ABS 308 (FORMERLY P-14) NON ADJACENT PROP 2022-CREATED PER DEED 20210038200||||",
+        "node_id": "INT-009",
+        "node_name": "Schuwirth Rd / Loop 1604 East",
+        "node_score": 68.1,
+        "node_edge_miles": 0.442,
+        "dist_score": 90,
+        "acre_score": 86,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.813,
+        "aspect_ratio": 1.41,
+        "road_score": 100,
+        "frontage_roads": [
+          "Unnamed road",
+          "E LOOP 1604 N"
+        ],
+        "frontage_ft_proxy": 346.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Low Density Residential / I-10 East Corridor"
+        ],
+        "aadt": 20632,
+        "aadt_5yr_growth_pct": 90.2,
+        "aadt_station_miles": 0.96,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 4.73,
+        "future_residential_lots_nearby": 5845.3,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 180663.0,
+        "land_value_per_acre": 180663.0,
+        "parcel_opportunity_score": 86.0,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of priority intersection \u00b7 5845 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05088-000-0274",
+        "ownership_type": "Private",
+        "rank": 15
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.78550394579652,
+              29.420177808235394
+            ],
+            [
+              -98.78552693338438,
+              29.421060183967775
+            ],
+            [
+              -98.78552791015144,
+              29.421097706006254
+            ],
+            [
+              -98.78552817728045,
+              29.421107944868474
+            ],
+            [
+              -98.7855282659711,
+              29.42111136203269
+            ],
+            [
+              -98.78552840334532,
+              29.42111663080112
+            ],
+            [
+              -98.78611953920422,
+              29.42111402170958
+            ],
+            [
+              -98.7862057648141,
+              29.420475342647247
+            ],
+            [
+              -98.78626960830623,
+              29.420028301228335
+            ],
+            [
+              -98.78634848836356,
+              29.41947435994683
+            ],
+            [
+              -98.78642371971404,
+              29.418894486847492
+            ],
+            [
+              -98.78644622819493,
+              29.418748716911757
+            ],
+            [
+              -98.78646139770969,
+              29.41857377369015
+            ],
+            [
+              -98.78645803882466,
+              29.41841175882366
+            ],
+            [
+              -98.78644720809277,
+              29.41827889626248
+            ],
+            [
+              -98.78641794576673,
+              29.41811359979968
+            ],
+            [
+              -98.78632229106998,
+              29.41784127416035
+            ],
+            [
+              -98.78610002886845,
+              29.417440424643118
+            ],
+            [
+              -98.78333714706866,
+              29.4174799221116
+            ],
+            [
+              -98.78341691297597,
+              29.41780732964718
+            ],
+            [
+              -98.78351256325995,
+              29.418199933542205
+            ],
+            [
+              -98.78357351086636,
+              29.41845009491294
+            ],
+            [
+              -98.78360664112613,
+              29.418709784624333
+            ],
+            [
+              -98.78266853875137,
+              29.418788592812714
+            ],
+            [
+              -98.78268409885571,
+              29.418926010979977
+            ],
+            [
+              -98.78362210798139,
+              29.418846563700292
+            ],
+            [
+              -98.78363548742357,
+              29.418973323821525
+            ],
+            [
+              -98.78363971428683,
+              29.41901559636693
+            ],
+            [
+              -98.78366302838023,
+              29.41927520190817
+            ],
+            [
+              -98.7836818439699,
+              29.41953517220951
+            ],
+            [
+              -98.78369615541449,
+              29.41979542932574
+            ],
+            [
+              -98.7837059584231,
+              29.42005589522565
+            ],
+            [
+              -98.78370761420666,
+              29.420117079483745
+            ],
+            [
+              -98.78370965542183,
+              29.420198277451963
+            ],
+            [
+              -98.78394756268754,
+              29.42019353015257
+            ],
+            [
+              -98.78449698204341,
+              29.420182564994494
+            ],
+            [
+              -98.78452037864182,
+              29.421080967378934
+            ],
+            [
+              -98.78467740686905,
+              29.421077833341673
+            ],
+            [
+              -98.7846540099204,
+              29.4201794327905
+            ],
+            [
+              -98.78501484021584,
+              29.42017226141015
+            ],
+            [
+              -98.78510770407863,
+              29.420170406817828
+            ],
+            [
+              -98.78550394579652,
+              29.420177808235394
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "201255",
+        "owner": "QT SOUTH LLC",
+        "situs": "STATE HWY 211",
+        "acres": 22.62,
+        "land_value": 7647380.0,
+        "assessed_value": 7647380.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB 4349 P-7 ABS 1018   2024 RMS PER PLAT 20003/919-920  //  2022-RMS PER PLAT 20002/223, FILED 01-08-2021.///2021- RMS PER PLAT 20001/2219,  FILED 07-02-2020",
+        "node_id": "INT-005",
+        "node_name": "Potranco Rd / SH 211",
+        "node_score": 64.4,
+        "node_edge_miles": 0.106,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 62.7,
+        "compactness": 0.392,
+        "aspect_ratio": 1.11,
+        "road_score": 100,
+        "frontage_roads": [
+          "ZETA DR",
+          "POTRANCO RD",
+          "STATE HWY 211 S"
+        ],
+        "frontage_ft_proxy": 2001.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "General Urban Tier / West"
+        ],
+        "aadt": 26938,
+        "aadt_5yr_growth_pct": 85.8,
+        "aadt_station_miles": 0.15,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 7.34,
+        "future_residential_lots_nearby": 11269.7,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 338080.0,
+        "land_value_per_acre": 338080.0,
+        "parcel_opportunity_score": 86.0,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 11269 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04349-000-0072",
+        "ownership_type": "Private",
+        "last_deed_date": "2020-05-02",
+        "hold_years": 6.4,
+        "rank": 16
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.78160334552685,
+              29.414653635237368
+            ],
+            [
+              -98.78160547659469,
+              29.41466191555798
+            ],
+            [
+              -98.78177744884127,
+              29.41532983941876
+            ],
+            [
+              -98.78193044857102,
+              29.415949735749116
+            ],
+            [
+              -98.78276058908133,
+              29.415746052479662
+            ],
+            [
+              -98.78287187636438,
+              29.415711798798192
+            ],
+            [
+              -98.78290940699699,
+              29.415701522102765
+            ],
+            [
+              -98.782947137369,
+              29.415691818684444
+            ],
+            [
+              -98.78298505304554,
+              29.415682692128698
+            ],
+            [
+              -98.7830231498875,
+              29.415674150549528
+            ],
+            [
+              -98.78306141038541,
+              29.415666189406714
+            ],
+            [
+              -98.78309982113096,
+              29.415658814092247
+            ],
+            [
+              -98.78313837490317,
+              29.415652028203432
+            ],
+            [
+              -98.78317705212181,
+              29.415645831708378
+            ],
+            [
+              -98.78321585793267,
+              29.415640228224575
+            ],
+            [
+              -98.78325475728941,
+              29.415635221304218
+            ],
+            [
+              -98.78329376256143,
+              29.415630810065057
+            ],
+            [
+              -98.7833328459373,
+              29.415626988145686
+            ],
+            [
+              -98.78337199605282,
+              29.415623769062147
+            ],
+            [
+              -98.78341121085512,
+              29.415621149201932
+            ],
+            [
+              -98.78345046458062,
+              29.415619128523193
+            ],
+            [
+              -98.78348975206953,
+              29.41561771062668
+            ],
+            [
+              -98.7835290692212,
+              29.41561688558039
+            ],
+            [
+              -98.78356839332179,
+              29.4156166731982
+            ],
+            [
+              -98.78360771513314,
+              29.415617056321476
+            ],
+            [
+              -98.783647023312,
+              29.415618038540856
+            ],
+            [
+              -98.78368630445206,
+              29.415619624346313
+            ],
+            [
+              -98.7837255503209,
+              29.415621808310576
+            ],
+            [
+              -98.78376474545875,
+              29.4156245913111
+            ],
+            [
+              -98.78380387852806,
+              29.415627974231786
+            ],
+            [
+              -98.78384294128684,
+              29.41563195615706
+            ],
+            [
+              -98.78388191519316,
+              29.41563653344783
+            ],
+            [
+              -98.7839207940623,
+              29.415641706996382
+            ],
+            [
+              -98.78395956347455,
+              29.41564747317031
+            ],
+            [
+              -98.78399821106558,
+              29.4156538310474
+            ],
+            [
+              -98.78403672859721,
+              29.415660777907497
+            ],
+            [
+              -98.78407509649487,
+              29.41566831101223
+            ],
+            [
+              -98.78411331475357,
+              29.4156764330685
+            ],
+            [
+              -98.78415135968399,
+              29.41568513772217
+            ],
+            [
+              -98.78418922923514,
+              29.415694420458443
+            ],
+            [
+              -98.78422690692229,
+              29.41570427944625
+            ],
+            [
+              -98.78426437831786,
+              29.415714714662478
+            ],
+            [
+              -98.78430164034042,
+              29.41572572159081
+            ],
+            [
+              -98.78433867547638,
+              29.415737297496175
+            ],
+            [
+              -98.7843754744587,
+              29.4157494387546
+            ],
+            [
+              -98.78441202803367,
+              29.41576213542602
+            ],
+            [
+              -98.78444831866686,
+              29.415775394700766
+            ],
+            [
+              -98.78448434638726,
+              29.415789203044522
+            ],
+            [
+              -98.7845200864635,
+              29.41580355951532
+            ],
+            [
+              -98.78455553684627,
+              29.415818458696155
+            ],
+            [
+              -98.7845906831022,
+              29.415833903271054
+            ],
+            [
+              -98.78462551599083,
+              29.415849876983714
+            ],
+            [
+              -98.78466002724704,
+              29.415866389746505
+            ],
+            [
+              -98.78469420352494,
+              29.415883417176012
+            ],
+            [
+              -98.78472803656328,
+              29.41590096737973
+            ],
+            [
+              -98.78476151401063,
+              29.41591903311964
+            ],
+            [
+              -98.78479462248309,
+              29.415937608058428
+            ],
+            [
+              -98.78482736095995,
+              29.415956687683085
+            ],
+            [
+              -98.78485970988132,
+              29.415976262037045
+            ],
+            [
+              -98.78489166306782,
+              29.415996329306072
+            ],
+            [
+              -98.78492321538204,
+              29.416016882263687
+            ],
+            [
+              -98.7849543493194,
+              29.416037913663587
+            ],
+            [
+              -98.78498505871192,
+              29.41605941627768
+            ],
+            [
+              -98.78501533841629,
+              29.416081385586462
+            ],
+            [
+              -98.78504517195476,
+              29.41610381614995
+            ],
+            [
+              -98.78507455626041,
+              29.416126696233402
+            ],
+            [
+              -98.78510348102367,
+              29.416150027625275
+            ],
+            [
+              -98.78513193082016,
+              29.416173794059468
+            ],
+            [
+              -98.78515990566117,
+              29.4161979901226
+            ],
+            [
+              -98.78518739215873,
+              29.41622261128179
+            ],
+            [
+              -98.78521438723428,
+              29.416247651216327
+            ],
+            [
+              -98.78525990683579,
+              29.41629194721809
+            ],
+            [
+              -98.78530770310763,
+              29.416346037762438
+            ],
+            [
+              -98.78535195478736,
+              29.41639641863588
+            ],
+            [
+              -98.78539519719465,
+              29.41644747008895
+            ],
+            [
+              -98.7854374190359,
+              29.416499171351543
+            ],
+            [
+              -98.7854785945704,
+              29.416551510653324
+            ],
+            [
+              -98.78551872280269,
+              29.41660447084993
+            ],
+            [
+              -98.78555779345245,
+              29.41665803929336
+            ],
+            [
+              -98.78559578595245,
+              29.416712194296387
+            ],
+            [
+              -98.78563269414458,
+              29.416766923217736
+            ],
+            [
+              -98.78566850569847,
+              29.416822207992354
+            ],
+            [
+              -98.78570320931621,
+              29.416878029654686
+            ],
+            [
+              -98.78573679058904,
+              29.416934378257107
+            ],
+            [
+              -98.78576924854549,
+              29.41699122492522
+            ],
+            [
+              -98.78581339729689,
+              29.417072823379083
+            ],
+            [
+              -98.78589975844127,
+              29.416973362834675
+            ],
+            [
+              -98.78502675373657,
+              29.415196054272332
+            ],
+            [
+              -98.78502509256418,
+              29.415192076047195
+            ],
+            [
+              -98.78483288203891,
+              29.414800624060444
+            ],
+            [
+              -98.7847977458998,
+              29.414621645059743
+            ],
+            [
+              -98.78467957837954,
+              29.414086407192116
+            ],
+            [
+              -98.78448317726433,
+              29.41301908581954
+            ],
+            [
+              -98.78432795521603,
+              29.41222829114968
+            ],
+            [
+              -98.78317726904572,
+              29.41204706901294
+            ],
+            [
+              -98.78110704219382,
+              29.41272462012186
+            ],
+            [
+              -98.78131174227772,
+              29.41356631820587
+            ],
+            [
+              -98.78160334552685,
+              29.414653635237368
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "201186",
+        "owner": "RANCHO COACHELLA PROPERTIES",
+        "situs": "STATE HWY 211",
+        "acres": 29.5,
+        "land_value": 7887456.0,
+        "assessed_value": 7887456.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB 4347 P-105A ABS 1029 CB 4348 P-15A  ABS 1001",
+        "node_id": "INT-005",
+        "node_name": "Potranco Rd / SH 211",
+        "node_score": 64.4,
+        "node_edge_miles": 0.355,
+        "dist_score": 90,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 86.2,
+        "compactness": 0.539,
+        "aspect_ratio": 1.79,
+        "road_score": 100,
+        "frontage_roads": [
+          "STATE HWY 211 S",
+          "CITIBANK DR",
+          "ZETA DR",
+          "THETA DR"
+        ],
+        "frontage_ft_proxy": 1473.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "General Urban Tier / West"
+        ],
+        "aadt": 26938,
+        "aadt_5yr_growth_pct": 85.8,
+        "aadt_station_miles": 0.34,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 7.69,
+        "future_residential_lots_nearby": 11269.7,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 267371.0,
+        "land_value_per_acre": 267371.0,
+        "parcel_opportunity_score": 85.9,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of priority intersection \u00b7 11269 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04347-000-1051",
+        "ownership_type": "Private",
+        "last_deed_date": "2001-04-02",
+        "hold_years": 25.5,
+        "rank": 17
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.74001839861963,
+              29.409379230096544
+            ],
+            [
+              -98.73989275962076,
+              29.409379588226592
+            ],
+            [
+              -98.73976712062326,
+              29.40937994533617
+            ],
+            [
+              -98.73964148059437,
+              29.409380302325562
+            ],
+            [
+              -98.73951584056232,
+              29.40938066009906
+            ],
+            [
+              -98.73951695994266,
+              29.40968318100409
+            ],
+            [
+              -98.73951746959455,
+              29.409820691569127
+            ],
+            [
+              -98.73951859413941,
+              29.41012321155883
+            ],
+            [
+              -98.73964423404973,
+              29.410122854683056
+            ],
+            [
+              -98.73976987499196,
+              29.410122496788837
+            ],
+            [
+              -98.73989551489822,
+              29.41012214057905
+            ],
+            [
+              -98.74002115583643,
+              29.410121783350743
+            ],
+            [
+              -98.74014679574324,
+              29.410121426002263
+            ],
+            [
+              -98.74027243668198,
+              29.410121067635256
+            ],
+            [
+              -98.74039807658698,
+              29.410120710050347
+            ],
+            [
+              -98.74052371648888,
+              29.410120353249678
+            ],
+            [
+              -98.74064935639447,
+              29.410119994526145
+            ],
+            [
+              -98.74077499732739,
+              29.410119636588735
+            ],
+            [
+              -98.74090063825943,
+              29.410119278533152
+            ],
+            [
+              -98.74102627816232,
+              29.4101189194551
+            ],
+            [
+              -98.74115191805984,
+              29.410118562063513
+            ],
+            [
+              -98.74127755795875,
+              29.410118203651365
+            ],
+            [
+              -98.74140319888727,
+              29.410117845123054
+            ],
+            [
+              -98.74152883981719,
+              29.410117485574208
+            ],
+            [
+              -98.74165447971342,
+              29.410117126807553
+            ],
+            [
+              -98.74178011960653,
+              29.41011676882501
+            ],
+            [
+              -98.74190576053381,
+              29.410116408921667
+            ],
+            [
+              -98.74203140042744,
+              29.410116049800493
+            ],
+            [
+              -98.74203252930634,
+              29.410418571552146
+            ],
+            [
+              -98.74207775930654,
+              29.410418442346522
+            ],
+            [
+              -98.7420782724009,
+              29.41055595288425
+            ],
+            [
+              -98.742079453344,
+              29.41087222855388
+            ],
+            [
+              -98.74319158480573,
+              29.410851250775156
+            ],
+            [
+              -98.7433120619696,
+              29.40932023203185
+            ],
+            [
+              -98.74330902193655,
+              29.40932024062637
+            ],
+            [
+              -98.74289221377089,
+              29.409321436649243
+            ],
+            [
+              -98.74286080352623,
+              29.409321526867636
+            ],
+            [
+              -98.74286098919197,
+              29.409371113430478
+            ],
+            [
+              -98.74270393995515,
+              29.409371563513613
+            ],
+            [
+              -98.74253118764658,
+              29.409372058936714
+            ],
+            [
+              -98.74240554763705,
+              29.409372418526118
+            ],
+            [
+              -98.74227990762664,
+              29.409372777997344
+            ],
+            [
+              -98.74215426864356,
+              29.40937313825461
+            ],
+            [
+              -98.74202862966189,
+              29.40937349749145
+            ],
+            [
+              -98.74190299068164,
+              29.40937385570781
+            ],
+            [
+              -98.7417773506654,
+              29.409374215608583
+            ],
+            [
+              -98.7416517106506,
+              29.409374574488904
+            ],
+            [
+              -98.74152607166538,
+              29.409374933252998
+            ],
+            [
+              -98.74140043267701,
+              29.409375292801208
+            ],
+            [
+              -98.74127479266184,
+              29.40937565042466
+            ],
+            [
+              -98.74114915367403,
+              29.409376008834254
+            ],
+            [
+              -98.74102351365252,
+              29.409376368025942
+            ],
+            [
+              -98.74089787466292,
+              29.409376726199163
+            ],
+            [
+              -98.74077223464194,
+              29.40937708425219
+            ],
+            [
+              -98.74064659565056,
+              29.40937744218902
+            ],
+            [
+              -98.74052095665837,
+              29.409377800007693
+            ],
+            [
+              -98.74039531766525,
+              29.40937815770819
+            ],
+            [
+              -98.74026967660798,
+              29.40937851618874
+            ],
+            [
+              -98.74014403761309,
+              29.409378873652873
+            ],
+            [
+              -98.74001839861963,
+              29.409379230096544
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "1280325",
+        "owner": "THREE ENCINO CROSSING LTD",
+        "situs": "W GROSENBACHER RD",
+        "acres": 9.78,
+        "land_value": 890000.0,
+        "assessed_value": 890000.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 4341  P-17D  ABS 422 2025-RMS PER PLAT 20003/1251-1252//  2018 NEW ACCT PER DEED 18720/294 EXEC 09/01/2017.",
+        "node_id": "INT-024",
+        "node_name": "Talley Rd / Potranco Rd",
+        "node_score": 65.7,
+        "node_edge_miles": 0.222,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 70.0,
+        "compactness": 0.438,
+        "aspect_ratio": 2.17,
+        "road_score": 100,
+        "frontage_roads": [
+          "W GROSENBACHER RD",
+          "Unnamed road"
+        ],
+        "frontage_ft_proxy": 795.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Suburban Tier / West"
+        ],
+        "aadt": 6400,
+        "aadt_5yr_growth_pct": 0,
+        "aadt_station_miles": 0.88,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 8.7,
+        "future_residential_lots_nearby": 11439.6,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 91002.0,
+        "land_value_per_acre": 91002.0,
+        "parcel_opportunity_score": 85.7,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 11439 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04341-000-0174",
+        "ownership_type": "Private",
+        "last_deed_date": "2017-09-01",
+        "hold_years": 9.1,
+        "rank": 18
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.79827489007077,
+              29.522733519412537
+            ],
+            [
+              -98.79807905869893,
+              29.523079323335395
+            ],
+            [
+              -98.79777089551098,
+              29.5236234806038
+            ],
+            [
+              -98.79751667389411,
+              29.524046766579758
+            ],
+            [
+              -98.79728422028417,
+              29.524469123204163
+            ],
+            [
+              -98.79870621671014,
+              29.525146312223857
+            ],
+            [
+              -98.79889156376228,
+              29.52505719362167
+            ],
+            [
+              -98.79969212428793,
+              29.523900633668102
+            ],
+            [
+              -98.79967962973997,
+              29.523890647407548
+            ],
+            [
+              -98.79933290616161,
+              29.52361264418724
+            ],
+            [
+              -98.79914235525126,
+              29.5234590769909
+            ],
+            [
+              -98.7990239351382,
+              29.52334925787458
+            ],
+            [
+              -98.7989536575087,
+              29.523287274412453
+            ],
+            [
+              -98.7987987219605,
+              29.52316186554079
+            ],
+            [
+              -98.79839027834694,
+              29.52274668815037
+            ],
+            [
+              -98.7983153328349,
+              29.52268022287283
+            ],
+            [
+              -98.79831490956316,
+              29.522679848688274
+            ],
+            [
+              -98.79827489007077,
+              29.522733519412537
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "241183",
+        "owner": "LEHMAN BETTY LOUISE",
+        "situs": "15279  CULEBRA RD",
+        "acres": 8.26,
+        "land_value": 487420.0,
+        "assessed_value": 620000.0,
+        "improvement_value": 132580.0,
+        "improvement_ratio": 0.214,
+        "gba": 2639.0,
+        "prop_use": "2",
+        "legal": "CB 4499 P-1D ABS 507",
+        "node_id": "INT-001",
+        "node_name": "Culebra Rd / SH 211",
+        "node_score": 66.5,
+        "node_edge_miles": 0.162,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 73.8,
+        "shape_score": 100,
+        "compactness": 0.77,
+        "aspect_ratio": 1.22,
+        "road_score": 100,
+        "frontage_roads": [
+          "Unnamed road",
+          "GERONIMO LOOP"
+        ],
+        "frontage_ft_proxy": 323.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 11644,
+        "aadt_5yr_growth_pct": 38.8,
+        "aadt_station_miles": 0.35,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 0.23,
+        "future_residential_lots_nearby": 8293.8,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 75061.0,
+        "land_value_per_acre": 59010.0,
+        "parcel_opportunity_score": 85.7,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 8293 weighted future residential lots nearby \u00b7 0.2 mi from Culebra / SH 211 H-E-B",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04499-000-0013",
+        "ownership_type": "Private",
+        "rank": 19
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.69226122550427,
+              29.384668517627826
+            ],
+            [
+              -98.69213493657217,
+              29.38469628927941
+            ],
+            [
+              -98.69177337565395,
+              29.38473856308025
+            ],
+            [
+              -98.69177158545058,
+              29.384738772795565
+            ],
+            [
+              -98.6909739687385,
+              29.384832026516545
+            ],
+            [
+              -98.69097240836417,
+              29.38483220878144
+            ],
+            [
+              -98.68972420651424,
+              29.38518463240891
+            ],
+            [
+              -98.69008805916798,
+              29.385534601040654
+            ],
+            [
+              -98.69009040346052,
+              29.38594919366098
+            ],
+            [
+              -98.69067762507426,
+              29.385946454194713
+            ],
+            [
+              -98.69067380092542,
+              29.38586722791693
+            ],
+            [
+              -98.69071787471532,
+              29.38586703675289
+            ],
+            [
+              -98.69382694748279,
+              29.38585248559779
+            ],
+            [
+              -98.69386182801065,
+              29.38585232194432
+            ],
+            [
+              -98.69387038664371,
+              29.38585228201283
+            ],
+            [
+              -98.69387972211668,
+              29.38585223844768
+            ],
+            [
+              -98.69388561847742,
+              29.385852210458253
+            ],
+            [
+              -98.6938772576786,
+              29.385456856733192
+            ],
+            [
+              -98.69386015262556,
+              29.384648010985106
+            ],
+            [
+              -98.69385705321531,
+              29.384501297246278
+            ],
+            [
+              -98.69385686270614,
+              29.384492305287143
+            ],
+            [
+              -98.6938567507773,
+              29.384487011175928
+            ],
+            [
+              -98.69383592609853,
+              29.38447527941459
+            ],
+            [
+              -98.693673053148,
+              29.384383522598785
+            ],
+            [
+              -98.69364052076482,
+              29.384365194227016
+            ],
+            [
+              -98.69226122550427,
+              29.384668517627826
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "691218",
+        "owner": "MELISSA RANCH 1856 LP",
+        "situs": "4500 W PUE RD",
+        "acres": 12.53,
+        "land_value": 2226630.0,
+        "assessed_value": 2226630.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "NCB 18160  P-3 (1.088 AC)  & CB 5983 P-3 (11.4419 AC)  ABS 506 2022- RMS PER PLAT 20002/605-606, FILED 04-30-2021///2021 SPLIT PER DEED 20200284217 EXE 11-20-20 CR 52511. JA/GIS/11-20-21// 2021-RMS PER SPLIT PER DEED 20200067959 EXE 03-31-2020|||| LEGAL DESC CHANGE PER DEED 12780/2110 EXE 02/09/07.",
+        "node_id": "INT-011",
+        "node_name": "US 90 / Loop 1604 West",
+        "node_score": 64.8,
+        "node_edge_miles": 0.739,
+        "dist_score": 78,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 90.0,
+        "compactness": 0.563,
+        "aspect_ratio": 2.44,
+        "road_score": 100,
+        "frontage_roads": [
+          "US HWY 90 W ACCESS RD",
+          "Unnamed road",
+          "PUE RD"
+        ],
+        "frontage_ft_proxy": 2959.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 75,
+        "flood_pct": 0.6,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "A",
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Urban Mixed Use"
+        ],
+        "aadt": 55327,
+        "aadt_5yr_growth_pct": 58.0,
+        "aadt_station_miles": 0.56,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 11.67,
+        "future_residential_lots_nearby": 4718.1,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_context": "2 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
+        "assessed_value_per_acre": 177704.0,
+        "land_value_per_acre": 177704.0,
+        "parcel_opportunity_score": 85.1,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of priority intersection \u00b7 4718 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "18160-000-0030",
+        "ownership_type": "Private",
+        "last_deed_date": "2016-02-01",
+        "hold_years": 10.6,
+        "rank": 20
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.73984588009738,
+              29.411813899959533
+            ],
+            [
+              -98.73984803326125,
+              29.412186522839434
+            ],
+            [
+              -98.73985018540802,
+              29.41255914659546
+            ],
+            [
+              -98.73985233757269,
+              29.412931769425082
+            ],
+            [
+              -98.73985448975078,
+              29.41330439313278
+            ],
+            [
+              -98.73985664194679,
+              29.413677015914026
+            ],
+            [
+              -98.73985879518676,
+              29.414049639575403
+            ],
+            [
+              -98.73986416677764,
+              29.414979670998143
+            ],
+            [
+              -98.73986218290236,
+              29.415094886041143
+            ],
+            [
+              -98.73985870926346,
+              29.415296732068438
+            ],
+            [
+              -98.73985419853963,
+              29.41640975487119
+            ],
+            [
+              -98.73985561728367,
+              29.41711286759516
+            ],
+            [
+              -98.73985701936465,
+              29.417727221423494
+            ],
+            [
+              -98.74186822255852,
+              29.417734060110746
+            ],
+            [
+              -98.7447754804644,
+              29.417731056661747
+            ],
+            [
+              -98.74477550856415,
+              29.417709860685783
+            ],
+            [
+              -98.74477985709605,
+              29.416390324632857
+            ],
+            [
+              -98.74421918723051,
+              29.416297693555155
+            ],
+            [
+              -98.74421359456375,
+              29.41586811009027
+            ],
+            [
+              -98.74420042693752,
+              29.414856567970407
+            ],
+            [
+              -98.74418033746832,
+              29.41331325975226
+            ],
+            [
+              -98.74418027693493,
+              29.413308614570315
+            ],
+            [
+              -98.74162978218088,
+              29.41108470959144
+            ],
+            [
+              -98.7398415752689,
+              29.411068488105943
+            ],
+            [
+              -98.73984588009738,
+              29.411813899959533
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "200735",
+        "owner": "ARCADIA 75 LLC",
+        "situs": "12555 W GROSENBACHER RD",
+        "acres": 74.97,
+        "land_value": 5000000.0,
+        "assessed_value": 5000000.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 4339 P-2B ABS 954 (16.80 AC) CB 4340 P-2B ABS 1119 (26.17 AC) CB 4352 P-1B ABS 1021 (32 AC) 2023 RESURVEY PER DOC 20220173058 EXE 07/13/22 AND SURVEY",
+        "node_id": "INT-024",
+        "node_name": "Talley Rd / Potranco Rd",
+        "node_score": 65.7,
+        "node_edge_miles": 0.0,
+        "dist_score": 100,
+        "acre_score": 92,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.701,
+        "aspect_ratio": 1.55,
+        "road_score": 100,
+        "frontage_roads": [
+          "Unnamed road",
+          "W GROSENBACHER RD"
+        ],
+        "frontage_ft_proxy": 1207.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 75,
+        "flood_pct": 0.7,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "A",
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Suburban Tier / West"
+        ],
+        "aadt": 6400,
+        "aadt_5yr_growth_pct": 0,
+        "aadt_station_miles": 0.94,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 8.39,
+        "future_residential_lots_nearby": 11439.6,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 66693.0,
+        "land_value_per_acre": 66693.0,
+        "parcel_opportunity_score": 84.9,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 11439 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04339-000-0022",
+        "ownership_type": "Private",
+        "last_deed_date": "2022-07-12",
+        "hold_years": 4.2,
+        "rank": 21
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.25353801513754,
+              29.52356349084475
+            ],
+            [
+              -98.25322193490146,
+              29.523092342943215
+            ],
+            [
+              -98.25307327645558,
+              29.522860643246847
+            ],
+            [
+              -98.25289764929097,
+              29.522586913228835
+            ],
+            [
+              -98.25272471331974,
+              29.52232706819301
+            ],
+            [
+              -98.25249240081783,
+              29.521973463884343
+            ],
+            [
+              -98.25179830548421,
+              29.520942319314393
+            ],
+            [
+              -98.2495759363606,
+              29.522099369066538
+            ],
+            [
+              -98.25036584362566,
+              29.523275918707633
+            ],
+            [
+              -98.25153795468819,
+              29.525014601588392
+            ],
+            [
+              -98.25197071350439,
+              29.525687040087384
+            ],
+            [
+              -98.2525333277658,
+              29.52651833315881
+            ],
+            [
+              -98.25475772999754,
+              29.525400881711548
+            ],
+            [
+              -98.25449775216957,
+              29.525002946695245
+            ],
+            [
+              -98.25417284157646,
+              29.524516875748215
+            ],
+            [
+              -98.25384547996177,
+              29.524030625147326
+            ],
+            [
+              -98.25353801513754,
+              29.52356349084475
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "309935",
+        "owner": "SCHERTZ 1518 LTD",
+        "situs": "LOWER SEGUIN RD",
+        "acres": 35.14,
+        "land_value": 1701808.0,
+        "assessed_value": 1701808.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 5058 P-26 ABS 424 (FORMERLY P-4J)",
+        "node_id": "INT-010",
+        "node_name": "FM 1516 / I-10 East",
+        "node_score": 55.9,
+        "node_edge_miles": 0.478,
+        "dist_score": 90,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.666,
+        "aspect_ratio": 2.27,
+        "road_score": 100,
+        "frontage_roads": [
+          "LOWER SEGUIN RD",
+          "SCHNEBLY DR"
+        ],
+        "frontage_ft_proxy": 1145.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 6664,
+        "aadt_5yr_growth_pct": 58.5,
+        "aadt_station_miles": 0.29,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 3.66,
+        "future_residential_lots_nearby": 2930.2,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 48429.0,
+        "land_value_per_acre": 48429.0,
+        "parcel_opportunity_score": 84.7,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of priority intersection \u00b7 2930 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05058-000-0260",
+        "ownership_type": "Private",
+        "last_deed_date": "2005-07-01",
+        "hold_years": 21.2,
+        "rank": 22
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.4392258176396,
+              29.34211204687856
+            ],
+            [
+              -98.43918235851558,
+              29.342145519484248
+            ],
+            [
+              -98.43913701522268,
+              29.34217639174657
+            ],
+            [
+              -98.43908994314717,
+              29.342204557869806
+            ],
+            [
+              -98.43901788920954,
+              29.34224494263826
+            ],
+            [
+              -98.43895753825579,
+              29.342281697225474
+            ],
+            [
+              -98.4389000531408,
+              29.34232278978992
+            ],
+            [
+              -98.43888444441936,
+              29.342335453254456
+            ],
+            [
+              -98.43878113124609,
+              29.342419849960972
+            ],
+            [
+              -98.4388558443906,
+              29.342490056261944
+            ],
+            [
+              -98.44017898718344,
+              29.343733360043334
+            ],
+            [
+              -98.43981165695584,
+              29.34403345121168
+            ],
+            [
+              -98.44076230396912,
+              29.34492671138532
+            ],
+            [
+              -98.44012748947783,
+              29.345197957669388
+            ],
+            [
+              -98.44007322070937,
+              29.34586180920737
+            ],
+            [
+              -98.44138482544557,
+              29.345308927237046
+            ],
+            [
+              -98.44141506101441,
+              29.345296193858655
+            ],
+            [
+              -98.44149056768792,
+              29.345263667054326
+            ],
+            [
+              -98.44150206804323,
+              29.345258617949728
+            ],
+            [
+              -98.44157082829855,
+              29.34522791443946
+            ],
+            [
+              -98.44157804086831,
+              29.34522463940381
+            ],
+            [
+              -98.4416509530958,
+              29.34519099360204
+            ],
+            [
+              -98.44165247811753,
+              29.345190279025005
+            ],
+            [
+              -98.44172986107306,
+              29.34515340441994
+            ],
+            [
+              -98.44173867231085,
+              29.345149127264513
+            ],
+            [
+              -98.44180952242834,
+              29.3451141932576
+            ],
+            [
+              -98.4418095451441,
+              29.34511418252475
+            ],
+            [
+              -98.44181198747428,
+              29.345112957457587
+            ],
+            [
+              -98.44188803824619,
+              29.34507427254362
+            ],
+            [
+              -98.44189060265236,
+              29.345072946022963
+            ],
+            [
+              -98.44189683862602,
+              29.345069717416912
+            ],
+            [
+              -98.4419655189071,
+              29.345033608453267
+            ],
+            [
+              -98.44196791311548,
+              29.345032330847378
+            ],
+            [
+              -98.4419689697495,
+              29.34503176680112
+            ],
+            [
+              -98.44204251899339,
+              29.344991918172337
+            ],
+            [
+              -98.44204385979378,
+              29.34499117936026
+            ],
+            [
+              -98.44205191700306,
+              29.344986737516507
+            ],
+            [
+              -98.44205240869603,
+              29.344986467070207
+            ],
+            [
+              -98.44211882990355,
+              29.344949305499213
+            ],
+            [
+              -98.44211987845921,
+              29.34494871164136
+            ],
+            [
+              -98.44212330308484,
+              29.344946766108492
+            ],
+            [
+              -98.44219462103787,
+              29.344905678203776
+            ],
+            [
+              -98.44219814207037,
+              29.344903616672152
+            ],
+            [
+              -98.44220235017829,
+              29.3449011492593
+            ],
+            [
+              -98.442205265778,
+              29.344899441615116
+            ],
+            [
+              -98.44226957834789,
+              29.344861213634694
+            ],
+            [
+              -98.44227211086907,
+              29.344859688462336
+            ],
+            [
+              -98.44227299224836,
+              29.34485915616508
+            ],
+            [
+              -98.44227486968862,
+              29.34485802437546
+            ],
+            [
+              -98.44234386092558,
+              29.344815821323305
+            ],
+            [
+              -98.4424173375323,
+              29.344769582833926
+            ],
+            [
+              -98.4424901704279,
+              29.344722393273788
+            ],
+            [
+              -98.44256230176308,
+              29.344674284886025
+            ],
+            [
+              -98.44263337486016,
+              29.344625509735227
+            ],
+            [
+              -98.44270414753197,
+              29.34457553139759
+            ],
+            [
+              -98.4427737368379,
+              29.344524980520998
+            ],
+            [
+              -98.44284273420064,
+              29.344473427363127
+            ],
+            [
+              -98.44289332291065,
+              29.344434695146752
+            ],
+            [
+              -98.44288636611438,
+              29.344067612746766
+            ],
+            [
+              -98.44150831575628,
+              29.343021001395417
+            ],
+            [
+              -98.44146919914901,
+              29.34299070372642
+            ],
+            [
+              -98.4414263500226,
+              29.34295612514311
+            ],
+            [
+              -98.44138429551744,
+              29.342920685445346
+            ],
+            [
+              -98.44134349684845,
+              29.34288479170755
+            ],
+            [
+              -98.44130654297837,
+              29.34285091540349
+            ],
+            [
+              -98.44109130068811,
+              29.342649625393843
+            ],
+            [
+              -98.44007564178276,
+              29.341699778646902
+            ],
+            [
+              -98.43974250890825,
+              29.341689927798754
+            ],
+            [
+              -98.4392258176396,
+              29.34211204687856
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "1122022",
+        "owner": "VHS SAN ANTONIO PARTNERS LLC",
+        "situs": "8010  CHENNAULT PATH",
+        "acres": 19.95,
+        "land_value": 6633984.0,
+        "assessed_value": 6900000.0,
+        "improvement_value": 266016.0,
+        "improvement_ratio": 0.039,
+        "gba": 70026.0,
+        "prop_use": "98",
+        "legal": "NCB  10879  (BROOKS CITY BASE UT-14) BLK  7  LOT  1 09) ACREAGE UPDATE PER PLAT 9583/104-106",
+        "node_id": "INT-018",
+        "node_name": "Louis Bauer Dr / Laser Dr (Brooks)",
+        "node_score": 62.2,
+        "node_edge_miles": 0.09,
+        "dist_score": 100,
+        "acre_score": 100,
+        "raw_score": 89.5,
+        "shape_score": 80.6,
+        "compactness": 0.504,
+        "aspect_ratio": 1.3,
+        "road_score": 84,
+        "frontage_roads": [
+          "CHENNAULT PATH",
+          "TUSKEEGEE RD",
+          "RESEARCH PLAZA",
+          "INNER CIRCLE DR"
+        ],
+        "frontage_ft_proxy": 3548.0,
+        "corner_signal": "YES",
+        "major_road_signal": false,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Business/Innovation Mixed-Use / Brooks Area Regional Center Plan",
+          "Business/Innovation Mixed-Use / Brooks Area Regional Center Plan"
+        ],
+        "aadt": 28899,
+        "aadt_5yr_growth_pct": -8.7,
+        "aadt_station_miles": 0.75,
+        "nearest_retail_catalyst": "H-E-B Foster campus",
+        "retail_catalyst_miles": 7.13,
+        "future_residential_lots_nearby": 2689.8,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_context": "2 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
+        "assessed_value_per_acre": 345865.0,
+        "land_value_per_acre": 332531.0,
+        "parcel_opportunity_score": 84.0,
+        "eligible": true,
+        "why_this_tract": "road frontage \u00b7 within \u00bc mile of priority intersection \u00b7 2689 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "10879-007-0010",
+        "ownership_type": "Private",
+        "last_deed_date": "2012-10-22",
+        "hold_years": 13.9,
+        "rank": 23
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.78965108499163,
+              29.364687935810437
+            ],
+            [
+              -98.78961889168241,
+              29.368131200796796
+            ],
+            [
+              -98.78962210703112,
+              29.36814253528138
+            ],
+            [
+              -98.78962550469974,
+              29.368153873662436
+            ],
+            [
+              -98.78962903125327,
+              29.36816515269392
+            ],
+            [
+              -98.7896327443046,
+              29.368176407656687
+            ],
+            [
+              -98.78963686271733,
+              29.368188406762425
+            ],
+            [
+              -98.7896791864673,
+              29.36831127166251
+            ],
+            [
+              -98.7897278181118,
+              29.368389233948843
+            ],
+            [
+              -98.78982795662805,
+              29.368520057991486
+            ],
+            [
+              -98.78997109792267,
+              29.368658483907684
+            ],
+            [
+              -98.79000583158357,
+              29.36868529567355
+            ],
+            [
+              -98.79011354411344,
+              29.368768335092
+            ],
+            [
+              -98.790134359471,
+              29.36878439917223
+            ],
+            [
+              -98.79033199806544,
+              29.36892793982783
+            ],
+            [
+              -98.79099883374002,
+              29.369137401142087
+            ],
+            [
+              -98.79262611820177,
+              29.36871747118636
+            ],
+            [
+              -98.79262887601399,
+              29.367882308115664
+            ],
+            [
+              -98.7931225383229,
+              29.367818168924625
+            ],
+            [
+              -98.79444062814636,
+              29.367630766412248
+            ],
+            [
+              -98.79446138913296,
+              29.36583051694262
+            ],
+            [
+              -98.79451315671061,
+              29.36469038356405
+            ],
+            [
+              -98.79268326062686,
+              29.364689476466125
+            ],
+            [
+              -98.79229155706571,
+              29.36468928089165
+            ],
+            [
+              -98.78965108499163,
+              29.364687935810437
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "163841",
+        "owner": "STAHLEY DIANE L TRUST",
+        "situs": "6775  JUNGMAN RD",
+        "acres": 48.89,
+        "land_value": 1600000.0,
+        "assessed_value": 1600000.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 4016 P-25D (33.586 AC) & P-25E (15.300 AC) ABS 1114",
+        "node_id": "INT-004",
+        "node_name": "US 90 / SH 211",
+        "node_score": 66.7,
+        "node_edge_miles": 0.895,
+        "dist_score": 66,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.76,
+        "aspect_ratio": 1.05,
+        "road_score": 100,
+        "frontage_roads": [
+          "JUNGMAN RD",
+          "Unnamed road",
+          "PVT RD AT 14420 US HWY 90 W",
+          "US HWY 90 W"
+        ],
+        "frontage_ft_proxy": 2951.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 31896,
+        "aadt_5yr_growth_pct": 46.6,
+        "aadt_station_miles": 0.72,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 10.9,
+        "future_residential_lots_nearby": 9259.4,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_context": "1 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
+        "assessed_value_per_acre": 32727.0,
+        "land_value_per_acre": 32727.0,
+        "parcel_opportunity_score": 83.8,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of priority intersection \u00b7 9259 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04016-000-0255",
+        "ownership_type": "Private",
+        "last_deed_date": "2012-12-21",
+        "hold_years": 13.8,
+        "rank": 24
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.30710572770202,
+              29.514953904096554
+            ],
+            [
+              -98.30814423553969,
+              29.515023467008252
+            ],
+            [
+              -98.30817745013036,
+              29.513882030102707
+            ],
+            [
+              -98.30816511788618,
+              29.513869474599137
+            ],
+            [
+              -98.30815099659112,
+              29.51385897155469
+            ],
+            [
+              -98.30813542423957,
+              29.5138507723606
+            ],
+            [
+              -98.30811877355704,
+              29.513845073265248
+            ],
+            [
+              -98.30810144307898,
+              29.513842010676957
+            ],
+            [
+              -98.30808384761183,
+              29.51384165789903
+            ],
+            [
+              -98.30806640830454,
+              29.51384402337523
+            ],
+            [
+              -98.30804954256836,
+              29.513849050487696
+            ],
+            [
+              -98.30784730871096,
+              29.513871711706223
+            ],
+            [
+              -98.30768451892536,
+              29.513896720731527
+            ],
+            [
+              -98.30756597204405,
+              29.513934913033292
+            ],
+            [
+              -98.30726013781135,
+              29.514077357793212
+            ],
+            [
+              -98.30719572150082,
+              29.514123539911374
+            ],
+            [
+              -98.30713456765957,
+              29.514173962691967
+            ],
+            [
+              -98.30707695495316,
+              29.514228396368694
+            ],
+            [
+              -98.3070231459109,
+              29.514286592898426
+            ],
+            [
+              -98.30697338572959,
+              29.51434828709149
+            ],
+            [
+              -98.3069279011562,
+              29.514413197820073
+            ],
+            [
+              -98.30711829751947,
+              29.514602576113283
+            ],
+            [
+              -98.30710572770202,
+              29.514953904096554
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "311492",
+        "owner": "SALEHI FAMILY LTD",
+        "situs": "9156  FM 78",
+        "acres": 3.04,
+        "land_value": 417900.0,
+        "assessed_value": 425000.0,
+        "improvement_value": 7100.0,
+        "improvement_ratio": 0.017,
+        "gba": 434.0,
+        "prop_use": "390",
+        "legal": "CB 5063H BLK  6  LOT  13  J.R. MCCORVEY SUBD.",
+        "node_id": "INT-003",
+        "node_name": "I-10 / Loop 1604 East",
+        "node_score": 52.8,
+        "node_edge_miles": 0.23,
+        "dist_score": 97,
+        "acre_score": 86,
+        "raw_score": 97.8,
+        "shape_score": 100,
+        "compactness": 0.789,
+        "aspect_ratio": 1.09,
+        "road_score": 100,
+        "frontage_roads": [
+          "SHADOW CREEK LN",
+          "FM 78",
+          "CONVERSE CENTER"
+        ],
+        "frontage_ft_proxy": 496.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 15459,
+        "aadt_5yr_growth_pct": 31.9,
+        "aadt_station_miles": 0.31,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 0.26,
+        "future_residential_lots_nearby": 1388.4,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 139803.0,
+        "land_value_per_acre": 137467.0,
+        "parcel_opportunity_score": 83.5,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of priority intersection \u00b7 1388 weighted future residential lots nearby \u00b7 0.3 mi from I-10 / Loop 1604 East H-E-B",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05063-806-0130",
+        "ownership_type": "Private",
+        "last_deed_date": "2003-12-22",
+        "hold_years": 22.8,
+        "rank": 25
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.80125136592083,
+              29.52167682761745
+            ],
+            [
+              -98.80135443653144,
+              29.522527205216768
+            ],
+            [
+              -98.80301203132808,
+              29.522520528995596
+            ],
+            [
+              -98.80300568427921,
+              29.521230837069055
+            ],
+            [
+              -98.80260313533307,
+              29.521232104826833
+            ],
+            [
+              -98.80260569074129,
+              29.51990581271859
+            ],
+            [
+              -98.80107189158964,
+              29.520196002054043
+            ],
+            [
+              -98.80125136592083,
+              29.52167682761745
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "209143",
+        "owner": "CARIMAR RANCH LLC",
+        "situs": "15484 W FM 471",
+        "acres": 10.58,
+        "land_value": 2057425.0,
+        "assessed_value": 2150000.0,
+        "improvement_value": 92575.0,
+        "improvement_ratio": 0.043,
+        "gba": 2218.0,
+        "prop_use": "99",
+        "legal": "CB 4404  P-4 (5.2884 AC), P-4J (4.111 AC) & P-4K (1.181 AC) ABS 269 2021-SPLIT PER DEED 20200091211||||12398/749 & 17455/418",
+        "node_id": "INT-001",
+        "node_name": "Culebra Rd / SH 211",
+        "node_score": 66.5,
+        "node_edge_miles": 0.113,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 86.5,
+        "shape_score": 100,
+        "compactness": 0.662,
+        "aspect_ratio": 1.68,
+        "road_score": 84,
+        "frontage_roads": [
+          "CULEBRA RD"
+        ],
+        "frontage_ft_proxy": 0.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 11644,
+        "aadt_5yr_growth_pct": 38.8,
+        "aadt_station_miles": 0.16,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 0.2,
+        "future_residential_lots_nearby": 8293.8,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 203214.0,
+        "land_value_per_acre": 194464.0,
+        "parcel_opportunity_score": 83.4,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of priority intersection \u00b7 8293 weighted future residential lots nearby \u00b7 0.2 mi from Culebra / SH 211 H-E-B",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04404-000-0040",
+        "ownership_type": "Private",
+        "last_deed_date": "2017-05-10",
+        "hold_years": 9.4,
+        "rank": 26
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.29165811066893,
+              29.494468689847814
+            ],
+            [
+              -98.29178938137596,
+              29.494411329207583
+            ],
+            [
+              -98.29192703060929,
+              29.4943579074037
+            ],
+            [
+              -98.29204946611242,
+              29.494305177262582
+            ],
+            [
+              -98.2921772951518,
+              29.49425400678082
+            ],
+            [
+              -98.29230411227812,
+              29.494198959026
+            ],
+            [
+              -98.29242655667205,
+              29.494149361392527
+            ],
+            [
+              -98.29255707627124,
+              29.494091170413768
+            ],
+            [
+              -98.29269024954225,
+              29.49403535558509
+            ],
+            [
+              -98.29281361421829,
+              29.493984168092524
+            ],
+            [
+              -98.29293967714868,
+              29.49392905890029
+            ],
+            [
+              -98.29306659368305,
+              29.493873984781807
+            ],
+            [
+              -98.2905579436352,
+              29.493182293302628
+            ],
+            [
+              -98.29037811344709,
+              29.49388669121264
+            ],
+            [
+              -98.29016066326633,
+              29.49484346968072
+            ],
+            [
+              -98.29007345372321,
+              29.495165473482643
+            ],
+            [
+              -98.29067885998677,
+              29.494876280611862
+            ],
+            [
+              -98.29096075910576,
+              29.494757894867707
+            ],
+            [
+              -98.29114907291998,
+              29.494679493359417
+            ],
+            [
+              -98.2912763811942,
+              29.494626210483606
+            ],
+            [
+              -98.29140482357643,
+              29.494572819807775
+            ],
+            [
+              -98.29153308860433,
+              29.494518360641052
+            ],
+            [
+              -98.29165811066893,
+              29.494468689847814
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "990673",
+        "owner": "MMP VENTURES LLC",
+        "situs": "W LOOP 1604",
+        "acres": 6.96,
+        "land_value": 455510.0,
+        "assessed_value": 455510.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 5069  P-3A  ABS 192 RESURVEY - SWD 11311/1800",
+        "node_id": "INT-016",
+        "node_name": "Loop 1604 / Green Rd",
+        "node_score": 64.0,
+        "node_edge_miles": 0.13,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 87.7,
+        "compactness": 0.548,
+        "aspect_ratio": 1.14,
+        "road_score": 84,
+        "frontage_roads": [
+          "E LOOP 1604 N"
+        ],
+        "frontage_ft_proxy": 0.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 2381,
+        "aadt_5yr_growth_pct": 7.3,
+        "aadt_station_miles": 1.18,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 1.86,
+        "future_residential_lots_nearby": 3928.8,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 65447.0,
+        "land_value_per_acre": 65447.0,
+        "parcel_opportunity_score": 83.4,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of priority intersection \u00b7 3928 weighted future residential lots nearby \u00b7 1.9 mi from I-10 / Loop 1604 East H-E-B",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05069-000-0037",
+        "ownership_type": "Private",
+        "last_deed_date": "2007-05-09",
+        "hold_years": 19.4,
+        "rank": 27
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.73282646047333,
+              29.411126359958388
+            ],
+            [
+              -98.73282408769579,
+              29.412292079683784
+            ],
+            [
+              -98.7351186938125,
+              29.412287605081037
+            ],
+            [
+              -98.73512446693744,
+              29.412287594874186
+            ],
+            [
+              -98.7352129260555,
+              29.412287421070804
+            ],
+            [
+              -98.73521271767379,
+              29.41196390179267
+            ],
+            [
+              -98.73519404958532,
+              29.41117642466095
+            ],
+            [
+              -98.73518566445638,
+              29.41116913455248
+            ],
+            [
+              -98.73517709752906,
+              29.41116200920489
+            ],
+            [
+              -98.73516835911096,
+              29.41115504773628
+            ],
+            [
+              -98.73515944713166,
+              29.4111482537518
+            ],
+            [
+              -98.73515036672276,
+              29.411141635382307
+            ],
+            [
+              -98.73514112407447,
+              29.411135189933145
+            ],
+            [
+              -98.73513172227364,
+              29.411128919214942
+            ],
+            [
+              -98.73512216850355,
+              29.411122834971998
+            ],
+            [
+              -98.73511246484162,
+              29.411116930892188
+            ],
+            [
+              -98.7351026174499,
+              29.41111121510843
+            ],
+            [
+              -98.73509262736364,
+              29.411105685818203
+            ],
+            [
+              -98.73508250694208,
+              29.411100345752814
+            ],
+            [
+              -98.7350722509975,
+              29.411095208436645
+            ],
+            [
+              -98.73506187294774,
+              29.411090265775435
+            ],
+            [
+              -98.73479920421867,
+              29.411080691674137
+            ],
+            [
+              -98.73282653471995,
+              29.411090399622744
+            ],
+            [
+              -98.73282646047333,
+              29.411126359958388
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "200768",
+        "owner": "RATER JEWELL",
+        "situs": "1996  GROSENBACHER RD",
+        "acres": 5.56,
+        "land_value": 750160.0,
+        "assessed_value": 753770.0,
+        "improvement_value": 3610.0,
+        "improvement_ratio": 0.005,
+        "gba": 0.0,
+        "prop_use": "2",
+        "legal": "CB 4340A TR 7  REFER TO: 04340-003-0070",
+        "node_id": "INT-024",
+        "node_name": "Talley Rd / Potranco Rd",
+        "node_score": 65.7,
+        "node_edge_miles": 0.543,
+        "dist_score": 78,
+        "acre_score": 100,
+        "raw_score": 99.4,
+        "shape_score": 100,
+        "compactness": 0.743,
+        "aspect_ratio": 1.73,
+        "road_score": 100,
+        "frontage_roads": [
+          "Unnamed road",
+          "GROSENBACHER RD",
+          "W GROSENBACHER RD",
+          "CANTHREE DR"
+        ],
+        "frontage_ft_proxy": 2447.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Urban Low Density Residential"
+        ],
+        "aadt": 6400,
+        "aadt_5yr_growth_pct": 0,
+        "aadt_station_miles": 0.43,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 8.79,
+        "future_residential_lots_nearby": 11439.6,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 135570.0,
+        "land_value_per_acre": 134921.0,
+        "parcel_opportunity_score": 83.4,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of priority intersection \u00b7 11439 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04340-003-0071",
+        "ownership_type": "Private",
+        "rank": 28
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.24852939844313,
+              29.52235888060859
+            ],
+            [
+              -98.24977876810297,
+              29.521722303430334
+            ],
+            [
+              -98.249189641449,
+              29.52084829439157
+            ],
+            [
+              -98.24849262925709,
+              29.519814192352293
+            ],
+            [
+              -98.24846535949614,
+              29.519849653578834
+            ],
+            [
+              -98.24843968273271,
+              29.51988628474412
+            ],
+            [
+              -98.24827655787882,
+              29.520130410744223
+            ],
+            [
+              -98.24822844527304,
+              29.52019695948306
+            ],
+            [
+              -98.24817601545554,
+              29.52026016289842
+            ],
+            [
+              -98.24811950034483,
+              29.520319741415822
+            ],
+            [
+              -98.24805914993026,
+              29.52037543149517
+            ],
+            [
+              -98.24799523116636,
+              29.520426986796522
+            ],
+            [
+              -98.24799274229588,
+              29.52042888297474
+            ],
+            [
+              -98.24792622526049,
+              29.52047595195301
+            ],
+            [
+              -98.2478570205892,
+              29.52051897192726
+            ],
+            [
+              -98.24778537443596,
+              29.520557789879817
+            ],
+            [
+              -98.24777972539029,
+              29.52056113177341
+            ],
+            [
+              -98.24777461732418,
+              29.52056525337873
+            ],
+            [
+              -98.24777015702443,
+              29.520570068531473
+            ],
+            [
+              -98.24777013830283,
+              29.520570089179117
+            ],
+            [
+              -98.2477672379365,
+              29.52057425351551
+            ],
+            [
+              -98.24776491349839,
+              29.520578764702694
+            ],
+            [
+              -98.24776320578408,
+              29.52058354356598
+            ],
+            [
+              -98.24776214476526,
+              29.520588506232748
+            ],
+            [
+              -98.24775661871013,
+              29.52061267030517
+            ],
+            [
+              -98.24774724611898,
+              29.52063561794593
+            ],
+            [
+              -98.24773427525707,
+              29.520656741307953
+            ],
+            [
+              -98.24771827907277,
+              29.52067565283872
+            ],
+            [
+              -98.24769981232512,
+              29.520692160507842
+            ],
+            [
+              -98.24767923266316,
+              29.520705944608153
+            ],
+            [
+              -98.24765335379165,
+              29.520718506902575
+            ],
+            [
+              -98.24762597793726,
+              29.52072734374752
+            ],
+            [
+              -98.24759763837176,
+              29.520732283004428
+            ],
+            [
+              -98.24760024913036,
+              29.52073443525091
+            ],
+            [
+              -98.24763105812599,
+              29.52076289037207
+            ],
+            [
+              -98.24765701420893,
+              29.520795832288993
+            ],
+            [
+              -98.24767747275821,
+              29.52083244288709
+            ],
+            [
+              -98.24769192568448,
+              29.52087181293985
+            ],
+            [
+              -98.2477000140484,
+              29.52091296468952
+            ],
+            [
+              -98.24770153697496,
+              29.520954876129803
+            ],
+            [
+              -98.24769645664215,
+              29.520996506387437
+            ],
+            [
+              -98.24769494141516,
+              29.521005283752306
+            ],
+            [
+              -98.24769209266964,
+              29.5210137231063
+            ],
+            [
+              -98.24768797835934,
+              29.521021623137788
+            ],
+            [
+              -98.24768269662664,
+              29.521028795400095
+            ],
+            [
+              -98.24767637346156,
+              29.521035068806686
+            ],
+            [
+              -98.24767052313305,
+              29.52104083445423
+            ],
+            [
+              -98.24766567037491,
+              29.521047461653772
+            ],
+            [
+              -98.24766194015221,
+              29.521054779746006
+            ],
+            [
+              -98.24765942852322,
+              29.521062600280196
+            ],
+            [
+              -98.24765820016574,
+              29.52107072186706
+            ],
+            [
+              -98.24765828671164,
+              29.521078935364798
+            ],
+            [
+              -98.24766991579706,
+              29.52115667808217
+            ],
+            [
+              -98.24768790836147,
+              29.521233198885607
+            ],
+            [
+              -98.24771214214681,
+              29.52130797782235
+            ],
+            [
+              -98.24774245248645,
+              29.521380506775483
+            ],
+            [
+              -98.24777863342406,
+              29.52145029291656
+            ],
+            [
+              -98.24782273934306,
+              29.521525861664585
+            ],
+            [
+              -98.24784053720599,
+              29.52155635495013
+            ],
+            [
+              -98.24817716852289,
+              29.522079882888843
+            ],
+            [
+              -98.24822731961825,
+              29.522155161552742
+            ],
+            [
+              -98.24836085534263,
+              29.5220871107584
+            ],
+            [
+              -98.24852939844313,
+              29.52235888060859
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "1280284",
+        "owner": "MILES RANCE C",
+        "situs": "LOWER SEGUIN RD",
+        "acres": 7.75,
+        "land_value": 426620.0,
+        "assessed_value": 426620.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "2",
+        "legal": "CB 5059G(SEDONA UT-1), BLK 7 LOT NEIRR 459.83FT OF SWIRR 626.23FT OF 1(4.176) & CB 5059  P-42B(2.718) & P-28E(0.856)  ABS 187 2009-NEW ACCT PER PLAT 9583-73-81 FILED 2/26/2008 FROM PID 1091340 & 1091334",
+        "node_id": "INT-010",
+        "node_name": "FM 1516 / I-10 East",
+        "node_score": 55.9,
+        "node_edge_miles": 0.453,
+        "dist_score": 90,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.706,
+        "aspect_ratio": 1.59,
+        "road_score": 92,
+        "frontage_roads": [
+          "LOWER SEGUIN RD"
+        ],
+        "frontage_ft_proxy": 487.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 6664,
+        "aadt_5yr_growth_pct": 58.5,
+        "aadt_station_miles": 0.14,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 3.84,
+        "future_residential_lots_nearby": 2930.2,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 55048.0,
+        "land_value_per_acre": 55048.0,
+        "parcel_opportunity_score": 83.0,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within \u00bd mile of priority intersection \u00b7 2930 weighted future residential lots nearby \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05059-707-0012",
+        "ownership_type": "Private",
+        "last_deed_date": "2025-06-06",
+        "hold_years": 1.3,
+        "rank": 29
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.29319874465835,
+              29.49381557893486
+            ],
+            [
+              -98.29333080470606,
+              29.493757175183653
+            ],
+            [
+              -98.29346286544737,
+              29.49369879837495
+            ],
+            [
+              -98.29359492209953,
+              29.4936403943451
+            ],
+            [
+              -98.2937269815143,
+              29.49358201636645
+            ],
+            [
+              -98.29385904095902,
+              29.493523612090684
+            ],
+            [
+              -98.29399113100628,
+              29.493465234915337
+            ],
+            [
+              -98.29412319118082,
+              29.49340683038277
+            ],
+            [
+              -98.2941395160843,
+              29.493399612418848
+            ],
+            [
+              -98.29403019705478,
+              29.492781603480577
+            ],
+            [
+              -98.29394591635815,
+              29.492305031351314
+            ],
+            [
+              -98.29205432347334,
+              29.49184551516032
+            ],
+            [
+              -98.29139118769645,
+              29.491684413776756
+            ],
+            [
+              -98.29098848591025,
+              29.491586580766437
+            ],
+            [
+              -98.29077921647941,
+              29.492316953144996
+            ],
+            [
+              -98.2905579436352,
+              29.493182293302628
+            ],
+            [
+              -98.29306659368305,
+              29.493873984781807
+            ],
+            [
+              -98.29319874465835,
+              29.49381557893486
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "1058644",
+        "owner": "MMP VENTURES LLC",
+        "situs": "6735 W LOOP 1604",
+        "acres": 14.68,
+        "land_value": 951558.0,
+        "assessed_value": 951558.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 5069   P-4D (OUT P-4)  ABS 192 NEW ACCT - SPLIT (SWD 11311/1800)",
+        "node_id": "INT-016",
+        "node_name": "Loop 1604 / Green Rd",
+        "node_score": 64.0,
+        "node_edge_miles": 0.146,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.773,
+        "aspect_ratio": 1.83,
+        "road_score": 66,
+        "frontage_roads": [
+          "AUTUMN FLOWER"
+        ],
+        "frontage_ft_proxy": 0.0,
+        "corner_signal": "NO",
+        "major_road_signal": false,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Neighborhood Commercial / I-10 East Corridor"
+        ],
+        "aadt": 14472,
+        "aadt_5yr_growth_pct": 3.7,
+        "aadt_station_miles": 1.18,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 1.88,
+        "future_residential_lots_nearby": 3928.8,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level capacity verification; request SAWS as-builts and written capacity",
+        "assessed_value_per_acre": 64820.0,
+        "land_value_per_acre": 64820.0,
+        "parcel_opportunity_score": 82.9,
+        "eligible": true,
+        "why_this_tract": "road frontage \u00b7 within \u00bc mile of priority intersection \u00b7 3928 weighted future residential lots nearby \u00b7 1.9 mi from I-10 / Loop 1604 East H-E-B",
+        "verification_notes": "Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05069-000-0046",
+        "ownership_type": "Private",
+        "last_deed_date": "2007-05-09",
+        "hold_years": 19.4,
+        "rank": 30
+      }
+    }
+  ]
+}
