@@ -43,10 +43,15 @@ jobs:
           d=json.loads(p.read_text())
           assert d["type"]=="FeatureCollection"
           assert len(d["features"])>=5, f"Only {len(d['features'])} highlighted parcels"
+          import re
+          bad_owner=re.compile(r"(HEB GROCERY|WAL.?MART|COSTCO|CITY OF|BEXAR COUNTY|COUNTY OF|US GOVERNMENT|SCHOOL DISTRICT|\\bISD\\b|\\bI S D\\b|HOUSING TRUST|PUBLIC FACILITY CORP|DEVELOPMENT AUTHORITY|FIRE AND RESCUE|UNIVERSITY|OWNERS ASSN|OWNERS ASSOCIATION|PLACE ASSOCIATION|MASTER COMMUNITY|LAND TRUST|HOSPITAL|HEALTHCARE SYSTEM|MONTESSORI|ACADEMY)",re.I)
           for f in d["features"]:
               pr=f["properties"]
               assert pr["acres"] >= 3
               assert pr["node_edge_miles"] <= 1.0
+              assert pr.get("flood_confidence") == "SCREENED"
+              assert not bad_owner.search(pr.get("owner","")), pr.get("owner")
+              assert pr.get("bcad_geometry_verified") is True
               assert f.get("geometry")
           rows=list(csv.DictReader(open("data/tracts_to_review.csv")))
           assert len(rows)==len(d["features"])
