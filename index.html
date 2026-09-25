@@ -2983,6 +2983,49 @@
           attribution:"BCAD parcels via San Antonio River Authority (Dec. 2025)"
         });
 
+        // H-E-B ownership overlay — exact BCAD owner-name screen.
+        // BCAD records H-E-B real-property ownership under HEB GROCERY COMPANY LP.
+        var v3HEBOwnedParcels = L.esri.featureLayer({
+          url:v3ParcelUrl+"/0",
+          where:"Owner_name LIKE 'HEB GROCERY COMPANY LP%'",
+          simplifyFactor:0.35,
+          precision:5,
+          style:function(){
+            return {
+              color:"#e31b23",
+              weight:4,
+              opacity:1,
+              fillColor:"#e31b23",
+              fillOpacity:0.20
+            };
+          },
+          attribution:"BCAD ownership via San Antonio River Authority (Dec. 2025)"
+        });
+
+        v3HEBOwnedParcels.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.Land_acres);
+          return "H-E-B Owned"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
+        },{sticky:true});
+
+        v3HEBOwnedParcels.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.Land_acres);
+          var assessed=(Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0)+(Number(p.Imprv_hstd_val)||0)+(Number(p.Imprv_non_hstd_val)||0);
+          return "<div style='min-width:285px'>"+
+                 "<div style='font-size:15px;font-weight:900;color:#e31b23;margin-bottom:5px'>H-E-B OWNED PARCEL</div>"+
+                 "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br>"+
+                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
+                 "<b>Property ID:</b> "+v3esc(p.Prop_id||"—")+"<br>"+
+                 "<b>Geo ID:</b> "+v3esc(p.Geo_id||"—")+"<br>"+
+                 "<b>Situs:</b> "+v3esc(p.Situs||p.Situs_full_street_name||"—")+"<br>"+
+                 "<b>Market value:</b> "+v3money(p.Market_val)+"<br>"+
+                 "<b>Assessed components:</b> "+v3money(assessed)+"<br>"+
+                 "<b>Last deed:</b> "+v3esc(p.Last_Deed_Date||"—")+"<br>"+
+                 "<span style='font-size:10px;color:#666'>Owner screen is based on the BCAD parcel snapshot loaded through SARA. Verify current title/ownership before relying on it.</span>"+
+                 "</div>";
+        });
+
         // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
         var v3FloodplainBuffer = L.esri.dynamicMapLayer({
           url:v3FloodUrl,
@@ -3340,6 +3383,7 @@
         v3Info.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
 
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"DUE DILIGENCE — Parcels / Owners");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedParcels,"OWNER — H-E-B Grocery Company LP");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"GROWTH — Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Major New Corridors");
