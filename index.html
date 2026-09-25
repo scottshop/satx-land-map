@@ -3026,6 +3026,77 @@
                  "</div>";
         });
 
+        // ---- COMAL + GUADALUPE CAD PARCEL COVERAGE ----
+        // Comal source: parcel ownership data from Comal Appraisal District (public ArcGIS service).
+        var v3ComalCadUrl = "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/arcgis/rest/services/COMAL_PARCELS/FeatureServer/0";
+        var v3ComalParcels = L.esri.featureLayer({
+          url:v3ComalCadUrl,
+          simplifyFactor:0.45,
+          precision:5,
+          style:function(){
+            return {color:"#8e44ad",weight:1.5,opacity:.85,fillColor:"#8e44ad",fillOpacity:.035};
+          },
+          attribution:"Comal CAD parcel data — public ArcGIS service"
+        });
+        v3ComalParcels.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.LEGAL_ACRE);
+          return "Comal CAD"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
+        },{sticky:true});
+        v3ComalParcels.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.LEGAL_ACRE);
+          var land=(Number(p.LAND_HMSTD)||0)+(Number(p.LAND_NON_H)||0);
+          var impr=(Number(p.IMPRV_VAL)||0)+(Number(p.IMPROV_NON)||0);
+          return "<div style='min-width:285px'>"+
+                 "<div style='font-size:14px;font-weight:900;color:#8e44ad;margin-bottom:4px'>COMAL CAD PARCEL</div>"+
+                 "<b>Owner:</b> "+v3esc(p.PY_OWNER_N||"—")+"<br>"+
+                 "<b>Property ID:</b> "+v3esc(p.PROP_ID||"—")+"<br>"+
+                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
+                 "<b>Situs:</b> "+v3esc(p.SITUS_ADDR||"—")+"<br>"+
+                 "<b>Appraised:</b> "+v3money(p.APPRAISED)+"<br>"+
+                 "<b>Assessed:</b> "+v3money(p.ASSESSED)+"<br>"+
+                 "<b>Land / improvements:</b> "+v3money(land)+" / "+v3money(impr)+"<br>"+
+                 "<b>Legal:</b> "+v3esc(p.LEGAL_DESC||"—")+"<br>"+
+                 (p.CADLINK?"<a href='"+v3esc(p.CADLINK)+"' target='_blank'>Open CAD record</a><br>":"")+
+                 "<span style='font-size:10px;color:#666'>Public Comal CAD parcel snapshot; verify current title and appraisal details before acquisition.</span>"+
+                 "</div>";
+        });
+
+        // Guadalupe source: Guadalupe CAD parcel extract distributed through a public ArcGIS service.
+        // Public GIS copies are less current than the live Guadalupe CAD property-search portal,
+        // so the popup explicitly identifies this as a screening layer.
+        var v3GuadalupeCadUrl = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer/83";
+        var v3GuadalupeParcels = L.esri.featureLayer({
+          url:v3GuadalupeCadUrl,
+          simplifyFactor:0.45,
+          precision:5,
+          style:function(){
+            return {color:"#00a6a6",weight:1.5,opacity:.85,fillColor:"#00a6a6",fillOpacity:.035};
+          },
+          attribution:"Guadalupe CAD parcel data via public ArcGIS service"
+        });
+        v3GuadalupeParcels.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.LEGAL_AREA);
+          return "Guadalupe CAD"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
+        },{sticky:true});
+        v3GuadalupeParcels.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          var ac=Number(p.LEGAL_AREA);
+          return "<div style='min-width:285px'>"+
+                 "<div style='font-size:14px;font-weight:900;color:#008b8b;margin-bottom:4px'>GUADALUPE CAD PARCEL</div>"+
+                 "<b>Owner:</b> "+v3esc(p.OWNER_NAME||"—")+"<br>"+
+                 "<b>Property ID:</b> "+v3esc(p.PROP_ID||"—")+"<br>"+
+                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
+                 "<b>Situs:</b> "+v3esc(p.SITUS_ADDR||"—")+"<br>"+
+                 "<b>Market value:</b> "+v3money(p.MKT_VALUE)+"<br>"+
+                 "<b>Land value:</b> "+v3money(p.LAND_VALUE)+"<br>"+
+                 "<b>Improvement value:</b> "+v3money(p.IMP_VALUE)+"<br>"+
+                 "<span style='font-size:10px;color:#666'>Screening layer from a public Guadalupe CAD parcel extract. Confirm current ownership/value in the live Guadalupe Appraisal District portal.</span>"+
+                 "</div>";
+        });
+
         // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
         var v3FloodplainBuffer = L.esri.dynamicMapLayer({
           url:v3FloodUrl,
@@ -3383,6 +3454,8 @@
         v3Info.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
 
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"DUE DILIGENCE — Parcels / Owners");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"CAD — Comal Parcels / Owners");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"CAD — Guadalupe Parcels / Owners");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedParcels,"OWNER — H-E-B Grocery Company LP");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"GROWTH — Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
@@ -3672,7 +3745,7 @@
             feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
             feature_group_0c45a8fa797258d406c1e937c6f99c34,
             feature_group_370786adb15c6d6d865f189609798696,
-            v3Parcels,v3PrelimPlats,v3BexarDevelopment,v3MTP,v3FutureLandUse,
+            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3PrelimPlats,v3BexarDevelopment,v3MTP,v3FutureLandUse,
             v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings,v3LandResults
           ];
 
