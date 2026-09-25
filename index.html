@@ -3023,42 +3023,58 @@
           opacity:0.58,
           attribution:"Bexar County Public Works - Plats / MDPs"
         });
-        // Future Roads — Metro 911 proposed street centerlines only.
-        // ROADCLASS: 2 = Proposed Public, 4 = Proposed Private, 7 = Proposed State Highway.
-        // This avoids showing existing roads that merely appear on a long-range thoroughfare plan.
-        var v3FutureRoadsUrl = "https://maps.schertz.com/hosting/rest/services/PublicFolder/CV_Workspace_View/MapServer/2";
+        // Future Roads — curated major future corridors only.
+        // Source: current City of San Antonio Major Thoroughfare Plan.
+        // We intentionally exclude the blanket MTP network and local/subdivision proposed streets.
+        // Only named arterial extensions/realignments documented as proposed are eligible,
+        // and only MTP segments without a recorded current ROW are rendered.
+        var v3FutureRoadsUrl = "https://services.arcgis.com/g1fRTDLeMgspWrYp/ArcGIS/rest/services/Major_Thoroughfare_Plan__MTP/FeatureServer/0";
+        var v3FutureRoadNameWhere = [
+          "StreetName LIKE '%BECK%'",
+          "StreetName LIKE '%FOSTER%'",
+          "StreetName LIKE '%SOUTHTON%'",
+          "StreetName LIKE '%RETAMA%'",
+          "StreetName LIKE '%MASTERSON%'",
+          "StreetName LIKE '%KEARNEY%'",
+          "StreetName LIKE '%TALLEY%'",
+          "StreetName LIKE '%MECHLER%'",
+          "StreetName LIKE '%GALM%'",
+          "StreetName LIKE '%MARBACH%'",
+          "StreetName LIKE '%GROSENBACHER%'",
+          "StreetName LIKE '%STEVENS%'",
+          "StreetName LIKE '%CONNECTOR%'"
+        ].join(" OR ");
+
         var v3MTP = L.esri.featureLayer({
           url:v3FutureRoadsUrl,
-          where:"ROADCLASS IN (2,4,7)",
+          where:"(CurrentRow IS NULL OR CurrentRow = '' OR CurrentRow = '0') AND ("+v3FutureRoadNameWhere+")",
           simplifyFactor:0.35,
           precision:5,
-          style:function(feature){
-            var p=feature.properties||{};
+          style:function(){
             return {
               color:"#20c65a",
-              weight:Number(p.ROADCLASS)===7?6:5,
+              weight:6,
               opacity:0.95,
               dashArray:"10,6",
               lineCap:"round",
               lineJoin:"round"
             };
           },
-          attribution:"Regional Metro 911 street centerlines — proposed roads only"
+          attribution:"City of San Antonio Major Thoroughfare Plan — curated future major corridors"
         });
         v3MTP.bindTooltip(function(layer){
           var p=layer.feature&&layer.feature.properties||{};
-          return (p.MSAG_NAME||p.STNAME||"Future Road")+" — Proposed";
+          return (p.StreetName||"Future Major Road")+" — planned major corridor";
         },{sticky:true});
         v3MTP.bindPopup(function(layer){
           var p=layer.feature&&layer.feature.properties||{};
-          var cls=Number(p.ROADCLASS);
-          var type=cls===2?"Proposed Public Road":cls===4?"Proposed Private Road":cls===7?"Proposed State Highway":"Proposed Road";
-          return "<div style='min-width:245px'>"+
-                 "<b>"+v3esc(p.MSAG_NAME||p.STNAME||"Future Road")+"</b><br>"+
-                 "<b>Status:</b> "+type+"<br>"+
-                 "<b>City:</b> "+v3esc(p.CITY||"—")+"<br>"+
-                 "<b>Jurisdiction:</b> "+v3esc(p.JURISDICT||"—")+"<br>"+
-                 "<span style='color:#666'>This layer only includes Metro 911 street segments classified as proposed (ROADCLASS 2, 4 or 7). Verify project timing and final alignment before acquisition.</span>"+
+          return "<div style='min-width:250px'>"+
+                 "<b>"+v3esc(p.StreetName||"Future Major Road")+"</b><br>"+
+                 "<b>Status:</b> Planned major arterial alignment / extension<br>"+
+                 "<b>MTP type:</b> "+v3esc(p.Type||"—")+"<br>"+
+                 "<b>Proposed ROW:</b> "+v3esc(p.PropRow||"—")+"<br>"+
+                 "<b>Ordinance:</b> "+v3esc(p.Ordinance||"—")+"<br>"+
+                 "<span style='color:#666'>Curated from the current City MTP to show major future corridors only. Green does not indicate funded construction or a guaranteed final alignment; verify current project status before acquisition.</span>"+
                  "</div>";
         });
 
@@ -3326,7 +3342,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"DUE DILIGENCE — Parcels / Owners");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"GROWTH — Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Proposed Only");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Major New Corridors");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"DUE DILIGENCE — Future Land Use");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"DUE DILIGENCE — Traffic Counts");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"DUE DILIGENCE — Flood Zones");
