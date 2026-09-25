@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-25T15:45:48.324765+00:00",
+  "generated_at": "2026-09-25T15:48:55.914175+00:00",
   "generator": "scripts/generate_opportunities.py",
   "node_count": 24,
   "candidate_count": 180,
   "highlighted_count": 30,
-  "assemblage_count": 2,
+  "assemblage_count": 5,
   "sources": {
     "parcels": "Bexar County Public Works PlatsMDPs parcel layer; top parcels optionally re-verified against SARA/BCAD",
     "plats": "Bexar County Public Works Plat Applications / Working / Staff Accepted / CC Approved / Recorded",
@@ -15,22 +15,7 @@
     "land_use": "City of San Antonio Future Land Use",
     "utilities": "SAWS CIP proximity proxy only; capacity unverified"
   },
-  "errors": [
-    "fema-parcel 1113105: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 694750: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 338011: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 619277: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 338017: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 163717: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 1401059: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 1058772: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 323261: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 1338594: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 691218: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 163835: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 339374: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 339373: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: HTTPSConnectionPool(host='hazards.fema.gov', port=443): Read timed out. (read timeout=25)"
-  ],
+  "errors": [],
   "source_feature_counts": {
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/4/query": 62,
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/5/query": 262,
@@ -46,7 +31,7 @@
     "https://services.arcgis.com/g7IVOf0Gf9OkqkzV/ArcGIS/rest/services/SSORP_1_25_svc/FeatureServer/1/query": 10,
     "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Building_Permits_Issued_Past_180_Days/FeatureServer/0/query": 2892,
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/2/query": 2383,
-    "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query": 173,
+    "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query": 203,
     "https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query": 30
   },
   "methodology": {
