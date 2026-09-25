@@ -118,6 +118,8 @@
 .v7Thesis{background:#fff9c4;border-left:4px solid #FFD400;padding:7px 8px;margin-top:7px}
 .v7PopupActions{display:flex;gap:6px;margin-top:8px}
 .v7PopupActions a,.v7PopupActions button{display:inline-block;border:1px solid #bbb;background:#fff;color:#111;border-radius:5px;padding:5px 7px;font:700 10px Arial;text-decoration:none;cursor:pointer}
+.leaflet-interactive{cursor:pointer!important}
+.leaflet-marker-icon,.leaflet-marker-shadow{cursor:pointer}
 .leaflet-control-layers{font:11px/1.3 Arial!important}
 .leaflet-control-layers-expanded{min-width:235px}
 @media (max-width:700px){
@@ -168,7 +170,7 @@
                     ...{
   "zoom": 9,
   "zoomControl": true,
-  "preferCanvas": true,
+  "preferCanvas": false,
 }
 
                 }
@@ -3859,10 +3861,12 @@
         if(!map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane")){
           map_33cc2c2ac68d72d2971fbb7de3650b24.createPane("v6ExactParcelPane");
           map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane").style.zIndex=695;
+          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane").style.pointerEvents="auto";
         }
         if(!map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane")){
           map_33cc2c2ac68d72d2971fbb7de3650b24.createPane("v6AssemblagePane");
           map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane").style.zIndex=680;
+          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane").style.pointerEvents="auto";
         }
 
         window.v6OpportunityData=[];
@@ -3972,8 +3976,14 @@
             var nodeSel=document.getElementById("v6NodeFilter"), seen={};
             window.v6OpportunityData.forEach(function(f){
               var p=f.properties||{};
-              var layer=L.geoJSON(f,{style:v6style,pane:"v6ExactParcelPane"});
+              var layer=L.geoJSON(f,{style:v6style,pane:"v6ExactParcelPane",interactive:true});
               layer.bindPopup(v6popup(p),{maxWidth:390});
+              layer.on("click",function(e){
+                try{
+                  layer.openPopup(e&&e.latlng?e.latlng:layer.getBounds().getCenter());
+                  if(e&&e.originalEvent)L.DomEvent.stopPropagation(e.originalEvent);
+                }catch(err){}
+              });
               layer.bindTooltip("#"+p.rank+" · "+p.acres+" AC · "+(p.owner||"Target parcel"),{sticky:true});
               layer.on("mouseover",function(){layer.setStyle({weight:Number(p.rank)<=10?10:8,fillOpacity:.24});});
               layer.on("mouseout",function(){layer.setStyle(v6style(f));});
