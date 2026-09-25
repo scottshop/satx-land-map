@@ -269,8 +269,7 @@ def node_support(node):
                                  out_fields="*",return_geometry=True)
     support["mtp"]=safe_query("mtp",COSA_MTP_URL,geom=point_geom(node),distance=3218.688,
                               out_fields="*",return_geometry=True)
-    support["fema"]=safe_query("fema",FEMA_URL,geom=point_geom(node),distance=3218.688,
-                               out_fields="*",return_geometry=True)
+    # FEMA is screened later, parcel-by-parcel, to avoid broad-service throttling.
     support["flu"]=safe_query("flu",FLU_URL,geom=point_geom(node),distance=2414.016,
                               out_fields="*",return_geometry=True)
     support["cip"]=safe_query("saws-cip-points",SAWS_CIP_POINT,geom=point_geom(node),distance=1609.344,
@@ -454,6 +453,37 @@ def flood_quality(c,support):
     elif sfha>0: score=75
     return round(score,1),round(sfha,1),round(fw,1),sorted(zones)
 
+def screen_fema_candidate(c):
+    g=feature_shape(c["feature"])
+    if not g or g.is_empty:
+        c["flood_confidence"]="UNKNOWN"; c["eligible"]=False
+        return c
+    minx,miny,maxx,maxy=g.bounds
+    env={"xmin":minx,"ymin":miny,"xmax":maxx,"ymax":maxy,"spatialReference":{"wkid":4326}}
+    try:
+        feats=arc_query(FEMA_URL,geom=env,geom_type="esriGeometryEnvelope",
+                        out_fields="FLD_ZONE,ZONE_SUBTY,SFHA_TF",return_geometry=True,
+                        page_size=300,timeout=25)
+        flood_score,flood_pct,fw_pct,zones=flood_quality(c,{"fema":feats})
+        c["flood_score"]=flood_score
+        c["flood_pct"]=flood_pct
+        c["floodway_pct"]=fw_pct
+        c["flood_zones"]=zones
+        c["flood_confidence"]="SCREENED"
+        c["parcel_opportunity_score"]=round(clamp(c["parcel_opportunity_score"] + .08*(flood_score-55)),1)
+        c["eligible"]=bool(c.get("eligible_pre_flood") and fw_pct<10 and flood_pct<50)
+        why=[x for x in str(c.get("why_this_tract","")).split(" · ") if x and "FEMA" not in x]
+        if flood_pct==0:
+            why.append("no mapped FEMA SFHA overlap returned")
+        elif flood_pct<25:
+            why.append(f"{flood_pct:.1f}% mapped FEMA SFHA overlap")
+        c["why_this_tract"]=" · ".join(why[:4])
+    except Exception as e:
+        errors.append(f"fema-parcel {c.get('prop_id')}: {e}")
+        c["flood_confidence"]="UNKNOWN"
+        c["eligible"]=False
+    return c
+
 def land_use_quality(c,support):
     poly=c["_geom2278"]; best=55; names=[]
     for f in support["flu"]:
@@ -494,12 +524,8 @@ def value_score(c):
 
 def enrich_candidate(c,support,node_result):
     road_score,roads,frontage,corner,major,mtp=road_quality(c,support)
-    if support["fema"]:
-        flood_score,flood_pct,fw_pct,zones=flood_quality(c,support)
-        flood_confidence="SCREENED"
-    else:
-        flood_score,flood_pct,fw_pct,zones=55,None,None,[]
-        flood_confidence="UNKNOWN"
+    flood_score,flood_pct,fw_pct,zones=55,None,None,[]
+    flood_confidence="PENDING"
     flu,flu_names=land_use_quality(c,support)
     aadt,growth,aadt_dist=traffic_for_parcel(c,support)
     val=value_score(c)
@@ -507,9 +533,9 @@ def enrich_candidate(c,support,node_result):
     traffic_score=clamp(aadt/500*.7 + clamp((growth+5)*4)*.3)
     score=(.22*c["node_score"]+.18*c["dist_score"]+.18*road_score+.10*c["acre_score"]+
            .10*c["raw_score"]+.08*flood_score+.05*c["shape_score"]+.04*flu+.03*traffic_score+.02*val)
-    flood_gate=(flood_confidence=="SCREENED" and fw_pct is not None and flood_pct is not None and fw_pct<10 and flood_pct<50)
-    eligible=(c["acres"]>=3 and c["node_edge_miles"]<=1.0 and road_score>=65 and c["raw_score"]>=55
-              and flood_gate and flu>=35 and c["shape_score"]>=25)
+    eligible_pre_flood=(c["acres"]>=3 and c["node_edge_miles"]<=1.0 and road_score>=65 and c["raw_score"]>=55
+                        and flu>=35 and c["shape_score"]>=25)
+    eligible=False
     reasons=[]
     if corner and major: reasons.append("corner exposure on a major road")
     elif major: reasons.append("major-road frontage")
@@ -520,8 +546,7 @@ def enrich_candidate(c,support,node_result):
     if node_result["weighted_future_res_lots"]>=800: reasons.append(f"{int(node_result['weighted_future_res_lots'])} weighted future residential lots nearby")
     if catalyst_d<=2.5: reasons.append(f"{catalyst_d:.1f} mi from {catalyst_name}")
     if c["raw_score"]>=80: reasons.append("mostly raw / low-improvement land")
-    if flood_confidence=="SCREENED" and flood_pct==0: reasons.append("no mapped FEMA SFHA overlap returned")
-    elif flood_confidence=="UNKNOWN": reasons.append("FEMA screen requires verification")
+    reasons.append("FEMA parcel screen pending")
     c.update({
         "road_score":road_score,"frontage_roads":roads,"frontage_ft_proxy":frontage,
         "corner_signal":"STRONG" if corner and major else "YES" if corner else "NO",
@@ -534,7 +559,7 @@ def enrich_candidate(c,support,node_result):
         "recent_housing_units_180d":node_result["net_new_housing_units_180d"],
         "utility_confidence":"PROXY" if support["cip"] else "UNKNOWN",
         "utility_context":f"{len(support['cip'])} mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified" if support["cip"] else "No parcel-level capacity verification; request SAWS as-builts and written capacity",
-        "parcel_opportunity_score":round(clamp(score),1),"eligible":eligible,
+        "parcel_opportunity_score":round(clamp(score),1),"eligible_pre_flood":eligible_pre_flood,"eligible":eligible,
         "why_this_tract":" · ".join(reasons[:4]),
         "verification_notes":"Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity."
     })
@@ -663,8 +688,13 @@ def main():
         if i%20==0: print(f"  {i}/{len(candidates)}")
         enriched.append(enrich_candidate(cand,supports[cand["node_id"]],node_by[cand["node_id"]]))
 
-    top=select_top(enriched,30,4)
-    print(f"Eligible highlighted parcels: {len(top)}")
+    provisional=sorted([x for x in enriched if x.get("eligible_pre_flood")],
+                       key=lambda x:x["parcel_opportunity_score"],reverse=True)[:80]
+    print(f"Parcel-level FEMA screening on {len(provisional)} provisional candidates...")
+    with ThreadPoolExecutor(max_workers=3) as ex:
+        screened=list(ex.map(screen_fema_candidate,provisional))
+    top=select_top(screened,30,4)
+    print(f"Eligible highlighted parcels after FEMA: {len(top)}")
     with ThreadPoolExecutor(max_workers=5) as ex:
         list(ex.map(sara_enrich,top))
 
@@ -683,7 +713,7 @@ def main():
     ]}
     (DATA/"opportunity_parcels_all.geojson").write_text(json.dumps(all_fc,indent=2))
     (DATA/"opportunity_nodes.json").write_text(json.dumps(node_results,indent=2))
-    ass=assemblages(enriched)
+    ass=assemblages(screened)
     (DATA/"assemblages.geojson").write_text(json.dumps({"type":"FeatureCollection","features":ass},indent=2))
 
     cols=["rank","parcel_opportunity_score","owner","prop_id","situs","acres","node_name","node_edge_miles",
