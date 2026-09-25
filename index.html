@@ -2768,177 +2768,101 @@
             // Clean UI: retail / employment anchors are available in Layers but hidden by default.
         
     
-            var feature_group_370786adb15c6d6d865f189609798696 = L.featureGroup(
-                {
-}
-            );
-        
-    
-            var poly_line_553b793bafae85ab9f4a44c38fe31e93 = L.polyline(
-                [[29.407, -98.624], [29.394, -98.682], [29.383, -98.742], [29.38, -98.8]],
-                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
-            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
-        
-    
-        var popup_694914cf55f708d01df34706390b30d1 = L.popup({
-  "maxWidth": 370,
-});
+            // V8: Road-improvement corridors use official TxDOT Roadway Inventory geometry.
+            // This replaces the old straight-line sketches so the overlay follows the actual roadway.
+            var feature_group_370786adb15c6d6d865f189609798696 = L.featureGroup({});
+            var v8TxDOTRoadwayUrl = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_Roadway_Inventory/FeatureServer/0";
 
-        
-            
-                var html_2e57d8b4131f474ab4feb1f2c12a748f = $(`<div id="html_2e57d8b4131f474ab4feb1f2c12a748f" style="width: 100.0%; height: 100.0%;"><b>US 90 Expansion - I-410 to SH 211</b><br>7.6-mile TxDOT expansion; Phase I late 2025–2030; Phase II planned 2028–2032 with partial funding.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio/us90/project-phasing.html' target='_blank'>Source</a></div>`)[0];
-                popup_694914cf55f708d01df34706390b30d1.setContent(html_2e57d8b4131f474ab4feb1f2c12a748f);
-            
-        
+            function v8RoadProject(opts){
+              var bounds=L.latLngBounds(opts.southWest,opts.northEast);
+              var query=L.esri.query({url:v8TxDOTRoadwayUrl})
+                .where(opts.where)
+                .intersects(bounds)
+                .limit(2000);
 
-        poly_line_553b793bafae85ab9f4a44c38fe31e93.bindPopup(popup_694914cf55f708d01df34706390b30d1)
-        ;
+              query.run(function(err,fc){
+                if(err || !fc || !fc.features || !fc.features.length){
+                  console.warn("Road geometry unavailable:",opts.name,err||"no features");
+                  return;
+                }
 
-        
-    
-    
-            poly_line_553b793bafae85ab9f4a44c38fe31e93.bindTooltip(
-                `<div>
-                     US 90 Expansion - I-410 to SH 211
-                 </div>`,
-                {
-  "sticky": true,
-}
-            );
-        
-    
-            var poly_line_21ea315fa2c68fab588f6254ca11f181 = L.polyline(
-                [[29.6, -98.235], [29.575, -98.235], [29.489044, -98.223251]],
-                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
-            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
-        
-    
-        var popup_aefbdcc49835f774eb32c0f992343df0 = L.popup({
-  "maxWidth": 370,
-});
+                var road=L.geoJSON(fc,{
+                  style:function(){
+                    return {
+                      color:"#ff8c00",
+                      weight:6,
+                      opacity:.92,
+                      lineCap:"round",
+                      lineJoin:"round"
+                    };
+                  },
+                  onEachFeature:function(feature,layer){
+                    layer.bindTooltip(opts.name+" — exact roadway alignment",{sticky:true});
+                    layer.bindPopup(
+                      "<div style='min-width:275px'>"+
+                      "<b>"+opts.name+"</b><br>"+
+                      opts.description+"<br>"+
+                      "<span style='font-size:10px;color:#666'>Line geometry: TxDOT Roadway Inventory. Project limits: "+opts.limits+".</span><br>"+
+                      "<a href='"+opts.source+"' target='_blank'>TxDOT project source</a>"+
+                      "</div>",
+                      {maxWidth:370}
+                    );
+                  }
+                });
+                road.eachLayer(function(layer){layer.addTo(feature_group_370786adb15c6d6d865f189609798696);});
+              });
+            }
 
-        
-            
-                var html_e87af45b330719c63495d29530a524db = $(`<div id="html_e87af45b330719c63495d29530a524db" style="width: 100.0%; height: 100.0%;"><b>FM 1518 Expansion - FM 78 to I-10</b><br>Active TxDOT expansion corridor supporting Schertz/Converse growth.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio.html' target='_blank'>Source</a></div>`)[0];
-                popup_aefbdcc49835f774eb32c0f992343df0.setContent(html_e87af45b330719c63495d29530a524db);
-            
-        
+            v8RoadProject({
+              name:"US 90 Expansion",
+              where:"(HSYS='US' AND HNUM IN ('90','090','0090')) OR HWY LIKE 'US%90%'",
+              southWest:[29.345,-98.835],
+              northEast:[29.435,-98.605],
+              limits:"I-410 to SH 211",
+              description:"TxDOT widening and interchange improvements along the 7.6-mile US 90 corridor.",
+              source:"https://www.txdot.gov/projects/projects-studies/san-antonio/us90.html"
+            });
 
-        poly_line_21ea315fa2c68fab588f6254ca11f181.bindPopup(popup_aefbdcc49835f774eb32c0f992343df0)
-        ;
+            v8RoadProject({
+              name:"FM 1518 Expansion",
+              where:"HSYS='FM' AND HNUM='1518'",
+              southWest:[29.470,-98.305],
+              northEast:[29.625,-98.205],
+              limits:"FM 78 to I-10",
+              description:"TxDOT expansion of FM 1518 along the existing 5.6-mile roadway corridor.",
+              source:"https://www.txdot.gov/projects/projects-studies/san-antonio/fm1518-from-fm78-i10.html"
+            });
 
-        
-    
-    
-            poly_line_21ea315fa2c68fab588f6254ca11f181.bindTooltip(
-                `<div>
-                     FM 1518 Expansion - FM 78 to I-10
-                 </div>`,
-                {
-  "sticky": true,
-}
-            );
-        
-    
-            var poly_line_6e41d3ed7bcae7497e8e6795dd4d2fed = L.polyline(
-                [[29.553, -98.294], [29.53, -98.275], [29.513, -98.252]],
-                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
-            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
-        
-    
-        var popup_7508835a65873628a2becbbedc039ed7 = L.popup({
-  "maxWidth": 370,
-});
+            v8RoadProject({
+              name:"FM 1516 Expansion",
+              where:"HSYS='FM' AND HNUM='1516'",
+              southWest:[29.480,-98.340],
+              northEast:[29.570,-98.220],
+              limits:"FM 78 to I-10",
+              description:"TxDOT expansion of FM 1516 along the existing 4.6-mile roadway corridor.",
+              source:"https://www.txdot.gov/projects/projects-studies/san-antonio/fm1516-expansion-project.html"
+            });
 
-        
-            
-                var html_d71f6faec81d846d9df3c81295e8bedb = $(`<div id="html_d71f6faec81d846d9df3c81295e8bedb" style="width: 100.0%; height: 100.0%;"><b>FM 1516 Expansion - FM 78 to I-10</b><br>Active construction; TxDOT expects project completion in fall 2028.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio/fm1516-expansion-project.html' target='_blank'>Source</a></div>`)[0];
-                popup_7508835a65873628a2becbbedc039ed7.setContent(html_d71f6faec81d846d9df3c81295e8bedb);
-            
-        
+            v8RoadProject({
+              name:"I-35 Northeast Expansion (NEX Central)",
+              where:"(HSYS='IH' AND HNUM IN ('35','035','0035')) OR HWY LIKE 'IH%35%'",
+              southWest:[29.495,-98.420],
+              northEast:[29.650,-98.245],
+              limits:"I-410 North to FM 3009",
+              description:"I-35 NEX Central improvements following the existing I-35 corridor through northeast San Antonio, Live Oak, Selma and Schertz.",
+              source:"https://www.txdot.gov/35nex/nex-central.html"
+            });
 
-        poly_line_6e41d3ed7bcae7497e8e6795dd4d2fed.bindPopup(popup_7508835a65873628a2becbbedc039ed7)
-        ;
+            v8RoadProject({
+              name:"Loop 1604 North Expansion",
+              where:"(HSYS='SL' AND HNUM='1604') OR HWY LIKE '%1604%'",
+              southWest:[29.530,-98.705],
+              northEast:[29.640,-98.295],
+              limits:"SH 16 (Bandera Road) to I-35",
+              description:"TxDOT's 23-mile Loop 1604 North Expansion corridor.",
+              source:"https://www.txdot.gov/projects/projects-studies/san-antonio/loop1604.html"
+            });
 
-        
-    
-    
-            poly_line_6e41d3ed7bcae7497e8e6795dd4d2fed.bindTooltip(
-                `<div>
-                     FM 1516 Expansion - FM 78 to I-10
-                 </div>`,
-                {
-  "sticky": true,
-}
-            );
-        
-    
-            var poly_line_7fce466b95333a74266b9a2f93039617 = L.polyline(
-                [[29.515, -98.391], [29.57, -98.339], [29.615, -98.289], [29.665, -98.221]],
-                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
-            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
-        
-    
-        var popup_1cbc2f88c76abab06dee0e76f85f63fb = L.popup({
-  "maxWidth": 370,
-});
-
-        
-            
-                var html_45beeeb356bda8d24e6a63cd2d0884e4 = $(`<div id="html_45beeeb356bda8d24e6a63cd2d0884e4" style="width: 100.0%; height: 100.0%;"><b>I-35 Northeast Expansion (NEX)</b><br>Major multi-phase I-35 expansion through northeast San Antonio toward Guadalupe/Comal counties.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio.html' target='_blank'>Source</a></div>`)[0];
-                popup_1cbc2f88c76abab06dee0e76f85f63fb.setContent(html_45beeeb356bda8d24e6a63cd2d0884e4);
-            
-        
-
-        poly_line_7fce466b95333a74266b9a2f93039617.bindPopup(popup_1cbc2f88c76abab06dee0e76f85f63fb)
-        ;
-
-        
-    
-    
-            poly_line_7fce466b95333a74266b9a2f93039617.bindTooltip(
-                `<div>
-                     I-35 Northeast Expansion (NEX)
-                 </div>`,
-                {
-  "sticky": true,
-}
-            );
-        
-    
-            var poly_line_b050b1205d10ec18df7c7ec2be66cda5 = L.polyline(
-                [[29.555, -98.665], [29.59, -98.59], [29.61, -98.5], [29.612, -98.43]],
-                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.68, "smoothFactor": 1.0, "stroke": true, "weight": 6}
-            ).addTo(feature_group_370786adb15c6d6d865f189609798696);
-        
-    
-        var popup_030cd992e721ee7ff6a17f2e305abefe = L.popup({
-  "maxWidth": 370,
-});
-
-        
-            
-                var html_d9ca989d8a4640e1ba94c822079a0eee = $(`<div id="html_d9ca989d8a4640e1ba94c822079a0eee" style="width: 100.0%; height: 100.0%;"><b>Loop 1604 North Expansion</b><br>Large TxDOT mobility program across North San Antonio; useful secondary growth context.<br><a href='https://www.txdot.gov/projects/projects-studies/san-antonio.html' target='_blank'>Source</a></div>`)[0];
-                popup_030cd992e721ee7ff6a17f2e305abefe.setContent(html_d9ca989d8a4640e1ba94c822079a0eee);
-            
-        
-
-        poly_line_b050b1205d10ec18df7c7ec2be66cda5.bindPopup(popup_030cd992e721ee7ff6a17f2e305abefe)
-        ;
-
-        
-    
-    
-            poly_line_b050b1205d10ec18df7c7ec2be66cda5.bindTooltip(
-                `<div>
-                     Loop 1604 North Expansion
-                 </div>`,
-                {
-  "sticky": true,
-}
-            );
-        
-    
             // Clean UI: road projects remain available in Layers but are hidden by default.
         
     
