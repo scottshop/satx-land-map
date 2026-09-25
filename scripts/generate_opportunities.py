@@ -86,6 +86,13 @@ def haversine(lat1,lon1,lat2,lon2):
 def point_geom(node):
     return {"x":node["lng"],"y":node["lat"],"spatialReference":{"wkid":4326}}
 
+def envelope_geom(node, miles):
+    dy=miles/69.0
+    dx=miles/(69.0*max(0.25,math.cos(math.radians(node["lat"]))))
+    return {"xmin":node["lng"]-dx,"ymin":node["lat"]-dy,
+            "xmax":node["lng"]+dx,"ymax":node["lat"]+dy,
+            "spatialReference":{"wkid":4326}}
+
 def arc_query(url, *, where="1=1", geom=None, geom_type="esriGeometryPoint",
               distance=None, units="esriSRUnit_Meter", out_fields="*",
               return_geometry=True, page_size=2000, timeout=18):
@@ -253,8 +260,15 @@ def node_support(node):
                          out_fields="*",return_geometry=True)
         for f in feats: f["_stage_weight"]=stage_w
         support["plats"].extend(feats)
-    support["permits"]=safe_query("permits",PERMITS_URL,geom=point_geom(node),distance=4828.032,
-                                  out_fields="*",return_geometry=True)
+    permit_box=safe_query("permits",PERMITS_URL,geom=envelope_geom(node,3.0),
+                          geom_type="esriGeometryEnvelope",out_fields="*",return_geometry=True)
+    support["permits"]=[]
+    for feat in permit_box:
+        g=feature_shape(feat)
+        if g and not g.is_empty:
+            cc=g.centroid
+            if haversine(node["lat"],node["lng"],cc.y,cc.x)<=3.0:
+                support["permits"].append(feat)
     support["traffic"]=safe_query("aadt",AADT_URL,geom=point_geom(node),distance=3218.688,
                                   out_fields="*",return_geometry=True)
     support["roads"]=safe_query("cosa-streets",STREETS_URL,geom=point_geom(node),distance=3218.688,
@@ -483,7 +497,7 @@ def enrich_candidate(c,support,node_result):
     traffic_score=clamp(aadt/500*.7 + clamp((growth+5)*4)*.3)
     score=(.22*c["node_score"]+.18*c["dist_score"]+.18*road_score+.10*c["acre_score"]+
            .10*c["raw_score"]+.08*flood_score+.05*c["shape_score"]+.04*flu+.03*traffic_score+.02*val)
-    flood_gate=((fw_pct is None or fw_pct<10) and (flood_pct is None or flood_pct<50))
+    flood_gate=(flood_confidence=="SCREENED" and fw_pct is not None and flood_pct is not None and fw_pct<10 and flood_pct<50)
     eligible=(c["acres"]>=3 and c["node_edge_miles"]<=1.0 and road_score>=65 and c["raw_score"]>=55
               and flood_gate and flu>=35 and c["shape_score"]>=25)
     reasons=[]
@@ -688,7 +702,7 @@ def main():
       "methodology":{
         "parcel_query_radius_miles":1.5,"hard_highlight_distance_miles":1.0,"min_acres":3,
         "top_limit":30,"per_node_cap":4,
-        "yellow_gate":"3+ ac; <=1 mi by parcel-edge distance; road signal >=65; raw-land >=55; no known >=10% floodway; no known >=50% SFHA; FLU >=35; shape >=25; public/institutional/major-anchor owners excluded"
+        "yellow_gate":"3+ ac; <=1 mi by parcel-edge distance; road signal >=65; raw-land >=55; FEMA screen required with <10% floodway and <50% SFHA; FLU >=35; shape >=25; public/institutional/major-anchor owners excluded"
       }
     }
     (DATA/"opportunity_metadata.json").write_text(json.dumps(meta,indent=2))
