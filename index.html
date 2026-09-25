@@ -3023,11 +3023,39 @@
           opacity:0.58,
           attribution:"Bexar County Public Works - Plats / MDPs"
         });
-        var v3MTP = L.esri.dynamicMapLayer({
-          url:v3BexarDevUrl,
-          layers:[1],
-          opacity:0.62,
+        // Future Roads — official Bexar County Major Thoroughfare Plan.
+        // Styled uniformly green so planned roadway corridors are visually distinct
+        // from active TxDOT road-improvement projects (orange).
+        var v3MTP = L.esri.featureLayer({
+          url:v3BexarDevUrl+"/1",
+          simplifyFactor:0.45,
+          precision:5,
+          style:function(){
+            return {
+              color:"#20c65a",
+              weight:5,
+              opacity:0.92,
+              dashArray:"10,6",
+              lineCap:"round",
+              lineJoin:"round"
+            };
+          },
           attribution:"Bexar County Major Thoroughfare Plan"
+        });
+        v3MTP.bindTooltip(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return (p.StreetName||"Future Road")+" — Future Roads";
+        },{sticky:true});
+        v3MTP.bindPopup(function(layer){
+          var p=layer.feature&&layer.feature.properties||{};
+          return "<div style='min-width:245px'>"+
+                 "<b>"+v3esc(p.StreetName||"Future Road")+"</b><br>"+
+                 "<b>Plan:</b> Bexar County Major Thoroughfare Plan<br>"+
+                 "<b>Road type:</b> "+v3esc(p.Type||"—")+"<br>"+
+                 "<b>Current ROW:</b> "+v3esc(p.CurrentRow||"—")+"<br>"+
+                 "<b>Planned ROW:</b> "+v3esc(p.PropRow||"—")+"<br>"+
+                 "<span style='color:#666'>Planning corridor / ROW designation. Verify current alignment and project status before acquisition.</span>"+
+                 "</div>";
         });
 
         // Current City of San Antonio preliminary plats. Feature service was edited 2026-09-21.
@@ -3294,7 +3322,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"DUE DILIGENCE — Parcels / Owners");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"GROWTH — Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"DUE DILIGENCE — Major Thoroughfares");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Major Thoroughfare Plan");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"DUE DILIGENCE — Future Land Use");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"DUE DILIGENCE — Traffic Counts");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"DUE DILIGENCE — Flood Zones");
@@ -3594,7 +3622,6 @@
             v7safeAdd(v3PrelimPlats);
             v7safeAdd(v3AADT);
             v7safeAdd(v3FemaHazard);
-            v7safeAdd(v3MTP);
             v7safeAdd(feature_group_370786adb15c6d6d865f189609798696);
             try{v3Info.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);}catch(e){}
           }else{
