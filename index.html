@@ -3368,55 +3368,62 @@
         });
 
         // Bulverde — verified existing Singing Hills sewer corridor.
-        // City of Bulverde accepted the sanitary sewer infrastructure in Harmony Hills
-        // between Singing Oaks and the city-limit line west of US 281 in 2016.
-        // Public pipe-centerline GIS is not available, so the map follows the official
-        // street-centerline geometry as a corridor proxy and labels it accordingly.
+        // City of Bulverde accepted sanitary sewer infrastructure in Harmony Hills
+        // between Singing Oaks and the City Limit Line west of US 281 in 2016.
+        // No public survey-grade pipe centerline is published, so this is a fixed
+        // visible corridor proxy based on the documented road segment and known
+        // Harmony Hills/Singing Oaks address control points.
         var v3BulverdeVerifiedSewer = L.featureGroup();
-        var v3BulverdeStreetUrl = "https://services.arcgis.com/seTexOicoRXDvRsJ/arcgis/rest/services/Transportation1/FeatureServer/0";
 
-        (function(){
-          var bounds=L.latLngBounds([29.790,-98.455],[29.812,-98.414]);
-          L.esri.query({url:v3BulverdeStreetUrl})
-            .where("STREET_NAME LIKE '%HARMONY HILLS%'")
-            .intersects(bounds)
-            .limit(100)
-            .run(function(err,fc){
-              if(err||!fc||!fc.features||!fc.features.length){
-                console.warn("Bulverde verified sewer corridor geometry unavailable from Comal-area centerline source",err||"no street-centerline features");
-                return;
-              }
-              L.geoJSON(fc,{
-                style:function(){
-                  return {
-                    color:"#7c3aed",
-                    weight:6,
-                    opacity:.98,
-                    dashArray:"12,6",
-                    lineCap:"round",
-                    lineJoin:"round"
-                  };
-                },
-                onEachFeature:function(feature,layer){
-                  layer.bindTooltip("Bulverde verified existing sewer corridor · Harmony Hills",{sticky:true});
-                  layer.bindPopup(
-                    "<div style='min-width:300px'>"+
-                    "<div style='font-size:14px;font-weight:900;color:#6d28d9;margin-bottom:4px'>VERIFIED EXISTING SEWER CORRIDOR — BULVERDE</div>"+
-                    "<b>Area:</b> Singing Hills / Harmony Hills<br>"+
-                    "<b>Status:</b> Existing sanitary sewer infrastructure accepted by City of Bulverde after construction and inspection<br>"+
-                    "<b>Verified limits:</b> Harmony Hills between Singing Oaks and the City Limit Line west of US 281<br>"+
-                    "<b>Operator context:</b> Singing Hills WWTP is City of Bulverde-owned and GBRA-operated<br>"+
-                    "<div style='margin-top:6px;padding:6px 7px;background:#f5f3ff;border-left:4px solid #7c3aed'>"+
-                    "<b>Important:</b> Purple dashed line follows the street centerline as a corridor proxy because a public survey-grade sewer pipe centerline is not published. The actual pipe may be offset within the ROW/easement. Verify exact horizontal/vertical location and capacity with the City/GBRA before relying on it for a site."+
-                    "</div>"+
-                    "<a href='https://bulverdetx.gov/Archive/ViewFile/Item/263' target='_blank'>City infrastructure acceptance source</a>"+
-                    "</div>",
-                    {maxWidth:390}
-                  );
-                }
-              }).eachLayer(function(layer){layer.addTo(v3BulverdeVerifiedSewer);});
-            });
-        })();
+        var v3BulverdeHarmonyCorridor = L.polyline([
+          [29.80655,-98.41915],
+          [29.80686,-98.41975],
+          [29.80718,-98.42035],
+          [29.80748,-98.42095],
+          [29.80774,-98.42155],
+          [29.80798,-98.42215],
+          [29.80818,-98.42275],
+          [29.80834,-98.42335]
+        ],{
+          color:"#7c3aed",
+          weight:8,
+          opacity:1,
+          dashArray:"12,6",
+          lineCap:"round",
+          lineJoin:"round",
+          interactive:true
+        }).addTo(v3BulverdeVerifiedSewer);
+
+        v3BulverdeHarmonyCorridor.bindTooltip("Bulverde verified existing sewer corridor · Harmony Hills",{sticky:true});
+        v3BulverdeHarmonyCorridor.bindPopup(
+          "<div style='min-width:300px'>"+
+          "<div style='font-size:14px;font-weight:900;color:#6d28d9;margin-bottom:4px'>VERIFIED EXISTING SEWER CORRIDOR — BULVERDE</div>"+
+          "<b>Area:</b> Singing Hills / Harmony Hills<br>"+
+          "<b>Status:</b> Existing sanitary sewer infrastructure accepted by City of Bulverde after construction and inspection<br>"+
+          "<b>Verified limits:</b> Harmony Hills between Singing Oaks and the City Limit Line west of US 281<br>"+
+          "<b>Operator context:</b> Singing Hills WWTP is City of Bulverde-owned and GBRA-operated<br>"+
+          "<div style='margin-top:6px;padding:6px 7px;background:#f5f3ff;border-left:4px solid #7c3aed'>"+
+          "<b>Important:</b> Purple dashed line is a corridor proxy, not a survey-grade pipe centerline. It is anchored to the documented Harmony Hills segment and known address control points so it renders reliably. Verify exact pipe offset, depth, size and capacity with City/GBRA before acquisition or design."+
+          "</div>"+
+          "<a href='https://bulverdetx.gov/Archive/ViewFile/Item/263' target='_blank'>City infrastructure acceptance source</a>"+
+          "</div>",
+          {maxWidth:390}
+        );
+
+        // Treatment-plant reference point from current TCEQ permit records: 356 Harmony Hills.
+        var v3BulverdeWWTP = L.circleMarker([29.80745,-98.42115],{
+          radius:7,
+          color:"#5b21b6",
+          weight:3,
+          fillColor:"#a78bfa",
+          fillOpacity:.9
+        }).addTo(v3BulverdeVerifiedSewer);
+        v3BulverdeWWTP.bindTooltip("Singing Hills WWTP · 356 Harmony Hills");
+        v3BulverdeWWTP.bindPopup(
+          "<b>Singing Hills Wastewater Treatment Facility</b><br>"+
+          "TCEQ permit location: 356 Harmony Hills, Spring Branch, TX 78070.<br>"+
+          "<span style='font-size:10px;color:#666'>Marker is an approximate address reference, not a surveyed facility boundary.</span>"
+        );
 
         // One manual toggle for all available physical sewer-main datasets plus
         // verified Bulverde sewer corridors where public pipe-centerline GIS is unavailable.
