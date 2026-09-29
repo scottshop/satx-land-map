@@ -35,14 +35,7 @@
             }
             </style>
 
-            <style>#map {
-                position:absolute;
-                top:0;
-                bottom:0;
-                right:0;
-                left:0;
-                }
-            </style>
+
 
             <script>
                 L_NO_TOUCH = false;
@@ -58,57 +51,43 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
     <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
-    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
     <script src="https://unpkg.com/esri-leaflet@3.0.15/dist/esri-leaflet.js"></script>
-<style id="v5-clean-ui">
-.leaflet-control-layers{border:0!important;border-radius:9px!important;box-shadow:0 3px 14px rgba(0,0,0,.18)!important;font:12px/1.35 Arial!important}
-.leaflet-control-layers-expanded{padding:9px 11px!important;max-height:70vh;overflow:auto}
+
+
+
+
+
+
+<style id="acquisition-ui">.leaflet-control-layers{border:0;border-radius:9px;box-shadow:0 3px 14px rgba(0,0,0,.18);font:11px/1.3 Arial}
+.leaflet-control-layers-expanded{padding:9px 11px;max-height:70vh;overflow:auto;min-width:235px}
 .leaflet-popup-content{font:12px/1.45 Arial;margin:12px 14px}
 .leaflet-tooltip{font:600 11px/1.2 Arial;border:0;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,.16)}
-</style>
-
-<style id="v6-exact-parcel-ui">
-#v6TopToggle{position:fixed;top:58px;right:12px;z-index:11000;background:#111;color:#fff;border:0;border-radius:7px;padding:8px 11px;font:700 11px Arial;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.25)}
-#v6TopPanel{display:none;position:fixed;top:100px;right:12px;width:355px;max-height:calc(100vh - 120px);overflow:auto;z-index:10990;background:rgba(255,255,255,.98);border:2px solid #111;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.28);font:11px/1.35 Arial;color:#222}
-#v6TopHead{position:sticky;top:0;z-index:2;background:#111;color:#fff;padding:10px 11px}
-#v6TopHead b{font-size:15px}
-#v6Filters{display:flex;gap:5px;margin-top:7px}
-#v6Filters select{flex:1;font:11px Arial;padding:4px;border-radius:4px;border:1px solid #bbb}
-#v6OppList{padding:7px}
-.v6OppCard{border:1px solid #ddd;border-left:6px solid #FFD400;border-radius:7px;padding:7px 8px;margin:6px 0;background:#fff;cursor:pointer}
-.v6OppCard:hover{background:#fffde8}
-.v6Rank{display:inline-block;background:#111;color:#FFD400;border-radius:50%;width:24px;height:24px;line-height:24px;text-align:center;font-weight:800;margin-right:6px}
-.v6Score{float:right;font-size:16px;font-weight:800;color:#111}
+#v6TopToggle{position:fixed;top:58px;right:12px;z-index:11000;background:#111;color:#FFD400;border:0;border-radius:7px;padding:8px 11px;font:700 11px Arial;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+#v6TopPanel{display:none;position:fixed;top:100px;right:12px;width:380px;max-height:calc(100vh - 120px);overflow:auto;z-index:10990;background:rgba(255,255,255,.98);border:1px solid #222;border-radius:9px;box-shadow:0 6px 24px rgba(0,0,0,.28);font:11px/1.35 Arial;color:#222}
+#v6TopHead{position:sticky;top:0;z-index:2;background:#111;color:#fff;padding:11px 12px}
+#v6TopHead b{font-size:14px;letter-spacing:.2px}
+#v6Filters{display:flex;gap:6px;margin-top:7px}
+#v6Filters select{flex:1;font:11px Arial;padding:5px;border-radius:4px;border:1px solid #888;background:#fff}
+#v6OppList{padding:8px;background:#f5f5f5}
+.v6OppCard{border:1px solid #d8d8d8;border-left:6px solid #FFD400;border-radius:7px;padding:9px 9px;margin:7px 0;background:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.v6OppCard:hover{background:#fffce0;box-shadow:0 2px 8px rgba(0,0,0,.10)}
+.v6Rank{display:inline-block;background:#111;color:#FFD400;border-radius:50%;width:25px;height:25px;line-height:25px;text-align:center;font-weight:800;margin-right:6px}
+.v6Score{float:right;font-size:10px;font-weight:800;color:#333;background:#eee;padding:3px 5px;border-radius:4px;margin-top:1px}
 .v6Owner{font-weight:800;color:#222}
 .v6Why{clear:both;margin-top:4px;color:#555}
 .v6Tiny{font-size:10px;color:#777}
 .v6Num{background:#111;color:#FFD400;border:2px solid #FFD400;border-radius:50%;width:25px;height:25px;line-height:21px;text-align:center;font:bold 12px Arial;box-shadow:0 2px 6px rgba(0,0,0,.35)}
-</style>
-
-<style id="v7-clean-ui">
 #v7Header{position:fixed;top:12px;left:55px;z-index:10020;background:rgba(17,17,17,.92);color:#fff;border-radius:8px;padding:8px 11px;box-shadow:0 3px 14px rgba(0,0,0,.22);font-family:Arial;pointer-events:none}
 #v7Header .v7Title{font-size:15px;font-weight:800;letter-spacing:.1px}
 #v7Header .v7Sub{font-size:10px;margin-top:2px;color:#e9e9e9}
 #v7ModeToggle{position:fixed;top:58px;right:94px;z-index:11000;background:#fff;color:#111;border:1px solid #111;border-radius:7px;padding:8px 10px;font:800 10px Arial;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.20)}
 #v7ModeToggle[data-mode="research"]{background:#17365D;color:#fff;border-color:#17365D}
-#v6TopToggle{top:58px!important;right:12px!important;background:#111!important;color:#FFD400!important;padding:8px 11px!important}
-#v6TopPanel{top:100px!important;width:380px!important;border:1px solid #222!important;border-radius:9px!important}
-#v6TopHead{background:#111!important;padding:11px 12px!important}
-#v6TopHead b{font-size:14px!important;letter-spacing:.2px}
-#v6Filters{gap:6px!important}
-#v6Filters select{padding:5px!important;border:1px solid #888!important;background:#fff!important}
-#v6OppList{padding:8px!important;background:#f5f5f5}
-.v6OppCard{border:1px solid #d8d8d8!important;border-left:6px solid #FFD400!important;border-radius:7px!important;padding:9px 9px!important;margin:7px 0!important;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.v6OppCard:hover{background:#fffce0!important;box-shadow:0 2px 8px rgba(0,0,0,.10)}
-.v6Rank{width:25px!important;height:25px!important;line-height:25px!important;background:#111!important;color:#FFD400!important}
-.v6Score{font-size:10px!important;font-weight:800!important;background:#eee;color:#333!important;padding:3px 5px;border-radius:4px;margin-top:1px}
 .v7Acres{font-size:16px;font-weight:900;color:#111}
 .v7Node{font-weight:800;margin-top:4px;color:#222}
 .v7Signals{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px;font-size:10px;color:#555}
 .v7Signal{background:#f0f0f0;border-radius:4px;padding:3px 5px}
 .v7Why{margin-top:6px;padding-top:6px;border-top:1px solid #e5e5e5;color:#444;font-size:10px;line-height:1.35}
-.v7Popup{min-width:320px;font:12px/1.35 Arial;color:#222}
+.v7Popup{min-width:0;font:12px/1.35 Arial;color:#222}
 .v7PopupHead{display:flex;align-items:center;gap:8px;margin-bottom:7px}
 .v7PopupRank{background:#111;color:#FFD400;border-radius:50%;width:28px;height:28px;line-height:28px;text-align:center;font-weight:900}
 .v7PopupAcres{font-size:19px;font-weight:900}
@@ -118,10 +97,7 @@
 .v7Thesis{background:#fff9c4;border-left:4px solid #FFD400;padding:7px 8px;margin-top:7px}
 .v7PopupActions{display:flex;gap:6px;margin-top:8px}
 .v7PopupActions a,.v7PopupActions button{display:inline-block;border:1px solid #bbb;background:#fff;color:#111;border-radius:5px;padding:5px 7px;font:700 10px Arial;text-decoration:none;cursor:pointer}
-.leaflet-interactive{cursor:pointer!important}
-.leaflet-marker-icon,.leaflet-marker-shadow{cursor:pointer}
-.leaflet-control-layers{font:11px/1.3 Arial!important}
-.leaflet-control-layers-expanded{min-width:235px}
+.leaflet-interactive{cursor:pointer}
 @media (max-width:700px){
   #v7Header{left:48px;right:10px;padding:7px 9px}
   #v7Header .v7Title{font-size:13px}
@@ -129,8 +105,22 @@
   #v6TopToggle{top:56px!important}
   #v6TopPanel{left:8px!important;right:8px!important;width:auto!important;max-height:72vh!important}
 }
-</style>
 
+.parcel-number{pointer-events:none}
+.leaflet-popup-content{max-height:60vh;overflow-y:auto;max-width:calc(100vw - 70px)}
+.leaflet-popup-content [style*="min-width"]{min-width:0!important}
+.layer-heading{font:700 10px Arial;letter-spacing:1px;color:#64748b;margin:14px 0 6px;padding-top:8px;border-top:1px solid #e2e8f0}
+.layer-heading:first-child{margin-top:0;border:0}
+.leaflet-control-layers label{display:flex;align-items:center;gap:7px;padding:5px 0;cursor:pointer}
+.leaflet-control-layers input{margin:0;flex-shrink:0}
+.leaflet-control-layers-expanded{max-height:calc(100dvh - 130px);width:265px}
+.leaflet-top.leaflet-right{top:90px}
+.layer-help{font:11px/1.4 Arial;color:#64748b;margin-top:10px;max-width:240px}
+.popup-facts{display:grid;grid-template-columns:95px 1fr;gap:5px 10px;margin:10px 0}
+.popup-facts dt{font-weight:600;color:#64748b}.popup-facts dd{margin:0;overflow-wrap:anywhere}
+.popup-source{font-size:10px;color:#64748b;border-top:1px solid #ddd;padding-top:7px}
+@media(max-width:700px){#v7Header{right:10px}.leaflet-control-layers-expanded{max-height:calc(100dvh - 160px)}.v7Popup{width:250px}#v6Filters select{min-width:0}#v6TopPanel{max-height:calc(100dvh - 120px)!important}}
+</style>
 </head>
 <body>
     
@@ -176,6 +166,12 @@
                 }
             );
             L.control.scale().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+            // Features own their clicks; empty map space retains normal dragging.
+            L.Path.mergeOptions({bubblingMouseEvents:false});
+            [['cad',410],['ownership',440],['infrastructure',450],['diligence',405]].forEach(function(item){
+              map_33cc2c2ac68d72d2971fbb7de3650b24.createPane(item[0]).style.zIndex=item[1];
+            });
+
 
             
 
@@ -238,7 +234,7 @@
             );
         
     
-            // Satellite basemap — Esri World Imagery. Kept off by default; select from the layer control.
+            // Satellite imagery and labels are the acquisition basemap.
             var tile_layer_satellite = L.tileLayer(
                 "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                 {
@@ -1192,9 +1188,6 @@
         
     
                 marker_caa877d502156cb37bd8ca3a0d4fc8e2.setIcon(div_icon_2cfec8400c0aef69c80d3339a7d828c5);
-            
-    
-            // Clean UI: top-node labels available conceptually via priority intersections; hidden by default.
         
     
             var feature_group_0c45a8fa797258d406c1e937c6f99c34 = L.featureGroup(
@@ -2422,9 +2415,6 @@
             marker_cluster_9871e831b359eb1ea9745338fc5ffd62.addTo(feature_group_a226874f9972842eec65b43be2a10db9);
         
     
-            // Clean UI: growth developments are available in Layers but hidden by default.
-        
-    
             var feature_group_18e326aa803143ba3330a0ba600b718a = L.featureGroup(
                 {
 }
@@ -2765,9 +2755,6 @@
         
     
                 marker_e2bbf31fa9ccde5bfb586db3459d6735.setIcon(icon_f356ecbdb36f5865978dc3f3fdc87ad3);
-            
-    
-            // Clean UI: retail / employment anchors are available in Layers but hidden by default.
         
     
             // V8: Road-improvement corridors use official TxDOT Roadway Inventory geometry.
@@ -2775,7 +2762,9 @@
             var feature_group_370786adb15c6d6d865f189609798696 = L.featureGroup({});
             var v8TxDOTRoadwayUrl = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_Roadway_Inventory/FeatureServer/0";
 
-            function v8RoadProject(opts){
+            var roadProjects=[];
+            function v8RoadProject(opts){roadProjects.push(opts);}
+            function loadRoadProject(opts){
               var bounds=L.latLngBounds(opts.southWest,opts.northEast);
               var query=L.esri.query({url:v8TxDOTRoadwayUrl})
                 .where(opts.where)
@@ -2789,10 +2778,11 @@
                 }
 
                 var road=L.geoJSON(fc,{
+                  pane:"infrastructure",
                   style:function(){
                     return {
                       color:"#ff8c00",
-                      weight:6,
+                      weight:4,
                       opacity:.92,
                       lineCap:"round",
                       lineJoin:"round"
@@ -2864,8 +2854,6 @@
               description:"TxDOT's 23-mile Loop 1604 North Expansion corridor.",
               source:"https://www.txdot.gov/projects/projects-studies/san-antonio/loop1604.html"
             });
-
-            // Clean UI: road projects remain available in Layers but are hidden by default.
         
     
             L.control.fullscreen(
@@ -2905,23 +2893,8 @@
 
         
     
-            var mouse_position_2f9c59aacac0861ead685684cef81130 = new L.Control.MousePosition(
-                {
-  "position": "bottomleft",
-  "separator": " | ",
-  "emptyString": "Unavailable",
-  "lngFirst": false,
-  "numDigits": 5,
-  "prefix": "Lat/Lon:",
-}
-            );
-            mouse_position_2f9c59aacac0861ead685684cef81130.options["latFormatter"] =
-                undefined;
-            mouse_position_2f9c59aacac0861ead685684cef81130.options["lngFormatter"] =
-                undefined;
-            // Clean UI: mouse coordinate readout hidden.
-        
-    
+            feature_group_370786adb15c6d6d865f189609798696.once('add',function(){roadProjects.forEach(loadRoadProject);});
+
             var layer_control_b250c1d6f8951aadc14a9860adeeb93d_layers = {
                 base_layers : {
                     "Satellite + Labels" : tile_layer_satellite_hybrid,
@@ -2930,15 +2903,42 @@
                     "Topo" : tile_layer_34ebf833fc2ef87725ad85de46958f36,
                 },
                 overlays :  {
-                    "RESEARCH — Priority Heat Map" : feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
+                    "RESEARCH — Heat Map" : feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
                     "GROWTH — Priority Intersections" : feature_group_faeb81c75b71b2840ca70907d2e58065,
-                    "RESEARCH — Legacy Site References" : feature_group_0c45a8fa797258d406c1e937c6f99c34,
+                    "RESEARCH — Legacy References" : feature_group_0c45a8fa797258d406c1e937c6f99c34,
                     "GROWTH — Major Developments" : feature_group_a226874f9972842eec65b43be2a10db9,
                     "GROWTH — Retail / Employment Anchors" : feature_group_18e326aa803143ba3330a0ba600b718a,
-                    "RESEARCH — Road / Infrastructure" : feature_group_370786adb15c6d6d865f189609798696,
+                    "INFRASTRUCTURE — Active Road Improvements" : feature_group_370786adb15c6d6d865f189609798696,
                 },
             };
-            let layer_control_b250c1d6f8951aadc14a9860adeeb93d = L.control.layers(
+
+            var GroupedLayers=L.Control.Layers.extend({
+              _update:function(){
+                L.Control.Layers.prototype._update.call(this);
+                if(!this._container)return this;
+                var headings=['LAND','PARCEL DATA','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH'];
+                var container=this._overlaysList, groups={};
+                Array.from(container.children).forEach(function(label){
+                  var span=label.querySelector('span'), text=span.textContent.trim(), parts=text.split(' — ');
+                  var group=parts.length>1?parts.shift():'RESEARCH';
+                  span.textContent=' '+parts.join(' — ');
+                  (groups[group]||(groups[group]=[])).push(label);
+                });
+                container.textContent='';
+                headings.forEach(function(group){
+                  if(!groups[group])return;
+                  var title=L.DomUtil.create('div','layer-heading',container);title.textContent=group;
+                  var order=['Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Assemblage Opportunities','Existing Sewer Mains','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
+                  groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(label){container.appendChild(label);});
+                });
+                var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
+                this._baseLayersList.prepend(title);
+                var help=L.DomUtil.create('div','layer-help',container);
+                help.textContent='CAD appears at zoom 14+. Sewer and detailed GIS layers appear at zoom 12+. Snapshot dates are shown in popups.';
+                return this;
+              }
+            });
+            let layer_control_b250c1d6f8951aadc14a9860adeeb93d = new GroupedLayers(
                 layer_control_b250c1d6f8951aadc14a9860adeeb93d_layers.base_layers,
                 layer_control_b250c1d6f8951aadc14a9860adeeb93d_layers.overlays,
                 {
@@ -2971,6 +2971,25 @@
           if(v==null || isNaN(Number(v))) return "—";
           return "$"+Number(v).toLocaleString();
         }
+
+        function factPopup(title, rows, note, url){
+          return "<div class='v7Popup'><b>"+v3esc(title)+"</b><dl class='popup-facts'>"+
+            rows.map(function(row){return '<dt>'+v3esc(row[0])+'</dt><dd>'+v3esc(row[1]==null||String(row[1]).trim()===''?'Not reported':row[1])+'</dd>';}).join('')+
+            "</dl><div class='popup-source'>"+v3esc(note||'')+
+            (url&&/^https?:\/\//i.test(url)?" <a target='_blank' rel='noopener' href='"+v3esc(url)+"'>Source record</a>":'')+"</div></div>";
+        }
+        function parcelPopup(p,county,heb){
+          var bexar=county==='Bexar',comal=county==='Comal';
+          var acres=bexar?p.Land_acres:comal?p.LEGAL_ACRE:p.LEGAL_AREA;
+          if(!bexar&&!comal&&p.LGL_AREA_UNIT&&p.LGL_AREA_UNIT!=='ACRES')acres=null;
+          var date=bexar?'December 2025':comal?'November 22, 2024 (data edit date)':'February 2022';
+          return factPopup((heb?'H-E-B ownership screen':'CAD parcel')+' · '+county,[
+            ['County',county],['Owner',bexar?p.Owner_name:comal?p.PY_OWNER_N:p.OWNER_NAME],
+            ['Acres',acres==null?'Not reported':Number(acres).toFixed(2)],['Property ID',bexar?p.Prop_id:p.PROP_ID],
+            ['Situs',p.Situs||p.SITUS_ADDR],['Value',v3money(bexar?p.Market_val:comal?p.APPRAISED:p.MKT_VALUE)]
+          ],'Snapshot: '+date+'. Confirm current ownership and value with CAD.',p.CADLINK);
+        }
+
         function v3growth(now,old){
           now=Number(now); old=Number(old);
           if(!now || !old) return null;
@@ -2978,16 +2997,20 @@
         }
 
         // Bexar parcel polygons: authoritative county/BCAD screening geometry.
-        var v3Parcels = L.esri.dynamicMapLayer({
-          url:v3ParcelUrl,
-          layers:[0],
-          opacity:0.72,
+        var v3Parcels = L.esri.featureLayer({
+          url:v3ParcelUrl+"/0",
+          pane:"cad", minZoom:14,
+          simplifyFactor:0.35, precision:5,
+          style:function(){return {color:"#e2e8f0",weight:1.5,fillOpacity:.025};},
           attribution:"BCAD parcels via San Antonio River Authority (Dec. 2025)"
         });
+
+        v3Parcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Bexar",false);});
 
         // H-E-B ownership overlay — exact BCAD owner-name screen.
         // BCAD records H-E-B real-property ownership under HEB GROCERY COMPANY LP.
         var v3HEBOwnedParcels = L.esri.featureLayer({
+          pane:"ownership", minZoom:10,
           url:v3ParcelUrl+"/0",
           where:"Owner_name LIKE 'HEB GROCERY COMPANY LP%'",
           simplifyFactor:0.35,
@@ -3010,28 +3033,13 @@
           return "H-E-B Owned"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
         },{sticky:true});
 
-        v3HEBOwnedParcels.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          var ac=Number(p.Land_acres);
-          var assessed=(Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0)+(Number(p.Imprv_hstd_val)||0)+(Number(p.Imprv_non_hstd_val)||0);
-          return "<div style='min-width:285px'>"+
-                 "<div style='font-size:15px;font-weight:900;color:#e31b23;margin-bottom:5px'>H-E-B OWNED PARCEL</div>"+
-                 "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br>"+
-                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
-                 "<b>Property ID:</b> "+v3esc(p.Prop_id||"—")+"<br>"+
-                 "<b>Geo ID:</b> "+v3esc(p.Geo_id||"—")+"<br>"+
-                 "<b>Situs:</b> "+v3esc(p.Situs||p.Situs_full_street_name||"—")+"<br>"+
-                 "<b>Market value:</b> "+v3money(p.Market_val)+"<br>"+
-                 "<b>Assessed components:</b> "+v3money(assessed)+"<br>"+
-                 "<b>Last deed:</b> "+v3esc(p.Last_Deed_Date||"—")+"<br>"+
-                 "<span style='font-size:10px;color:#666'>Owner screen is based on the BCAD parcel snapshot loaded through SARA. Verify current title/ownership before relying on it.</span>"+
-                 "</div>";
-        });
+        v3HEBOwnedParcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Bexar",true);});
 
         // ---- COMAL + GUADALUPE CAD PARCEL COVERAGE ----
         // Comal source: parcel ownership data from Comal Appraisal District (public ArcGIS service).
         var v3ComalCadUrl = "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/arcgis/rest/services/COMAL_PARCELS/FeatureServer/0";
         var v3ComalParcels = L.esri.featureLayer({
+          pane:"cad", minZoom:14,
           url:v3ComalCadUrl,
           simplifyFactor:0.45,
           precision:5,
@@ -3045,31 +3053,14 @@
           var ac=Number(p.LEGAL_ACRE);
           return "Comal CAD"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
         },{sticky:true});
-        v3ComalParcels.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          var ac=Number(p.LEGAL_ACRE);
-          var land=(Number(p.LAND_HMSTD)||0)+(Number(p.LAND_NON_H)||0);
-          var impr=(Number(p.IMPRV_VAL)||0)+(Number(p.IMPROV_NON)||0);
-          return "<div style='min-width:285px'>"+
-                 "<div style='font-size:14px;font-weight:900;color:#8e44ad;margin-bottom:4px'>COMAL CAD PARCEL</div>"+
-                 "<b>Owner:</b> "+v3esc(p.PY_OWNER_N||"—")+"<br>"+
-                 "<b>Property ID:</b> "+v3esc(p.PROP_ID||"—")+"<br>"+
-                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
-                 "<b>Situs:</b> "+v3esc(p.SITUS_ADDR||"—")+"<br>"+
-                 "<b>Appraised:</b> "+v3money(p.APPRAISED)+"<br>"+
-                 "<b>Assessed:</b> "+v3money(p.ASSESSED)+"<br>"+
-                 "<b>Land / improvements:</b> "+v3money(land)+" / "+v3money(impr)+"<br>"+
-                 "<b>Legal:</b> "+v3esc(p.LEGAL_DESC||"—")+"<br>"+
-                 (p.CADLINK?"<a href='"+v3esc(p.CADLINK)+"' target='_blank'>Open CAD record</a><br>":"")+
-                 "<span style='font-size:10px;color:#666'>Public Comal CAD parcel snapshot; verify current title and appraisal details before acquisition.</span>"+
-                 "</div>";
-        });
+        v3ComalParcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Comal",false);});
 
         // Guadalupe source: Guadalupe CAD parcel extract distributed through a public ArcGIS service.
         // Public GIS copies are less current than the live Guadalupe CAD property-search portal,
         // so the popup explicitly identifies this as a screening layer.
         var v3GuadalupeCadUrl = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer/83";
         var v3GuadalupeParcels = L.esri.featureLayer({
+          pane:"cad", minZoom:14,
           url:v3GuadalupeCadUrl,
           simplifyFactor:0.45,
           precision:5,
@@ -3083,27 +3074,14 @@
           var ac=Number(p.LEGAL_AREA);
           return "Guadalupe CAD"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
         },{sticky:true});
-        v3GuadalupeParcels.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          var ac=Number(p.LEGAL_AREA);
-          return "<div style='min-width:285px'>"+
-                 "<div style='font-size:14px;font-weight:900;color:#008b8b;margin-bottom:4px'>GUADALUPE CAD PARCEL</div>"+
-                 "<b>Owner:</b> "+v3esc(p.OWNER_NAME||"—")+"<br>"+
-                 "<b>Property ID:</b> "+v3esc(p.PROP_ID||"—")+"<br>"+
-                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
-                 "<b>Situs:</b> "+v3esc(p.SITUS_ADDR||"—")+"<br>"+
-                 "<b>Market value:</b> "+v3money(p.MKT_VALUE)+"<br>"+
-                 "<b>Land value:</b> "+v3money(p.LAND_VALUE)+"<br>"+
-                 "<b>Improvement value:</b> "+v3money(p.IMP_VALUE)+"<br>"+
-                 "<span style='font-size:10px;color:#666'>Screening layer from a public Guadalupe CAD parcel extract. Confirm current ownership/value in the live Guadalupe Appraisal District portal.</span>"+
-                 "</div>";
-        });
+        v3GuadalupeParcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Guadalupe",false);});
 
         // H-E-B ownership — Comal + Guadalupe CAD screening.
         // Multiple legal-name patterns are included because appraisal districts may abbreviate H-E-B differently.
         var v3HEBComalParcels = L.esri.featureLayer({
+          pane:"ownership", minZoom:10,
           url:v3ComalCadUrl,
-          where:"PY_OWNER_N LIKE '%HEB%' OR PY_OWNER_N LIKE '%H E B%' OR PY_OWNER_N LIKE '%H-E-B%' OR PY_OWNER_N LIKE '%H E BUTT%' OR PY_OWNER_N LIKE '%BUTT%GROC%'",
+          where:"PY_OWNER_N IN ('H E B LP','HEB GROCERY CO LP','HEB GROCERY COMPANY LP','HEB LP')",
           simplifyFactor:0.35,
           precision:5,
           style:function(){
@@ -3116,26 +3094,12 @@
           var ac=Number(p.LEGAL_ACRE);
           return "H-E-B Owned · Comal"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
         },{sticky:true});
-        v3HEBComalParcels.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          var ac=Number(p.LEGAL_ACRE);
-          return "<div style='min-width:285px'>"+
-                 "<div style='font-size:15px;font-weight:900;color:#e31b23;margin-bottom:5px'>H-E-B OWNED PARCEL — COMAL</div>"+
-                 "<b>Owner:</b> "+v3esc(p.PY_OWNER_N||"—")+"<br>"+
-                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
-                 "<b>Property ID:</b> "+v3esc(p.PROP_ID||"—")+"<br>"+
-                 "<b>Situs:</b> "+v3esc(p.SITUS_ADDR||"—")+"<br>"+
-                 "<b>Appraised:</b> "+v3money(p.APPRAISED)+"<br>"+
-                 "<b>Assessed:</b> "+v3money(p.ASSESSED)+"<br>"+
-                 "<b>Legal:</b> "+v3esc(p.LEGAL_DESC||"—")+"<br>"+
-                 (p.CADLINK?"<a href='"+v3esc(p.CADLINK)+"' target='_blank'>Open CAD record</a><br>":"")+
-                 "<span style='font-size:10px;color:#666'>Comal CAD screening snapshot. Verify current ownership in the live appraisal record before relying on it.</span>"+
-                 "</div>";
-        });
+        v3HEBComalParcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Comal",true);});
 
         var v3HEBGuadalupeParcels = L.esri.featureLayer({
+          pane:"ownership", minZoom:10,
           url:v3GuadalupeCadUrl,
-          where:"OWNER_NAME LIKE '%HEB%' OR OWNER_NAME LIKE '%H E B%' OR OWNER_NAME LIKE '%H-E-B%' OR OWNER_NAME LIKE '%H E BUTT%' OR OWNER_NAME LIKE '%BUTT%GROC%'",
+          where:"OWNER_NAME IN ('H E BUTT GROCERY CO','HEB GROCERY COMPANY LP')",
           simplifyFactor:0.35,
           precision:5,
           style:function(){
@@ -3148,21 +3112,7 @@
           var ac=Number(p.LEGAL_AREA);
           return "H-E-B Owned · Guadalupe"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
         },{sticky:true});
-        v3HEBGuadalupeParcels.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          var ac=Number(p.LEGAL_AREA);
-          return "<div style='min-width:285px'>"+
-                 "<div style='font-size:15px;font-weight:900;color:#e31b23;margin-bottom:5px'>H-E-B OWNED PARCEL — GUADALUPE</div>"+
-                 "<b>Owner:</b> "+v3esc(p.OWNER_NAME||"—")+"<br>"+
-                 "<b>Acres:</b> "+(isFinite(ac)?ac.toFixed(2):"—")+"<br>"+
-                 "<b>Property ID:</b> "+v3esc(p.PROP_ID||"—")+"<br>"+
-                 "<b>Situs:</b> "+v3esc(p.SITUS_ADDR||"—")+"<br>"+
-                 "<b>Market value:</b> "+v3money(p.MKT_VALUE)+"<br>"+
-                 "<b>Land value:</b> "+v3money(p.LAND_VALUE)+"<br>"+
-                 "<b>Improvement value:</b> "+v3money(p.IMP_VALUE)+"<br>"+
-                 "<span style='font-size:10px;color:#666'>Guadalupe CAD public screening extract. Verify current ownership in the live appraisal district portal.</span>"+
-                 "</div>";
-        });
+        v3HEBGuadalupeParcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Guadalupe",true);});
 
         var v3HEBOwnedAllCounties = L.layerGroup([
           v3HEBOwnedParcels,
@@ -3174,11 +3124,11 @@
         // Sources are public utility/municipal GIS line datasets; no CCN/service-territory polygons are used.
         function v3SewerWeight(d){
           d=parseFloat(String(d==null?"":d).replace(/[^0-9.]/g,""));
-          return isFinite(d)?(d>=36?6:d>=18?5:d>=12?4:3):3;
+          return isFinite(d)?(d>=18?4:3):3;
         }
         function v3SewerDate(v){
           if(!v) return "—";
-          try{return new Date(v).toLocaleDateString();}catch(e){return "—";}
+          var date=new Date(v);return isNaN(date.getTime())?"Not reported":date.toLocaleDateString();
         }
         function v3SewerStyle(d,color,dashed){
           return {
@@ -3194,6 +3144,7 @@
         // Bexar — SAWS existing sewer mains. Public SAWS-sourced snapshot received July 21, 2021.
         var v3SewerSAWSUrl = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__GreaterSATX/MapServer/28";
         var v3SewerSAWS = L.esri.featureLayer({
+          pane:"infrastructure", minZoom:12,
           url:v3SewerSAWSUrl,
           simplifyFactor:0.25,
           precision:5,
@@ -3208,25 +3159,18 @@
           return "SAWS Sewer Main · "+v3esc(p.PIPEDIAM||"—");
         },{sticky:true});
         v3SewerSAWS.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          var len=Number(p.PIPELEN);
-          return "<div style='min-width:285px'>"+
-                 "<div style='font-size:14px;font-weight:900;color:#009bc4;margin-bottom:4px'>EXISTING SEWER MAIN — SAWS</div>"+
-                 "<b>Diameter:</b> "+v3esc(p.PIPEDIAM||"—")+"<br>"+
-                 "<b>Pipe type:</b> "+v3esc(p.PIPETYPE||"—")+"<br>"+
-                 "<b>Install date:</b> "+v3esc(v3SewerDate(p.INSTDATE))+"<br>"+
-                 "<b>Length:</b> "+(isFinite(len)?Math.round(len).toLocaleString()+" ft":"—")+"<br>"+
-                 "<b>Slope:</b> "+v3esc(p.SLOPE||"—")+"<br>"+
-                 "<b>As-built:</b> "+v3esc(p.ASBLT||"—")+"<br>"+
-                 "<b>Map #:</b> "+v3esc(p.MAPNO||"—")+"<br>"+
-                 "<span style='font-size:10px;color:#666'>SAWS-sourced July 2021 public GIS snapshot. Verify current location, depth, capacity and tie-in feasibility with SAWS.</span>"+
-                 "</div>";
+          var p=layer.feature.properties||{};
+          return factPopup('Existing sewer main',[
+            ['Utility','SAWS'],['Diameter',p.PIPEDIAM],['Main type',p.UNIT_TYPE],['Material',p.PIPETYPE],
+            ['Installed',v3SewerDate(p.INSTDATE)],['Data date','July 21, 2021']
+          ],'Public GIS screening. Verify location, depth and capacity with the utility.',v3SewerSAWSUrl);
         });
 
         // Comal / New Braunfels — NBU wastewater mains.
         // Public NBU-sourced utility snapshot retrieved January 17, 2024.
         var v3SewerNBUUrl = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Hines_SiteSelection/MapServer/512";
         var v3SewerNBU = L.esri.featureLayer({
+          pane:"infrastructure", minZoom:12,
           url:v3SewerNBUUrl,
           where:"ENABLED=1 AND (ARCHIVEDFA IS NULL OR ARCHIVEDFA='')",
           simplifyFactor:0.25,
@@ -3242,24 +3186,17 @@
           return "NBU Wastewater Main · "+(p.DIAMETER!=null?p.DIAMETER+" in":"diameter —");
         },{sticky:true});
         v3SewerNBU.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          var len=Number(p.MEASUREDLE);
-          return "<div style='min-width:285px'>"+
-                 "<div style='font-size:14px;font-weight:900;color:#118bc2;margin-bottom:4px'>EXISTING SEWER MAIN — NBU</div>"+
-                 "<b>Diameter:</b> "+v3esc(p.DIAMETER!=null?p.DIAMETER+" in":"—")+"<br>"+
-                 "<b>Material:</b> "+v3esc(p.MATERIAL||"—")+"<br>"+
-                 "<b>Install date:</b> "+v3esc(v3SewerDate(p.INSTALLDAT))+"<br>"+
-                 "<b>Length:</b> "+(isFinite(len)?Math.round(len).toLocaleString()+" ft":"—")+"<br>"+
-                 "<b>Slope:</b> "+v3esc(p.PERCENTSLO||p.NBUPERCENT||"—")+"<br>"+
-                 "<b>Facility ID:</b> "+v3esc(p.FACILITYID||"—")+"<br>"+
-                 "<b>Drawing #:</b> "+v3esc(p.DRAWINGNUM||"—")+"<br>"+
-                 "<span style='font-size:10px;color:#666'>NBU-sourced public GIS snapshot retrieved Jan. 17, 2024. Verify current infrastructure in NBU's Infrastructure Information Portal before design.</span>"+
-                 "</div>";
+          var p=layer.feature.properties||{};
+          return factPopup('Existing sewer main',[
+            ['Utility','NBU'],['Diameter',p.DIAMETER],['Main type',"Not reported"],['Material',p.MATERIAL],
+            ['Installed',v3SewerDate(p.INSTALLDAT)],['Data date','January 17, 2024']
+          ],'Public GIS screening. Verify location, depth and capacity with the utility.',v3SewerNBUUrl);
         });
 
         // Guadalupe — GBRA Stein Falls existing gravity mains.
         var v3SewerGBRAGravityUrl = "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/170";
         var v3SewerGBRAGravity = L.esri.featureLayer({
+          pane:"infrastructure", minZoom:12,
           url:v3SewerGBRAGravityUrl,
           simplifyFactor:0.25,
           precision:5,
@@ -3274,17 +3211,17 @@
           return "GBRA Stein Falls Sewer Main · "+(p.Diameter!=null?p.Diameter+" in":"diameter —");
         },{sticky:true});
         v3SewerGBRAGravity.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          return "<div style='min-width:270px'><b>EXISTING SEWER MAIN — GBRA STEIN FALLS</b><br>"+
-                 "<b>Diameter:</b> "+v3esc(p.Diameter!=null?p.Diameter+" in":"—")+"<br>"+
-                 "<b>System:</b> "+v3esc(p.System||"—")+"<br>"+
-                 "<b>Asset type:</b> "+v3esc(p.AssetType||"Gravity Main")+"<br>"+
-                 "<span style='font-size:10px;color:#666'>Existing line layer; proposed Stein Falls mains are intentionally excluded.</span></div>";
+          var p=layer.feature.properties||{};
+          return factPopup('Existing sewer main',[
+            ['Utility','GBRA Stein Falls'],['Diameter',p.Diameter],['Main type',p.AssetType],['Material',null],
+            ['Installed',v3SewerDate(null)],['Data date','Not published']
+          ],'Public GIS screening. Verify location, depth and capacity with the utility.',v3SewerGBRAGravityUrl);
         });
 
         // Guadalupe — GBRA Stein Falls existing force mains.
         var v3SewerGBRAForceUrl = "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/172";
         var v3SewerGBRAForce = L.esri.featureLayer({
+          pane:"infrastructure", minZoom:12,
           url:v3SewerGBRAForceUrl,
           simplifyFactor:0.25,
           precision:5,
@@ -3299,72 +3236,11 @@
           return "GBRA Stein Falls Force Main · "+(p.Diameter!=null?p.Diameter+" in":"diameter —");
         },{sticky:true});
         v3SewerGBRAForce.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          return "<div style='min-width:270px'><b>EXISTING SEWER FORCE MAIN — GBRA STEIN FALLS</b><br>"+
-                 "<b>Diameter:</b> "+v3esc(p.Diameter!=null?p.Diameter+" in":"—")+"<br>"+
-                 "<b>System:</b> "+v3esc(p.System||"—")+"<br>"+
-                 "<b>Asset type:</b> "+v3esc(p.AssetType||"Force Main")+"<br>"+
-                 "<span style='font-size:10px;color:#666'>Dashed cyan = force main. Proposed Stein Falls force mains are intentionally excluded.</span></div>";
-        });
-
-        // Guadalupe — Green Valley SUD wastewater mains.
-        var v3SewerGVSUDUrl = "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/176";
-        var v3SewerGVSUD = L.esri.featureLayer({
-          url:v3SewerGVSUDUrl,
-          simplifyFactor:0.25,
-          precision:5,
-          style:function(feature){
-            var p=feature.properties||{};
-            return v3SewerStyle(p.Diam,"#38bdf8",false);
-          },
-          attribution:"Green Valley SUD wastewater mains"
-        });
-        v3SewerGVSUD.bindTooltip(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          return "GVSUD Sewer Main · "+(p.Diam!=null?p.Diam+" in":"diameter —");
-        },{sticky:true});
-        v3SewerGVSUD.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          return "<div style='min-width:270px'><b>EXISTING SEWER MAIN — GVSUD</b><br>"+
-                 "<b>Diameter:</b> "+v3esc(p.Diam!=null?p.Diam+" in":"—")+"<br>"+
-                 "<b>Material:</b> "+v3esc(p.Material||"—")+"<br>"+
-                 "<b>Type:</b> "+v3esc(p.Type||"—")+"<br>"+
-                 "<b>Notes:</b> "+v3esc(p.Notes||"—")+"<br>"+
-                 "<span style='font-size:10px;color:#666'>Public wastewater-main screening layer. Verify current field conditions with Green Valley SUD.</span></div>";
-        });
-
-        // Guadalupe / southern Comal — City of Schertz and neighboring active sewer mains.
-        // Live public Schertz utility layer; proposed and abandoned segments are excluded.
-        var v3SewerSchertzUrl = "https://maps.schertz.com/hosting/rest/services/PublicFolder/SchertzSewerUtilities/MapServer/10";
-        var v3SewerSchertz = L.esri.featureLayer({
-          url:v3SewerSchertzUrl,
-          where:"LifecycleStatus='Active'",
-          simplifyFactor:0.25,
-          precision:5,
-          style:function(feature){
-            var p=feature.properties||{};
-            return v3SewerStyle(p.Diameter,"#0ea5e9",Number(p.Type)===1);
-          },
-          attribution:"City of Schertz active sewer mains"
-        });
-        v3SewerSchertz.bindTooltip(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          return (p.OwnerName||"Schertz-area")+" Sewer Main · "+(p.Diameter!=null?p.Diameter+" in":"diameter —");
-        },{sticky:true});
-        v3SewerSchertz.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          var typ=Number(p.Type)===1?"Pressure / Force Main":"Gravity Main";
-          return "<div style='min-width:285px'>"+
-                 "<div style='font-size:14px;font-weight:900;color:#087fae;margin-bottom:4px'>EXISTING SEWER MAIN — SCHERTZ AREA</div>"+
-                 "<b>Owner / agency:</b> "+v3esc(p.OwnerName||"—")+"<br>"+
-                 "<b>Status:</b> "+v3esc(p.LifecycleStatus||"Active")+"<br>"+
-                 "<b>Main type:</b> "+v3esc(typ)+"<br>"+
-                 "<b>Diameter:</b> "+v3esc(p.Diameter!=null?p.Diameter+" in":"—")+"<br>"+
-                 "<b>Material:</b> "+v3esc(p.Material||"—")+"<br>"+
-                 "<b>Install date:</b> "+v3esc(v3SewerDate(p.InstallDate))+"<br>"+
-                 "<b>Slope:</b> "+v3esc(p.Slope||"—")+"<br>"+
-                 "<span style='font-size:10px;color:#666'>Live public City of Schertz utility layer filtered to Active only. It also contains neighboring-agency mains where maintained in the Schertz GIS.</span>"+
-                 "</div>";
+          var p=layer.feature.properties||{};
+          return factPopup('Existing sewer main',[
+            ['Utility','GBRA Stein Falls'],['Diameter',p.Diameter],['Main type',p.AssetType],['Material',null],
+            ['Installed',v3SewerDate(null)],['Data date','Not published']
+          ],'Public GIS screening. Verify location, depth and capacity with the utility.',v3SewerGBRAForceUrl);
         });
 
         // Bulverde — verified existing Singing Hills sewer corridor.
@@ -3385,8 +3261,9 @@
           [29.80818,-98.42275],
           [29.80834,-98.42335]
         ],{
+          pane:"infrastructure",
           color:"#7c3aed",
-          weight:8,
+          weight:4,
           opacity:1,
           dashArray:"12,6",
           lineCap:"round",
@@ -3399,7 +3276,7 @@
           "<div style='min-width:300px'>"+
           "<div style='font-size:14px;font-weight:900;color:#6d28d9;margin-bottom:4px'>VERIFIED EXISTING SEWER CORRIDOR — BULVERDE</div>"+
           "<b>Area:</b> Singing Hills / Harmony Hills<br>"+
-          "<b>Status:</b> Existing sanitary sewer infrastructure accepted by City of Bulverde after construction and inspection<br>"+
+          "<b>Status:</b> Existing sanitary sewer infrastructure accepted by City of Bulverde in 2016 after construction and inspection<br>"+
           "<b>Verified limits:</b> Harmony Hills between Singing Oaks and the City Limit Line west of US 281<br>"+
           "<b>Operator context:</b> Singing Hills WWTP is City of Bulverde-owned and GBRA-operated<br>"+
           "<div style='margin-top:6px;padding:6px 7px;background:#f5f3ff;border-left:4px solid #7c3aed'>"+
@@ -3431,10 +3308,7 @@
           v3SewerSAWS,
           v3SewerNBU,
           v3SewerGBRAGravity,
-          v3SewerGBRAForce,
-          v3SewerGVSUD,
-          v3SewerSchertz,
-          v3BulverdeVerifiedSewer
+          v3SewerGBRAForce
         ]);
 
         // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
@@ -3447,6 +3321,7 @@
 
         // FEMA National Flood Hazard Layer, regulatory flood hazard polygons (S_FLD_HAZ_AR, layer 28).
         var v3FemaHazard = L.esri.featureLayer({
+          pane:"diligence", minZoom:12,
           url:v3FemaUrl,
           simplifyFactor:0.55,
           precision:5,
@@ -3477,63 +3352,9 @@
           opacity:0.58,
           attribution:"Bexar County Public Works - Plats / MDPs"
         });
-        // Future Roads — curated major future corridors only.
-        // Source: current City of San Antonio Major Thoroughfare Plan.
-        // We intentionally exclude the blanket MTP network and local/subdivision proposed streets.
-        // Only named arterial extensions/realignments documented as proposed are eligible,
-        // and only MTP segments without a recorded current ROW are rendered.
-        var v3FutureRoadsUrl = "https://services.arcgis.com/g1fRTDLeMgspWrYp/ArcGIS/rest/services/Major_Thoroughfare_Plan__MTP/FeatureServer/0";
-        var v3FutureRoadNameWhere = [
-          "StreetName LIKE '%BECK%'",
-          "StreetName LIKE '%FOSTER%'",
-          "StreetName LIKE '%SOUTHTON%'",
-          "StreetName LIKE '%RETAMA%'",
-          "StreetName LIKE '%MASTERSON%'",
-          "StreetName LIKE '%KEARNEY%'",
-          "StreetName LIKE '%TALLEY%'",
-          "StreetName LIKE '%MECHLER%'",
-          "StreetName LIKE '%GALM%'",
-          "StreetName LIKE '%MARBACH%'",
-          "StreetName LIKE '%GROSENBACHER%'",
-          "StreetName LIKE '%STEVENS%'",
-          "StreetName LIKE '%CONNECTOR%'"
-        ].join(" OR ");
-
-        var v3MTP = L.esri.featureLayer({
-          url:v3FutureRoadsUrl,
-          where:"(CurrentRow IS NULL OR CurrentRow = '' OR CurrentRow = '0') AND ("+v3FutureRoadNameWhere+")",
-          simplifyFactor:0.35,
-          precision:5,
-          style:function(){
-            return {
-              color:"#20c65a",
-              weight:6,
-              opacity:0.95,
-              dashArray:"10,6",
-              lineCap:"round",
-              lineJoin:"round"
-            };
-          },
-          attribution:"City of San Antonio Major Thoroughfare Plan — curated future major corridors"
-        });
-        v3MTP.bindTooltip(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          return (p.StreetName||"Future Major Road")+" — planned major corridor";
-        },{sticky:true});
-        v3MTP.bindPopup(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          return "<div style='min-width:250px'>"+
-                 "<b>"+v3esc(p.StreetName||"Future Major Road")+"</b><br>"+
-                 "<b>Status:</b> Planned major arterial alignment / extension<br>"+
-                 "<b>MTP type:</b> "+v3esc(p.Type||"—")+"<br>"+
-                 "<b>Proposed ROW:</b> "+v3esc(p.PropRow||"—")+"<br>"+
-                 "<b>Ordinance:</b> "+v3esc(p.Ordinance||"—")+"<br>"+
-                 "<span style='color:#666'>Curated from the current City MTP to show major future corridors only. Green does not indicate funded construction or a guaranteed final alignment; verify current project status before acquisition.</span>"+
-                 "</div>";
-        });
-
         // Current City of San Antonio preliminary plats. Feature service was edited 2026-09-21.
         var v3PrelimPlats = L.esri.featureLayer({
+          pane:"diligence", minZoom:12,
           url:v3PlatUrl,
           simplifyFactor:0.45,
           precision:5,
@@ -3554,6 +3375,7 @@
 
         // City of San Antonio adopted Future Land Use / SA Tomorrow planning context.
         var v3FutureLandUse = L.esri.featureLayer({
+          pane:"diligence", minZoom:12,
           url:v3FluUrl,
           simplifyFactor:0.55,
           precision:5,
@@ -3595,9 +3417,9 @@
           var g1=v3growth(p.AADT_RPT_QTY,p.AADT_RPT_HIST_01_QTY);
           return "<div style='min-width:250px'><b>"+v3esc(p.ON_ROAD||"TxDOT count station")+"</b><br>"+
                  "<b>Station:</b> "+v3esc(p.TRFC_STATN_ID||"—")+"<br>"+
-                 "<b>AADT 2025:</b> "+(Number(p.AADT_RPT_QTY)||0).toLocaleString()+"<br>"+
-                 "<b>AADT 2024:</b> "+(Number(p.AADT_RPT_HIST_01_QTY)||0).toLocaleString()+"<br>"+
-                 "<b>AADT 2020:</b> "+(Number(p.AADT_RPT_HIST_05_QTY)||0).toLocaleString()+"<br>"+
+                 "<b>AADT "+v3esc(p.AADT_RPT_YEAR||"latest")+":</b> "+(Number(p.AADT_RPT_QTY)||0).toLocaleString()+"<br>"+
+                 "<b>Prior year:</b> "+(Number(p.AADT_RPT_HIST_01_QTY)||0).toLocaleString()+"<br>"+
+                 "<b>Five years earlier:</b> "+(Number(p.AADT_RPT_HIST_05_QTY)||0).toLocaleString()+"<br>"+
                  "<b>1-yr growth:</b> "+(g1==null?"—":g1.toFixed(1)+"%")+"<br>"+
                  "<b>5-yr growth:</b> "+(g5==null?"—":g5.toFixed(1)+"%")+"<br>"+
                  "<span style='color:#666'>Annual TxDOT STARS II traffic-count series.</span></div>";
@@ -3644,7 +3466,6 @@
           L.DomEvent.disableClickPropagation(d);
           return d;
         };
-        // Clean UI: advanced parcel finder panel hidden by default.
 
         function v3PlatCount(n,miles,cb){
           L.esri.query({url:v3PlatUrl}).nearby([n.lat,n.lng],miles*1609.344).count(function(err,count){
@@ -3720,7 +3541,7 @@
               }).slice(0,40);
               items.forEach(function(feat){
                 var p=feat.properties||{};
-                var lyr=L.geoJSON(feat,{style:{color:"#FFD400",weight:5,opacity:1,fillColor:"#FFEB3B",fillOpacity:.34}});
+                var lyr=L.geoJSON(feat,{style:{color:"#94a3b8",weight:2,opacity:1,fillColor:"#94a3b8",fillOpacity:.08}});
                 var ac=Number(p.Land_acres||0);
                 lyr.bindPopup("<div style='min-width:260px'><b>"+v3esc(p.Situs||"Candidate parcel")+"</b><br>"+
                   "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br><b>Acres:</b> "+(ac?ac.toFixed(2):"—")+"<br>"+
@@ -3754,56 +3575,34 @@
           document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
         }
 
-        // Click a visible official parcel polygon for ownership/acreage/value screening.
-        map_33cc2c2ac68d72d2971fbb7de3650b24.on("click",function(e){
-          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3Parcels)) return;
-          L.esri.identifyFeatures({url:v3ParcelUrl})
-            .on(map_33cc2c2ac68d72d2971fbb7de3650b24).at(e.latlng).layers("visible:0").run(function(err,fc){
-              if(err || !fc || !fc.features || !fc.features.length) return;
-              var p=fc.features[0].properties||{};
-              var ac=Number(p.Land_acres);
-              var html="<div style='min-width:270px'><b>"+v3esc(p.Situs||"Bexar County parcel")+"</b><br>"+
-                "<b>Owner:</b> "+v3esc(p.Owner_name||"—")+"<br>"+
-                "<b>Property ID:</b> "+v3esc(p.Prop_id||p.Geo_id||"—")+"<br>"+
-                "<b>Acres:</b> "+(isNaN(ac)?"—":ac.toFixed(2))+"<br>"+
-                "<b>Land value:</b> "+v3money((Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0))+"<br>"+
-                "<b>Market value:</b> "+v3money(p.Market_val)+"<br>"+
-                "<b>Last deed:</b> "+v3esc(p.Last_Deed_Date||"—")+"<br>"+
-                "<b>Ownership type:</b> "+v3esc(p.Ownership_Type||"—")+"<br>"+
-                "<b>Legal:</b> "+v3esc(p.Legal_desc||"—")+"<br>"+
-                "<span style='color:#666'>BCAD parcel data obtained Dec. 2025 via San Antonio River Authority. Verify current ownership/title and survey before contact or acquisition.</span></div>";
-              L.popup({maxWidth:360}).setLatLng(e.latlng).setContent(html).openOn(map_33cc2c2ac68d72d2971fbb7de3650b24);
-            });
-        });
-
         var v3Info=L.control({position:"bottomleft"});
         v3Info.onAdd=function(){
           var d=L.DomUtil.create("div","leaflet-bar");
           d.style.cssText="background:white;padding:7px 9px;max-width:285px;font:11px/1.35 Arial;color:#333";
-          d.innerHTML="<b>V3 GIS screening</b><br>"+
+          d.innerHTML="<b>Source notes</b><br>"+
             "Parcel polygons/owner screen: BCAD via SARA (Dec. 2025)<br>"+
             "Preliminary plats: CoSA Development Services<br>"+
-            "County plats/MDPs + MTP: Bexar Public Works<br>"+
+            "County plats/MDPs: Bexar Public Works<br>"+
             "Future Land Use: CoSA (edited Jul. 21, 2026)<br>"+
-            "Traffic: TxDOT historical AADT (2025→2006)<br>"+
-            "Flood hazard: FEMA NFHL layer 28<br>"+
+            "Traffic: TxDOT historical AADT<br>"+
+            "FEMA NFHL: unavailable at Sept. 29 audit<br>"+
             "Flood buffer: Bexar Public Works 100-ft screen<br>"+
             "<span style='color:#777'>Official GIS is still screening data; verify title, survey, access, utilities and flood status before acquisition.</span>";
           return d;
         };
         v3Info.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
 
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"DUE DILIGENCE — Parcels / Owners");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"CAD — Comal Parcels / Owners");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"CAD — Guadalupe Parcels / Owners");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"OWNER — H-E-B Owned Parcels (Bexar / Comal / Guadalupe)");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"PARCEL DATA — Bexar CAD");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"PARCEL DATA — Comal CAD");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"PARCEL DATA — Guadalupe CAD");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"LAND — H-E-B Owned Parcels");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"GROWTH — Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Major New Corridors");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"DUE DILIGENCE — Future Land Use");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"UTILITIES — Existing Sewer Mains + Verified Bulverde Corridors");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"DUE DILIGENCE — Traffic Counts");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"DUE DILIGENCE — Flood Zones");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"INFRASTRUCTURE — Existing Sewer Mains");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BulverdeVerifiedSewer,"INFRASTRUCTURE — Approximate Utility Corridors");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"INFRASTRUCTURE — Traffic Counts");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"DUE DILIGENCE — Flood Zones (service unavailable at audit)");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"DUE DILIGENCE — Flood Buffer");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Rings,"RESEARCH — 1 / 3 / 5 Mile Rings");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3LandResults,"RESEARCH — Parcel Search Results");
@@ -3824,9 +3623,9 @@
           try {
             var p=feature.properties||{};
             var lyr=L.geoJSON(feature,{
-              style:{color:"#FFD400",weight:5,opacity:1,fillColor:"#FFEB3B",fillOpacity:.34}
+              style:{color:"#94a3b8",weight:2,opacity:1,fillColor:"#94a3b8",fillOpacity:.08}
             });
-            lyr.bindTooltip("Highlighted parcel: "+label); if(lyr.bringToFront) lyr.bringToFront();
+            lyr.bindTooltip("Legacy reference: "+label).bindPopup(parcelPopup(p,"Bexar",false)); if(lyr.bringToFront) lyr.bringToFront();
             lyr.addTo(v3VerifiedTargetGeometry);
           } catch(e){}
         }
@@ -3851,8 +3650,8 @@
             var bounds=L.latLngBounds([]);
             fc.features.forEach(function(feature){
               try {
-                var lyr=L.geoJSON(feature,{style:{color:"#FFD400",weight:5,opacity:1,fillColor:"#FFEB3B",fillOpacity:.34}});
-                lyr.bindTooltip("Highlighted parcel: "+label).addTo(v3VerifiedTargetGeometry); if(lyr.bringToFront) lyr.bringToFront();
+                var lyr=L.geoJSON(feature,{style:{color:"#94a3b8",weight:2,opacity:1,fillColor:"#94a3b8",fillOpacity:.08}});
+                lyr.bindTooltip("Legacy reference: "+label).bindPopup(parcelPopup(feature.properties||{},"Bexar",false)).addTo(v3VerifiedTargetGeometry); if(lyr.bringToFront) lyr.bringToFront();
                 var b=lyr.getBounds(); if(b.isValid()) bounds.extend(b);
               } catch(e){}
             });
@@ -3912,7 +3711,7 @@
           "Situs_num='711' AND Situs LIKE '%FOSTER%'","H-E-B Foster Road campus",null,null,false);
 
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(
-          v3VerifiedTargetGeometry,"Highlighted Parcels"
+          v3VerifiedTargetGeometry,"RESEARCH — Legacy Parcel References"
         );
 
 
@@ -3920,11 +3719,11 @@
         // ---- V6 EXACT PARCEL DISCOVERY — STATIC RENDERER ----
         if(!map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane")){
           map_33cc2c2ac68d72d2971fbb7de3650b24.createPane("v6ExactParcelPane");
-          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane").style.zIndex=695;
+          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane").style.zIndex=430;
         }
         if(!map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane")){
           map_33cc2c2ac68d72d2971fbb7de3650b24.createPane("v6AssemblagePane");
-          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane").style.zIndex=680;
+          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane").style.zIndex=420;
         }
 
         window.v6OpportunityData=[];
@@ -3940,54 +3739,11 @@
         }
         function v6arr(v){return Array.isArray(v)?v.join(" / "):(v||"—");}
 
-        // Robust parcel hit-testing independent of Leaflet/SVG pointer targeting.
-        // This is the fallback that keeps target parcels clickable even if a browser
-        // reports the draggable map canvas as the event target.
-        function v6PointInRing(lat,lng,ring){
-          if(!ring||ring.length<3)return false;
-          var x=lng,y=lat,inside=false;
-          for(var i=0,j=ring.length-1;i<ring.length;j=i++){
-            var xi=Number(ring[i][0]), yi=Number(ring[i][1]);
-            var xj=Number(ring[j][0]), yj=Number(ring[j][1]);
-            var crosses=((yi>y)!=(yj>y)) &&
-              (x < (xj-xi)*(y-yi)/((yj-yi)||1e-12)+xi);
-            if(crosses)inside=!inside;
-          }
-          return inside;
-        }
-        function v6PointInPolygon(lat,lng,rings){
-          if(!rings||!rings.length||!v6PointInRing(lat,lng,rings[0]))return false;
-          for(var h=1;h<rings.length;h++)if(v6PointInRing(lat,lng,rings[h]))return false;
-          return true;
-        }
-        function v6GeometryContains(geom,latlng){
-          if(!geom||!latlng)return false;
-          var c=geom.coordinates||[];
-          if(geom.type==="Polygon")return v6PointInPolygon(latlng.lat,latlng.lng,c);
-          if(geom.type==="MultiPolygon"){
-            for(var i=0;i<c.length;i++)if(v6PointInPolygon(latlng.lat,latlng.lng,c[i]))return true;
-          }
-          return false;
-        }
-        function v6HitOpportunity(latlng){
-          if(!window.v6OpportunityData||!window.v6OpportunityData.length)return null;
-          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v6OpportunityLayer))return null;
-          for(var i=0;i<window.v6OpportunityData.length;i++){
-            var f=window.v6OpportunityData[i], p=f.properties||{};
-            var rec=window.v6OpportunityById[String(p.prop_id)];
-            if(rec&&rec.layer){
-              try{if(!rec.layer.getBounds().contains(latlng))continue;}catch(e){}
-            }
-            if(v6GeometryContains(f.geometry,latlng))return rec||{feature:f};
-          }
-          return null;
-        }
-
         function v6popup(p){
           var geom=p.bcad_geometry_verified ? "BCAD geometry verified through SARA parcel service" : (p.geometry_source||"Bexar County parcel geometry; current BCAD title/geometry should be re-verified");
           var situs=(p.situs&&p.situs!=="—")?p.situs:(p.node_name||"San Antonio");
           var mapQuery=encodeURIComponent(situs+", TX");
-          var copyId=String(p.prop_id||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+          
           var flood=p.flood_confidence==="UNKNOWN"?"UNKNOWN — verify":Number(p.flood_pct||0).toFixed(1)+"% SFHA / "+Number(p.floodway_pct||0).toFixed(1)+"% floodway";
           var traffic=Number(p.aadt||0)?Number(p.aadt).toLocaleString()+" AADT"+(Number(p.aadt_5yr_growth_pct||0)?" · "+Number(p.aadt_5yr_growth_pct).toFixed(1)+"% 5-yr growth":""):"—";
           var catalyst=v6h(p.nearest_retail_catalyst||"—")+(isFinite(Number(p.retail_catalyst_miles))?" · "+Number(p.retail_catalyst_miles).toFixed(1)+" mi":"");
@@ -4017,18 +3773,26 @@
             "<div class='v7Thesis'><b>WHY THIS TRACT</b><br>"+v6h(p.why_this_tract||"—")+"</div>"+
             "<div class='v7PopupActions'>"+
               "<a href='https://www.google.com/maps/search/?api=1&query="+mapQuery+"' target='_blank'>Google Maps</a>"+
-              "<button type='button' onclick=\"if(navigator.clipboard){navigator.clipboard.writeText('"+copyId+"')};this.textContent='Copied'\">Copy Property ID</button>"+
+              "<button type='button' class='copy-property-id' data-property-id='"+v6h(p.prop_id)+"'>Copy Property ID</button>"+
             "</div>"+
             "<div style='font-size:9px;color:#777;margin-top:7px'>"+v6h(geom)+". Frontage is a GIS proxy, not legal access. Verify title, survey, ROW, flood and utility capacity.</div>"+
           "</div>";
         }
 
+        map_33cc2c2ac68d72d2971fbb7de3650b24.on('popupopen',function(e){
+          var button=e.popup.getElement().querySelector('.copy-property-id');
+          if(button)button.onclick=async function(){
+            try{await navigator.clipboard.writeText(button.dataset.propertyId);button.textContent='Copied';}
+            catch(error){button.textContent='Copy unavailable';}
+          };
+        });
+
         function v6style(feature){
-          var p=feature.properties||{}, rank=Number(p.rank||99), score=Number(p.parcel_opportunity_score||0);
+          var p=feature.properties||{}, rank=Number(p.rank||99);
           return {
             pane:"v6ExactParcelPane",
             color:"#FFD400",
-            weight:rank<=10?7:score>=80?6:5,
+            weight:rank<=10?4:3,
             opacity:1,
             fillColor:"#FFF200",
             fillOpacity:rank<=10?.18:.09,
@@ -4064,14 +3828,14 @@
             el.onclick=function(){
               var rec=window.v6OpportunityById[el.getAttribute("data-pid")];
               if(rec&&rec.layer){
-                try{map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(rec.layer.getBounds().pad(.8),{maxZoom:16});rec.layer.openPopup();}catch(e){}
+                try{v7safeAdd(window.v6OpportunityLayer);map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(rec.layer.getBounds().pad(.8),{maxZoom:16});rec.layer.openPopup();}catch(e){}
               }
             };
           });
         }
 
         function v6loadOpportunities(){
-          fetch("data/opportunity_parcels.geojson?ts="+Date.now(),{cache:"no-store"}).then(function(r){
+          fetch("data/opportunity_parcels.geojson").then(function(r){
             if(!r.ok)throw new Error("HTTP "+r.status); return r.json();
           }).then(function(fc){
             window.v6OpportunityData=(fc.features||[]).sort(function(a,b){return Number(a.properties.rank)-Number(b.properties.rank);});
@@ -4080,27 +3844,21 @@
               var p=f.properties||{};
               var layer=L.geoJSON(f,{style:v6style,pane:"v6ExactParcelPane",interactive:true});
               layer.bindPopup(v6popup(p),{maxWidth:390});
-              layer.on("click",function(e){
-                try{
-                  layer.openPopup(e&&e.latlng?e.latlng:layer.getBounds().getCenter());
-                  if(e&&e.originalEvent)L.DomEvent.stopPropagation(e.originalEvent);
-                }catch(err){}
-              });
               layer.bindTooltip("#"+p.rank+" · "+p.acres+" AC · "+(p.owner||"Target parcel"),{sticky:true});
-              layer.on("mouseover",function(){layer.setStyle({weight:Number(p.rank)<=10?10:8,fillOpacity:.24});});
+              layer.on("mouseover",function(){layer.setStyle({weight:Number(p.rank)<=10?5:4,fillOpacity:.24});});
               layer.on("mouseout",function(){layer.setStyle(v6style(f));});
               layer.addTo(window.v6OpportunityLayer);
               if(layer.bringToFront)layer.bringToFront();
               window.v6OpportunityById[String(p.prop_id)]={feature:f,layer:layer};
               if(Number(p.rank)<=10){
                 var ctr=layer.getBounds().getCenter();
-                L.marker(ctr,{interactive:false,icon:L.divIcon({className:"",html:"<div class='v6Num'>"+p.rank+"</div>",iconSize:[25,25],iconAnchor:[12,12]})}).addTo(window.v6OpportunityMarkers);
+                L.marker(ctr,{interactive:false,icon:L.divIcon({className:"parcel-number",html:"<div class='v6Num'>"+p.rank+"</div>",iconSize:[25,25],iconAnchor:[12,12]})}).addTo(window.v6OpportunityMarkers);
               }
               if(nodeSel&&p.node_id&&!seen[p.node_id]){
                 var o=document.createElement("option");o.value=p.node_id;o.textContent=p.node_name;nodeSel.appendChild(o);seen[p.node_id]=1;
               }
             });
-            layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v6OpportunityLayer,"LAND — Exact Target Parcels — Yellow");
+            layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v6OpportunityLayer,"LAND — Exact Target Parcels");
             layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v6OpportunityMarkers,"LAND — Top 10 Parcel Numbers");
             window.v6OppLoaded=true;
             v6renderCardList();
@@ -4111,44 +3869,13 @@
             var list=document.getElementById("v6OppList"); if(list)list.innerHTML="<div class='v6Tiny'><b>Parcel dataset unavailable.</b><br>"+v6h(e.message)+"</div>";
           });
 
-          fetch("data/assemblages.geojson?ts="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error();return r.json();}).then(function(fc){
+          fetch("data/assemblages.geojson").then(function(r){if(!r.ok)throw new Error();return r.json();}).then(function(fc){
             L.geoJSON(fc,{pane:"v6AssemblagePane",style:function(){return {pane:"v6AssemblagePane",color:"#ff8c00",weight:4,dashArray:"8,5",fillColor:"#ffb347",fillOpacity:.06};},
               onEachFeature:function(f,l){var p=f.properties||{};l.bindPopup("<b>Assemblage Opportunity</b><br>"+v6h(p.owner||"—")+"<br>"+v6h(p.combined_acres||"—")+" acres across "+v6h(p.parcel_count||"—")+" parcels<br>Parcel IDs: "+v6h(v6arr(p.parcel_ids))+"<br><span style='color:#666'>Underlying parcel IDs remain separately identifiable.</span>");}
             }).eachLayer(function(l){l.addTo(window.v6AssemblageLayer);});
             layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v6AssemblageLayer,"LAND — Assemblage Opportunities");
           }).catch(function(){});
         }
-
-        // Hard interaction fallback: map-level click + hover hit-test for exact target parcels.
-        // This bypasses SVG/canvas event targeting entirely.
-        (function(){
-          var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
-          var container=map.getContainer();
-          var movePending=false,lastMove=null;
-
-          map.on("click",function(e){
-            var rec=v6HitOpportunity(e.latlng);
-            if(rec&&rec.layer){
-              try{
-                rec.layer.openPopup(e.latlng);
-                if(rec.layer.bringToFront)rec.layer.bringToFront();
-              }catch(err){}
-            }
-          });
-
-          map.on("mousemove",function(e){
-            lastMove=e.latlng;
-            if(movePending)return;
-            movePending=true;
-            requestAnimationFrame(function(){
-              movePending=false;
-              var rec=v6HitOpportunity(lastMove);
-              container.style.cursor=rec?"pointer":"grab";
-            });
-          });
-
-          map.on("mouseout",function(){container.style.cursor="";});
-        })();
 
         setTimeout(function(){
           var toggle=document.getElementById("v6TopToggle"), panel=document.getElementById("v6TopPanel");
@@ -4167,7 +3894,7 @@
             feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
             feature_group_0c45a8fa797258d406c1e937c6f99c34,
             feature_group_370786adb15c6d6d865f189609798696,
-            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v3PrelimPlats,v3BexarDevelopment,v3MTP,v3FutureLandUse,v3SewerService,
+            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v3PrelimPlats,v3BexarDevelopment,v3FutureLandUse,v3SewerService,v3BulverdeVerifiedSewer,v3VerifiedTargetGeometry,
             v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings,v3LandResults
           ];
 
@@ -4180,7 +3907,7 @@
             v7safeAdd(v3Parcels);
             v7safeAdd(v3PrelimPlats);
             v7safeAdd(v3AADT);
-            v7safeAdd(v3FemaHazard);
+
             v7safeAdd(feature_group_370786adb15c6d6d865f189609798696);
             try{v3Info.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);}catch(e){}
           }else{
