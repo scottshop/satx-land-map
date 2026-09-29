@@ -3373,17 +3373,17 @@
         // Public pipe-centerline GIS is not available, so the map follows the official
         // street-centerline geometry as a corridor proxy and labels it accordingly.
         var v3BulverdeVerifiedSewer = L.featureGroup();
-        var v3BulverdeStreetUrl = "https://maps.schertz.com/hosting/rest/services/PublicFolder/CV_Workspace_View/MapServer/2";
+        var v3BulverdeStreetUrl = "https://services.arcgis.com/seTexOicoRXDvRsJ/arcgis/rest/services/Transportation1/FeatureServer/0";
 
         (function(){
           var bounds=L.latLngBounds([29.790,-98.455],[29.812,-98.414]);
           L.esri.query({url:v3BulverdeStreetUrl})
-            .where("(MSAG_NAME LIKE '%HARMONY HILLS%' OR STNAME LIKE '%HARMONY HILLS%')")
+            .where("STREET_NAME LIKE '%HARMONY HILLS%'")
             .intersects(bounds)
             .limit(100)
             .run(function(err,fc){
               if(err||!fc||!fc.features||!fc.features.length){
-                console.warn("Bulverde verified sewer corridor geometry unavailable",err||"no street-centerline features");
+                console.warn("Bulverde verified sewer corridor geometry unavailable from Comal-area centerline source",err||"no street-centerline features");
                 return;
               }
               L.geoJSON(fc,{
