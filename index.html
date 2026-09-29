@@ -3367,14 +3367,67 @@
                  "</div>";
         });
 
-        // One manual toggle for all available physical sewer-main datasets.
+        // Bulverde — verified existing Singing Hills sewer corridor.
+        // City of Bulverde accepted the sanitary sewer infrastructure in Harmony Hills
+        // between Singing Oaks and the city-limit line west of US 281 in 2016.
+        // Public pipe-centerline GIS is not available, so the map follows the official
+        // street-centerline geometry as a corridor proxy and labels it accordingly.
+        var v3BulverdeVerifiedSewer = L.featureGroup();
+        var v3BulverdeStreetUrl = "https://maps.schertz.com/hosting/rest/services/PublicFolder/CV_Workspace_View/MapServer/2";
+
+        (function(){
+          var bounds=L.latLngBounds([29.790,-98.455],[29.812,-98.414]);
+          L.esri.query({url:v3BulverdeStreetUrl})
+            .where("(MSAG_NAME LIKE '%HARMONY HILLS%' OR STNAME LIKE '%HARMONY HILLS%')")
+            .intersects(bounds)
+            .limit(100)
+            .run(function(err,fc){
+              if(err||!fc||!fc.features||!fc.features.length){
+                console.warn("Bulverde verified sewer corridor geometry unavailable",err||"no street-centerline features");
+                return;
+              }
+              L.geoJSON(fc,{
+                style:function(){
+                  return {
+                    color:"#7c3aed",
+                    weight:6,
+                    opacity:.98,
+                    dashArray:"12,6",
+                    lineCap:"round",
+                    lineJoin:"round"
+                  };
+                },
+                onEachFeature:function(feature,layer){
+                  layer.bindTooltip("Bulverde verified existing sewer corridor · Harmony Hills",{sticky:true});
+                  layer.bindPopup(
+                    "<div style='min-width:300px'>"+
+                    "<div style='font-size:14px;font-weight:900;color:#6d28d9;margin-bottom:4px'>VERIFIED EXISTING SEWER CORRIDOR — BULVERDE</div>"+
+                    "<b>Area:</b> Singing Hills / Harmony Hills<br>"+
+                    "<b>Status:</b> Existing sanitary sewer infrastructure accepted by City of Bulverde after construction and inspection<br>"+
+                    "<b>Verified limits:</b> Harmony Hills between Singing Oaks and the City Limit Line west of US 281<br>"+
+                    "<b>Operator context:</b> Singing Hills WWTP is City of Bulverde-owned and GBRA-operated<br>"+
+                    "<div style='margin-top:6px;padding:6px 7px;background:#f5f3ff;border-left:4px solid #7c3aed'>"+
+                    "<b>Important:</b> Purple dashed line follows the street centerline as a corridor proxy because a public survey-grade sewer pipe centerline is not published. The actual pipe may be offset within the ROW/easement. Verify exact horizontal/vertical location and capacity with the City/GBRA before relying on it for a site."+
+                    "</div>"+
+                    "<a href='https://bulverdetx.gov/Archive/ViewFile/Item/263' target='_blank'>City infrastructure acceptance source</a>"+
+                    "</div>",
+                    {maxWidth:390}
+                  );
+                }
+              }).eachLayer(function(layer){layer.addTo(v3BulverdeVerifiedSewer);});
+            });
+        })();
+
+        // One manual toggle for all available physical sewer-main datasets plus
+        // verified Bulverde sewer corridors where public pipe-centerline GIS is unavailable.
         var v3SewerService = L.layerGroup([
           v3SewerSAWS,
           v3SewerNBU,
           v3SewerGBRAGravity,
           v3SewerGBRAForce,
           v3SewerGVSUD,
-          v3SewerSchertz
+          v3SewerSchertz,
+          v3BulverdeVerifiedSewer
         ]);
 
         // Bexar County FEMA/NFHL-derived 100-ft floodplain screening buffer.
@@ -3741,7 +3794,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3MTP,"FUTURE ROADS — Major New Corridors");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"DUE DILIGENCE — Future Land Use");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"UTILITIES — Existing Sewer Mains (Bexar / Comal / Guadalupe)");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"UTILITIES — Existing Sewer Mains + Verified Bulverde Corridors");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"DUE DILIGENCE — Traffic Counts");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"DUE DILIGENCE — Flood Zones");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"DUE DILIGENCE — Flood Buffer");
