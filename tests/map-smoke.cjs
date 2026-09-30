@@ -109,6 +109,15 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     console.log('PASS drag/zoom');
     await page.locator('#v7ModeToggle').click(); assert.equal(await page.locator('#v7ModeToggle').getAttribute('data-mode'),'research');
     await page.locator('#v7ModeToggle').click(); assert.equal(await page.locator('#v7ModeToggle').getAttribute('data-mode'),'acquisition'); console.log('PASS modes');
+    const zoomState = await page.evaluate(() => ({
+      maxZoom: map_33cc2c2ac68d72d2971fbb7de3650b24.getMaxZoom(),
+      clusterDisableAt: marker_cluster_9871e831b359eb1ea9745338fc5ffd62.options.disableClusteringAtZoom,
+      satelliteOn: map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(tile_layer_satellite_hybrid)
+    }));
+    assert.equal(zoomState.maxZoom,20,'map should expose a finite max zoom for marker clustering');
+    assert.equal(zoomState.clusterDisableAt,11,'development markers should uncluster at zoom 11');
+    assert.equal(zoomState.satelliteOn,true,'satellite should activate after the initial parcel extent is chosen');
+    console.log('PASS startup zoom/cluster/satellite');
     assert.deepEqual(errors,[]); console.log('CORE CHECKS PASSED');
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exitCode=1; }).finally(()=>server?.close());
