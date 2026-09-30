@@ -195,7 +195,7 @@
             L.control.scale().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
             // Features own their clicks; empty map space retains normal dragging.
             L.Path.mergeOptions({bubblingMouseEvents:false});
-            [['cad',410],['ownership',440],['infrastructure',450],['diligence',405]].forEach(function(item){
+            [['cad',410],['cadSelected',435],['ownership',440],['infrastructure',450],['diligence',405]].forEach(function(item){
               map_33cc2c2ac68d72d2971fbb7de3650b24.createPane(item[0]).style.zIndex=item[1];
             });
 
@@ -3093,12 +3093,20 @@
         }
 
         var v3BexarSelectedParcel=null;
+        var v3BexarSelection=L.featureGroup();
         function v3SelectBexarParcel(layer){
-          if(v3BexarSelectedParcel&&v3BexarSelectedParcel!==layer&&v3BexarSelectedParcel.setStyle){
-            v3BexarSelectedParcel.setStyle(v3BexarBaseStyle());
+          v3BexarSelectedParcel=layer||null;
+          v3BexarSelection.clearLayers();
+          if(layer&&layer.feature){
+            L.geoJSON(layer.feature,{
+              pane:"cadSelected",
+              interactive:false,
+              style:function(){
+                var s=v3BexarSelectedStyle();s.pane="cadSelected";return s;
+              }
+            }).addTo(v3BexarSelection);
+            if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3BexarSelection))v3BexarSelection.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
           }
-          v3BexarSelectedParcel=layer;
-          if(layer&&layer.setStyle){layer.setStyle(v3BexarSelectedStyle());if(layer.bringToFront)layer.bringToFront();}
         }
 
         var v3Parcels = L.esri.featureLayer({
@@ -3129,7 +3137,11 @@
           var layer=e&&e.layer;
           if(layer&&layer!==v3BexarSelectedParcel&&layer.setStyle)layer.setStyle(v3BexarBaseStyle());
         });
-        v3Parcels.on("remove",function(){v3BexarSelectedParcel=null;});
+        v3Parcels.on("remove",function(){
+          v3BexarSelectedParcel=null;
+          v3BexarSelection.clearLayers();
+          if(map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3BexarSelection))map_33cc2c2ac68d72d2971fbb7de3650b24.removeLayer(v3BexarSelection);
+        });
 
         // H-E-B ownership overlay — exact BCAD owner-name screen.
         // BCAD records H-E-B real-property ownership under HEB GROCERY COMPANY LP.
