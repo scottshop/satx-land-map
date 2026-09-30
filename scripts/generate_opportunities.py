@@ -64,6 +64,8 @@ CATALYSTS = [
 
 PUBLIC_OWNER = re.compile(r"(CITY OF|COUNTY OF|(BEXAR|COMAL|GUADALUPE|MEDINA|KENDALL|WILSON|ATASCOSA) COUNTY|STATE OF TEXAS|UNITED STATES|US GOVERNMENT|U S GOVERNMENT|SCHOOL DISTRICT|ISD|I S D|SCHOOL|MONTESSORI|ACADEMY|SAWS|CPS ENERGY|RIVER AUTHORITY|TXDOT|TEXAS DEPARTMENT|HOUSING AUTHORITY|HOUSING TRUST|PUBLIC FACILITY CORPORATION|PUBLIC FACILITY CORP|DEVELOPMENT AUTHORITY|FIRE AND RESCUE|EMERGENCY SERVICES DISTRICT|ESD|UNIVERSITY SYSTEM|UNIVERSITY OF|TEXAS A.*M|HOMEOWNERS|HOME OWNER|PROPERTY OWNERS|OWNERS ASSN|OWNERS ASSOCIATION|PLACE ASSOCIATION|MASTER COMMUNITY|LAND TRUST|HOSPITAL|HEALTHCARE SYSTEM|MEDICAL CENTER| HOA| POA)", re.I)
 ANCHOR_OWNER = re.compile(r"(HEB GROCERY|H E B GROCERY|WAL.?MART|WALMART|COSTCO|TARGET CORPORATION|LOWE.?S|HOME DEPOT)", re.I)
+INSTITUTIONAL_OWNER = re.compile(r"(CHURCH|MINISTR|TEMPLE|DIOCESE|PARISH|SYNAGOGUE|MOSQUE|FOUNDATION|BOYSVILLE|YMCA|Y W C A|SALVATION ARMY|BAPTIST|METHODIST|CATHOLIC|LUTHERAN|PRESBYTERIAN|EPISCOPAL)", re.I)
+RESIDENTIAL_BUILDER_OWNER = re.compile(r"(KB HOME|KB HOMES|CONTINENTAL HOMES|D\s*R\s*HORTON|DR HORTON|LENNAR|PULTE|CENTEX|MERITAGE|PERRY HOMES|CASTLEROCK|CHESMAR|DAVID WEEKLEY|TOLL BROTHERS|M/I HOMES|MI HOMES)", re.I)
 
 T4326_2278 = Transformer.from_crs("EPSG:4326","EPSG:2278",always_xy=True).transform
 
@@ -189,6 +191,19 @@ def road_class(p):
             vals.append(v)
     return " | ".join(vals)
 
+def road_importance(name,cls):
+    n=(name or "").upper().strip(); t=(cls or "").upper()
+    # Numbered routes and true highway designations. Do not treat every street ending in "Loop" as a highway.
+    if re.search(r"\b(IH|I-|INTERSTATE)\s*[- ]?\d+\b|\bUS\s*(HWY|HIGHWAY)?\s*\d+\b|\bSH\s*\d+\b|\bSTATE\s+(HWY|HIGHWAY)\s*\d+\b|\bFM\s*\d+\b|\bLOOP\s*\d+\b",n):
+        return 3
+    if re.search(r"PRINCIPAL|ARTERIAL|EXPRESS|INTERSTATE|FREEWAY|HIGHWAY",t):
+        return 3
+    if re.search(r"COLLECTOR",t) or re.search(r"\b(PKWY|PARKWAY|EXPY|EXPRESSWAY)\b",n):
+        return 2
+    if name and name!="Unnamed road":
+        return 1
+    return 0
+
 def flu_score(name):
     s=(name or "").lower()
     if re.search(r"regional.*(commercial|center)|commercial|mixed use|urban mixed",s): return 100
@@ -296,9 +311,34 @@ def assign_permits_to_nodes(permits,supports):
             if haversine(node["lat"],node["lng"],lat,lng)<=3.0:
                 supports[node["id"]]["permits"].append(feat)
 
+def node_network_quality(node,support):
+    nodep=proj(Point(node["lng"],node["lat"]))
+    if not nodep: return 45,[],False
+    all_names=set(); major_names=set(); mtp_near=False
+    for f in support["roads"]:
+        g=feature_shape(f); gp=proj(g) if g else None
+        if not gp or gp.distance(nodep)>2640: continue
+        p=props(f); name=road_name(p) or "Unnamed road"; cls=road_class(p)
+        all_names.add(name)
+        if re.search(r"arterial|collector|express|principal|major|interstate|highway|state|us |fm |loop|sh ",name+" "+cls,re.I):
+            major_names.add(name)
+    for f in support["mtp"]:
+        g=feature_shape(f); gp=proj(g) if g else None
+        if gp and gp.distance(nodep)<=1320:
+            mtp_near=True; break
+    if len(major_names)>=2: score=100
+    elif len(major_names)==1 and len(all_names)>=2: score=88
+    elif len(major_names)==1: score=78
+    elif len(all_names)>=2: score=68
+    elif all_names: score=55
+    else: score=35
+    if mtp_near: score=min(100,score+6)
+    return round(score,1),sorted(major_names)[:4],mtp_near
+
 def score_node(node,support):
     now=datetime.now(timezone.utc)
     res=comm=recent=0.0
+    active_plats=0
     for f in support["plats"]:
         p=props(f)
         if p.get("RETIRED_DT"): continue
@@ -313,6 +353,7 @@ def score_node(node,support):
             if rd and (now-rd).days>365*5: continue
         r=nval(p,"NBR_NEW_SINGLE_LOTS")
         cm=nval(p,"NBR_NEW_COMMERCIAL_LOTS")
+        if r or cm: active_plats+=1
         res+=r*sw*dw; comm+=cm*sw*dw
         ed=date_from_any(p.get("last_edited_date")) or date_from_any(p.get("INIT_SUBMIT_DT"))
         if ed and (now-ed).days<=180: recent+=r*sw*dw
@@ -333,21 +374,43 @@ def score_node(node,support):
             best_aadt=cur
             best_growth=((cur-old)/old*100) if old else 0
     catalyst_d,catalyst_name=nearest_catalyst(node["lat"],node["lng"])
-    housing=sat(res,2200)
-    permit=sat(net_units+res_permits*.5,250)
-    volume=clamp(best_aadt/500)
-    growth=clamp((best_growth+5)*4)
-    traffic=.7*volume+.3*growth
-    gap=clamp(45 + sat(res,1800)*.55 - sat(comm,30)*.45)
-    momentum=.65*sat(recent,700)+.35*permit
-    catalyst=100 if catalyst_d<=1 else 85 if catalyst_d<=2 else 65 if catalyst_d<=4 else 35
-    score=.15*node["base"]+.27*housing+.14*permit+.15*traffic+.12*gap+.11*momentum+.06*catalyst
+    network,major_roads,mtp_near=node_network_quality(node,support)
+
+    housing=.72*sat(res,3500)+.18*sat(recent,1200)+.10*sat(net_units+res_permits,180)
+    volume=sat(best_aadt,38000)
+    growth_score=clamp((max(-20,min(100,best_growth))+5)*2.15)
+    traffic=.65*volume+.35*growth_score
+    catalyst=100 if catalyst_d<=1 else 90 if catalyst_d<=2 else 72 if catalyst_d<=4 else 50 if catalyst_d<=6 else 28
+    demand_gap=clamp(48 + sat(res,3500)*.58 - sat(comm,80)*.42)
+    momentum=.72*sat(recent,1200)+.28*sat(net_units+res_permits,180)
+    timing=.58*demand_gap+.42*momentum
+
+    node_score=(20*housing+15*network+10*catalyst+10*traffic+5*timing)/60
+    confidence=0
+    confidence+=30 if active_plats else 8
+    confidence+=25 if support["traffic"] else 0
+    confidence+=25 if (support["roads"] or support["mtp"]) else 0
+    confidence+=10 if support["flu"] else 0
+    confidence+=10
+    confidence=clamp(confidence)
+
+    if node_score>=76 and confidence>=70: node_class="PRIORITY NODE"
+    elif node_score>=66 and confidence>=60: node_class="EMERGING NODE"
+    elif node_score>=55: node_class="WATCH NODE"
+    else: node_class="LOWER CONFIDENCE"
+
     return {
-        **node,"score":round(clamp(score),1),
+        **node,"score":round(clamp(node_score),1),"confidence_score":round(confidence,1),"node_class":node_class,
         "weighted_future_res_lots":round(res,1),"weighted_future_commercial_lots":round(comm,1),
-        "recent_progress_res_lots":round(recent,1),"net_new_housing_units_180d":round(net_units,1),
-        "residential_permits_180d":int(res_permits),"aadt":int(best_aadt),"aadt_5yr_growth_pct":round(best_growth,1),
-        "nearest_catalyst":catalyst_name,"catalyst_miles":round(catalyst_d,2)
+        "recent_progress_res_lots":round(recent,1),"active_plat_signals":active_plats,
+        "net_new_housing_units_180d":round(net_units,1),"residential_permits_180d":int(res_permits),
+        "aadt":int(best_aadt),"aadt_5yr_growth_pct":round(best_growth,1),
+        "nearest_catalyst":catalyst_name,"catalyst_miles":round(catalyst_d,2),
+        "major_node_roads":major_roads,"mtp_near_node":mtp_near,
+        "component_scores":{
+            "residential_growth":round(housing,1),"intersection_network":round(network,1),
+            "retail_catalyst":round(catalyst,1),"traffic":round(traffic,1),"timing":round(timing,1)
+        }
     }
 
 def query_parcels(node):
@@ -358,7 +421,8 @@ def query_parcels(node):
 def make_candidate(feature,node_result):
     p=props(feature)
     owner=sval(p,"Owner")
-    if PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner): return None
+    if (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
+            or INSTITUTIONAL_OWNER.search(owner) or RESIDENTIAL_BUILDER_OWNER.search(owner)): return None
     a=nval(p,"Acres","LglAcres")
     if a<3: return None
     g=feature_shape(feature)
@@ -376,7 +440,8 @@ def make_candidate(feature,node_result):
     if a<12 and houses>=5: return None
     sh,compact,aspect=geometry_shape_metrics(gp)
     dist=parcel_distance_score(edge_mi); acre=acreage_score(a)
-    pre=.38*node_result["score"]+.24*dist+.14*acre+.14*raw+.10*sh
+    # Node-first pre-ranking: location quality dominates before parcel-level enrichment.
+    pre=.60*node_result["score"]+.15*dist+.10*acre+.10*raw+.05*sh
     c=g.centroid
     return {
         "feature":feature,"prop_id":str(int(nval(p,"PropID"))) if nval(p,"PropID") else str(p.get("OBJECTID","")),
@@ -393,7 +458,7 @@ def make_candidate(feature,node_result):
 
 def road_quality(c,support):
     poly=c["_geom2278"]; boundary=poly.boundary
-    roads=[]; frontage=0; major=False
+    roads=[]; frontage=0
     for f in support["roads"]:
         g=feature_shape(f)
         if not g: continue
@@ -404,31 +469,34 @@ def road_quality(c,support):
             p=props(f); name=road_name(p) or "Unnamed road"; cls=road_class(p)
             try: near_len=boundary.intersection(gp.buffer(55)).length
             except: near_len=0
-            roads.append((name,cls,d,near_len))
+            roads.append((name,cls,d,near_len,road_importance(name,cls)))
             frontage+=near_len
-            if re.search(r"arterial|collector|express|principal|major|interstate|highway|state|us |fm |loop",name+" "+cls,re.I):
-                major=True
-    unique=[]
-    seen=set()
-    for name,cls,d,l in sorted(roads,key=lambda x:x[2]):
+    unique=[]; seen=set()
+    for name,cls,d,l,importance in sorted(roads,key=lambda x:x[2]):
         k=name.upper()
         if k not in seen:
-            unique.append((name,cls,d,l)); seen.add(k)
-    corner=len(unique)>=2
+            unique.append((name,cls,d,l,importance)); seen.add(k)
+    primary=[x for x in unique if x[4]>=3]
+    collectors=[x for x in unique if x[4]>=2]
+    meaningful=[x for x in unique if x[4]>=1 and x[3]>=40]
+    major=bool(primary)
+    strong_corner=bool(primary and len(meaningful)>=2)
+    secondary_corner=bool(collectors and len(meaningful)>=2)
     mtp_cross=False
     for f in support["mtp"]:
         g=feature_shape(f); gp=proj(g) if g else None
         if gp and gp.distance(poly)<=60:
             mtp_cross=True; break
-    if corner and major: score=100
-    elif major and frontage>=200: score=92
+    if len(collectors)>=2 and strong_corner: score=100
+    elif strong_corner: score=94
+    elif major and frontage>=200: score=90
     elif major: score=84
-    elif corner: score=84
-    elif frontage>=200: score=78
-    elif unique: score=66
+    elif secondary_corner: score=80
+    elif collectors and frontage>=200: score=75
+    elif collectors: score=70
+    elif meaningful: score=60
     else: score=20
-    return round(score,1),[x[0] for x in unique[:4]],round(frontage,0),corner,major,mtp_cross
-
+    return round(score,1),[x[0] for x in unique[:4]],round(frontage,0),strong_corner,major,mtp_cross
 def flood_quality(c,support):
     poly=c["_geom2278"]; area=max(1,poly.area)
     sfha_area=fw_area=0
@@ -457,7 +525,7 @@ def screen_fema_candidate(c):
     g=feature_shape(c["feature"])
     if not g or g.is_empty:
         c["flood_confidence"]="UNKNOWN"; c["eligible"]=False
-        return c
+        return classify_candidate(c)
     minx,miny,maxx,maxy=g.bounds
     env={"xmin":minx,"ymin":miny,"xmax":maxx,"ymax":maxy,"spatialReference":{"wkid":4326}}
     try:
@@ -470,19 +538,22 @@ def screen_fema_candidate(c):
         c["floodway_pct"]=fw_pct
         c["flood_zones"]=zones
         c["flood_confidence"]="SCREENED"
-        c["parcel_opportunity_score"]=round(clamp(c["parcel_opportunity_score"] + .08*(flood_score-55)),1)
-        c["eligible"]=bool(c.get("eligible_pre_flood") and fw_pct<10 and flood_pct<50)
+        usable_acres=c["acres"]*(1-min(100,flood_pct)/100)
+        c["usable_acres_proxy"]=round(max(0,usable_acres),2)
+        # Flood was provisionally neutral (55) in parcel execution; replace it with the screened value.
+        c["parcel_execution_score"]=round(clamp(c["parcel_execution_score"] + (5/40)*(flood_score-55)),1)
+        c["parcel_component_scores"]["flood"]=round(flood_score,1)
+        c["parcel_opportunity_score"]=round(clamp(.60*c["node_score"]+.40*c["parcel_execution_score"]),1)
+        c["eligible"]=bool(c.get("eligible_pre_flood") and fw_pct<10 and flood_pct<50 and usable_acres>=3)
         why=[x for x in str(c.get("why_this_tract","")).split(" · ") if x and "FEMA" not in x]
-        if flood_pct==0:
-            why.append("no mapped FEMA SFHA overlap returned")
-        elif flood_pct<25:
-            why.append(f"{flood_pct:.1f}% mapped FEMA SFHA overlap")
+        if flood_pct==0: why.append("no mapped FEMA SFHA overlap returned")
+        elif flood_pct<25: why.append(f"{flood_pct:.1f}% mapped FEMA SFHA overlap")
         c["why_this_tract"]=" · ".join(why[:4])
     except Exception as e:
         errors.append(f"fema-parcel {c.get('prop_id')}: {e}")
-        c["flood_confidence"]="UNKNOWN"
-        c["eligible"]=False
-    return c
+        c["flood_confidence"]="UNKNOWN"; c["eligible"]=False
+    c["confidence_score"]=candidate_confidence(c)
+    return classify_candidate(c)
 
 def land_use_quality(c,support):
     poly=c["_geom2278"]; best=55; names=[]
@@ -522,6 +593,57 @@ def value_score(c):
     if v<=350000: return 50
     return 35
 
+def candidate_confidence(c):
+    score=0.25*float(c.get("node_confidence_score") or 0)
+    score+=15 if c.get("bcad_geometry_verified") else 8
+    score+=15 if c.get("frontage_roads") else 3
+    score+=15 if c.get("flood_confidence")=="SCREENED" else 0
+    score+=10 if c.get("aadt") and float(c.get("aadt_station_miles") or 99)<=2 else 4 if c.get("aadt") else 0
+    score+=10 if c.get("utility_confidence")=="PROXY" else 2
+    score+=10 if c.get("bcad_geometry_verified") else 4
+    score=clamp(score)
+    if c.get("utility_confidence")!="PROXY":
+        score=min(score,84)
+    return round(score,1)
+
+def classify_candidate(c):
+    risks=[]
+    if c.get("node_edge_miles",99)>.5: risks.append("not on the immediate intersection")
+    if not c.get("major_road_signal"): risks.append("major-road exposure needs confirmation")
+    if c.get("frontage_ft_proxy",0)<200: risks.append("limited frontage proxy")
+    if c.get("utility_confidence")!="PROXY": risks.append("utility path is unverified")
+    else: risks.append("utility capacity is unverified")
+    if c.get("flood_pct") is None: risks.append("flood screen unavailable")
+    elif c.get("flood_pct",0)>0: risks.append(f"{c['flood_pct']:.1f}% mapped SFHA overlap")
+    if c.get("shape_score",100)<55: risks.append("parcel geometry is less efficient")
+    if c.get("confidence_score",100)<65: risks.append("important diligence data is incomplete")
+
+    score=float(c.get("parcel_opportunity_score") or 0)
+    conf=float(c.get("confidence_score") or 0)
+    access_ready=(c.get("major_road_signal") and c.get("road_score",0)>=84
+                  and (c.get("frontage_ft_proxy",0)>=150 or c.get("corner_signal")=="STRONG"))
+    priority=(c.get("eligible") and score>=78 and conf>=68 and c.get("node_edge_miles",99)<=.60
+              and access_ready and c.get("flood_score",0)>=75 and c.get("parcel_execution_score",0)>=68
+              and c.get("utility_confidence")=="PROXY")
+    watch=(c.get("eligible") and score>=68 and conf>=52 and c.get("road_score",0)>=66)
+    early=(c.get("eligible") and c.get("node_score",0)>=62 and score>=59)
+    if priority: category="PRIORITY"
+    elif watch: category="WATCH"
+    elif early: category="EARLY SPECULATION"
+    else: category="REVIEW"
+
+    c["acquisition_category"]=category
+    c["main_risks"]=risks[:4]
+    if category=="PRIORITY":
+        c["decision_summary"]="Investigate ownership, access, utilities and pricing now."
+    elif category=="WATCH":
+        c["decision_summary"]="Strong enough to track closely; one or more execution items still need to improve or be verified."
+    elif category=="EARLY SPECULATION":
+        c["decision_summary"]="The node thesis is ahead of the parcel certainty; monitor before committing acquisition resources."
+    else:
+        c["decision_summary"]="Does not currently clear the acquisition-mode highlight standard."
+    return c
+
 def enrich_candidate(c,support,node_result):
     road_score,roads,frontage,corner,major,mtp=road_quality(c,support)
     flood_score,flood_pct,fw_pct,zones=55,None,None,[]
@@ -530,23 +652,27 @@ def enrich_candidate(c,support,node_result):
     aadt,growth,aadt_dist=traffic_for_parcel(c,support)
     val=value_score(c)
     catalyst_d,catalyst_name=nearest_catalyst(c["centroid_lat"],c["centroid_lng"])
-    traffic_score=clamp(aadt/500*.7 + clamp((growth+5)*4)*.3)
-    score=(.22*c["node_score"]+.18*c["dist_score"]+.18*road_score+.10*c["acre_score"]+
-           .10*c["raw_score"]+.08*flood_score+.05*c["shape_score"]+.04*flu+.03*traffic_score+.02*val)
-    eligible_pre_flood=(c["acres"]>=3 and c["node_edge_miles"]<=1.0 and road_score>=65 and c["raw_score"]>=55
-                        and flu>=35 and c["shape_score"]>=25)
-    eligible=False
+    utility_score=58 if support["cip"] else 25
+    parcel_fit=.62*c["acre_score"]+.38*c["shape_score"]
+    acquisition=.72*c["raw_score"]+.28*val
+    parcel_execution=(12*road_score+10*parcel_fit+8*utility_score+5*flood_score+5*acquisition)/40
+    score=.60*c["node_score"]+.40*parcel_execution
+
+    eligible_pre_flood=(c["acres"]>=3 and c["node_edge_miles"]<=1.0 and road_score>=66 and c["raw_score"]>=60
+                        and flu>=35 and c["shape_score"]>=30 and c["node_score"]>=55
+                        and node_result.get("confidence_score",0)>=50 and bool(roads))
     reasons=[]
     if corner and major: reasons.append("corner exposure on a major road")
     elif major: reasons.append("major-road frontage")
     elif roads: reasons.append("road frontage")
-    if c["node_edge_miles"]<=.25: reasons.append("within ¼ mile of priority intersection")
-    elif c["node_edge_miles"]<=.5: reasons.append("within ½ mile of priority intersection")
-    else: reasons.append("within 1 mile of priority intersection")
-    if node_result["weighted_future_res_lots"]>=800: reasons.append(f"{int(node_result['weighted_future_res_lots'])} weighted future residential lots nearby")
+    if c["node_edge_miles"]<=.25: reasons.append("within ¼ mile of the node")
+    elif c["node_edge_miles"]<=.5: reasons.append("within ½ mile of the node")
+    else: reasons.append("within 1 mile of the node")
+    if node_result["weighted_future_res_lots"]>=1200:
+        reasons.append(f"{int(node_result['weighted_future_res_lots'])} weighted future residential lots")
     if catalyst_d<=2.5: reasons.append(f"{catalyst_d:.1f} mi from {catalyst_name}")
     if c["raw_score"]>=80: reasons.append("mostly raw / low-improvement land")
-    reasons.append("FEMA parcel screen pending")
+
     c.update({
         "road_score":road_score,"frontage_roads":roads,"frontage_ft_proxy":frontage,
         "corner_signal":"STRONG" if corner and major else "YES" if corner else "NO",
@@ -557,12 +683,23 @@ def enrich_candidate(c,support,node_result):
         "nearest_retail_catalyst":catalyst_name,"retail_catalyst_miles":round(catalyst_d,2),
         "future_residential_lots_nearby":node_result["weighted_future_res_lots"],
         "recent_housing_units_180d":node_result["net_new_housing_units_180d"],
+        "node_confidence_score":node_result.get("confidence_score",0),
+        "node_class":node_result.get("node_class",""),
+        "node_component_scores":node_result.get("component_scores",{}),
+        "utility_score":round(utility_score,1),
         "utility_confidence":"PROXY" if support["cip"] else "UNKNOWN",
-        "utility_context":f"{len(support['cip'])} mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified" if support["cip"] else "No parcel-level capacity verification; request SAWS as-builts and written capacity",
-        "parcel_opportunity_score":round(clamp(score),1),"eligible_pre_flood":eligible_pre_flood,"eligible":eligible,
+        "utility_context":f"{len(support['cip'])} mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified" if support["cip"] else "No parcel-level utility path verified; request provider as-builts and written capacity",
+        "parcel_fit_score":round(parcel_fit,1),"acquisition_complexity_score":round(acquisition,1),
+        "parcel_execution_score":round(parcel_execution,1),
+        "parcel_component_scores":{
+            "frontage_access":round(road_score,1),"size_shape":round(parcel_fit,1),
+            "utilities":round(utility_score,1),"flood":round(flood_score,1),"acquisition":round(acquisition,1)
+        },
+        "parcel_opportunity_score":round(clamp(score),1),"eligible_pre_flood":eligible_pre_flood,"eligible":False,
         "why_this_tract":" · ".join(reasons[:4]),
-        "verification_notes":"Road frontage is a GIS proximity/overlap proxy, not legal access. Flood is FEMA screening. Utilities are not verified. Confirm survey, title, access, ROW and capacity."
+        "verification_notes":"Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity."
     })
+    c["confidence_score"]=candidate_confidence(c)
     return c
 
 def sara_enrich(c):
@@ -583,10 +720,15 @@ def sara_enrich(c):
     g=feature_shape(f)
     if g and not g.is_empty:
         c["feature"]["geometry"]=mapping(g)
+    c["confidence_score"]=candidate_confidence(c)
+    classify_candidate(c)
 else_dummy = None
 
-def select_top(candidates,limit=30,node_cap=4):
-    candidates=sorted([x for x in candidates if x["eligible"]],key=lambda x:x["parcel_opportunity_score"],reverse=True)
+def select_top(candidates,limit=30,node_cap=3):
+    order={"PRIORITY":0,"WATCH":1,"EARLY SPECULATION":2,"REVIEW":3}
+    pool=[x for x in candidates if x.get("eligible") and x.get("bcad_geometry_verified") is True
+          and x.get("acquisition_category") in {"PRIORITY","WATCH","EARLY SPECULATION"}]
+    candidates=sorted(pool,key=lambda x:(order.get(x.get("acquisition_category"),9),-x["parcel_opportunity_score"],-x.get("confidence_score",0)))
     out=[]; counts=defaultdict(int)
     for c in candidates:
         if counts[c["node_id"]]>=node_cap: continue
@@ -634,8 +776,11 @@ def public_props(c,rank=None):
       "major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","flood_confidence","future_land_use_score",
       "future_land_use","aadt","aadt_5yr_growth_pct","aadt_station_miles","nearest_retail_catalyst","retail_catalyst_miles",
       "future_residential_lots_nearby","recent_housing_units_180d","utility_confidence","utility_context",
-      "assessed_value_per_acre","land_value_per_acre","parcel_opportunity_score","eligible","why_this_tract",
-      "verification_notes","bcad_geometry_verified","geometry_source","bcad_geo_id","ownership_type","last_deed_date","hold_years"
+      "assessed_value_per_acre","land_value_per_acre","parcel_opportunity_score","parcel_execution_score","parcel_fit_score",
+      "acquisition_complexity_score","utility_score","confidence_score","node_confidence_score","node_class",
+      "node_component_scores","parcel_component_scores","acquisition_category","decision_summary","main_risks",
+      "usable_acres_proxy","eligible","why_this_tract","verification_notes","bcad_geometry_verified","geometry_source",
+      "bcad_geo_id","ownership_type","last_deed_date","hold_years"
     ]
     p={k:c.get(k) for k in keys if k in c}
     if rank is not None: p["rank"]=rank
@@ -663,11 +808,19 @@ def main():
     node_results=[score_node(node,supports[node["id"]]) for node in NODES]
     node_results.sort(key=lambda x:x["score"],reverse=True)
     node_by={x["id"]:x for x in node_results}
+    # Acquisition Mode V2 searches parcels only after identifying credible nodes.
+    active_nodes=[x for x in node_results if x["score"]>=55 and x.get("confidence_score",0)>=55][:14]
+    if len(active_nodes)<8:
+        active_nodes=node_results[:min(12,len(node_results))]
+    active_ids={x["id"] for x in active_nodes}
+    for n in node_results:
+        n["selected_for_parcel_search"]=n["id"] in active_ids
+    print("Active parcel-search nodes:",", ".join(x["name"] for x in active_nodes))
 
-    print("Querying parcel universe in parallel...")
+    print("Querying parcel universe around selected nodes in parallel...")
     by_pid={}
     with ThreadPoolExecutor(max_workers=6) as ex:
-        futs={ex.submit(query_parcels,node):node for node in node_results}
+        futs={ex.submit(query_parcels,node):node for node in active_nodes}
         for fut in as_completed(futs):
             node=futs[fut]
             try: feats=fut.result()
@@ -689,17 +842,26 @@ def main():
         enriched.append(enrich_candidate(cand,supports[cand["node_id"]],node_by[cand["node_id"]]))
 
     provisional=sorted([x for x in enriched if x.get("eligible_pre_flood")],
-                       key=lambda x:x["parcel_opportunity_score"],reverse=True)[:80]
+                       key=lambda x:x["parcel_opportunity_score"],reverse=True)[:100]
     print(f"Parcel-level FEMA screening on {len(provisional)} provisional candidates...")
     with ThreadPoolExecutor(max_workers=3) as ex:
         screened=list(ex.map(screen_fema_candidate,provisional))
-    top=select_top(screened,30,4)
-    print(f"Eligible highlighted parcels after FEMA: {len(top)}")
-    with ThreadPoolExecutor(max_workers=5) as ex:
-        list(ex.map(sara_enrich,top))
 
-    # Stable rank after SARA enrichment.
-    top.sort(key=lambda x:x["parcel_opportunity_score"],reverse=True)
+    # Verify a broader finalist pool against SARA/BCAD before category/rank selection.
+    sara_pool=sorted([x for x in screened if x.get("eligible")],
+                     key=lambda x:x["parcel_opportunity_score"],reverse=True)
+    print(f"SARA/BCAD verification on all {len(sara_pool)} eligible finalists...")
+    with ThreadPoolExecutor(max_workers=5) as ex:
+        list(ex.map(sara_enrich,sara_pool))
+    for cand in screened:
+        cand["confidence_score"]=candidate_confidence(cand)
+        classify_candidate(cand)
+
+    top=select_top(screened,30,3)
+    print(f"Acquisition Mode V2 highlighted parcels: {len(top)}")
+    category_order={"PRIORITY":0,"WATCH":1,"EARLY SPECULATION":2}
+    top.sort(key=lambda x:(category_order.get(x.get("acquisition_category"),9),
+                           -x["parcel_opportunity_score"],-x.get("confidence_score",0)))
     for i,cand in enumerate(top,1): cand["rank"]=i
 
     fc={"type":"FeatureCollection","features":[
@@ -709,29 +871,36 @@ def main():
     (DATA/"opportunity_parcels.geojson").write_text(json.dumps(fc,indent=2))
     all_fc={"type":"FeatureCollection","features":[
         {"type":"Feature","geometry":cand["feature"]["geometry"],"properties":public_props(cand)}
-        for cand in sorted(enriched,key=lambda x:x["parcel_opportunity_score"],reverse=True)[:120]
+        for cand in sorted(screened,key=lambda x:x["parcel_opportunity_score"],reverse=True)[:120]
     ]}
     (DATA/"opportunity_parcels_all.geojson").write_text(json.dumps(all_fc,indent=2))
     (DATA/"opportunity_nodes.json").write_text(json.dumps(node_results,indent=2))
     ass=assemblages(screened)
     (DATA/"assemblages.geojson").write_text(json.dumps({"type":"FeatureCollection","features":ass},indent=2))
 
-    cols=["rank","parcel_opportunity_score","owner","prop_id","situs","acres","node_name","node_edge_miles",
-          "frontage_roads","corner_signal","raw_score","future_residential_lots_nearby","aadt","aadt_5yr_growth_pct",
-          "nearest_retail_catalyst","flood_pct","floodway_pct","future_land_use","assessed_value","assessed_value_per_acre",
-          "land_value_per_acre","last_deed_date","hold_years","utility_confidence","why_this_tract","verification_notes"]
+    cols=["rank","acquisition_category","parcel_opportunity_score","confidence_score","parcel_execution_score",
+          "node_score","node_class","owner","prop_id","situs","acres","usable_acres_proxy","node_name","node_edge_miles",
+          "frontage_roads","frontage_ft_proxy","corner_signal","raw_score","shape_score","future_residential_lots_nearby",
+          "aadt","aadt_5yr_growth_pct","nearest_retail_catalyst","retail_catalyst_miles","flood_pct","floodway_pct",
+          "assessed_value","assessed_value_per_acre","land_value_per_acre","last_deed_date","hold_years",
+          "utility_confidence","decision_summary","why_this_tract","main_risks","verification_notes"]
     with (DATA/"tracts_to_review.csv").open("w",newline="") as fh:
         w=csv.DictWriter(fh,fieldnames=cols); w.writeheader()
         for cand in top:
             row={k:cand.get(k,"") for k in cols}
-            for k in ("frontage_roads","future_land_use"):
-                if isinstance(row[k],list): row[k]=" | ".join(map(str,row[k]))
+            for k in ("frontage_roads","main_risks"):
+                if isinstance(row.get(k),list): row[k]=" | ".join(map(str,row[k]))
             w.writerow(row)
 
     meta={
       "generated_at":datetime.now(timezone.utc).isoformat(),
       "generator":"scripts/generate_opportunities.py",
-      "node_count":len(node_results),"candidate_count":len(enriched),"highlighted_count":len(top),
+      "version":"Acquisition Mode V2",
+      "node_count":len(node_results),"active_node_count":len(active_nodes),
+      "candidate_count":len(enriched),"fema_screened_count":len(screened),"highlighted_count":len(top),
+      "priority_count":sum(1 for x in top if x.get("acquisition_category")=="PRIORITY"),
+      "watch_count":sum(1 for x in top if x.get("acquisition_category")=="WATCH"),
+      "early_speculation_count":sum(1 for x in top if x.get("acquisition_category")=="EARLY SPECULATION"),
       "assemblage_count":len(ass),
       "sources":{
         "parcels":"Bexar County Public Works PlatsMDPs parcel layer; top parcels optionally re-verified against SARA/BCAD",
@@ -745,9 +914,13 @@ def main():
       },
       "errors":errors[:100],"source_feature_counts":dict(source_stats),
       "methodology":{
+        "architecture":"Node first -> parcel second -> hard filters -> 60% location / 40% parcel execution -> confidence -> category",
+        "node_weights":{"residential_growth":20,"intersection_network":15,"retail_catalyst":10,"traffic":10,"timing":5},
+        "parcel_weights":{"frontage_access":12,"size_shape":10,"utilities":8,"flood":5,"acquisition_complexity":5},
         "parcel_query_radius_miles":1.5,"hard_highlight_distance_miles":1.0,"min_acres":3,
-        "top_limit":30,"per_node_cap":4,
-        "yellow_gate":"3+ ac; <=1 mi by parcel-edge distance; road signal >=65; raw-land >=55; FEMA screen required with <10% floodway and <50% SFHA; FLU >=35; shape >=25; public/institutional/major-anchor owners excluded"
+        "active_node_limit":14,"top_limit":30,"per_node_cap":3,
+        "hard_gate":"3+ ac; <=1 mi by parcel-edge distance; actual road signal; raw-land >=60; shape >=30; node >=55 with confidence >=50; FEMA screen required with <10% floodway, <50% SFHA and >=3 usable-acre proxy; public/institutional/major-anchor owners excluded",
+        "category_rules":"PRIORITY requires score >=78, confidence >=68, <=0.60 mi to node, road >=78, flood >=75 and parcel execution >=68. WATCH requires score >=68/confidence >=52. EARLY SPECULATION requires strong node thesis with score >=59."
       }
     }
     (DATA/"opportunity_metadata.json").write_text(json.dumps(meta,indent=2))

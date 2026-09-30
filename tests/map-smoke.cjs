@@ -25,7 +25,9 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     await page.goto(process.env.MAP_URL || 'http://127.0.0.1:'+(process.env.TEST_PORT||8770), {waitUntil: 'domcontentloaded', timeout: 90000});
     await page.waitForFunction(() => window.v6OppLoaded, null, {timeout: 60000});
     await page.evaluate(() => { window.testMap = map_33cc2c2ac68d72d2971fbb7de3650b24; });
-    assert.equal(await page.evaluate(() => v6OpportunityData.length), 30);
+    assert(await page.evaluate(() => v6OpportunityData.length >= 5),'Acquisition mode should load at least five qualified parcels');
+    assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>['PRIORITY','WATCH','EARLY SPECULATION'].includes(f.properties.acquisition_category))),true,'Every highlighted parcel needs an acquisition tier');
+    assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>Number.isFinite(Number(f.properties.confidence_score)))),true,'Every highlighted parcel needs confidence');
     assert.equal(await page.evaluate(() => testMap.hasLayer(tile_layer_satellite_hybrid)), true);
     for (const name of ['v3Parcels','v3ComalParcels','v3GuadalupeParcels','v3SewerService','v3FemaHazard','v3AADT','v3FutureLandUse','v3Rings','v3VerifiedTargetGeometry']) {
       assert.equal(await page.evaluate(n => testMap.hasLayer(window[n]), name), false, name + ' must default OFF');
@@ -38,6 +40,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     await page.screenshot({path: process.env.SCREENSHOT_DIR ? path.join(process.env.SCREENSHOT_DIR,'desktop.png') : '/tmp/satx-desktop.png'});
     await page.setViewportSize({width:390,height:844}); await page.evaluate(()=>testMap.invalidateSize());
     await page.locator('.leaflet-control-layers').hover(); assert(await page.getByText('Exact Target Parcels',{exact:true}).isVisible());
+    assert.equal(await page.locator('#v6CategoryFilter').count(),1);
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     await page.screenshot({path:process.env.SCREENSHOT_DIR ? path.join(process.env.SCREENSHOT_DIR,'mobile.png') : '/tmp/satx-mobile.png'});
     await page.mouse.click(60,700); await page.locator('#v6TopToggle').click(); assert(await page.locator('#v6TopPanel').isVisible());
