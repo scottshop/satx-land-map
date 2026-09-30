@@ -702,7 +702,8 @@ else_dummy = None
 
 def select_top(candidates,limit=30,node_cap=3):
     order={"PRIORITY":0,"WATCH":1,"EARLY SPECULATION":2,"REVIEW":3}
-    pool=[x for x in candidates if x.get("eligible") and x.get("acquisition_category") in {"PRIORITY","WATCH","EARLY SPECULATION"}]
+    pool=[x for x in candidates if x.get("eligible") and x.get("bcad_geometry_verified") is True
+          and x.get("acquisition_category") in {"PRIORITY","WATCH","EARLY SPECULATION"}]
     candidates=sorted(pool,key=lambda x:(order.get(x.get("acquisition_category"),9),-x["parcel_opportunity_score"],-x.get("confidence_score",0)))
     out=[]; counts=defaultdict(int)
     for c in candidates:
@@ -824,8 +825,8 @@ def main():
 
     # Verify a broader finalist pool against SARA/BCAD before category/rank selection.
     sara_pool=sorted([x for x in screened if x.get("eligible")],
-                     key=lambda x:x["parcel_opportunity_score"],reverse=True)[:60]
-    print(f"SARA/BCAD verification on {len(sara_pool)} eligible finalists...")
+                     key=lambda x:x["parcel_opportunity_score"],reverse=True)
+    print(f"SARA/BCAD verification on all {len(sara_pool)} eligible finalists...")
     with ThreadPoolExecutor(max_workers=5) as ex:
         list(ex.map(sara_enrich,sara_pool))
     for cand in screened:
