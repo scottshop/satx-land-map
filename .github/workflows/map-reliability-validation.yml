@@ -17,13 +17,18 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install Playwright
+      - name: Install Playwright library
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
+          test -x /usr/bin/google-chrome
+          /usr/bin/google-chrome --version
 
       - name: Desktop, mobile, imagery and core interactions
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
         run: node tests/map-smoke.cjs
 
       - name: Audit live GIS endpoints
@@ -32,4 +37,5 @@ jobs:
       - name: Live GIS feature clicks
         env:
           TEST_STAGE: gis
+          CHROMIUM_PATH: /usr/bin/google-chrome
         run: node tests/map-smoke.cjs
