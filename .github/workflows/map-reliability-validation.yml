@@ -1,0 +1,35 @@
+name: Map reliability validation
+
+on:
+  push:
+    branches:
+      - cleanup/map-reliability-20260929
+  workflow_dispatch:
+
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Desktop, mobile, imagery and core interactions
+        run: node tests/map-smoke.cjs
+
+      - name: Audit live GIS endpoints
+        run: python3 tests/audit-sources.py
+
+      - name: Live GIS feature clicks
+        env:
+          TEST_STAGE: gis
+        run: node tests/map-smoke.cjs
