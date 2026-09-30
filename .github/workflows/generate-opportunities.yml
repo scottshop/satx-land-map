@@ -84,6 +84,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated changes."
           else
-            git commit -m "Refresh Acquisition Mode V2 datasets [skip ci]"
+            git commit -m "Refresh Acquisition Mode V2 datasets"
             git push origin HEAD:${{ github.ref_name }}
           fi
