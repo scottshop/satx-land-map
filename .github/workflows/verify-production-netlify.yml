@@ -1,4 +1,4 @@
-name: Deploy merged main to existing Netlify site
+name: Verify current production deploy
 
 on:
   push:
@@ -6,41 +6,32 @@ on:
       - verify/netlify-20260930-merge32
 
 jobs:
-  deploy-existing-site:
+  verify-production:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      NETLIFY_SITE_ID: 7e86b63c-d7f1-4377-a08a-c56aa962ccfc
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    timeout-minutes: 6
     steps:
-      - name: Check out merged production branch
-        uses: actions/checkout@v4
-        with:
-          ref: main
-
-      - name: Require existing Netlify credential
+      - name: Wait for existing Netlify site to publish latest main
         shell: bash
         run: |
-          if [ -z "${NETLIFY_AUTH_TOKEN}" ]; then
-            echo "NETLIFY_AUTH_TOKEN is not configured in repository secrets."
-            exit 2
-          fi
-
-      - name: Deploy main to existing Netlify site
-        shell: bash
-        run: |
-          npx --yes netlify-cli@23 deploy --prod --dir=. --site="${NETLIFY_SITE_ID}" --message="PR #32 cleanup reliability"
-
-      - name: Verify merged code is live
-        shell: bash
-        run: |
-          for i in $(seq 1 18); do
-            curl -fsSL -H 'Cache-Control: no-cache' "https://satx-land-map.netlify.app/?verify=${GITHUB_SHA}-${i}" -o /tmp/site.html
-            if grep -q 'v8ActivateSatellite' /tmp/site.html && grep -q 'layer-service-status' /tmp/site.html; then
-              echo "Production verified at https://satx-land-map.netlify.app/"
+          set -euo pipefail
+          TARGET="9c8fecc1175f1de900ad7e1aa519c513247412dc"
+          for i in $(seq 1 60); do
+            curl -fsSL https://api.netlify.com/api/v1/sites/satx-land-map.netlify.app -o /tmp/site.json
+            REF=$(python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/site.json'))
+          print((d.get('published_deploy') or {}).get('commit_ref') or '')
+          PY
+            )
+            echo "published commit: $REF"
+            if [ "$REF" = "$TARGET" ]; then
+              curl -fsSL -H 'Cache-Control: no-cache' "https://satx-land-map.netlify.app/?verify=$TARGET-$i" -o /tmp/live.html
+              grep -q 'v8ActivateSatellite' /tmp/live.html
+              grep -q 'production trigger: 2026-09-30 cleanup merge' /tmp/live.html
+              echo "Production is current."
               exit 0
             fi
             sleep 5
           done
-          echo "Deploy command completed, but merged signatures are not yet visible."
+          echo "Netlify did not publish latest main within the verification window."
           exit 1
