@@ -1,4 +1,4 @@
-name: Verify production Netlify deploy
+name: Diagnose production Netlify deploy
 
 on:
   push:
@@ -6,22 +6,37 @@ on:
       - verify/netlify-20260930-merge32
 
 jobs:
-  verify-production:
+  diagnose-production:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Confirm merged map is live at existing URL
+      - name: Inspect Netlify site metadata and live response
         shell: bash
         run: |
-          set -euo pipefail
-          for i in $(seq 1 24); do
-            if curl -fsSL -H 'Cache-Control: no-cache' "https://satx-land-map.netlify.app/?verify=${GITHUB_SHA}-${i}" -o /tmp/site.html; then
-              if grep -q 'v8ActivateSatellite' /tmp/site.html && grep -q '"maxZoom": 20' /tmp/site.html; then
-                echo "Merged cleanup is live at https://satx-land-map.netlify.app/"
-                exit 0
-              fi
-            fi
-            sleep 5
-          done
-          echo "Production URL did not expose the merged cleanup within the verification window."
-          exit 1
+          set -u
+          echo "=== Netlify API ==="
+          curl -sS -D /tmp/netlify-api-headers.txt https://api.netlify.com/api/v1/sites/satx-land-map.netlify.app -o /tmp/netlify-site.json || true
+          head -40 /tmp/netlify-api-headers.txt || true
+          python3 - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('/tmp/netlify-site.json')
+          print(p.read_text()[:4000] if p.exists() else 'no site metadata body')
+          if p.exists():
+              try:
+                  d=json.loads(p.read_text())
+                  keys=['id','name','url','ssl_url','updated_at','published_deploy','build_settings','repo','branch']
+                  print({k:d.get(k) for k in keys if k in d})
+              except Exception as e: print('json parse:',e)
+          PY
+          echo "=== Production response ==="
+          curl -fsSL -D /tmp/prod-headers.txt -H 'Cache-Control: no-cache' "https://satx-land-map.netlify.app/?verify=${GITHUB_SHA}" -o /tmp/site.html || true
+          head -60 /tmp/prod-headers.txt || true
+          sha256sum /tmp/site.html || true
+          echo "new v8ActivateSatellite count:"
+          grep -c 'v8ActivateSatellite' /tmp/site.html || true
+          echo "new maxZoom 20 count:"
+          grep -c '"maxZoom": 20' /tmp/site.html || true
+          echo "old immediate satellite add count:"
+          grep -c 'tile_layer_satellite_labels.*addTo' /tmp/site.html || true
+          echo "cleanup UI marker count:"
+          grep -c 'layer-service-status' /tmp/site.html || true
