@@ -51,6 +51,22 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     const targetLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Exact Target Parcels'});
     await targetLabel.locator('input').uncheck(); assert.equal(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)), false);
     await targetLabel.locator('input').check(); assert.equal(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)), true);
+
+    if(process.env.TEST_STAGE!=='gis') {
+      for (const [labelText,layerName] of [['Bexar CAD','v3Parcels'],['Comal CAD','v3ComalParcels'],['Guadalupe CAD','v3GuadalupeParcels']]) {
+        const label=page.locator('.leaflet-control-layers label').filter({hasText:labelText});
+        const box=label.locator('input');
+        if(await box.isChecked()) await box.uncheck();
+        await box.check();
+        await page.waitForFunction(n=>testMap.hasLayer(window[n])&&testMap.getZoom()>=14,layerName,{timeout:10000});
+        await page.waitForFunction(n=>{
+          let visible=false; window[n].eachFeature(l=>{if(l._path&&l._path.isConnected)visible=true;}); return visible;
+        },layerName,{timeout:45000});
+        await box.uncheck();
+        assert.equal(await page.evaluate(n=>testMap.hasLayer(window[n]),layerName),false);
+        console.log('PASS visible parcel toggle',labelText);
+      }
+    }
     await page.mouse.click(750,850); console.log('PASS layer menu headings/toggles');
     await page.evaluate(() => { window.testTarget = Object.values(v6OpportunityById)[0].layer; testMap.fitBounds(testTarget.getBounds(), {maxZoom: 17, animate: false}); });
     await page.waitForTimeout(300);
