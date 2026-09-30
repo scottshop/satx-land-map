@@ -1,9 +1,9 @@
-name: Generate Land Opportunities
+name: Generate Acquisition Opportunities V2
 
 on:
   push:
     branches:
-      - v6-exact-parcel-engine-fast
+      - main
     paths:
       - "scripts/generate_opportunities.py"
       - ".github/workflows/generate-opportunities.yml"
@@ -15,47 +15,65 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Install GIS dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests shapely pyproj
+        run: pip install requests shapely pyproj
 
-      - name: Generate static opportunity datasets
+      - name: Validate scoring code
+        run: |
+          python -m py_compile scripts/generate_opportunities.py
+          python - <<'PY'
+          from scripts.generate_opportunities import road_importance
+          assert road_importance("GERONIMO LOOP","") < 3
+          assert road_importance("REEVES LOOP","") < 3
+          assert road_importance("LOOP 1604","") == 3
+          assert road_importance("IH 10 E ACCESS RD","") == 3
+          assert road_importance("STATE HWY 211 S","") == 3
+          print("Road hierarchy checks passed")
+          PY
+
+      - name: Generate Acquisition Mode V2 datasets
         run: python scripts/generate_opportunities.py
 
-      - name: Validate generated files
+      - name: Validate generated acquisition data
         run: |
           python - <<'PY'
-          import json, csv
+          import csv, json, re
           from pathlib import Path
-          p=Path("data/opportunity_parcels.geojson")
-          d=json.loads(p.read_text())
+          d=json.loads(Path("data/opportunity_parcels.geojson").read_text())
+          m=json.loads(Path("data/opportunity_metadata.json").read_text())
+          assert m.get("version")=="Acquisition Mode V2"
           assert d["type"]=="FeatureCollection"
-          assert len(d["features"])>=5, f"Only {len(d['features'])} highlighted parcels"
-          import re
-          bad_owner=re.compile(r"(HEB GROCERY|WAL.?MART|COSTCO|CITY OF|BEXAR COUNTY|COUNTY OF|US GOVERNMENT|SCHOOL DISTRICT|ISD|I S D|HOUSING TRUST|PUBLIC FACILITY CORP|DEVELOPMENT AUTHORITY|FIRE AND RESCUE|UNIVERSITY|OWNERS ASSN|OWNERS ASSOCIATION|PLACE ASSOCIATION|MASTER COMMUNITY|LAND TRUST|HOSPITAL|HEALTHCARE SYSTEM|MONTESSORI|ACADEMY)",re.I)
+          assert len(d["features"])>=5, f"Only {len(d['features'])} qualified parcels"
+          excluded=re.compile(r"(HEB GROCERY|WAL.?MART|COSTCO|CITY OF|BEXAR COUNTY|COUNTY OF|SCHOOL DISTRICT|ISD|CHURCH|MINISTR|DIOCESE|BOYSVILLE|KB HOME|CONTINENTAL HOMES|DR HORTON|LENNAR|PULTE|CENTEX|MERITAGE|PERRY HOMES)",re.I)
           for f in d["features"]:
-              pr=f["properties"]
-              assert pr["acres"] >= 3
-              assert pr["node_edge_miles"] <= 1.0
-              assert pr.get("flood_confidence") == "SCREENED"
-              assert not bad_owner.search(pr.get("owner","")), pr.get("owner")
-              assert pr.get("bcad_geometry_verified") is True
-              assert f.get("geometry")
+              p=f["properties"]
+              assert p["acres"]>=3
+              assert p["node_edge_miles"]<=1.0
+              assert p["flood_confidence"]=="SCREENED"
+              assert p.get("bcad_geometry_verified") is True
+              assert p["acquisition_category"] in {"PRIORITY","WATCH","EARLY SPECULATION"}
+              assert 0<=p["confidence_score"]<=100
+              assert p.get("parcel_execution_score") is not None
+              assert p.get("node_component_scores")
+              assert p.get("parcel_component_scores")
+              assert not excluded.search(p.get("owner","")), p.get("owner")
+              if p["acquisition_category"]=="PRIORITY":
+                  assert p.get("utility_confidence")=="PROXY"
+                  assert p.get("major_road_signal") is True
           rows=list(csv.DictReader(open("data/tracts_to_review.csv")))
           assert len(rows)==len(d["features"])
-          print("Validated",len(rows),"highlighted parcels")
+          print("Validated",len(rows),"Acquisition V2 parcels")
           PY
 
       - name: Commit generated datasets
@@ -66,6 +84,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated changes."
           else
-            git commit -m "Generate static land opportunity datasets [skip ci]"
+            git commit -m "Refresh Acquisition Mode V2 datasets [skip ci]"
             git push origin HEAD:${{ github.ref_name }}
           fi
