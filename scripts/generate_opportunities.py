@@ -64,6 +64,8 @@ CATALYSTS = [
 
 PUBLIC_OWNER = re.compile(r"(CITY OF|COUNTY OF|(BEXAR|COMAL|GUADALUPE|MEDINA|KENDALL|WILSON|ATASCOSA) COUNTY|STATE OF TEXAS|UNITED STATES|US GOVERNMENT|U S GOVERNMENT|SCHOOL DISTRICT|ISD|I S D|SCHOOL|MONTESSORI|ACADEMY|SAWS|CPS ENERGY|RIVER AUTHORITY|TXDOT|TEXAS DEPARTMENT|HOUSING AUTHORITY|HOUSING TRUST|PUBLIC FACILITY CORPORATION|PUBLIC FACILITY CORP|DEVELOPMENT AUTHORITY|FIRE AND RESCUE|EMERGENCY SERVICES DISTRICT|ESD|UNIVERSITY SYSTEM|UNIVERSITY OF|TEXAS A.*M|HOMEOWNERS|HOME OWNER|PROPERTY OWNERS|OWNERS ASSN|OWNERS ASSOCIATION|PLACE ASSOCIATION|MASTER COMMUNITY|LAND TRUST|HOSPITAL|HEALTHCARE SYSTEM|MEDICAL CENTER| HOA| POA)", re.I)
 ANCHOR_OWNER = re.compile(r"(HEB GROCERY|H E B GROCERY|WAL.?MART|WALMART|COSTCO|TARGET CORPORATION|LOWE.?S|HOME DEPOT)", re.I)
+INSTITUTIONAL_OWNER = re.compile(r"(CHURCH|MINISTR|TEMPLE|DIOCESE|PARISH|SYNAGOGUE|MOSQUE|FOUNDATION|BOYSVILLE|YMCA|Y W C A|SALVATION ARMY|BAPTIST|METHODIST|CATHOLIC|LUTHERAN|PRESBYTERIAN|EPISCOPAL)", re.I)
+RESIDENTIAL_BUILDER_OWNER = re.compile(r"(KB HOME|KB HOMES|CONTINENTAL HOMES|D\s*R\s*HORTON|DR HORTON|LENNAR|PULTE|CENTEX|MERITAGE|PERRY HOMES|CASTLEROCK|CHESMAR|DAVID WEEKLEY|TOLL BROTHERS|M/I HOMES|MI HOMES)", re.I)
 
 T4326_2278 = Transformer.from_crs("EPSG:4326","EPSG:2278",always_xy=True).transform
 
@@ -188,6 +190,19 @@ def road_class(p):
         if isinstance(v,str) and re.search(r"(function|class|type|route|system)",k,re.I):
             vals.append(v)
     return " | ".join(vals)
+
+def road_importance(name,cls):
+    n=(name or "").upper().strip(); t=(cls or "").upper()
+    # Numbered routes and true highway designations. Do not treat every street ending in "Loop" as a highway.
+    if re.search(r"\b(IH|I-|INTERSTATE)\s*[- ]?\d+\b|\bUS\s*(HWY|HIGHWAY)?\s*\d+\b|\bSH\s*\d+\b|\bSTATE\s+(HWY|HIGHWAY)\s*\d+\b|\bFM\s*\d+\b|\bLOOP\s*\d+\b",n):
+        return 3
+    if re.search(r"PRINCIPAL|ARTERIAL|EXPRESS|INTERSTATE|FREEWAY|HIGHWAY",t):
+        return 3
+    if re.search(r"COLLECTOR",t) or re.search(r"\b(PKWY|PARKWAY|EXPY|EXPRESSWAY)\b",n):
+        return 2
+    if name and name!="Unnamed road":
+        return 1
+    return 0
 
 def flu_score(name):
     s=(name or "").lower()
@@ -406,7 +421,8 @@ def query_parcels(node):
 def make_candidate(feature,node_result):
     p=props(feature)
     owner=sval(p,"Owner")
-    if PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner): return None
+    if (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
+            or INSTITUTIONAL_OWNER.search(owner) or RESIDENTIAL_BUILDER_OWNER.search(owner)): return None
     a=nval(p,"Acres","LglAcres")
     if a<3: return None
     g=feature_shape(feature)
@@ -442,7 +458,7 @@ def make_candidate(feature,node_result):
 
 def road_quality(c,support):
     poly=c["_geom2278"]; boundary=poly.boundary
-    roads=[]; frontage=0; major=False
+    roads=[]; frontage=0
     for f in support["roads"]:
         g=feature_shape(f)
         if not g: continue
@@ -453,31 +469,34 @@ def road_quality(c,support):
             p=props(f); name=road_name(p) or "Unnamed road"; cls=road_class(p)
             try: near_len=boundary.intersection(gp.buffer(55)).length
             except: near_len=0
-            roads.append((name,cls,d,near_len))
+            roads.append((name,cls,d,near_len,road_importance(name,cls)))
             frontage+=near_len
-            if re.search(r"arterial|collector|express|principal|major|interstate|highway|state|us |fm |loop",name+" "+cls,re.I):
-                major=True
-    unique=[]
-    seen=set()
-    for name,cls,d,l in sorted(roads,key=lambda x:x[2]):
+    unique=[]; seen=set()
+    for name,cls,d,l,importance in sorted(roads,key=lambda x:x[2]):
         k=name.upper()
         if k not in seen:
-            unique.append((name,cls,d,l)); seen.add(k)
-    corner=len(unique)>=2
+            unique.append((name,cls,d,l,importance)); seen.add(k)
+    primary=[x for x in unique if x[4]>=3]
+    collectors=[x for x in unique if x[4]>=2]
+    meaningful=[x for x in unique if x[4]>=1 and x[3]>=40]
+    major=bool(primary)
+    strong_corner=bool(primary and len(meaningful)>=2)
+    secondary_corner=bool(collectors and len(meaningful)>=2)
     mtp_cross=False
     for f in support["mtp"]:
         g=feature_shape(f); gp=proj(g) if g else None
         if gp and gp.distance(poly)<=60:
             mtp_cross=True; break
-    if corner and major: score=100
-    elif major and frontage>=200: score=92
+    if len(collectors)>=2 and strong_corner: score=100
+    elif strong_corner: score=94
+    elif major and frontage>=200: score=90
     elif major: score=84
-    elif corner: score=84
-    elif frontage>=200: score=78
-    elif unique: score=66
+    elif secondary_corner: score=80
+    elif collectors and frontage>=200: score=75
+    elif collectors: score=70
+    elif meaningful: score=60
     else: score=20
-    return round(score,1),[x[0] for x in unique[:4]],round(frontage,0),corner,major,mtp_cross
-
+    return round(score,1),[x[0] for x in unique[:4]],round(frontage,0),strong_corner,major,mtp_cross
 def flood_quality(c,support):
     poly=c["_geom2278"]; area=max(1,poly.area)
     sfha_area=fw_area=0
@@ -582,7 +601,10 @@ def candidate_confidence(c):
     score+=10 if c.get("aadt") and float(c.get("aadt_station_miles") or 99)<=2 else 4 if c.get("aadt") else 0
     score+=10 if c.get("utility_confidence")=="PROXY" else 2
     score+=10 if c.get("bcad_geometry_verified") else 4
-    return round(clamp(score),1)
+    score=clamp(score)
+    if c.get("utility_confidence")!="PROXY":
+        score=min(score,84)
+    return round(score,1)
 
 def classify_candidate(c):
     risks=[]
@@ -598,9 +620,11 @@ def classify_candidate(c):
 
     score=float(c.get("parcel_opportunity_score") or 0)
     conf=float(c.get("confidence_score") or 0)
+    access_ready=(c.get("major_road_signal") and c.get("road_score",0)>=84
+                  and (c.get("frontage_ft_proxy",0)>=150 or c.get("corner_signal")=="STRONG"))
     priority=(c.get("eligible") and score>=78 and conf>=68 and c.get("node_edge_miles",99)<=.60
-              and c.get("road_score",0)>=78 and c.get("flood_score",0)>=75
-              and c.get("parcel_execution_score",0)>=68)
+              and access_ready and c.get("flood_score",0)>=75 and c.get("parcel_execution_score",0)>=68
+              and c.get("utility_confidence")=="PROXY")
     watch=(c.get("eligible") and score>=68 and conf>=52 and c.get("road_score",0)>=66)
     early=(c.get("eligible") and c.get("node_score",0)>=62 and score>=59)
     if priority: category="PRIORITY"
