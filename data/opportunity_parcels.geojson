@@ -8,6 +8,152 @@
         "coordinates": [
           [
             [
+              -98.79798801537686,
+              29.37229845202923
+            ],
+            [
+              -98.79795878319297,
+              29.375177282508822
+            ],
+            [
+              -98.79880945214504,
+              29.37517070609206
+            ],
+            [
+              -98.79881053843349,
+              29.37598185995044
+            ],
+            [
+              -98.79965336930347,
+              29.375942054117782
+            ],
+            [
+              -98.80127991239237,
+              29.375940009348838
+            ],
+            [
+              -98.8018867068634,
+              29.37593924178787
+            ],
+            [
+              -98.80190456858045,
+              29.373626009934995
+            ],
+            [
+              -98.801886064684,
+              29.37226206387686
+            ],
+            [
+              -98.80124667293848,
+              29.372271180684866
+            ],
+            [
+              -98.79798801537686,
+              29.37229845202923
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "338017",
+        "owner": "MECHLER DONALD  ET AL",
+        "situs": "5845  MECHLER LN N",
+        "acres": 36.42,
+        "land_value": 761790.0,
+        "assessed_value": 761790.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB: 5172  P-9  ABS: 1009",
+        "node_id": "INT-004",
+        "node_name": "US 90 / SH 211",
+        "node_score": 75.4,
+        "node_edge_miles": 0.279,
+        "dist_score": 90,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.747,
+        "aspect_ratio": 1.06,
+        "road_score": 90,
+        "frontage_roads": [
+          "Unnamed road",
+          "MECHLER RD"
+        ],
+        "frontage_ft_proxy": 2245.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Country Tier / West"
+        ],
+        "aadt": 31896,
+        "aadt_5yr_growth_pct": 46.6,
+        "aadt_station_miles": 0.62,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 10.37,
+        "future_residential_lots_nearby": 9269.1,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_context": "1 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
+        "assessed_value_per_acre": 20917.0,
+        "land_value_per_acre": 20917.0,
+        "parcel_opportunity_score": 80.5,
+        "parcel_execution_score": 88.2,
+        "parcel_fit_score": 100.0,
+        "acquisition_complexity_score": 97.2,
+        "utility_score": 58,
+        "confidence_score": 100,
+        "node_confidence_score": 100,
+        "node_class": "EMERGING NODE",
+        "node_component_scores": {
+          "residential_growth": 83.6,
+          "intersection_network": 100,
+          "retail_catalyst": 28,
+          "traffic": 71.9,
+          "timing": 70.1
+        },
+        "parcel_component_scores": {
+          "frontage_access": 90,
+          "size_shape": 100.0,
+          "utilities": 58,
+          "flood": 100,
+          "acquisition": 97.2
+        },
+        "acquisition_category": "PRIORITY",
+        "decision_summary": "Investigate ownership, access, utilities and pricing now.",
+        "main_risks": [
+          "utility capacity is unverified"
+        ],
+        "usable_acres_proxy": 36.42,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within \u00bd mile of the node \u00b7 9269 weighted future residential lots \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05172-000-0093",
+        "ownership_type": "Private",
+        "last_deed_date": "2022-05-16",
+        "hold_years": 4.4,
+        "rank": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
               -98.79800478759839,
               29.37909786594609
             ],
@@ -140,7 +286,7 @@
         "ownership_type": "Private",
         "last_deed_date": "2007-07-17",
         "hold_years": 19.2,
-        "rank": 1
+        "rank": 2
       }
     },
     {
@@ -435,7 +581,7 @@
         "ownership_type": "Private",
         "last_deed_date": "2009-04-28",
         "hold_years": 17.4,
-        "rank": 2
+        "rank": 3
       }
     },
     {
@@ -445,174 +591,174 @@
         "coordinates": [
           [
             [
-              -98.79799804227294,
-              29.371003160823985
+              -98.8025453790675,
+              29.51140912004305
             ],
             [
-              -98.79798801537686,
-              29.37229845202923
+              -98.80374832311725,
+              29.51141098861957
             ],
             [
-              -98.80124667293848,
-              29.372271180684866
+              -98.80471555636012,
+              29.511411165112698
             ],
             [
-              -98.801886064684,
-              29.37226206387686
+              -98.80528960609148,
+              29.504827704049447
             ],
             [
-              -98.80187891832139,
-              29.37171414334942
+              -98.8025103266047,
+              29.504822471590757
             ],
             [
-              -98.80522432048215,
-              29.371670926433595
+              -98.80251406243607,
+              29.504942245991806
             ],
             [
-              -98.80522475975667,
-              29.371631688303307
+              -98.80251448182403,
+              29.50502475097428
             ],
             [
-              -98.80525899102726,
-              29.370450424359195
+              -98.80251490121262,
+              29.505107255955327
             ],
             [
-              -98.80508065380029,
-              29.370451353366832
+              -98.80251917307707,
+              29.505948035398504
             ],
             [
-              -98.80422562790774,
-              29.370455803164162
+              -98.8025202904357,
+              29.506168049237115
             ],
             [
-              -98.80188780695792,
-              29.370467942127185
+              -98.80252460295891,
+              29.50701666673697
             ],
             [
-              -98.80158180555081,
-              29.370469526945676
+              -98.80252544073792,
+              29.50718167662959
             ],
             [
-              -98.80157670532436,
-              29.370224412103184
+              -98.80252975231333,
+              29.508030294855647
             ],
             [
-              -98.80122566239173,
-              29.37034773838494
+              -98.80253087075245,
+              29.508250306798224
             ],
             [
-              -98.80057539382472,
-              29.370570805194845
+              -98.80253436383484,
+              29.50893784811266
             ],
             [
-              -98.79800123944973,
-              29.37059063377089
+              -98.80253520267684,
+              29.50910285794238
             ],
             [
-              -98.79799978840693,
-              29.370777972010604
+              -98.80254022174125,
+              29.510010414309903
             ],
             [
-              -98.79799804227294,
-              29.371003160823985
+              -98.8025429748044,
+              29.510757550374155
+            ],
+            [
+              -98.8025453790675,
+              29.51140912004305
             ]
           ]
         ]
       },
       "properties": {
-        "prop_id": "338020",
-        "owner": "45 SRL INC",
-        "situs": "MECHLER RD",
-        "acres": 28.48,
-        "land_value": 583350.0,
-        "assessed_value": 583350.0,
+        "prop_id": "209006",
+        "owner": "STOLTE FARMS LTD",
+        "situs": "8370  FM 471 N",
+        "acres": 42.29,
+        "land_value": 3846890.0,
+        "assessed_value": 3846890.0,
         "improvement_value": 0.0,
         "improvement_ratio": 0.0,
         "gba": 0.0,
         "prop_use": "9",
-        "legal": "CB 5172   P-9D (14.50),  P-9C  (3.5363)  &  P-16  (10.443)   A-1009 MERGE FOR 2011 PER CUSTOMER # 22378",
-        "node_id": "INT-004",
-        "node_name": "US 90 / SH 211",
-        "node_score": 75.4,
-        "node_edge_miles": 0.531,
-        "dist_score": 78,
+        "legal": "CB 4403  P-1  ABS 1298",
+        "node_id": "INT-001",
+        "node_name": "Culebra Rd / SH 211",
+        "node_score": 82.2,
+        "node_edge_miles": 0.878,
+        "dist_score": 66,
         "acre_score": 100,
         "raw_score": 100,
-        "shape_score": 71.1,
-        "compactness": 0.444,
-        "aspect_ratio": 3.12,
-        "road_score": 90,
+        "shape_score": 93.3,
+        "compactness": 0.583,
+        "aspect_ratio": 2.71,
+        "road_score": 84,
         "frontage_roads": [
-          "Unnamed road",
-          "MECHLER RD"
+          "PVT RD AT 15464 FM 471 W"
         ],
-        "frontage_ft_proxy": 1387.0,
+        "frontage_ft_proxy": 79.0,
         "corner_signal": "NO",
         "major_road_signal": true,
-        "mtp_row_flag": true,
-        "flood_score": 75,
-        "flood_pct": 10.1,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
         "floodway_pct": 0.0,
         "flood_zones": [
-          "A",
           "X"
         ],
         "flood_confidence": "SCREENED",
         "future_land_use_score": 55,
-        "future_land_use": [
-          "Country Tier / West"
-        ],
-        "aadt": 31896,
-        "aadt_5yr_growth_pct": 46.6,
-        "aadt_station_miles": 0.41,
+        "future_land_use": [],
+        "aadt": 10000,
+        "aadt_5yr_growth_pct": 0,
+        "aadt_station_miles": 0.33,
         "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
-        "retail_catalyst_miles": 10.56,
-        "future_residential_lots_nearby": 9269.1,
+        "retail_catalyst_miles": 1.12,
+        "future_residential_lots_nearby": 8304.9,
         "recent_housing_units_180d": 0,
-        "utility_confidence": "PROXY",
-        "utility_context": "1 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
-        "assessed_value_per_acre": 20483.0,
-        "land_value_per_acre": 20483.0,
-        "parcel_opportunity_score": 78.2,
-        "parcel_execution_score": 82.4,
-        "parcel_fit_score": 89.0,
-        "acquisition_complexity_score": 97.2,
-        "utility_score": 58,
-        "confidence_score": 100,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level utility path verified; request provider as-builts and written capacity",
+        "assessed_value_per_acre": 90965.0,
+        "land_value_per_acre": 90965.0,
+        "parcel_opportunity_score": 80.8,
+        "parcel_execution_score": 78.8,
+        "parcel_fit_score": 97.5,
+        "acquisition_complexity_score": 94.4,
+        "utility_score": 25,
+        "confidence_score": 84,
         "node_confidence_score": 100,
-        "node_class": "EMERGING NODE",
+        "node_class": "PRIORITY NODE",
         "node_component_scores": {
-          "residential_growth": 83.6,
+          "residential_growth": 79.0,
           "intersection_network": 100,
-          "retail_catalyst": 28,
-          "traffic": 71.9,
-          "timing": 70.1
+          "retail_catalyst": 100,
+          "traffic": 50.1,
+          "timing": 69.4
         },
         "parcel_component_scores": {
-          "frontage_access": 90,
-          "size_shape": 89.0,
-          "utilities": 58,
-          "flood": 75,
-          "acquisition": 97.2
+          "frontage_access": 84,
+          "size_shape": 97.5,
+          "utilities": 25,
+          "flood": 100,
+          "acquisition": 94.4
         },
-        "acquisition_category": "PRIORITY",
-        "decision_summary": "Investigate ownership, access, utilities and pricing now.",
+        "acquisition_category": "WATCH",
+        "decision_summary": "Strong enough to track closely; one or more execution items still need to improve or be verified.",
         "main_risks": [
           "not on the immediate intersection",
-          "utility capacity is unverified",
-          "10.1% mapped SFHA overlap"
+          "limited frontage proxy",
+          "utility path is unverified"
         ],
-        "usable_acres_proxy": 25.6,
+        "usable_acres_proxy": 42.29,
         "eligible": true,
-        "why_this_tract": "major-road frontage \u00b7 within 1 mile of the node \u00b7 9269 weighted future residential lots \u00b7 mostly raw / low-improvement land",
+        "why_this_tract": "major-road frontage \u00b7 within 1 mile of the node \u00b7 8304 weighted future residential lots \u00b7 1.1 mi from Culebra / SH 211 H-E-B",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity.",
         "bcad_geometry_verified": true,
         "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "05172-000-0096",
+        "bcad_geo_id": "04403-000-0010",
         "ownership_type": "Private",
-        "last_deed_date": "2015-04-09",
-        "hold_years": 11.5,
-        "rank": 3
+        "last_deed_date": "2004-06-14",
+        "hold_years": 22.3,
+        "rank": 4
       }
     },
     {
@@ -795,7 +941,7 @@
         "ownership_type": "Private",
         "last_deed_date": "2024-05-10",
         "hold_years": 2.4,
-        "rank": 4
+        "rank": 5
       }
     },
     {
@@ -927,150 +1073,6 @@
         "ownership_type": "Private",
         "last_deed_date": "2017-05-10",
         "hold_years": 9.4,
-        "rank": 5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -98.7962304553303,
-              29.519178866993528
-            ],
-            [
-              -98.7967659610522,
-              29.51949302787587
-            ],
-            [
-              -98.79676700383797,
-              29.519493639406157
-            ],
-            [
-              -98.79718635451921,
-              29.518696198729153
-            ],
-            [
-              -98.79612143298557,
-              29.518261164259826
-            ],
-            [
-              -98.79556307191946,
-              29.51930309098851
-            ],
-            [
-              -98.79530081375412,
-              29.519636030288638
-            ],
-            [
-              -98.79510712610555,
-              29.519881917838244
-            ],
-            [
-              -98.79560374029944,
-              29.520197830105204
-            ],
-            [
-              -98.79581543957872,
-              29.51969766097895
-            ],
-            [
-              -98.7962304553303,
-              29.519178866993528
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "prop_id": "1095142",
-        "owner": "WHITE ROCKY & LISA J",
-        "situs": "15122 W FM 471",
-        "acres": 4.19,
-        "land_value": 627410.0,
-        "assessed_value": 764630.0,
-        "improvement_value": 137220.0,
-        "improvement_ratio": 0.179,
-        "gba": 1120.0,
-        "prop_use": "406",
-        "legal": "CB 4404  BLK  LOT 66                      (AAA STORAGE FM 471) PER PLAT 9574/72",
-        "node_id": "INT-001",
-        "node_name": "Culebra Rd / SH 211",
-        "node_score": 82.2,
-        "node_edge_miles": 0.466,
-        "dist_score": 90,
-        "acre_score": 86,
-        "raw_score": 78.0,
-        "shape_score": 73.8,
-        "compactness": 0.462,
-        "aspect_ratio": 1.82,
-        "road_score": 100,
-        "frontage_roads": [
-          "PVT RD AT 15464 FM 471 W",
-          "CULEBRA RD"
-        ],
-        "frontage_ft_proxy": 570.0,
-        "corner_signal": "STRONG",
-        "major_road_signal": true,
-        "mtp_row_flag": true,
-        "flood_score": 100,
-        "flood_pct": 0.0,
-        "floodway_pct": 0.0,
-        "flood_zones": [
-          "X"
-        ],
-        "flood_confidence": "SCREENED",
-        "future_land_use_score": 55,
-        "future_land_use": [],
-        "aadt": 11644,
-        "aadt_5yr_growth_pct": 38.8,
-        "aadt_station_miles": 0.54,
-        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
-        "retail_catalyst_miles": 0.51,
-        "future_residential_lots_nearby": 8304.9,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "UNKNOWN",
-        "utility_context": "No parcel-level utility path verified; request provider as-builts and written capacity",
-        "assessed_value_per_acre": 182489.0,
-        "land_value_per_acre": 149740.0,
-        "parcel_opportunity_score": 80.2,
-        "parcel_execution_score": 77.1,
-        "parcel_fit_score": 81.4,
-        "acquisition_complexity_score": 74.4,
-        "utility_score": 25,
-        "confidence_score": 84,
-        "node_confidence_score": 100,
-        "node_class": "PRIORITY NODE",
-        "node_component_scores": {
-          "residential_growth": 79.0,
-          "intersection_network": 100,
-          "retail_catalyst": 100,
-          "traffic": 50.1,
-          "timing": 69.4
-        },
-        "parcel_component_scores": {
-          "frontage_access": 100,
-          "size_shape": 81.4,
-          "utilities": 25,
-          "flood": 100,
-          "acquisition": 74.4
-        },
-        "acquisition_category": "WATCH",
-        "decision_summary": "Strong enough to track closely; one or more execution items still need to improve or be verified.",
-        "main_risks": [
-          "utility path is unverified"
-        ],
-        "usable_acres_proxy": 4.19,
-        "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of the node \u00b7 8304 weighted future residential lots \u00b7 0.5 mi from Culebra / SH 211 H-E-B",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity.",
-        "bcad_geometry_verified": true,
-        "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "04404-100-0660",
-        "ownership_type": "Private",
-        "last_deed_date": "2009-12-08",
-        "hold_years": 16.8,
         "rank": 6
       }
     },

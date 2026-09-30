@@ -8,6 +8,327 @@
         "coordinates": [
           [
             [
+              -98.8025453790675,
+              29.51140912004305
+            ],
+            [
+              -98.80374832311725,
+              29.51141098861957
+            ],
+            [
+              -98.80471555636012,
+              29.511411165112698
+            ],
+            [
+              -98.80528960609148,
+              29.504827704049447
+            ],
+            [
+              -98.8025103266047,
+              29.504822471590757
+            ],
+            [
+              -98.80251406243607,
+              29.504942245991806
+            ],
+            [
+              -98.80251448182403,
+              29.50502475097428
+            ],
+            [
+              -98.80251490121262,
+              29.505107255955327
+            ],
+            [
+              -98.80251917307707,
+              29.505948035398504
+            ],
+            [
+              -98.8025202904357,
+              29.506168049237115
+            ],
+            [
+              -98.80252460295891,
+              29.50701666673697
+            ],
+            [
+              -98.80252544073792,
+              29.50718167662959
+            ],
+            [
+              -98.80252975231333,
+              29.508030294855647
+            ],
+            [
+              -98.80253087075245,
+              29.508250306798224
+            ],
+            [
+              -98.80253436383484,
+              29.50893784811266
+            ],
+            [
+              -98.80253520267684,
+              29.50910285794238
+            ],
+            [
+              -98.80254022174125,
+              29.510010414309903
+            ],
+            [
+              -98.8025429748044,
+              29.510757550374155
+            ],
+            [
+              -98.8025453790675,
+              29.51140912004305
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "209006",
+        "owner": "STOLTE FARMS LTD",
+        "situs": "8370  FM 471 N",
+        "acres": 42.29,
+        "land_value": 3846890.0,
+        "assessed_value": 3846890.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 4403  P-1  ABS 1298",
+        "node_id": "INT-001",
+        "node_name": "Culebra Rd / SH 211",
+        "node_score": 82.2,
+        "node_edge_miles": 0.878,
+        "dist_score": 66,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 93.3,
+        "compactness": 0.583,
+        "aspect_ratio": 2.71,
+        "road_score": 84,
+        "frontage_roads": [
+          "PVT RD AT 15464 FM 471 W"
+        ],
+        "frontage_ft_proxy": 79.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 10000,
+        "aadt_5yr_growth_pct": 0,
+        "aadt_station_miles": 0.33,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 1.12,
+        "future_residential_lots_nearby": 8304.9,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level utility path verified; request provider as-builts and written capacity",
+        "assessed_value_per_acre": 90965.0,
+        "land_value_per_acre": 90965.0,
+        "parcel_opportunity_score": 80.8,
+        "parcel_execution_score": 78.8,
+        "parcel_fit_score": 97.5,
+        "acquisition_complexity_score": 94.4,
+        "utility_score": 25,
+        "confidence_score": 84,
+        "node_confidence_score": 100,
+        "node_class": "PRIORITY NODE",
+        "node_component_scores": {
+          "residential_growth": 79.0,
+          "intersection_network": 100,
+          "retail_catalyst": 100,
+          "traffic": 50.1,
+          "timing": 69.4
+        },
+        "parcel_component_scores": {
+          "frontage_access": 84,
+          "size_shape": 97.5,
+          "utilities": 25,
+          "flood": 100,
+          "acquisition": 94.4
+        },
+        "acquisition_category": "WATCH",
+        "decision_summary": "Strong enough to track closely; one or more execution items still need to improve or be verified.",
+        "main_risks": [
+          "not on the immediate intersection",
+          "limited frontage proxy",
+          "utility path is unverified"
+        ],
+        "usable_acres_proxy": 42.29,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within 1 mile of the node \u00b7 8304 weighted future residential lots \u00b7 1.1 mi from Culebra / SH 211 H-E-B",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04403-000-0010",
+        "ownership_type": "Private",
+        "last_deed_date": "2004-06-14",
+        "hold_years": 22.3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.79798801537686,
+              29.37229845202923
+            ],
+            [
+              -98.79795878319297,
+              29.375177282508822
+            ],
+            [
+              -98.79880945214504,
+              29.37517070609206
+            ],
+            [
+              -98.79881053843349,
+              29.37598185995044
+            ],
+            [
+              -98.79965336930347,
+              29.375942054117782
+            ],
+            [
+              -98.80127991239237,
+              29.375940009348838
+            ],
+            [
+              -98.8018867068634,
+              29.37593924178787
+            ],
+            [
+              -98.80190456858045,
+              29.373626009934995
+            ],
+            [
+              -98.801886064684,
+              29.37226206387686
+            ],
+            [
+              -98.80124667293848,
+              29.372271180684866
+            ],
+            [
+              -98.79798801537686,
+              29.37229845202923
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "prop_id": "338017",
+        "owner": "MECHLER DONALD  ET AL",
+        "situs": "5845  MECHLER LN N",
+        "acres": 36.42,
+        "land_value": 761790.0,
+        "assessed_value": 761790.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB: 5172  P-9  ABS: 1009",
+        "node_id": "INT-004",
+        "node_name": "US 90 / SH 211",
+        "node_score": 75.4,
+        "node_edge_miles": 0.279,
+        "dist_score": 90,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.747,
+        "aspect_ratio": 1.06,
+        "road_score": 90,
+        "frontage_roads": [
+          "Unnamed road",
+          "MECHLER RD"
+        ],
+        "frontage_ft_proxy": 2245.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Country Tier / West"
+        ],
+        "aadt": 31896,
+        "aadt_5yr_growth_pct": 46.6,
+        "aadt_station_miles": 0.62,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 10.37,
+        "future_residential_lots_nearby": 9269.1,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_context": "1 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
+        "assessed_value_per_acre": 20917.0,
+        "land_value_per_acre": 20917.0,
+        "parcel_opportunity_score": 80.5,
+        "parcel_execution_score": 88.2,
+        "parcel_fit_score": 100.0,
+        "acquisition_complexity_score": 97.2,
+        "utility_score": 58,
+        "confidence_score": 100,
+        "node_confidence_score": 100,
+        "node_class": "EMERGING NODE",
+        "node_component_scores": {
+          "residential_growth": 83.6,
+          "intersection_network": 100,
+          "retail_catalyst": 28,
+          "traffic": 71.9,
+          "timing": 70.1
+        },
+        "parcel_component_scores": {
+          "frontage_access": 90,
+          "size_shape": 100.0,
+          "utilities": 58,
+          "flood": 100,
+          "acquisition": 97.2
+        },
+        "acquisition_category": "PRIORITY",
+        "decision_summary": "Investigate ownership, access, utilities and pricing now.",
+        "main_risks": [
+          "utility capacity is unverified"
+        ],
+        "usable_acres_proxy": 36.42,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within \u00bd mile of the node \u00b7 9269 weighted future residential lots \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05172-000-0093",
+        "ownership_type": "Private",
+        "last_deed_date": "2022-05-16",
+        "hold_years": 4.4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
               -98.7874086810149,
               29.516203608849164
             ],
@@ -2008,117 +2329,145 @@
         "coordinates": [
           [
             [
-              -98.29872983212913,
-              29.46406492345841
+              -98.28969399149736,
+              29.456727709846273
             ],
             [
-              -98.29872637199718,
-              29.46406580129587
+              -98.28970455633551,
+              29.456725167343567
             ],
             [
-              -98.29718048312108,
-              29.46445577706183
+              -98.29044567807436,
+              29.456546784330456
             ],
             [
-              -98.29557612639215,
-              29.465082961903555
+              -98.29076433831074,
+              29.456470086710812
             ],
             [
-              -98.29525085735632,
-              29.46608981552248
+              -98.29081617383974,
+              29.456459126904225
             ],
             [
-              -98.29788438663846,
-              29.46669543769378
+              -98.2908689913853,
+              29.456454962014092
             ],
             [
-              -98.29788643737103,
-              29.466695908645928
+              -98.2909219040457,
+              29.45645766197642
             ],
             [
-              -98.3000829892842,
-              29.467200995119967
+              -98.29097402332214,
+              29.456467181453977
             ],
             [
-              -98.30097295115526,
-              29.464566681470696
+              -98.29124353360629,
+              29.456535403956654
             ],
             [
-              -98.30100166994455,
-              29.464474443208594
+              -98.29125969434892,
+              29.456539459845242
             ],
             [
-              -98.30136671621052,
-              29.463396386422414
+              -98.2914358057925,
+              29.456010553251
             ],
             [
-              -98.29872983212913,
-              29.46406492345841
+              -98.29146133387229,
+              29.45573092753895
+            ],
+            [
+              -98.29163328593626,
+              29.455201870434422
+            ],
+            [
+              -98.29178451890732,
+              29.454952885759862
+            ],
+            [
+              -98.29204849573105,
+              29.454149842163297
+            ],
+            [
+              -98.28897104408145,
+              29.4535075831983
+            ],
+            [
+              -98.28849128242314,
+              29.453403919899817
+            ],
+            [
+              -98.28885650592727,
+              29.454344791961432
+            ],
+            [
+              -98.28919916616249,
+              29.455116498136434
+            ],
+            [
+              -98.28969399149736,
+              29.456727709846273
             ]
           ]
         ]
       },
       "properties": {
-        "prop_id": "618978",
-        "owner": "MS410 PARTNERS LLC",
-        "situs": "9713 E IH 10",
-        "acres": 33.83,
-        "land_value": 1695740.0,
-        "assessed_value": 1695840.0,
-        "improvement_value": 100.0,
+        "prop_id": "1113105",
+        "owner": "GREEN ROAD 1604 PARTNERS LLC",
+        "situs": "E LOOP 1604 N",
+        "acres": 18.5,
+        "land_value": 825000.0,
+        "assessed_value": 825000.0,
+        "improvement_value": 0.0,
         "improvement_ratio": 0.0,
-        "gba": 660.0,
+        "gba": 0.0,
         "prop_use": "99",
-        "legal": "NCB 16550 BLK     LOT P-12 (33.831 AC) 2009-RESURVEY PER DEED 13437/795 EX 4/8/08",
+        "legal": "CB 5088 P-29 ABS 308 2023 REMAINS PER DEED 20220127912//  2008-NEW PER SPLIT PER DEED 13178/1366 EXE 10-16-07",
         "node_id": "INT-009",
         "node_name": "Schuwirth Rd / Loop 1604 East",
         "node_score": 77.8,
-        "node_edge_miles": 0.778,
-        "dist_score": 66,
+        "node_edge_miles": 0.091,
+        "dist_score": 100,
         "acre_score": 100,
-        "raw_score": 100.0,
+        "raw_score": 100,
         "shape_score": 100,
-        "compactness": 0.659,
-        "aspect_ratio": 1.13,
-        "road_score": 100,
+        "compactness": 0.681,
+        "aspect_ratio": 1.07,
+        "road_score": 90,
         "frontage_roads": [
-          "IH 10 E ACCESS RD",
-          "WEICHOLD RD",
-          "PVT RD AT 9607 WEICHOLD RD",
-          "IH 10 E"
+          "GREEN RD",
+          "E LOOP 1604 N"
         ],
-        "frontage_ft_proxy": 3825.0,
-        "corner_signal": "STRONG",
+        "frontage_ft_proxy": 961.0,
+        "corner_signal": "NO",
         "major_road_signal": true,
         "mtp_row_flag": false,
-        "flood_score": 75,
-        "flood_pct": 12.1,
+        "flood_score": 100,
+        "flood_pct": 0.0,
         "floodway_pct": 0.0,
         "flood_zones": [
-          "AE",
           "X"
         ],
         "flood_confidence": "SCREENED",
-        "future_land_use_score": 100,
+        "future_land_use_score": 55,
         "future_land_use": [
-          "Regional Commercial / I-10 East Corridor",
-          "Community Commercial / I-10 East Corridor"
+          "Urban Living / I-10 East Corridor"
         ],
-        "aadt": 41365,
-        "aadt_5yr_growth_pct": 383.2,
-        "aadt_station_miles": 0.37,
+        "aadt": 20632,
+        "aadt_5yr_growth_pct": 90.2,
+        "aadt_station_miles": 0.52,
         "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
-        "retail_catalyst_miles": 3.46,
+        "retail_catalyst_miles": 4.28,
         "future_residential_lots_nearby": 5845.3,
         "recent_housing_units_180d": 0,
         "utility_confidence": "UNKNOWN",
         "utility_context": "No parcel-level utility path verified; request provider as-builts and written capacity",
-        "assessed_value_per_acre": 50128.0,
-        "land_value_per_acre": 50125.0,
-        "parcel_opportunity_score": 79.2,
-        "parcel_execution_score": 81.2,
+        "assessed_value_per_acre": 44595.0,
+        "land_value_per_acre": 44595.0,
+        "parcel_opportunity_score": 79.3,
+        "parcel_execution_score": 81.6,
         "parcel_fit_score": 100.0,
-        "acquisition_complexity_score": 94.4,
+        "acquisition_complexity_score": 97.2,
         "utility_score": 25,
         "confidence_score": 84,
         "node_confidence_score": 100,
@@ -2131,29 +2480,27 @@
           "timing": 65.3
         },
         "parcel_component_scores": {
-          "frontage_access": 100,
+          "frontage_access": 90,
           "size_shape": 100.0,
           "utilities": 25,
-          "flood": 75,
-          "acquisition": 94.4
+          "flood": 100,
+          "acquisition": 97.2
         },
         "acquisition_category": "WATCH",
         "decision_summary": "Strong enough to track closely; one or more execution items still need to improve or be verified.",
         "main_risks": [
-          "not on the immediate intersection",
-          "utility path is unverified",
-          "12.1% mapped SFHA overlap"
+          "utility path is unverified"
         ],
-        "usable_acres_proxy": 29.74,
+        "usable_acres_proxy": 18.5,
         "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 5845 weighted future residential lots \u00b7 mostly raw / low-improvement land",
+        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of the node \u00b7 5845 weighted future residential lots \u00b7 mostly raw / low-improvement land",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity.",
         "bcad_geometry_verified": true,
         "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "16550-000-0120",
+        "bcad_geo_id": "05088-000-0290",
         "ownership_type": "Private",
-        "last_deed_date": "2010-02-04",
-        "hold_years": 16.7
+        "last_deed_date": "2008-12-22",
+        "hold_years": 17.8
       }
     },
     {
@@ -3674,174 +4021,6 @@
         "coordinates": [
           [
             [
-              -98.80254537906741,
-              29.51140912004313
-            ],
-            [
-              -98.80374832311715,
-              29.511410988619666
-            ],
-            [
-              -98.80471555636002,
-              29.51141116511276
-            ],
-            [
-              -98.80528960609134,
-              29.504827704049518
-            ],
-            [
-              -98.80251032660462,
-              29.504822471590845
-            ],
-            [
-              -98.80251406243599,
-              29.504942245991906
-            ],
-            [
-              -98.80251448182389,
-              29.50502475097436
-            ],
-            [
-              -98.80251490121248,
-              29.505107255955412
-            ],
-            [
-              -98.80251917307699,
-              29.50594803539858
-            ],
-            [
-              -98.8025202904356,
-              29.506168049237182
-            ],
-            [
-              -98.80252460295877,
-              29.507016666737073
-            ],
-            [
-              -98.8025254407378,
-              29.50718167662967
-            ],
-            [
-              -98.80252975231323,
-              29.50803029485571
-            ],
-            [
-              -98.8025308707523,
-              29.508250306798317
-            ],
-            [
-              -98.80253436383468,
-              29.508937848112726
-            ],
-            [
-              -98.8025352026767,
-              29.50910285794245
-            ],
-            [
-              -98.80254022174113,
-              29.510010414309978
-            ],
-            [
-              -98.8025429748043,
-              29.51075755037425
-            ],
-            [
-              -98.80254537906741,
-              29.51140912004313
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "prop_id": "209006",
-        "owner": "STOLTE FARMS LTD",
-        "situs": "8370  FM 471 N",
-        "acres": 42.29,
-        "land_value": 3846890.0,
-        "assessed_value": 3846890.0,
-        "improvement_value": 0.0,
-        "improvement_ratio": 0.0,
-        "gba": 0.0,
-        "prop_use": "9",
-        "legal": "CB 4403  P-1  ABS 1298",
-        "node_id": "INT-001",
-        "node_name": "Culebra Rd / SH 211",
-        "node_score": 82.2,
-        "node_edge_miles": 0.878,
-        "dist_score": 66,
-        "acre_score": 100,
-        "raw_score": 100,
-        "shape_score": 93.3,
-        "compactness": 0.583,
-        "aspect_ratio": 2.71,
-        "road_score": 84,
-        "frontage_roads": [
-          "PVT RD AT 15464 FM 471 W"
-        ],
-        "frontage_ft_proxy": 79.0,
-        "corner_signal": "NO",
-        "major_road_signal": true,
-        "mtp_row_flag": false,
-        "flood_score": 55,
-        "flood_pct": null,
-        "floodway_pct": null,
-        "flood_zones": [],
-        "flood_confidence": "UNKNOWN",
-        "future_land_use_score": 55,
-        "future_land_use": [],
-        "aadt": 10000,
-        "aadt_5yr_growth_pct": 0,
-        "aadt_station_miles": 0.33,
-        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
-        "retail_catalyst_miles": 1.12,
-        "future_residential_lots_nearby": 8304.9,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "UNKNOWN",
-        "utility_context": "No parcel-level utility path verified; request provider as-builts and written capacity",
-        "assessed_value_per_acre": 90965.0,
-        "land_value_per_acre": 90965.0,
-        "parcel_opportunity_score": 78.6,
-        "parcel_execution_score": 73.2,
-        "parcel_fit_score": 97.5,
-        "acquisition_complexity_score": 94.4,
-        "utility_score": 25,
-        "confidence_score": 64.0,
-        "node_confidence_score": 100,
-        "node_class": "PRIORITY NODE",
-        "node_component_scores": {
-          "residential_growth": 79.0,
-          "intersection_network": 100,
-          "retail_catalyst": 100,
-          "traffic": 50.1,
-          "timing": 69.4
-        },
-        "parcel_component_scores": {
-          "frontage_access": 84,
-          "size_shape": 97.5,
-          "utilities": 25,
-          "flood": 55,
-          "acquisition": 94.4
-        },
-        "acquisition_category": "REVIEW",
-        "decision_summary": "Does not currently clear the acquisition-mode highlight standard.",
-        "main_risks": [
-          "not on the immediate intersection",
-          "limited frontage proxy",
-          "utility path is unverified",
-          "flood screen unavailable"
-        ],
-        "eligible": false,
-        "why_this_tract": "major-road frontage \u00b7 within 1 mile of the node \u00b7 8304 weighted future residential lots \u00b7 1.1 mi from Culebra / SH 211 H-E-B",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity."
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
               -98.80008267562839,
               29.363198313645125
             ],
@@ -4272,133 +4451,142 @@
         "coordinates": [
           [
             [
-              -98.79798801537676,
-              29.37229845202928
+              -98.29872983212898,
+              29.464064923458487
             ],
             [
-              -98.79795878319288,
-              29.375177282508854
+              -98.29872637199706,
+              29.464065801295956
             ],
             [
-              -98.79880945214494,
-              29.375170706092142
+              -98.297180483121,
+              29.464455777061925
             ],
             [
-              -98.79881053843337,
-              29.37598185995052
+              -98.295576126392,
+              29.46508296190363
             ],
             [
-              -98.79965336930331,
-              29.37594205411787
+              -98.29525085735624,
+              29.466089815522537
             ],
             [
-              -98.80127991239227,
-              29.375940009348923
+              -98.29788438663833,
+              29.466695437693854
             ],
             [
-              -98.8018867068633,
-              29.37593924178797
+              -98.2978864373709,
+              29.466695908646017
             ],
             [
-              -98.80190456858031,
-              29.373626009935045
+              -98.30008298928412,
+              29.467200995120063
             ],
             [
-              -98.80188606468386,
-              29.372262063876928
+              -98.30097295115512,
+              29.46456668147076
             ],
             [
-              -98.80124667293839,
-              29.37227118068496
+              -98.30100166994441,
+              29.46447444320866
             ],
             [
-              -98.79798801537676,
-              29.37229845202928
+              -98.3013667162104,
+              29.46339638642252
+            ],
+            [
+              -98.29872983212898,
+              29.464064923458487
             ]
           ]
         ]
       },
       "properties": {
-        "prop_id": "338017",
-        "owner": "MECHLER DONALD  ET AL",
-        "situs": "5845  MECHLER LN N",
-        "acres": 36.42,
-        "land_value": 761790.0,
-        "assessed_value": 761790.0,
-        "improvement_value": 0.0,
+        "prop_id": "618978",
+        "owner": "MS410 PARTNERS LLC",
+        "situs": "9713 E IH 10",
+        "acres": 33.83,
+        "land_value": 1695740.0,
+        "assessed_value": 1695840.0,
+        "improvement_value": 100.0,
         "improvement_ratio": 0.0,
-        "gba": 0.0,
-        "prop_use": "9",
-        "legal": "CB: 5172  P-9  ABS: 1009",
-        "node_id": "INT-004",
-        "node_name": "US 90 / SH 211",
-        "node_score": 75.4,
-        "node_edge_miles": 0.279,
-        "dist_score": 90,
+        "gba": 660.0,
+        "prop_use": "99",
+        "legal": "NCB 16550 BLK     LOT P-12 (33.831 AC) 2009-RESURVEY PER DEED 13437/795 EX 4/8/08",
+        "node_id": "INT-009",
+        "node_name": "Schuwirth Rd / Loop 1604 East",
+        "node_score": 77.8,
+        "node_edge_miles": 0.778,
+        "dist_score": 66,
         "acre_score": 100,
-        "raw_score": 100,
+        "raw_score": 100.0,
         "shape_score": 100,
-        "compactness": 0.747,
-        "aspect_ratio": 1.06,
-        "road_score": 90,
+        "compactness": 0.659,
+        "aspect_ratio": 1.13,
+        "road_score": 100,
         "frontage_roads": [
-          "Unnamed road",
-          "MECHLER RD"
+          "IH 10 E ACCESS RD",
+          "WEICHOLD RD",
+          "PVT RD AT 9607 WEICHOLD RD",
+          "IH 10 E"
         ],
-        "frontage_ft_proxy": 2245.0,
-        "corner_signal": "NO",
+        "frontage_ft_proxy": 3825.0,
+        "corner_signal": "STRONG",
         "major_road_signal": true,
-        "mtp_row_flag": true,
+        "mtp_row_flag": false,
         "flood_score": 55,
         "flood_pct": null,
         "floodway_pct": null,
         "flood_zones": [],
         "flood_confidence": "UNKNOWN",
-        "future_land_use_score": 55,
+        "future_land_use_score": 100,
         "future_land_use": [
-          "Country Tier / West"
+          "Regional Commercial / I-10 East Corridor",
+          "Community Commercial / I-10 East Corridor"
         ],
-        "aadt": 31896,
-        "aadt_5yr_growth_pct": 46.6,
-        "aadt_station_miles": 0.62,
-        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
-        "retail_catalyst_miles": 10.37,
-        "future_residential_lots_nearby": 9269.1,
+        "aadt": 41365,
+        "aadt_5yr_growth_pct": 383.2,
+        "aadt_station_miles": 0.37,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 3.46,
+        "future_residential_lots_nearby": 5845.3,
         "recent_housing_units_180d": 0,
-        "utility_confidence": "PROXY",
-        "utility_context": "1 mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified",
-        "assessed_value_per_acre": 20917.0,
-        "land_value_per_acre": 20917.0,
-        "parcel_opportunity_score": 78.3,
-        "parcel_execution_score": 82.6,
+        "utility_confidence": "UNKNOWN",
+        "utility_context": "No parcel-level utility path verified; request provider as-builts and written capacity",
+        "assessed_value_per_acre": 50128.0,
+        "land_value_per_acre": 50125.0,
+        "parcel_opportunity_score": 78.2,
+        "parcel_execution_score": 78.7,
         "parcel_fit_score": 100.0,
-        "acquisition_complexity_score": 97.2,
-        "utility_score": 58,
-        "confidence_score": 72.0,
+        "acquisition_complexity_score": 94.4,
+        "utility_score": 25,
+        "confidence_score": 64.0,
         "node_confidence_score": 100,
-        "node_class": "EMERGING NODE",
+        "node_class": "PRIORITY NODE",
         "node_component_scores": {
-          "residential_growth": 83.6,
+          "residential_growth": 72.6,
           "intersection_network": 100,
-          "retail_catalyst": 28,
-          "traffic": 71.9,
-          "timing": 70.1
+          "retail_catalyst": 50,
+          "traffic": 89.1,
+          "timing": 65.3
         },
         "parcel_component_scores": {
-          "frontage_access": 90,
+          "frontage_access": 100,
           "size_shape": 100.0,
-          "utilities": 58,
+          "utilities": 25,
           "flood": 55,
-          "acquisition": 97.2
+          "acquisition": 94.4
         },
         "acquisition_category": "REVIEW",
         "decision_summary": "Does not currently clear the acquisition-mode highlight standard.",
         "main_risks": [
-          "utility capacity is unverified",
-          "flood screen unavailable"
+          "not on the immediate intersection",
+          "utility path is unverified",
+          "flood screen unavailable",
+          "important diligence data is incomplete"
         ],
         "eligible": false,
-        "why_this_tract": "major-road frontage \u00b7 within \u00bd mile of the node \u00b7 9269 weighted future residential lots \u00b7 mostly raw / low-improvement land",
+        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 5845 weighted future residential lots \u00b7 mostly raw / low-improvement land",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity."
       }
     },
@@ -6648,180 +6836,6 @@
         "ownership_type": "Private",
         "last_deed_date": "2025-09-30",
         "hold_years": 1.0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -98.28969399149727,
-              29.45672770984634
-            ],
-            [
-              -98.28970455633541,
-              29.456725167343645
-            ],
-            [
-              -98.29044567807424,
-              29.456546784330516
-            ],
-            [
-              -98.29076433831065,
-              29.456470086710887
-            ],
-            [
-              -98.29081617383966,
-              29.456459126904317
-            ],
-            [
-              -98.2908689913852,
-              29.45645496201419
-            ],
-            [
-              -98.29092190404559,
-              29.456457661976504
-            ],
-            [
-              -98.29097402332201,
-              29.45646718145405
-            ],
-            [
-              -98.29124353360613,
-              29.456535403956753
-            ],
-            [
-              -98.29125969434884,
-              29.45653945984533
-            ],
-            [
-              -98.29143580579236,
-              29.456010553251087
-            ],
-            [
-              -98.29146133387215,
-              29.45573092753904
-            ],
-            [
-              -98.29163328593616,
-              29.455201870434472
-            ],
-            [
-              -98.29178451890718,
-              29.454952885759926
-            ],
-            [
-              -98.29204849573095,
-              29.454149842163414
-            ],
-            [
-              -98.28897104408131,
-              29.453507583198395
-            ],
-            [
-              -98.28849128242304,
-              29.45340391989988
-            ],
-            [
-              -98.28885650592713,
-              29.454344791961493
-            ],
-            [
-              -98.28919916616235,
-              29.455116498136526
-            ],
-            [
-              -98.28969399149727,
-              29.45672770984634
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "prop_id": "1113105",
-        "owner": "GREEN ROAD 1604 PARTNERS LLC",
-        "situs": "E LOOP 1604 N",
-        "acres": 18.5,
-        "land_value": 825000.0,
-        "assessed_value": 825000.0,
-        "improvement_value": 0.0,
-        "improvement_ratio": 0.0,
-        "gba": 0.0,
-        "prop_use": "99",
-        "legal": "CB 5088 P-29 ABS 308 2023 REMAINS PER DEED 20220127912//  2008-NEW PER SPLIT PER DEED 13178/1366 EXE 10-16-07",
-        "node_id": "INT-009",
-        "node_name": "Schuwirth Rd / Loop 1604 East",
-        "node_score": 77.8,
-        "node_edge_miles": 0.091,
-        "dist_score": 100,
-        "acre_score": 100,
-        "raw_score": 100,
-        "shape_score": 100,
-        "compactness": 0.681,
-        "aspect_ratio": 1.07,
-        "road_score": 90,
-        "frontage_roads": [
-          "GREEN RD",
-          "E LOOP 1604 N"
-        ],
-        "frontage_ft_proxy": 961.0,
-        "corner_signal": "NO",
-        "major_road_signal": true,
-        "mtp_row_flag": false,
-        "flood_score": 55,
-        "flood_pct": null,
-        "floodway_pct": null,
-        "flood_zones": [],
-        "flood_confidence": "UNKNOWN",
-        "future_land_use_score": 55,
-        "future_land_use": [
-          "Urban Living / I-10 East Corridor"
-        ],
-        "aadt": 20632,
-        "aadt_5yr_growth_pct": 90.2,
-        "aadt_station_miles": 0.52,
-        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
-        "retail_catalyst_miles": 4.28,
-        "future_residential_lots_nearby": 5845.3,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "UNKNOWN",
-        "utility_context": "No parcel-level utility path verified; request provider as-builts and written capacity",
-        "assessed_value_per_acre": 44595.0,
-        "land_value_per_acre": 44595.0,
-        "parcel_opportunity_score": 77.1,
-        "parcel_execution_score": 76.0,
-        "parcel_fit_score": 100.0,
-        "acquisition_complexity_score": 97.2,
-        "utility_score": 25,
-        "confidence_score": 64.0,
-        "node_confidence_score": 100,
-        "node_class": "PRIORITY NODE",
-        "node_component_scores": {
-          "residential_growth": 72.6,
-          "intersection_network": 100,
-          "retail_catalyst": 50,
-          "traffic": 89.1,
-          "timing": 65.3
-        },
-        "parcel_component_scores": {
-          "frontage_access": 90,
-          "size_shape": 100.0,
-          "utilities": 25,
-          "flood": 55,
-          "acquisition": 97.2
-        },
-        "acquisition_category": "REVIEW",
-        "decision_summary": "Does not currently clear the acquisition-mode highlight standard.",
-        "main_risks": [
-          "utility path is unverified",
-          "flood screen unavailable",
-          "important diligence data is incomplete"
-        ],
-        "eligible": false,
-        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of the node \u00b7 5845 weighted future residential lots \u00b7 mostly raw / low-improvement land",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity."
       }
     },
     {

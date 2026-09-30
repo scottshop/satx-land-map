@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T20:20:47.938791+00:00",
+  "generated_at": "2026-09-30T20:27:20.201860+00:00",
   "generator": "scripts/generate_opportunities.py",
   "version": "Acquisition Mode V2",
   "node_count": 24,
@@ -23,9 +23,7 @@
   },
   "errors": [
     "fema-parcel 163841: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 338017: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
-    "fema-parcel 209006: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: HTTPSConnectionPool(host='hazards.fema.gov', port=443): Read timed out. (read timeout=25)",
-    "fema-parcel 1113105: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: HTTPSConnectionPool(host='hazards.fema.gov', port=443): Read timed out."
+    "fema-parcel 618978: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
   ],
   "source_feature_counts": {
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/4/query": 60,
@@ -42,8 +40,8 @@
     "https://services.arcgis.com/g7IVOf0Gf9OkqkzV/ArcGIS/rest/services/SSORP_1_25_svc/FeatureServer/1/query": 10,
     "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Building_Permits_Issued_Past_180_Days/FeatureServer/0/query": 2885,
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/2/query": 1767,
-    "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query": 149,
-    "https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query": 65
+    "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query": 151,
+    "https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query": 67
   },
   "methodology": {
     "architecture": "Node first -> parcel second -> hard filters -> 60% location / 40% parcel execution -> confidence -> category",
