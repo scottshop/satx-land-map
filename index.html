@@ -2922,7 +2922,6 @@
                 overlays :  {
                     "RESEARCH — Heat Map" : feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
                     "GROWTH — Priority Intersections" : feature_group_faeb81c75b71b2840ca70907d2e58065,
-                    "RESEARCH — Legacy References" : feature_group_0c45a8fa797258d406c1e937c6f99c34,
                     "GROWTH — Major Developments" : feature_group_a226874f9972842eec65b43be2a10db9,
                     "GROWTH — Retail / Employment Anchors" : feature_group_18e326aa803143ba3330a0ba600b718a,
                     "INFRASTRUCTURE — Active Road Improvements" : feature_group_370786adb15c6d6d865f189609798696,
@@ -2952,7 +2951,7 @@
                 headings.forEach(function(group){
                   if(!groups[group])return;
                   var title=L.DomUtil.create('div','layer-heading',container);title.textContent=group;
-                  var order=['Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Assemblage Opportunities','Existing Sewer Mains','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
+                  var order=['Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
                   groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(label){container.appendChild(label);});
                 });
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
@@ -3607,9 +3606,7 @@
           d.style.cssText="background:white;padding:7px 9px;max-width:285px;font:11px/1.35 Arial;color:#333";
           d.innerHTML="<b>Source notes</b><br>"+
             "Parcel polygons/owner screen: BCAD via SARA (Dec. 2025)<br>"+
-            "Preliminary plats: CoSA Development Services<br>"+
             "County plats/MDPs: Bexar Public Works<br>"+
-            "Future Land Use: CoSA (edited Jul. 21, 2026)<br>"+
             "Traffic: TxDOT historical AADT<br>"+
             "FEMA NFHL: unavailable at Sept. 29 audit<br>"+
             "Flood buffer: Bexar Public Works 100-ft screen<br>"+
@@ -3622,23 +3619,20 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"PARCEL DATA — Comal CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"PARCEL DATA — Guadalupe CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"LAND — H-E-B Owned Parcels");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3PrelimPlats,"GROWTH — Preliminary Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FutureLandUse,"DUE DILIGENCE — Future Land Use");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"INFRASTRUCTURE — Existing Sewer Mains");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BulverdeVerifiedSewer,"INFRASTRUCTURE — Approximate Utility Corridors");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"INFRASTRUCTURE — Traffic Counts");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FemaHazard,"DUE DILIGENCE — Flood Zones (service unavailable at audit)");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"DUE DILIGENCE — Flood Buffer");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Rings,"RESEARCH — 1 / 3 / 5 Mile Rings");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3LandResults,"RESEARCH — Parcel Search Results");
 
 
         [
           [v3Parcels,'Bexar CAD'],[v3ComalParcels,'Comal CAD'],[v3GuadalupeParcels,'Guadalupe CAD'],
           [v3HEBOwnedParcels,'H-E-B Bexar'],[v3HEBComalParcels,'H-E-B Comal'],[v3HEBGuadalupeParcels,'H-E-B Guadalupe'],
           [v3SewerSAWS,'SAWS sewer'],[v3SewerNBU,'NBU sewer'],[v3SewerGBRAGravity,'GBRA gravity'],[v3SewerGBRAForce,'GBRA force mains'],
-          [v3PrelimPlats,'Preliminary plats'],[v3FutureLandUse,'Future land use'],[v3FemaHazard,'FEMA flood'],[v3AADT,'Traffic counts']
+          [v3FemaHazard,'FEMA flood'],[v3AADT,'Traffic counts']
         ].forEach(function(item){
           item[0].on('requesterror',function(){sourceLoadErrors[item[1]]='Source request failed; coverage may be incomplete.';updateSourceStatus();});
           item[0].on('remove',function(){delete sourceLoadErrors[item[1]];updateSourceStatus();});
@@ -3746,10 +3740,6 @@
         v3SnapByBCAD(marker_e2bbf31fa9ccde5bfb586db3459d6735,
           "Situs_num='711' AND Situs LIKE '%FOSTER%'","H-E-B Foster Road campus",null,null,false);
 
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(
-          v3VerifiedTargetGeometry,"RESEARCH — Legacy Parcel References"
-        );
-
 
         
         // ---- V6 EXACT PARCEL DISCOVERY — STATIC RENDERER ----
@@ -3757,16 +3747,10 @@
           map_33cc2c2ac68d72d2971fbb7de3650b24.createPane("v6ExactParcelPane");
           map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6ExactParcelPane").style.zIndex=430;
         }
-        if(!map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane")){
-          map_33cc2c2ac68d72d2971fbb7de3650b24.createPane("v6AssemblagePane");
-          map_33cc2c2ac68d72d2971fbb7de3650b24.getPane("v6AssemblagePane").style.zIndex=420;
-        }
-
         window.v6OpportunityData=[];
         window.v6OpportunityById={};
         window.v6OpportunityLayer=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
         window.v6OpportunityMarkers=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
-        window.v6AssemblageLayer=L.featureGroup();
         window.v6OppLoaded=false;
         window.parcelSnapshotDate="Not reported";
 
@@ -3913,12 +3897,6 @@
             var list=document.getElementById("v6OppList"); if(list)list.innerHTML="<div class='v6Tiny'><b>Parcel dataset unavailable.</b><br>"+v6h(e.message)+"</div>";
           });
 
-          fetch("data/assemblages.geojson").then(function(r){if(!r.ok)throw new Error();return r.json();}).then(function(fc){
-            L.geoJSON(fc,{pane:"v6AssemblagePane",style:function(){return {pane:"v6AssemblagePane",color:"#ff8c00",weight:4,dashArray:"8,5",fillColor:"#ffb347",fillOpacity:.06};},
-              onEachFeature:function(f,l){var p=f.properties||{};l.bindPopup("<b>Assemblage Opportunity</b><br>"+v6h(p.owner||"—")+"<br>"+v6h(p.combined_acres||"—")+" acres across "+v6h(p.parcel_count||"—")+" parcels<br>Parcel IDs: "+v6h(v6arr(p.parcel_ids))+"<br><span style='color:#666'>Underlying parcel IDs remain separately identifiable.</span>");}
-            }).eachLayer(function(l){l.addTo(window.v6AssemblageLayer);});
-            layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v6AssemblageLayer,"LAND — Assemblage Opportunities");
-          }).catch(function(){});
         }
 
         setTimeout(function(){
@@ -3936,10 +3914,9 @@
           var btn=document.getElementById("v7ModeToggle");
           var researchLayers=[
             feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
-            feature_group_0c45a8fa797258d406c1e937c6f99c34,
             feature_group_370786adb15c6d6d865f189609798696,
-            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v3PrelimPlats,v3BexarDevelopment,v3FutureLandUse,v3SewerService,v3BulverdeVerifiedSewer,v3VerifiedTargetGeometry,
-            v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings,v3LandResults
+            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v3BexarDevelopment,v3SewerService,v3BulverdeVerifiedSewer,
+            v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings
           ];
 
           if(mode==="research"){
@@ -3949,7 +3926,6 @@
             v7safeAdd(feature_group_18e326aa803143ba3330a0ba600b718a);
             // Curated due-diligence baseline; the rest remains available in Layers.
             v7safeAdd(v3Parcels);
-            v7safeAdd(v3PrelimPlats);
             v7safeAdd(v3AADT);
 
             v7safeAdd(feature_group_370786adb15c6d6d865f189609798696);
@@ -3964,7 +3940,6 @@
             v7safeAdd(feature_group_18e326aa803143ba3330a0ba600b718a);
             if(window.v6OpportunityLayer)v7safeAdd(window.v6OpportunityLayer);
             if(window.v6OpportunityMarkers)v7safeAdd(window.v6OpportunityMarkers);
-            if(window.v6AssemblageLayer)v7safeRemove(window.v6AssemblageLayer);
           }
         }
 
