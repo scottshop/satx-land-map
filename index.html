@@ -115,6 +115,7 @@
 .leaflet-control-layers input{margin:0;flex-shrink:0}
 .leaflet-control-layers-expanded{max-height:calc(100dvh - 130px);width:265px}
 .leaflet-top.leaflet-right{top:90px}
+.layer-service-status{font:11px/1.4 Arial;color:#9a3412;max-width:240px;margin-top:7px}
 .layer-help{font:11px/1.4 Arial;color:#64748b;margin-top:10px;max-width:240px}
 .popup-facts{display:grid;grid-template-columns:95px 1fr;gap:5px 10px;margin:10px 0}
 .popup-facts dt{font-weight:600;color:#64748b}.popup-facts dd{margin:0;overflow-wrap:anywhere}
@@ -136,6 +137,7 @@
   <div id="v6TopHead">
     <b>TOP LAND OPPORTUNITIES</b>
     <div style="font-size:10px;color:#ddd;margin-top:2px">Ranked acquisition candidates — click a tract to zoom.</div>
+    <div id="parcelDataDate" class="v6Tiny" style="color:#ddd"></div>
     <div id="v6Filters">
       <select id="v6AcresFilter"><option value="3">3+ ac</option><option value="5">5+ ac</option><option value="10">10+ ac</option><option value="20">20+ ac</option></select>
       <select id="v6ScoreFilter"><option value="0">Any score</option><option value="70">70+</option><option value="75">75+</option><option value="80">80+</option><option value="85">85+</option></select>
@@ -239,6 +241,9 @@
                 "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                 {
   "minZoom": 0,
+  "updateWhenIdle": true,
+  "updateWhenZooming": false,
+  "keepBuffer": 1,
   "maxZoom": 20,
   "maxNativeZoom": 19,
   "noWrap": false,
@@ -254,6 +259,9 @@
                 "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
                 {
   "minZoom": 0,
+  "updateWhenIdle": true,
+  "updateWhenZooming": false,
+  "keepBuffer": 1,
   "maxZoom": 20,
   "maxNativeZoom": 19,
   "noWrap": false,
@@ -2765,6 +2773,8 @@
             var roadProjects=[];
             function v8RoadProject(opts){roadProjects.push(opts);}
             function loadRoadProject(opts){
+              if(opts.loading || opts.loaded)return;
+              opts.loading=true;
               var bounds=L.latLngBounds(opts.southWest,opts.northEast);
               var query=L.esri.query({url:v8TxDOTRoadwayUrl})
                 .where(opts.where)
@@ -2772,11 +2782,15 @@
                 .limit(2000);
 
               query.run(function(err,fc){
+                opts.loading=false;
                 if(err || !fc || !fc.features || !fc.features.length){
-                  console.warn("Road geometry unavailable:",opts.name,err||"no features");
+                  sourceLoadErrors[opts.name]='Road geometry unavailable; toggle roads off/on to retry.';
+                  updateSourceStatus();
                   return;
                 }
-
+                opts.loaded=true;
+                delete sourceLoadErrors[opts.name];
+                updateSourceStatus();
                 var road=L.geoJSON(fc,{
                   pane:"infrastructure",
                   style:function(){
@@ -2789,16 +2803,10 @@
                     };
                   },
                   onEachFeature:function(feature,layer){
-                    layer.bindTooltip(opts.name+" — exact roadway alignment",{sticky:true});
-                    layer.bindPopup(
-                      "<div style='min-width:275px'>"+
-                      "<b>"+opts.name+"</b><br>"+
-                      opts.description+"<br>"+
-                      "<span style='font-size:10px;color:#666'>Line geometry: TxDOT Roadway Inventory. Project limits: "+opts.limits+".</span><br>"+
-                      "<a href='"+opts.source+"' target='_blank'>TxDOT project source</a>"+
-                      "</div>",
-                      {maxWidth:370}
-                    );
+                    layer.bindTooltip(opts.name+" — roadway reference",{sticky:true});
+                    layer.bindPopup(factPopup(opts.name,[
+                      ['Project',opts.description],['Limits',opts.limits],['Geometry','TxDOT roadway inventory']
+                    ],'Centerlines are GIS geometry; project extents use screening bounds. Confirm current construction status at the source.',opts.source),{maxWidth:370});
                   }
                 });
                 road.eachLayer(function(layer){layer.addTo(feature_group_370786adb15c6d6d865f189609798696);});
@@ -2893,7 +2901,7 @@
 
         
     
-            feature_group_370786adb15c6d6d865f189609798696.once('add',function(){roadProjects.forEach(loadRoadProject);});
+            feature_group_370786adb15c6d6d865f189609798696.on('add',function(){roadProjects.forEach(loadRoadProject);});
 
             var layer_control_b250c1d6f8951aadc14a9860adeeb93d_layers = {
                 base_layers : {
@@ -2912,6 +2920,11 @@
                 },
             };
 
+            var sourceLoadErrors={};
+            function updateSourceStatus(){
+              var status=document.querySelector('.layer-service-status');
+              if(status)status.textContent=Object.keys(sourceLoadErrors).map(function(name){return name+': '+sourceLoadErrors[name];}).join(' ');
+            }
             var GroupedLayers=L.Control.Layers.extend({
               _update:function(){
                 L.Control.Layers.prototype._update.call(this);
@@ -2922,6 +2935,8 @@
                   var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
                   var group=parts.length>1?parts.shift():'RESEARCH';
                   span.textContent=' '+parts.join(' — ');
+                  var colors={'Exact Target Parcels':'#fff200','H-E-B Owned Parcels':'#e31b23','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Approximate Utility Corridors':'#7c3aed'};
+                  if(colors[parts.join(' — ')]){span.style.borderLeft='4px '+(parts[0]==='Approximate Utility Corridors'?'dashed':'solid')+' '+colors[parts.join(' — ')];span.style.paddingLeft='6px';}
                   (groups[group]||(groups[group]=[])).push(label);
                 });
                 container.textContent='';
@@ -2935,6 +2950,8 @@
                 this._baseLayersList.prepend(title);
                 var help=L.DomUtil.create('div','layer-help',container);
                 help.textContent='CAD appears at zoom 14+. Sewer and detailed GIS layers appear at zoom 12+. Snapshot dates are shown in popups.';
+                var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
+                updateSourceStatus();
                 return this;
               }
             });
@@ -3188,7 +3205,7 @@
         v3SewerNBU.bindPopup(function(layer){
           var p=layer.feature.properties||{};
           return factPopup('Existing sewer main',[
-            ['Utility','NBU'],['Diameter',p.DIAMETER],['Main type',"Not reported"],['Material',p.MATERIAL],
+            ['Utility','NBU'],['Diameter',p.DIAMETER==null?null:p.DIAMETER+' in'],['Main type',"Not reported"],['Material',p.MATERIAL],
             ['Installed',v3SewerDate(p.INSTALLDAT)],['Data date','January 17, 2024']
           ],'Public GIS screening. Verify location, depth and capacity with the utility.',v3SewerNBUUrl);
         });
@@ -3213,7 +3230,7 @@
         v3SewerGBRAGravity.bindPopup(function(layer){
           var p=layer.feature.properties||{};
           return factPopup('Existing sewer main',[
-            ['Utility','GBRA Stein Falls'],['Diameter',p.Diameter],['Main type',p.AssetType],['Material',null],
+            ['Utility','GBRA Stein Falls'],['Diameter',p.Diameter==null?null:p.Diameter+' in'],['Main type',p.AssetType],['Material',null],
             ['Installed',v3SewerDate(null)],['Data date','Not published']
           ],'Public GIS screening. Verify location, depth and capacity with the utility.',v3SewerGBRAGravityUrl);
         });
@@ -3238,7 +3255,7 @@
         v3SewerGBRAForce.bindPopup(function(layer){
           var p=layer.feature.properties||{};
           return factPopup('Existing sewer main',[
-            ['Utility','GBRA Stein Falls'],['Diameter',p.Diameter],['Main type',p.AssetType],['Material',null],
+            ['Utility','GBRA Stein Falls'],['Diameter',p.Diameter==null?null:p.Diameter+' in'],['Main type',p.AssetType],['Material',null],
             ['Installed',v3SewerDate(null)],['Data date','Not published']
           ],'Public GIS screening. Verify location, depth and capacity with the utility.',v3SewerGBRAForceUrl);
         });
@@ -3608,6 +3625,16 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3LandResults,"RESEARCH — Parcel Search Results");
 
 
+        [
+          [v3Parcels,'Bexar CAD'],[v3ComalParcels,'Comal CAD'],[v3GuadalupeParcels,'Guadalupe CAD'],
+          [v3HEBOwnedParcels,'H-E-B Bexar'],[v3HEBComalParcels,'H-E-B Comal'],[v3HEBGuadalupeParcels,'H-E-B Guadalupe'],
+          [v3SewerSAWS,'SAWS sewer'],[v3SewerNBU,'NBU sewer'],[v3SewerGBRAGravity,'GBRA gravity'],[v3SewerGBRAForce,'GBRA force mains'],
+          [v3PrelimPlats,'Preliminary plats'],[v3FutureLandUse,'Future land use'],[v3FemaHazard,'FEMA flood'],[v3AADT,'Traffic counts']
+        ].forEach(function(item){
+          item[0].on('requesterror',function(){sourceLoadErrors[item[1]]='Source request failed; coverage may be incomplete.';updateSourceStatus();});
+          item[0].on('remove',function(){delete sourceLoadErrors[item[1]];updateSourceStatus();});
+        });
+
         // ---- V3 COORDINATE ACCURACY / PARCEL SNAP AUDIT ----
         var v3VerifiedTargetGeometry = L.featureGroup();
 
@@ -3732,6 +3759,7 @@
         window.v6OpportunityMarkers=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
         window.v6AssemblageLayer=L.featureGroup();
         window.v6OppLoaded=false;
+        window.parcelSnapshotDate="Not reported";
 
         function v6h(v){return v3esc(v==null?"":v);}
         function v6money(v){
@@ -3775,7 +3803,7 @@
               "<a href='https://www.google.com/maps/search/?api=1&query="+mapQuery+"' target='_blank'>Google Maps</a>"+
               "<button type='button' class='copy-property-id' data-property-id='"+v6h(p.prop_id)+"'>Copy Property ID</button>"+
             "</div>"+
-            "<div style='font-size:9px;color:#777;margin-top:7px'>"+v6h(geom)+". Frontage is a GIS proxy, not legal access. Verify title, survey, ROW, flood and utility capacity.</div>"+
+            "<div style='font-size:9px;color:#777;margin-top:7px'>Opportunity snapshot: "+v6h(window.parcelSnapshotDate)+". "+v6h(geom)+". Frontage is a GIS proxy, not legal access. Verify title, survey, ROW, flood and utility capacity.</div>"+
           "</div>";
         }
 
@@ -3835,6 +3863,11 @@
         }
 
         function v6loadOpportunities(){
+          fetch('data/opportunity_metadata.json').then(function(r){if(!r.ok)throw new Error('Metadata unavailable');return r.json();}).then(function(meta){
+            var date=new Date(meta.generated_at);
+            if(!isNaN(date.getTime()))window.parcelSnapshotDate=date.toISOString().slice(0,10);
+            document.getElementById('parcelDataDate').textContent='Opportunity snapshot: '+window.parcelSnapshotDate;
+          }).catch(function(){document.getElementById('parcelDataDate').textContent='Opportunity snapshot date unavailable';});
           fetch("data/opportunity_parcels.geojson").then(function(r){
             if(!r.ok)throw new Error("HTTP "+r.status); return r.json();
           }).then(function(fc){
@@ -3843,7 +3876,7 @@
             window.v6OpportunityData.forEach(function(f){
               var p=f.properties||{};
               var layer=L.geoJSON(f,{style:v6style,pane:"v6ExactParcelPane",interactive:true});
-              layer.bindPopup(v6popup(p),{maxWidth:390});
+              layer.bindPopup(function(){return v6popup(p);},{maxWidth:390});
               layer.bindTooltip("#"+p.rank+" · "+p.acres+" AC · "+(p.owner||"Target parcel"),{sticky:true});
               layer.on("mouseover",function(){layer.setStyle({weight:Number(p.rank)<=10?5:4,fillOpacity:.24});});
               layer.on("mouseout",function(){layer.setStyle(v6style(f));});

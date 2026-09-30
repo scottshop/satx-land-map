@@ -64,3 +64,14 @@ All data files, scripts/generate_opportunities.py, ranking methodology, opportun
 - Remaining core/mobile/satellite checks are in progress; a popup fade-animation race was identified in the test and the test now waits for popup removal.
 - Refreshed live ownership query counts: Bexar 57, Comal 16, Guadalupe 4. Revised filters exclude the unrelated surname matches. All retained CAD/sewer schemas and sample queries passed; FEMA still returned HTTP 502.
 - No production change or merge at this checkpoint.
+
+
+## Stage 2 — September 30: live source interaction checkpoint
+
+- Passed real live feature hover/click/popup/close checks for Bexar CAD, Comal CAD, Guadalupe CAD, H-E-B in each of those three counties, SAWS sewer, NBU sewer, and GBRA gravity and force mains.
+- Passed Top Land (including restoring a hidden target layer), map dragging, zoom controls, and Acquisition/Research mode switching.
+- Added visible service-request failure messages, retryable road loads, color keys in the menu, sewer diameter units, consistent road popups, and metadata-driven opportunity snapshot date.
+- Reduced unnecessary intermediate satellite requests while zooming/dragging.
+- Satellite direct tile retrieval succeeds, but full-map browser tile completion still needs resolution. No production merge yet.
+- Road geometry loads; the test needs to center on the returned geometry rather than assume the first response is the US 90 corridor.
+- Mobile checks and final core rerun remain pending.

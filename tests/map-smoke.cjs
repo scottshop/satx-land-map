@@ -12,17 +12,17 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
   const file = path.join(root, pathname === '/' ? 'index.html' : pathname);
   if (!file.startsWith(root + path.sep)) { res.writeHead(403).end(); return; }
   try { res.end(fs.readFileSync(file)); } catch { res.writeHead(404).end(); }
-}).listen(8770, '127.0.0.1');
+}).listen(Number(process.env.TEST_PORT||8770), '127.0.0.1');
 (async () => {
   const browser = await chromium.launch({
     headless: true, executablePath: process.env.CHROMIUM_PATH || undefined,
-    args: ['--no-sandbox', '--disable-dev-shm-usage'],
+    args: ['--no-sandbox', '--disable-dev-shm-usage', ...(process.env.HTTPS_PROXY ? ['--disable-http2'] : [])],
     proxy: process.env.HTTPS_PROXY ? {server: process.env.HTTPS_PROXY, bypass: '127.0.0.1,localhost'} : undefined
   });
   try {
     const page = await browser.newPage({ignoreHTTPSErrors: true, viewport: {width: 1440, height: 1000}});
     const errors = []; page.on('pageerror', e => { errors.push(e.message); console.log('PAGE ERROR', e.message); });
-    await page.goto(process.env.MAP_URL || 'http://127.0.0.1:8770', {waitUntil: 'domcontentloaded', timeout: 90000});
+    await page.goto(process.env.MAP_URL || 'http://127.0.0.1:'+(process.env.TEST_PORT||8770), {waitUntil: 'domcontentloaded', timeout: 90000});
     await page.waitForFunction(() => window.v6OppLoaded, null, {timeout: 60000});
     await page.evaluate(() => { window.testMap = map_33cc2c2ac68d72d2971fbb7de3650b24; });
     assert.equal(await page.evaluate(() => v6OpportunityData.length), 30);
@@ -31,6 +31,18 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
       assert.equal(await page.evaluate(n => testMap.hasLayer(window[n]), name), false, name + ' must default OFF');
     }
     console.log('PASS page/GeoJSON/defaults');
+    if(process.env.TEST_STAGE!=='gis') {
+    try { await page.waitForFunction(() => Array.from(document.querySelectorAll('img.leaflet-tile-loaded')).some(i=>i.src.includes('World_Imagery')&&i.naturalWidth>0), null, {timeout:60000}); }
+    catch(e) {console.log('TILE DEBUG',await page.evaluate(()=>({base:testMap.hasLayer(tile_layer_satellite_hybrid),satellite:testMap.hasLayer(tile_layer_satellite),zoom:testMap.getZoom(),images:Array.from(document.querySelectorAll('img.leaflet-tile')).slice(0,8).map(x=>({src:x.src,complete:x.complete,width:x.naturalWidth,class:x.className}))})));await page.screenshot({path:'/tmp/satx-tile-failure.png'});throw e;}
+    console.log('PASS actual satellite imagery');
+    await page.screenshot({path: process.env.SCREENSHOT_DIR ? path.join(process.env.SCREENSHOT_DIR,'desktop.png') : '/tmp/satx-desktop.png'});
+    await page.setViewportSize({width:390,height:844}); await page.evaluate(()=>testMap.invalidateSize());
+    await page.locator('.leaflet-control-layers').hover(); assert(await page.getByText('Exact Target Parcels',{exact:true}).isVisible());
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await page.screenshot({path:process.env.SCREENSHOT_DIR ? path.join(process.env.SCREENSHOT_DIR,'mobile.png') : '/tmp/satx-mobile.png'});
+    await page.mouse.click(60,700); await page.locator('#v6TopToggle').click(); assert(await page.locator('#v6TopPanel').isVisible());
+    console.log('PASS mobile menu/panel/no overflow');await page.locator('#v6TopToggle').click();await page.setViewportSize({width:1440,height:1000});await page.evaluate(()=>testMap.invalidateSize());
+    }
     await page.locator('.leaflet-control-layers').hover();
     for (const title of ['BASEMAPS','LAND','PARCEL DATA','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH']) assert(await page.getByText(title, {exact: true}).isVisible());
     const targetLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Exact Target Parcels'});
@@ -41,7 +53,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     await page.waitForTimeout(300);
     async function clickFeature(name, expected) {
       const point = await page.evaluate(n => {
-        const paths = []; function visit(l) { if (l._path && l._path.isConnected) paths.push(l._path); else if (l.eachLayer) l.eachLayer(visit); } visit(window[n]);
+        const paths = []; function visit(l) { if (l._path && l._path.isConnected) paths.push(l._path); else if (l.eachFeature) l.eachFeature(visit); else if (l.eachLayer) l.eachLayer(visit); } visit(window[n]);
         function exposed(x,y,p) { return x>55 && y>105 && x<innerWidth-285 && y<innerHeight-55 && document.elementFromPoint(x,y)===p; }
         for (const p of paths) {
           const r=p.getBoundingClientRect();
@@ -69,7 +81,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
           v7applyMode('acquisition'); testMap.removeLayer(v6OpportunityLayer); testMap.removeLayer(v6OpportunityMarkers);
           testMap.setView(location,17,{animate:false}); window[name].addTo(testMap);
         },{name,location:source.location});
-        await page.waitForFunction(n=>{let found=false;window[n].eachLayer(l=>{if(l._path&&l._path.isConnected)found=true;});return found;},name,{timeout:45000});
+        await page.waitForFunction(n=>{let found=false;window[n].eachFeature(l=>{if(l._path&&l._path.isConnected)found=true;});return found;},name,{timeout:45000});
         await clickFeature(name,title); await page.evaluate(n=>testMap.removeLayer(window[n]),name);
       }
       await page.evaluate(()=>{
@@ -77,6 +89,8 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
         testMap.setView([29.39,-98.72],14,{animate:false});feature_group_370786adb15c6d6d865f189609798696.addTo(testMap);
       });
       await page.waitForFunction(()=>feature_group_370786adb15c6d6d865f189609798696.getLayers().length>0,null,{timeout:45000});
+      await page.evaluate(()=>testMap.fitBounds(feature_group_370786adb15c6d6d865f189609798696.getLayers()[0].getBounds().pad(.3),{maxZoom:16,animate:false}));
+      await page.waitForTimeout(300);
       await clickFeature('feature_group_370786adb15c6d6d865f189609798696','TxDOT');
       assert.deepEqual(errors,[]);console.log('LIVE GIS CHECKS PASSED');return;
     }
@@ -95,15 +109,6 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     console.log('PASS drag/zoom');
     await page.locator('#v7ModeToggle').click(); assert.equal(await page.locator('#v7ModeToggle').getAttribute('data-mode'),'research');
     await page.locator('#v7ModeToggle').click(); assert.equal(await page.locator('#v7ModeToggle').getAttribute('data-mode'),'acquisition'); console.log('PASS modes');
-    await page.evaluate(() => testMap.fitBounds(v6OpportunityLayer.getBounds(),{animate:false}));
-    await page.waitForFunction(() => Array.from(document.querySelectorAll('img.leaflet-tile-loaded')).some(i=>i.src.includes('World_Imagery')&&i.naturalWidth>0), null, {timeout:60000});
-    console.log('PASS actual satellite imagery');
-    await page.screenshot({path: process.env.SCREENSHOT_DIR ? path.join(process.env.SCREENSHOT_DIR,'desktop.png') : '/tmp/satx-desktop.png'});
-    await page.setViewportSize({width:390,height:844}); await page.evaluate(()=>testMap.invalidateSize());
-    await page.locator('.leaflet-control-layers').hover(); assert(await targetLabel.isVisible());
-    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-    await page.screenshot({path:process.env.SCREENSHOT_DIR ? path.join(process.env.SCREENSHOT_DIR,'mobile.png') : '/tmp/satx-mobile.png'});
-    await page.mouse.click(60,700); await page.locator('#v6TopToggle').click(); assert(await page.locator('#v6TopPanel').isVisible());
-    console.log('PASS mobile menu/panel/no overflow'); assert.deepEqual(errors,[]); console.log('CORE CHECKS PASSED');
+    assert.deepEqual(errors,[]); console.log('CORE CHECKS PASSED');
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exitCode=1; }).finally(()=>server?.close());
