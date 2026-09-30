@@ -3055,7 +3055,7 @@
           return {color:"#ff645c",weight:4,opacity:1,fillColor:"#ff645c",fillOpacity:.13,lineJoin:"round"};
         }
         function v3BexarDate(v){
-          if(v==null||v==="") return "Not reported";
+          if(v==null||String(v).trim()==="") return "Not reported";
           var n=Number(v), d;
           if(isFinite(n)&&n>10000000000)d=new Date(n);
           else d=new Date(v);
