@@ -75,3 +75,13 @@ All data files, scripts/generate_opportunities.py, ranking methodology, opportun
 - Satellite direct tile retrieval succeeds, but full-map browser tile completion still needs resolution. No production merge yet.
 - Road geometry loads; the test needs to center on the returned geometry rather than assume the first response is the US 90 corridor.
 - Mobile checks and final core rerun remain pending.
+
+
+## Stage 3 — September 30: final browser validation checkpoint
+
+- Added a finite map max zoom of 20 so Leaflet MarkerCluster always has a valid zoom ceiling; major-development markers still disable clustering at zoom 11.
+- Deferred satellite imagery until the opportunity-parcel dataset chooses the initial map extent, with a 4-second fallback if parcel loading stalls or fails.
+- Added a branch-only GitHub Actions browser validation workflow using the runner's installed Chrome; production remains untouched.
+- Final committed validation run passed desktop/mobile layout, actual Esri satellite imagery loading, grouped layer toggles, target parcel hover/click/popups, target clicks with Bexar CAD enabled, Top Land restore behavior, dragging/zooming, Acquisition/Research modes, existing endpoint audit, and live feature clicks for Bexar/Comal/Guadalupe CAD, H-E-B ownership in all three counties, SAWS, NBU, GBRA gravity/force mains, and TxDOT road geometry.
+- JavaScript syntax checks also pass for the inline application script and the smoke-test script.
+- Draft PR #32 remains unmerged at this checkpoint; merge only after the validation workflow is green on the final branch head.
