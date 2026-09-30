@@ -2984,6 +2984,14 @@
                 var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
                 updateSourceStatus();
                 return this;
+              },
+              _checkDisabledLayers:function(){
+                L.Control.Layers.prototype._checkDisabledLayers.call(this);
+                var self=this;
+                (this._layerControlInputs||[]).forEach(function(input){
+                  var obj=self._getLayer(input.layerId);
+                  if(obj && /^PARCEL DATA — (Bexar|Comal|Guadalupe) CAD$/.test(obj.name||""))input.disabled=false;
+                });
               }
             });
             let layer_control_b250c1d6f8951aadc14a9860adeeb93d = new GroupedLayers(
