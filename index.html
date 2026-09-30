@@ -2984,6 +2984,14 @@
                 var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
                 updateSourceStatus();
                 return this;
+              },
+              _checkDisabledLayers:function(){
+                L.Control.Layers.prototype._checkDisabledLayers.call(this);
+                var self=this;
+                (this._layerControlInputs||[]).forEach(function(input){
+                  var obj=self._getLayer(input.layerId);
+                  if(obj && /^PARCEL DATA — (Bexar|Comal|Guadalupe) CAD$/.test(obj.name||""))input.disabled=false;
+                });
               }
             });
             let layer_control_b250c1d6f8951aadc14a9860adeeb93d = new GroupedLayers(
@@ -3738,6 +3746,30 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3FloodplainBuffer,"DUE DILIGENCE — Flood Buffer");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Rings,"RESEARCH — 1 / 3 / 5 Mile Rings");
 
+        // Parcel-data toggles need parcel-level zoom to render. Make checkbox activation visibly do something.
+        // If the user is already inside the selected county, preserve their center and only zoom in.
+        // Otherwise, move to a practical county reference point at zoom 14.
+        var v9CadFocus={
+          "Bexar CAD":{lat:29.4241,lng:-98.4936,bounds:[[29.10,-98.90],[29.80,-98.10]]},
+          "Comal CAD":{lat:29.7030,lng:-98.1245,bounds:[[29.50,-98.60],[30.20,-97.95]]},
+          "Guadalupe CAD":{lat:29.5688,lng:-97.9647,bounds:[[29.20,-98.25],[29.90,-97.55]]}
+        };
+        function v9ActivateCadFromToggle(name){
+          var cfg=v9CadFocus[name]; if(!cfg)return;
+          var map=map_33cc2c2ac68d72d2971fbb7de3650b24, center=map.getCenter();
+          var bounds=L.latLngBounds(cfg.bounds), target=bounds.contains(center)?center:L.latLng(cfg.lat,cfg.lng);
+          if(map.getZoom()<14 || !bounds.contains(center))map.setView(target,14,{animate:false});
+        }
+        document.addEventListener("change",function(e){
+          var input=e.target;
+          if(!input || input.type!=="checkbox" || !input.checked || !input.closest(".leaflet-control-layers"))return;
+          var label=input.closest("label"); if(!label)return;
+          var text=(label.textContent||"").trim();
+          Object.keys(v9CadFocus).some(function(name){
+            if(text===name){setTimeout(function(){v9ActivateCadFromToggle(name);},0);return true;}
+            return false;
+          });
+        });
 
         [
           [v3Parcels,'Bexar CAD'],[v3ComalParcels,'Comal CAD'],[v3GuadalupeParcels,'Guadalupe CAD'],
