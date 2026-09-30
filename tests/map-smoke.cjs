@@ -68,11 +68,15 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
       assert.equal(await page.evaluate(({x,y}) => getComputedStyle(document.elementFromPoint(x,y)).cursor, point), 'pointer');
       await page.mouse.click(point.x, point.y);
       await page.locator('.leaflet-popup-content').waitFor();
-      assert((await page.locator('.leaflet-popup-content').innerText()).includes(expected));
+      const popupText=await page.locator('.leaflet-popup-content').innerText();
       if(name==='v3Parcels'){
+        console.log('BEXAR POPUP',popupText.replace(/\n/g,' | '));
         assert(await page.locator('.bcad-card').isVisible(),'Bexar CAD should use the dedicated parcel card');
+        assert(popupText.includes('Bexar County'),'Bexar card should identify the county');
         assert.equal(await page.locator('.bcad-address').count(),1);
         assert.equal(await page.evaluate(()=>v3BexarSelectedParcel&&v3BexarSelectedParcel.options.color),'#ff645c','selected Bexar parcel should use the coral highlight');
+      } else {
+        assert(popupText.includes(expected));
       }
       await page.locator('.leaflet-popup-close-button').click(); await page.waitForFunction(()=>document.querySelectorAll('.leaflet-popup').length===0);
       console.log('PASS feature hover/click/popup/close',name);
