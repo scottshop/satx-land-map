@@ -69,6 +69,11 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
       await page.mouse.click(point.x, point.y);
       await page.locator('.leaflet-popup-content').waitFor();
       assert((await page.locator('.leaflet-popup-content').innerText()).includes(expected));
+      if(name==='v3Parcels'){
+        assert(await page.locator('.bcad-card').isVisible(),'Bexar CAD should use the dedicated parcel card');
+        assert.equal(await page.locator('.bcad-address').count(),1);
+        assert.equal(await page.evaluate(()=>v3BexarSelectedParcel&&v3BexarSelectedParcel.options.color),'#ff645c','selected Bexar parcel should use the coral highlight');
+      }
       await page.locator('.leaflet-popup-close-button').click(); await page.waitForFunction(()=>document.querySelectorAll('.leaflet-popup').length===0);
       console.log('PASS feature hover/click/popup/close',name);
     }
