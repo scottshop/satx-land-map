@@ -1,0 +1,27 @@
+name: Verify production Netlify deploy
+
+on:
+  push:
+    branches:
+      - verify/netlify-20260930-merge32
+
+jobs:
+  verify-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Confirm merged map is live at existing URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 24); do
+            if curl -fsSL -H 'Cache-Control: no-cache' "https://satx-land-map.netlify.app/?verify=${GITHUB_SHA}-${i}" -o /tmp/site.html; then
+              if grep -q 'v8ActivateSatellite' /tmp/site.html && grep -q '"maxZoom": 20' /tmp/site.html; then
+                echo "Merged cleanup is live at https://satx-land-map.netlify.app/"
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo "Production URL did not expose the merged cleanup within the verification window."
+          exit 1
