@@ -44,6 +44,9 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     console.log('PASS mobile menu/panel/no overflow');await page.locator('#v6TopToggle').click();await page.setViewportSize({width:1440,height:1000});await page.evaluate(()=>testMap.invalidateSize());
     }
     await page.locator('.leaflet-control-layers').hover();
+    for (const removed of ['Assemblage Opportunities','Preliminary Plats','Future Land Use','Parcel Search Results','Legacy Parcel References','Legacy References']) {
+      assert.equal(await page.getByText(removed,{exact:true}).count(),0, removed+' should be removed from Layers');
+    }
     for (const title of ['BASEMAPS','LAND','PARCEL DATA','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH']) assert(await page.getByText(title, {exact: true}).isVisible());
     const targetLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Exact Target Parcels'});
     await targetLabel.locator('input').uncheck(); assert.equal(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)), false);
