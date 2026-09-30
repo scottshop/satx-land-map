@@ -1,6 +1,6 @@
 # Cleanup checkpoint — September 29, 2026
 
-Paused at the user's request. Work in progress: NOT approved for merge or production.
+Resumed September 30 at the user's request, with staged uploads. Work in progress: NOT yet validated for merge or production.
 
 Branch: cleanup/map-reliability-20260929
 Base commit: cbfa2a33a8674dcb8aac7597e22f93d4ee025d35
@@ -53,3 +53,14 @@ Metadata and one-feature geometry queries succeeded for Bexar, Comal, Guadalupe,
 ## Intentionally unchanged
 
 All data files, scripts/generate_opportunities.py, ranking methodology, opportunity selections, netlify.toml, repository/site identity, and production branch. No framework, build system, server, new datasets, or broad land research added.
+
+
+## Stage 1 — September 30: core interaction checkpoint
+
+- Corrected grouped-menu label handling to preserve Leaflet checkbox/radio input elements. The first browser regression run caught the issue.
+- Removed transient startup activation of research heat map and information panel; acquisition defaults apply immediately.
+- Added reusable browser smoke checks and an existing-endpoint audit script (developer test tools only; no site build/dependency changes).
+- Browser checks have passed: 30 opportunity parcels, default OFF states, grouped headings, target checkbox toggles, yellow parcel hover/click/popup/close, and target click while Bexar CAD is enabled.
+- Remaining core/mobile/satellite checks are in progress; a popup fade-animation race was identified in the test and the test now waits for popup removal.
+- Refreshed live ownership query counts: Bexar 57, Comal 16, Guadalupe 4. Revised filters exclude the unrelated surname matches. All retained CAD/sewer schemas and sample queries passed; FEMA still returned HTTP 502.
+- No production change or merge at this checkpoint.

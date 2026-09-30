@@ -290,7 +290,7 @@
             heat_map_a505fc1f7c6b329b7fe0323283a58be4.addTo(feature_group_8664419a099b0fb300dcdc7bb4f5e31c);
         
     
-            feature_group_8664419a099b0fb300dcdc7bb4f5e31c.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+
         
     
             var feature_group_faeb81c75b71b2840ca70907d2e58065 = L.featureGroup(
@@ -2919,7 +2919,7 @@
                 var headings=['LAND','PARCEL DATA','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH'];
                 var container=this._overlaysList, groups={};
                 Array.from(container.children).forEach(function(label){
-                  var span=label.querySelector('span'), text=span.textContent.trim(), parts=text.split(' — ');
+                  var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
                   var group=parts.length>1?parts.shift():'RESEARCH';
                   span.textContent=' '+parts.join(' — ');
                   (groups[group]||(groups[group]=[])).push(label);
@@ -3509,7 +3509,7 @@
         },0);
 
         // Acquisition search result layer. Query is intentionally capped so the browser stays responsive.
-        var v3LandResults=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        var v3LandResults=L.featureGroup();
         var v3LandRows=[];
         function v3IsPublicOwner(name){
           var s=String(name||"").toUpperCase();
@@ -3590,7 +3590,7 @@
             "<span style='color:#777'>Official GIS is still screening data; verify title, survey, access, utilities and flood status before acquisition.</span>";
           return d;
         };
-        v3Info.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+
 
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"PARCEL DATA — Bexar CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"PARCEL DATA — Comal CAD");
@@ -3924,10 +3924,8 @@
           }
         }
 
-        setTimeout(function(){
-          var btn=document.getElementById("v7ModeToggle");
-          if(btn)btn.onclick=function(){v7applyMode(btn.dataset.mode==="acquisition"?"research":"acquisition");};
-          v7applyMode("acquisition");
-        },75);
+        var modeButton=document.getElementById("v7ModeToggle");
+        modeButton.onclick=function(){v7applyMode(modeButton.dataset.mode==="acquisition"?"research":"acquisition");};
+        v7applyMode("acquisition");
 </script>
 </html>
