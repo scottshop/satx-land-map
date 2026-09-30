@@ -161,6 +161,7 @@
                     crs: L.CRS.EPSG3857,
                     ...{
   "zoom": 9,
+  "maxZoom": 20,
   "zoomControl": true,
   "preferCanvas": false,
 }
@@ -275,7 +276,14 @@
             var tile_layer_satellite_hybrid = L.layerGroup([
                 tile_layer_satellite,
                 tile_layer_satellite_labels
-            ]).addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+            ]);
+            function v8ActivateSatellite(){
+              if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(tile_layer_satellite_hybrid)){
+                tile_layer_satellite_hybrid.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+              }
+            }
+            // Let opportunity parcels choose the startup extent before requesting imagery tiles.
+            var v8SatelliteFallback=setTimeout(v8ActivateSatellite,4000);
         
     
             var feature_group_8664419a099b0fb300dcdc7bb4f5e31c = L.featureGroup(
@@ -3898,7 +3906,9 @@
             if(window.v6OpportunityData.length){
               try{map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(window.v6OpportunityLayer.getBounds().pad(.05),{maxZoom:11});}catch(e){}
             }
+            clearTimeout(v8SatelliteFallback); v8ActivateSatellite();
           }).catch(function(e){
+            clearTimeout(v8SatelliteFallback); v8ActivateSatellite();
             var list=document.getElementById("v6OppList"); if(list)list.innerHTML="<div class='v6Tiny'><b>Parcel dataset unavailable.</b><br>"+v6h(e.message)+"</div>";
           });
 
