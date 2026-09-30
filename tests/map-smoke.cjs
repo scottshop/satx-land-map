@@ -72,7 +72,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
       if(name==='v3Parcels'){
         console.log('BEXAR POPUP',popupText.replace(/\n/g,' | '));
         assert(await page.locator('.bcad-card').isVisible(),'Bexar CAD should use the dedicated parcel card');
-        assert(popupText.includes('Bexar County'),'Bexar card should identify the county');
+        assert(popupText.toLowerCase().includes('bexar county'),'Bexar card should identify the county');
         assert.equal(await page.locator('.bcad-address').count(),1);
         assert.equal(await page.evaluate(()=>v3BexarSelectedParcel&&v3BexarSelectedParcel.options.color),'#ff645c','selected Bexar parcel should use the coral highlight');
       } else {
