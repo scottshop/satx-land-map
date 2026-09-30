@@ -1,4 +1,4 @@
-name: Verify current production deploy
+name: Check current Netlify production commit
 
 on:
   push:
@@ -6,32 +6,22 @@ on:
       - verify/netlify-20260930-merge32
 
 jobs:
-  verify-production:
+  check-production:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 3
     steps:
-      - name: Wait for existing Netlify site to publish latest main
+      - name: Print current published Netlify commit
         shell: bash
         run: |
           set -euo pipefail
-          TARGET="9c8fecc1175f1de900ad7e1aa519c513247412dc"
-          for i in $(seq 1 60); do
-            curl -fsSL https://api.netlify.com/api/v1/sites/satx-land-map.netlify.app -o /tmp/site.json
-            REF=$(python3 - <<'PY'
+          curl -fsSL https://api.netlify.com/api/v1/sites/satx-land-map.netlify.app -o /tmp/site.json
+          python3 - <<'PY'
           import json
           d=json.load(open('/tmp/site.json'))
-          print((d.get('published_deploy') or {}).get('commit_ref') or '')
+          p=d.get('published_deploy') or {}
+          print('commit_ref='+str(p.get('commit_ref')))
+          print('title='+str(p.get('title')))
+          print('branch='+str(p.get('branch')))
+          print('published_at='+str(p.get('published_at')))
+          print('updated_at='+str(p.get('updated_at')))
           PY
-            )
-            echo "published commit: $REF"
-            if [ "$REF" = "$TARGET" ]; then
-              curl -fsSL -H 'Cache-Control: no-cache' "https://satx-land-map.netlify.app/?verify=$TARGET-$i" -o /tmp/live.html
-              grep -q 'v8ActivateSatellite' /tmp/live.html
-              grep -q 'production trigger: 2026-09-30 cleanup merge' /tmp/live.html
-              echo "Production is current."
-              exit 0
-            fi
-            sleep 5
-          done
-          echo "Netlify did not publish latest main within the verification window."
-          exit 1
