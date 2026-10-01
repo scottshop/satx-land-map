@@ -723,53 +723,87 @@ def value_score(c):
     if v<=350000: return 50
     return 35
 
+def utility_for_parcel(c,support):
+    poly=c["_geom2278"]
+    best_ft=None
+    for f in support.get("utility",[]):
+        g=feature_shape(f); gp=proj(g) if g else None
+        if not gp: continue
+        try: d=poly.distance(gp)
+        except: continue
+        if best_ft is None or d<best_ft: best_ft=d
+    provider=support.get("utility_provider","")
+    snapshot=support.get("utility_snapshot","")
+    if best_ft is None:
+        return 20,"UNKNOWN",None,provider,snapshot
+    if best_ft<=200: score=100
+    elif best_ft<=500: score=92
+    elif best_ft<=1000: score=82
+    elif best_ft<=2640: score=65
+    else: score=35
+    confidence="PROXY" if best_ft<=1000 else "NEARBY" if best_ft<=2640 else "UNKNOWN"
+    return round(score,1),confidence,round(best_ft,0),provider,snapshot
+
 def candidate_confidence(c):
-    score=0.25*float(c.get("node_confidence_score") or 0)
-    score+=15 if c.get("bcad_geometry_verified") else 8
+    score=.25*float(c.get("node_confidence_score") or 0)
+    score+=20 if c.get("cad_geometry_verified") else 5
     score+=15 if c.get("frontage_roads") else 3
     score+=15 if c.get("flood_confidence")=="SCREENED" else 0
     score+=10 if c.get("aadt") and float(c.get("aadt_station_miles") or 99)<=2 else 4 if c.get("aadt") else 0
-    score+=10 if c.get("utility_confidence")=="PROXY" else 2
-    score+=10 if c.get("bcad_geometry_verified") else 4
+    score+=10 if c.get("utility_confidence")=="PROXY" else 6 if c.get("utility_confidence")=="NEARBY" else 2
+    score+=5 if c.get("owner") else 0
     score=clamp(score)
     if c.get("utility_confidence")!="PROXY":
         score=min(score,84)
+    county=c.get("county")
+    if county=="Comal":
+        score=min(score,78 if c.get("live_secondary_verified") else 72)
+    elif county=="Guadalupe":
+        score=min(score,68 if c.get("live_secondary_verified") else 48)
+    if not c.get("cad_geometry_verified"):
+        score=min(score,45)
     return round(score,1)
 
 def classify_candidate(c):
     risks=[]
+    county=c.get("county","Bexar")
     if c.get("node_edge_miles",99)>.5: risks.append("not on the immediate intersection")
     if not c.get("major_road_signal"): risks.append("major-road exposure needs confirmation")
     if c.get("frontage_ft_proxy",0)<200: risks.append("limited frontage proxy")
-    if c.get("utility_confidence")!="PROXY": risks.append("utility path is unverified")
+    if c.get("utility_confidence")=="UNKNOWN": risks.append("mapped sewer path is unverified")
+    elif c.get("utility_confidence")=="NEARBY": risks.append("mapped sewer is nearby but not close to parcel")
     else: risks.append("utility capacity is unverified")
     if c.get("flood_pct") is None: risks.append("flood screen unavailable")
     elif c.get("flood_pct",0)>0: risks.append(f"{c['flood_pct']:.1f}% mapped SFHA overlap")
     if c.get("shape_score",100)<55: risks.append("parcel geometry is less efficient")
+    if c.get("parcel_freshness")=="AGING": risks.append("county parcel snapshot is aging")
+    if c.get("parcel_freshness")=="STALE": risks.append("county parcel snapshot is stale")
     if c.get("confidence_score",100)<65: risks.append("important diligence data is incomplete")
 
     score=float(c.get("parcel_opportunity_score") or 0)
     conf=float(c.get("confidence_score") or 0)
     access_ready=(c.get("major_road_signal") and c.get("road_score",0)>=84
                   and (c.get("frontage_ft_proxy",0)>=150 or c.get("corner_signal")=="STRONG"))
-    priority=(c.get("eligible") and score>=78 and conf>=68 and c.get("node_edge_miles",99)<=.60
+    priority=(county=="Bexar" and c.get("parcel_freshness")=="RECENT" and c.get("eligible")
+              and score>=78 and conf>=68 and c.get("node_edge_miles",99)<=.60
               and access_ready and c.get("flood_score",0)>=75 and c.get("parcel_execution_score",0)>=68
               and c.get("utility_confidence")=="PROXY")
-    watch=(c.get("eligible") and score>=68 and conf>=52 and c.get("road_score",0)>=66)
-    early=(c.get("eligible") and c.get("node_score",0)>=62 and score>=59)
+    watch=(c.get("eligible") and score>=68 and conf>=52 and c.get("road_score",0)>=66
+           and not (county=="Guadalupe" and not c.get("live_secondary_verified")))
+    early=(c.get("eligible") and c.get("node_score",0)>=58 and score>=58 and conf>=42)
     if priority: category="PRIORITY"
     elif watch: category="WATCH"
     elif early: category="EARLY SPECULATION"
     else: category="REVIEW"
 
     c["acquisition_category"]=category
-    c["main_risks"]=risks[:4]
+    c["main_risks"]=risks[:5]
     if category=="PRIORITY":
         c["decision_summary"]="Investigate ownership, access, utilities and pricing now."
     elif category=="WATCH":
-        c["decision_summary"]="Strong enough to track closely; one or more execution items still need to improve or be verified."
+        c["decision_summary"]="Strong enough to track closely; verify title, access and utility feasibility before elevating."
     elif category=="EARLY SPECULATION":
-        c["decision_summary"]="The node thesis is ahead of the parcel certainty; monitor before committing acquisition resources."
+        c["decision_summary"]="Interesting node/parcel thesis, but data freshness or execution certainty is not strong enough for active pursuit."
     else:
         c["decision_summary"]="Does not currently clear the acquisition-mode highlight standard."
     return c
@@ -782,15 +816,15 @@ def enrich_candidate(c,support,node_result):
     aadt,growth,aadt_dist=traffic_for_parcel(c,support)
     val=value_score(c)
     catalyst_d,catalyst_name=nearest_catalyst(c["centroid_lat"],c["centroid_lng"])
-    utility_score=58 if support["cip"] else 25
+    utility_score,utility_conf,utility_ft,utility_provider,utility_snapshot=utility_for_parcel(c,support)
     parcel_fit=.62*c["acre_score"]+.38*c["shape_score"]
     acquisition=.72*c["raw_score"]+.28*val
     parcel_execution=(12*road_score+10*parcel_fit+8*utility_score+5*flood_score+5*acquisition)/40
     score=.60*c["node_score"]+.40*parcel_execution
 
     eligible_pre_flood=(c["acres"]>=3 and c["node_edge_miles"]<=1.0 and road_score>=66 and c["raw_score"]>=60
-                        and flu>=35 and c["shape_score"]>=30 and c["node_score"]>=55
-                        and node_result.get("confidence_score",0)>=50 and bool(roads))
+                        and flu>=35 and c["shape_score"]>=30 and c["node_score"]>=52
+                        and node_result.get("confidence_score",0)>=45 and bool(roads))
     reasons=[]
     if corner and major: reasons.append("corner exposure on a major road")
     elif major: reasons.append("major-road frontage")
@@ -800,7 +834,11 @@ def enrich_candidate(c,support,node_result):
     else: reasons.append("within 1 mile of the node")
     if node_result["weighted_future_res_lots"]>=1200:
         reasons.append(f"{int(node_result['weighted_future_res_lots'])} weighted future residential lots")
+    elif c.get("county")!="Bexar":
+        reasons.append("regional growth node; county housing feed incomplete")
     if catalyst_d<=2.5: reasons.append(f"{catalyst_d:.1f} mi from {catalyst_name}")
+    if utility_ft is not None and utility_ft<=1000:
+        reasons.append(f"mapped {utility_provider or 'sewer'} feature ~{int(utility_ft)} ft from parcel")
     if c["raw_score"]>=80: reasons.append("mostly raw / low-improvement land")
 
     c.update({
@@ -815,10 +853,12 @@ def enrich_candidate(c,support,node_result):
         "recent_housing_units_180d":node_result["net_new_housing_units_180d"],
         "node_confidence_score":node_result.get("confidence_score",0),
         "node_class":node_result.get("node_class",""),
+        "node_evidence_model":node_result.get("evidence_model",""),
         "node_component_scores":node_result.get("component_scores",{}),
-        "utility_score":round(utility_score,1),
-        "utility_confidence":"PROXY" if support["cip"] else "UNKNOWN",
-        "utility_context":f"{len(support['cip'])} mapped SAWS CIP feature(s) within 1 mi of node; capacity NOT verified" if support["cip"] else "No parcel-level utility path verified; request provider as-builts and written capacity",
+        "utility_score":round(utility_score,1),"utility_confidence":utility_conf,
+        "utility_provider":utility_provider,"utility_distance_ft":utility_ft,"utility_snapshot":utility_snapshot,
+        "utility_context":("No mapped sewer feature returned near parcel" if utility_ft is None else
+                           f"{utility_provider or 'Mapped sewer'} feature approximately {int(utility_ft)} ft from parcel; capacity NOT verified"),
         "parcel_fit_score":round(parcel_fit,1),"acquisition_complexity_score":round(acquisition,1),
         "parcel_execution_score":round(parcel_execution,1),
         "parcel_component_scores":{
@@ -826,8 +866,8 @@ def enrich_candidate(c,support,node_result):
             "utilities":round(utility_score,1),"flood":round(flood_score,1),"acquisition":round(acquisition,1)
         },
         "parcel_opportunity_score":round(clamp(score),1),"eligible_pre_flood":eligible_pre_flood,"eligible":False,
-        "why_this_tract":" · ".join(reasons[:4]),
-        "verification_notes":"Frontage is a GIS proximity proxy, not legal access. Utilities/capacity are not verified. Confirm survey, title, curb access, median/turn movements, ROW, flood and provider capacity."
+        "why_this_tract":" · ".join(reasons[:5]),
+        "verification_notes":"Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity."
     })
     c["confidence_score"]=candidate_confidence(c)
     return c
