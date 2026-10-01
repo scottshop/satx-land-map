@@ -939,13 +939,12 @@ def verify_candidate(c):
     pid=str(c.get("prop_id") or "").strip()
     if not pid: return c
     qpid=pid.replace("'","''")
-    feats=[]
+
     if county=="Bexar":
-        if not pid.isdigit(): return c
-        feats=safe_query("sara-bcad-enrich",SARA_BCAD_URL,where=f"Prop_id={int(pid)}",out_fields="*",
-                         return_geometry=True,page_size=10,timeout=30)
-        if feats:
-            f=feats[0]; p=props(f)
+        # Bexar finalists are batch-loaded from SARA/BCAD in main().
+        f=c.get("_bexar_verify_feature")
+        if f:
+            p=props(f)
             c["cad_geometry_verified"]=True
             c["bcad_geometry_verified"]=True
             c["geometry_source"]="SARA / BCAD parcel service"
@@ -965,53 +964,39 @@ def verify_candidate(c):
             if g and not g.is_empty: c["feature"]["geometry"]=mapping(g)
 
     elif county=="Comal":
-        where=f"PROP_ID={int(pid)}" if pid.isdigit() else f"PARCELKEY='{qpid}'"
-        feats=safe_query("comal-cad-enrich",COMAL_PARCEL_URL,where=where,out_fields="*",
-                         return_geometry=True,page_size=10,timeout=30)
-        if feats:
-            f=feats[0]; p=props(f)
-            c["cad_geometry_verified"]=True
-            c["geometry_source"]="Comal CAD public ArcGIS parcel layer"
-            c["cad_verification_source"]="Comal CAD public ArcGIS service"
-            current_owner=sval(p,"PY_OWNER_N")
-            if current_owner:
-                c["owner_verification_match"]=owners_compatible(c.get("owner"),current_owner)
-                c["verified_owner"]=current_owner
-            c["cad_record_url"]=sval(p,"CADLINK") or c.get("cad_record_url","")
-            g=feature_shape(f)
-            if g and not g.is_empty: c["feature"]["geometry"]=mapping(g)
-        live=safe_query("nbu-live-parcel-check",NBU_LIVE_PARCELS_URL,
-                        where=f"Property_ID='{qpid}' OR Parcel_No_='{qpid}'",
-                        out_fields="Property_ID,Parcel_No_,Land_Owner_Name,County_Name",return_geometry=False,page_size=10,timeout=20)
-        if live:
-            lp=props(live[0]); live_owner=sval(lp,"Land_Owner_Name")
+        # Candidate geometry is already sourced directly from the Comal CAD layer.
+        f=c.get("feature") or {}
+        p=props(f)
+        c["cad_geometry_verified"]=True
+        c["geometry_source"]="Comal CAD public ArcGIS parcel layer"
+        c["cad_verification_source"]="Comal CAD public ArcGIS service"
+        current_owner=sval(p,"PY_OWNER_N") or c.get("owner","")
+        if current_owner:
+            c["owner_verification_match"]=owners_compatible(c.get("owner"),current_owner)
+            c["verified_owner"]=current_owner
+        c["cad_record_url"]=sval(p,"CADLINK") or c.get("cad_record_url","")
+        sec=c.get("_secondary_record")
+        if sec:
+            live_owner=sval(props(sec),"Land_Owner_Name")
             if live_owner and owners_compatible(c.get("owner"),live_owner):
                 c["live_secondary_verified"]=True
                 c["secondary_verification_source"]="NBU live project parcel feed"
                 c["verified_owner"]=live_owner
 
     elif county=="Guadalupe":
-        feats=safe_query("guadalupe-cad-enrich",GUADALUPE_PARCEL_URL,where=f"PROP_ID='{qpid}'",out_fields="*",
-                         return_geometry=True,page_size=10,timeout=30)
-        if feats:
-            f=feats[0]; p=props(f)
-            c["cad_geometry_verified"]=True
-            c["geometry_source"]="Guadalupe CAD / TxGIO public parcel extract"
-            c["cad_verification_source"]="Guadalupe public parcel extract (2022 vintage)"
-            current_owner=sval(p,"OWNER_NAME")
-            if current_owner:
-                c["owner_verification_match"]=owners_compatible(c.get("owner"),current_owner)
-                c["verified_owner"]=current_owner
-            g=feature_shape(f)
-            if g and not g.is_empty: c["feature"]["geometry"]=mapping(g)
-
-        live_where=(f"Property_ID='{qpid}' OR Parcel_No_='{qpid}' OR PropID_Text='{qpid}'"
-                    + (f" OR PROP_ID={int(pid)}" if pid.isdigit() else ""))
-        live=safe_query("gbra-live-parcel-check",GBRA_LIVE_PARCELS_URL,where=live_where,
-                        out_fields="PROP_ID,PropID_Text,Property_ID,Parcel_No_,Land_Owner_Name,County,County_Name",
-                        return_geometry=False,page_size=10,timeout=20)
-        if live:
-            lp=props(live[0]); live_owner=sval(lp,"Land_Owner_Name")
+        # Candidate geometry is already the configured Guadalupe public parcel extract.
+        f=c.get("feature") or {}
+        p=props(f)
+        c["cad_geometry_verified"]=True
+        c["geometry_source"]="Guadalupe CAD / TxGIO public parcel extract"
+        c["cad_verification_source"]="Guadalupe public parcel extract (2022 vintage)"
+        current_owner=sval(p,"OWNER_NAME") or c.get("owner","")
+        if current_owner:
+            c["owner_verification_match"]=owners_compatible(c.get("owner"),current_owner)
+            c["verified_owner"]=current_owner
+        sec=c.get("_secondary_record")
+        if sec:
+            live_owner=sval(props(sec),"Land_Owner_Name")
             if live_owner and owners_compatible(c.get("owner"),live_owner):
                 c["live_secondary_verified"]=True
                 c["secondary_verification_source"]="GBRA live project parcel feed"
@@ -1204,8 +1189,51 @@ def main():
 
     verify_pool=[x for x in screened if x.get("eligible")]
     print(f"County parcel verification on all {len(verify_pool)} eligible finalists...")
-    with ThreadPoolExecutor(max_workers=2) as ex:
-        list(ex.map(verify_candidate,verify_pool))
+
+    # Batch Bexar SARA/BCAD verification instead of one network request per parcel.
+    bexar_verify=[x for x in verify_pool if x.get("county")=="Bexar" and str(x.get("prop_id","")).isdigit()]
+    bexar_by_pid={}
+    for i in range(0,len(bexar_verify),40):
+        chunk=bexar_verify[i:i+40]
+        ids=sorted({int(x["prop_id"]) for x in chunk})
+        if not ids: continue
+        where="Prop_id IN ("+",".join(map(str,ids))+")"
+        try:
+            feats=arc_query(SARA_BCAD_URL,where=where,out_fields="*",return_geometry=True,page_size=500,timeout=30)
+        except Exception as e:
+            errors.append(f"sara-bcad-batch: {e}")
+            feats=[]
+        for ft in feats:
+            p=props(ft); k=str(int(nval(p,"Prop_id"))) if nval(p,"Prop_id") else ""
+            if k: bexar_by_pid[k]=ft
+    for cand in bexar_verify:
+        cand["_bexar_verify_feature"]=bexar_by_pid.get(str(cand["prop_id"]))
+
+    # NBU/GBRA are project parcel feeds, used only as secondary corroboration.
+    secondary={}
+    for county,url,label in [
+        ("Comal",NBU_LIVE_PARCELS_URL,"nbu-live-batch"),
+        ("Guadalupe",GBRA_LIVE_PARCELS_URL,"gbra-live-batch")
+    ]:
+        try:
+            feats=arc_query(url,where="1=1",
+                            out_fields="PROP_ID,PropID_Text,Property_ID,Parcel_No_,Land_Owner_Name,County,County_Name",
+                            return_geometry=False,page_size=2000,timeout=25)
+        except Exception as e:
+            errors.append(f"{label}: {e}"); feats=[]
+        idx={}
+        for ft in feats:
+            p=props(ft)
+            for k in ("PROP_ID","PropID_Text","Property_ID","Parcel_No_"):
+                v=sval(p,k)
+                if v: idx[v]=ft
+        secondary[county]=idx
+    for cand in verify_pool:
+        idx=secondary.get(cand.get("county"),{})
+        cand["_secondary_record"]=idx.get(str(cand.get("prop_id","")))
+
+    for cand in verify_pool:
+        verify_candidate(cand)
     for cand in screened:
         cand["confidence_score"]=candidate_confidence(cand)
         classify_candidate(cand)
@@ -1262,7 +1290,7 @@ def main():
       "early_speculation_count":sum(1 for x in top if x.get("acquisition_category")=="EARLY SPECULATION"),
       "assemblage_count":len(ass),
       "sources":{
-        "parcels_bexar":"Bexar Public Works candidate universe; finalists re-verified through SARA/BCAD",
+        "parcels_bexar":"Bexar Public Works candidate universe; finalists batch re-verified through SARA/BCAD",
         "parcels_comal":"Comal CAD public ArcGIS parcel layer; data edit date November 22, 2024",
         "parcels_guadalupe":"Guadalupe CAD / TxGIO public parcel extract; February 2022 vintage; secondary GBRA project-feed corroboration attempted",
         "plats":"Bexar Public Works plat stages; comparable countywide plat feed not yet loaded for Comal/Guadalupe",
