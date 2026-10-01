@@ -1,0 +1,93 @@
+name: Validate Acquisition V3 data
+
+on:
+  push:
+    branches:
+      - acquisition/v3-multicounty-20261001
+    paths:
+      - "scripts/generate_opportunities.py"
+      - ".github/workflows/validate-acquisition-v3-data.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install GIS dependencies
+        run: pip install requests shapely pyproj
+
+      - name: Syntax check
+        run: python -m py_compile scripts/generate_opportunities.py
+
+      - name: Generate multicounty acquisition data
+        run: python scripts/generate_opportunities.py
+
+      - name: Validate V3 output
+        run: |
+          python - <<'PY'
+          import csv, json
+          from collections import Counter
+          d=json.load(open("data/opportunity_parcels.geojson"))
+          m=json.load(open("data/opportunity_metadata.json"))
+          assert m.get("version")=="Acquisition Mode V3 Multi-County", m.get("version")
+          assert d.get("type")=="FeatureCollection"
+          assert len(d["features"])>=5, len(d["features"])
+          ids=set(); counties=Counter(); cats=Counter()
+          for f in d["features"]:
+              p=f["properties"]
+              cid=p.get("candidate_id")
+              assert cid and cid not in ids, cid
+              ids.add(cid)
+              county=p.get("county")
+              assert county in {"Bexar","Comal","Guadalupe"}, county
+              counties[county]+=1
+              assert p.get("cad_geometry_verified") is True, cid
+              assert p.get("flood_confidence")=="SCREENED", cid
+              assert p.get("acquisition_category") in {"PRIORITY","WATCH","EARLY SPECULATION"}, cid
+              assert 0 <= float(p.get("confidence_score",0)) <= 100
+              assert float(p.get("acres",0)) >= 3
+              assert float(p.get("node_edge_miles",99)) <= 1.0
+              if p["acquisition_category"]=="PRIORITY":
+                  assert county=="Bexar", cid
+                  assert p.get("parcel_freshness")=="RECENT", cid
+                  assert p.get("utility_confidence")=="PROXY", cid
+              if county=="Comal":
+                  assert p.get("parcel_freshness")=="AGING", cid
+                  assert p["acquisition_category"]!="PRIORITY", cid
+              if county=="Guadalupe":
+                  assert p.get("parcel_freshness")=="STALE", cid
+                  if p["acquisition_category"]=="WATCH":
+                      assert p.get("live_secondary_verified") is True, cid
+              cats[p["acquisition_category"]]+=1
+          rows=list(csv.DictReader(open("data/tracts_to_review.csv")))
+          assert len(rows)==len(d["features"])
+          print("V3 highlighted",len(d["features"]))
+          print("By county",dict(counties))
+          print("By category",dict(cats))
+          print("Active nodes by county",m.get("active_nodes_by_county"))
+          PY
+
+      - name: Commit generated datasets
+        run: |
+          git config user.name "land-opportunity-bot"
+          git config user.email "land-opportunity-bot@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No generated changes."
+          else
+            git commit -m "Generate Acquisition Mode V3 multicounty data [skip ci]"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
