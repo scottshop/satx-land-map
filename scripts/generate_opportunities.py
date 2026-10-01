@@ -872,33 +872,107 @@ def enrich_candidate(c,support,node_result):
     c["confidence_score"]=candidate_confidence(c)
     return c
 
-def sara_enrich(c):
-    pid=c["prop_id"]
-    if not pid or not pid.isdigit(): return
-    feats=safe_query("sara-bcad-enrich",SARA_BCAD_URL,where=f"Prop_id={pid}",out_fields="*",return_geometry=True,page_size=10,timeout=30)
-    if not feats: return
-    f=feats[0]; p=props(f)
-    c["bcad_geometry_verified"]=True
-    c["geometry_source"]="SARA / BCAD parcel service"
-    c["bcad_geo_id"]=sval(p,"Geo_id")
-    c["ownership_type"]=sval(p,"Ownership_Type")
-    dd=p.get("Last_Deed_Date")
-    dt=date_from_any(dd)
-    if dt:
-        c["last_deed_date"]=dt.date().isoformat()
-        c["hold_years"]=round((datetime.now(timezone.utc)-dt).days/365.25,1)
-    g=feature_shape(f)
-    if g and not g.is_empty:
-        c["feature"]["geometry"]=mapping(g)
+def owners_compatible(a,b):
+    aa=normalize_owner(a); bb=normalize_owner(b)
+    if not aa or not bb: return False
+    return aa==bb or (len(aa)>=8 and aa in bb) or (len(bb)>=8 and bb in aa)
+
+def verify_candidate(c):
+    county=c.get("county","Bexar")
+    pid=str(c.get("prop_id") or "").strip()
+    if not pid: return c
+    qpid=pid.replace("'","''")
+    feats=[]
+    if county=="Bexar":
+        if not pid.isdigit(): return c
+        feats=safe_query("sara-bcad-enrich",SARA_BCAD_URL,where=f"Prop_id={int(pid)}",out_fields="*",
+                         return_geometry=True,page_size=10,timeout=30)
+        if feats:
+            f=feats[0]; p=props(f)
+            c["cad_geometry_verified"]=True
+            c["bcad_geometry_verified"]=True
+            c["geometry_source"]="SARA / BCAD parcel service"
+            c["cad_verification_source"]="SARA / BCAD live service"
+            c["bcad_geo_id"]=sval(p,"Geo_id")
+            c["ownership_type"]=sval(p,"Ownership_Type")
+            current_owner=sval(p,"Owner_name")
+            if current_owner:
+                c["owner_verification_match"]=owners_compatible(c.get("owner"),current_owner)
+                c["verified_owner"]=current_owner
+            dd=p.get("Last_Deed_Date")
+            dt=date_from_any(dd)
+            if dt:
+                c["last_deed_date"]=dt.date().isoformat()
+                c["hold_years"]=round((datetime.now(timezone.utc)-dt).days/365.25,1)
+            g=feature_shape(f)
+            if g and not g.is_empty: c["feature"]["geometry"]=mapping(g)
+
+    elif county=="Comal":
+        where=f"PROP_ID={int(pid)}" if pid.isdigit() else f"PARCELKEY='{qpid}'"
+        feats=safe_query("comal-cad-enrich",COMAL_PARCEL_URL,where=where,out_fields="*",
+                         return_geometry=True,page_size=10,timeout=30)
+        if feats:
+            f=feats[0]; p=props(f)
+            c["cad_geometry_verified"]=True
+            c["geometry_source"]="Comal CAD public ArcGIS parcel layer"
+            c["cad_verification_source"]="Comal CAD public ArcGIS service"
+            current_owner=sval(p,"PY_OWNER_N")
+            if current_owner:
+                c["owner_verification_match"]=owners_compatible(c.get("owner"),current_owner)
+                c["verified_owner"]=current_owner
+            c["cad_record_url"]=sval(p,"CADLINK") or c.get("cad_record_url","")
+            g=feature_shape(f)
+            if g and not g.is_empty: c["feature"]["geometry"]=mapping(g)
+        live=safe_query("nbu-live-parcel-check",NBU_LIVE_PARCELS_URL,
+                        where=f"Property_ID='{qpid}' OR Parcel_No_='{qpid}'",
+                        out_fields="Property_ID,Parcel_No_,Land_Owner_Name,County_Name",return_geometry=False,page_size=10,timeout=20)
+        if live:
+            lp=props(live[0]); live_owner=sval(lp,"Land_Owner_Name")
+            if live_owner and owners_compatible(c.get("owner"),live_owner):
+                c["live_secondary_verified"]=True
+                c["secondary_verification_source"]="NBU live project parcel feed"
+                c["verified_owner"]=live_owner
+
+    elif county=="Guadalupe":
+        feats=safe_query("guadalupe-cad-enrich",GUADALUPE_PARCEL_URL,where=f"PROP_ID='{qpid}'",out_fields="*",
+                         return_geometry=True,page_size=10,timeout=30)
+        if feats:
+            f=feats[0]; p=props(f)
+            c["cad_geometry_verified"]=True
+            c["geometry_source"]="Guadalupe CAD / TxGIO public parcel extract"
+            c["cad_verification_source"]="Guadalupe public parcel extract (2022 vintage)"
+            current_owner=sval(p,"OWNER_NAME")
+            if current_owner:
+                c["owner_verification_match"]=owners_compatible(c.get("owner"),current_owner)
+                c["verified_owner"]=current_owner
+            g=feature_shape(f)
+            if g and not g.is_empty: c["feature"]["geometry"]=mapping(g)
+
+        live_where=(f"Property_ID='{qpid}' OR Parcel_No_='{qpid}' OR PropID_Text='{qpid}'"
+                    + (f" OR PROP_ID={int(pid)}" if pid.isdigit() else ""))
+        live=safe_query("gbra-live-parcel-check",GBRA_LIVE_PARCELS_URL,where=live_where,
+                        out_fields="PROP_ID,PropID_Text,Property_ID,Parcel_No_,Land_Owner_Name,County,County_Name",
+                        return_geometry=False,page_size=10,timeout=20)
+        if live:
+            lp=props(live[0]); live_owner=sval(lp,"Land_Owner_Name")
+            if live_owner and owners_compatible(c.get("owner"),live_owner):
+                c["live_secondary_verified"]=True
+                c["secondary_verification_source"]="GBRA live project parcel feed"
+                c["verified_owner"]=live_owner
+
     c["confidence_score"]=candidate_confidence(c)
     classify_candidate(c)
+    return c
 else_dummy = None
 
-def select_top(candidates,limit=30,node_cap=3):
+else_dummy = None
+
+def select_top(candidates,limit=36,node_cap=3):
     order={"PRIORITY":0,"WATCH":1,"EARLY SPECULATION":2,"REVIEW":3}
-    pool=[x for x in candidates if x.get("eligible") and x.get("bcad_geometry_verified") is True
+    pool=[x for x in candidates if x.get("eligible") and x.get("cad_geometry_verified") is True
           and x.get("acquisition_category") in {"PRIORITY","WATCH","EARLY SPECULATION"}]
-    candidates=sorted(pool,key=lambda x:(order.get(x.get("acquisition_category"),9),-x["parcel_opportunity_score"],-x.get("confidence_score",0)))
+    candidates=sorted(pool,key=lambda x:(order.get(x.get("acquisition_category"),9),
+                                          -x["parcel_opportunity_score"],-x.get("confidence_score",0)))
     out=[]; counts=defaultdict(int)
     for c in candidates:
         if counts[c["node_id"]]>=node_cap: continue
@@ -940,22 +1014,25 @@ def assemblages(candidates):
 
 def public_props(c,rank=None):
     keys=[
-      "prop_id","owner","situs","acres","land_value","assessed_value","improvement_value","improvement_ratio","gba",
-      "prop_use","legal","node_id","node_name","node_score","node_edge_miles","dist_score","acre_score","raw_score",
+      "candidate_id","county","prop_id","owner","verified_owner","owner_verification_match","situs","acres",
+      "land_value","assessed_value","improvement_value","improvement_ratio","gba","prop_use","legal","cad_record_url",
+      "parcel_source","parcel_snapshot","parcel_freshness","cad_geometry_verified","cad_verification_source",
+      "live_secondary_verified","secondary_verification_source",
+      "node_id","node_name","node_score","node_edge_miles","dist_score","acre_score","raw_score",
       "shape_score","compactness","aspect_ratio","road_score","frontage_roads","frontage_ft_proxy","corner_signal",
-      "major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","flood_confidence","future_land_use_score",
-      "future_land_use","aadt","aadt_5yr_growth_pct","aadt_station_miles","nearest_retail_catalyst","retail_catalyst_miles",
-      "future_residential_lots_nearby","recent_housing_units_180d","utility_confidence","utility_context",
-      "assessed_value_per_acre","land_value_per_acre","parcel_opportunity_score","parcel_execution_score","parcel_fit_score",
-      "acquisition_complexity_score","utility_score","confidence_score","node_confidence_score","node_class",
-      "node_component_scores","parcel_component_scores","acquisition_category","decision_summary","main_risks",
-      "usable_acres_proxy","eligible","why_this_tract","verification_notes","bcad_geometry_verified","geometry_source",
-      "bcad_geo_id","ownership_type","last_deed_date","hold_years"
+      "major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","flood_confidence",
+      "future_land_use_score","future_land_use","aadt","aadt_5yr_growth_pct","aadt_station_miles",
+      "nearest_retail_catalyst","retail_catalyst_miles","future_residential_lots_nearby","recent_housing_units_180d",
+      "utility_confidence","utility_provider","utility_distance_ft","utility_snapshot","utility_context",
+      "assessed_value_per_acre","land_value_per_acre","parcel_opportunity_score","parcel_execution_score",
+      "parcel_fit_score","acquisition_complexity_score","utility_score","confidence_score","node_confidence_score",
+      "node_class","node_evidence_model","node_component_scores","parcel_component_scores","acquisition_category",
+      "decision_summary","main_risks","usable_acres_proxy","eligible","why_this_tract","verification_notes",
+      "bcad_geometry_verified","geometry_source","bcad_geo_id","ownership_type","last_deed_date","hold_years"
     ]
     p={k:c.get(k) for k in keys if k in c}
     if rank is not None: p["rank"]=rank
     return p
-
 def main():
     print("Analyzing nodes in parallel...")
     supports={}; node_results=[]
