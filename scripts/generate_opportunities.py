@@ -429,6 +429,7 @@ def node_network_quality(node,support):
     return round(score,1),sorted(major_names)[:4],mtp_near
 
 def score_node(node,support):
+    county=support.get("county") or node_county(node)
     now=datetime.now(timezone.utc)
     res=comm=recent=0.0
     active_plats=0
@@ -456,7 +457,8 @@ def score_node(node,support):
         total=nval(p,"housingunitstotal"); exist=nval(p,"housingunitsexist")
         net=max(0,total-exist)
         net_units+=net
-        txt=" ".join([sval(p,"permittypemapped"),sval(p,"permitclassmapped"),sval(p,"workclass"),sval(p,"proposeduse"),sval(p,"landusedescription")]).lower()
+        txt=" ".join([sval(p,"permittypemapped"),sval(p,"permitclassmapped"),sval(p,"workclass"),
+                      sval(p,"proposeduse"),sval(p,"landusedescription")]).lower()
         if "residen" in txt or "single family" in txt or net>0: res_permits+=1
     best_aadt=best_growth=0
     for f in support["traffic"]:
@@ -478,28 +480,41 @@ def score_node(node,support):
     momentum=.72*sat(recent,1200)+.28*sat(net_units+res_permits,180)
     timing=.58*demand_gap+.42*momentum
 
-    node_score=(20*housing+15*network+10*catalyst+10*traffic+5*timing)/60
+    evidence_score=(20*housing+15*network+10*catalyst+10*traffic+5*timing)/60
     confidence=0
     confidence+=30 if active_plats else 8
     confidence+=25 if support["traffic"] else 0
-    confidence+=25 if (support["roads"] or support["mtp"]) else 0
+    confidence+=25 if support["roads"] else 0
     confidence+=10 if support["flu"] else 0
-    confidence+=10
+    confidence+=10 if support["utility"] else 4
     confidence=clamp(confidence)
 
-    if node_score>=76 and confidence>=70: node_class="PRIORITY NODE"
-    elif node_score>=66 and confidence>=60: node_class="EMERGING NODE"
-    elif node_score>=55: node_class="WATCH NODE"
+    evidence_model="Bexar detailed growth + statewide road/traffic evidence"
+    node_score=evidence_score
+    if county!="Bexar":
+        # Comparable plat/permit feeds are not yet loaded countywide outside Bexar.
+        # Use the curated corridor prior conservatively, and cap confidence.
+        node_score=.70*evidence_score+.30*float(node.get("base",50))
+        confidence=min(confidence,68)
+        evidence_model="Regional corridor prior + statewide road/traffic; county housing feed incomplete"
+
+    search_supported=county in {"Bexar","Comal","Guadalupe"}
+    if county=="Bexar" and node_score>=76 and confidence>=70: node_class="PRIORITY NODE"
+    elif node_score>=66 and confidence>=55: node_class="EMERGING NODE"
+    elif node_score>=52: node_class="WATCH NODE"
     else: node_class="LOWER CONFIDENCE"
 
     return {
-        **node,"score":round(clamp(node_score),1),"confidence_score":round(confidence,1),"node_class":node_class,
+        **node,"county":county,"search_supported":search_supported,
+        "score":round(clamp(node_score),1),"evidence_score":round(clamp(evidence_score),1),
+        "confidence_score":round(confidence,1),"node_class":node_class,"evidence_model":evidence_model,
         "weighted_future_res_lots":round(res,1),"weighted_future_commercial_lots":round(comm,1),
         "recent_progress_res_lots":round(recent,1),"active_plat_signals":active_plats,
         "net_new_housing_units_180d":round(net_units,1),"residential_permits_180d":int(res_permits),
         "aadt":int(best_aadt),"aadt_5yr_growth_pct":round(best_growth,1),
         "nearest_catalyst":catalyst_name,"catalyst_miles":round(catalyst_d,2),
         "major_node_roads":major_roads,"mtp_near_node":mtp_near,
+        "utility_provider":support.get("utility_provider",""),"mapped_utility_features":len(support.get("utility",[])),
         "component_scores":{
             "residential_growth":round(housing,1),"intersection_network":round(network,1),
             "retail_catalyst":round(catalyst,1),"traffic":round(traffic,1),"timing":round(timing,1)
@@ -507,16 +522,29 @@ def score_node(node,support):
     }
 
 def query_parcels(node):
-    return safe_query("bexar-parcels",PARCEL_URL,where="Acres >= 3",geom=point_geom(node),distance=2414.016,
-                      out_fields="OBJECTID,PropID,Situs,Owner,DBA,LglDesc,LandVal,ImprVal,TotVal,GBA,TOT_GBA,YrBlt,Houses,LglAcres,Acres,PropUse",
-                      return_geometry=True)
+    county=node.get("county") or node_county(node)
+    if county=="Bexar":
+        return safe_query("bexar-parcels",PARCEL_URL,where="Acres >= 3",geom=point_geom(node),distance=2414.016,
+                          out_fields="OBJECTID,PropID,Situs,Owner,DBA,LglDesc,LandVal,ImprVal,TotVal,GBA,TOT_GBA,YrBlt,Houses,LglAcres,Acres,PropUse",
+                          return_geometry=True)
+    if county=="Comal":
+        return safe_query("comal-parcels",COMAL_PARCEL_URL,where="LEGAL_ACRE >= 3",geom=point_geom(node),distance=2414.016,
+                          out_fields="OBJECTID,PROP_ID,PARCELKEY,PROP_TYPE_,PY_OWNER_N,SITUS_ADDR,LEGAL_DESC,LEGAL_DE_1,LEGAL_ACRE,LAND_HMSTD,LAND_NON_H,IMPRV_VAL,IMPROV_NON,APPRAISED,ASSESSED,CADLINK",
+                          return_geometry=True,page_size=2000,timeout=25)
+    if county=="Guadalupe":
+        where="(LGL_AREA_UNIT='ACRES' AND LEGAL_AREA >= 3) OR (GIS_AREA_UNIT='ACRES' AND GIS_AREA >= 3)"
+        return safe_query("guadalupe-parcels",GUADALUPE_PARCEL_URL,where=where,geom=point_geom(node),distance=2414.016,
+                          out_fields="OBJECTID,PROP_ID,GEO_ID,OWNER_NAME,LEGAL_AREA,LGL_AREA_UNIT,GIS_AREA,GIS_AREA_UNIT,LEGAL_DESC,STAT_LAND_USE,LOC_LAND_USE,LAND_VALUE,IMP_VALUE,MKT_VALUE,SITUS_ADDR,TAX_YEAR,YEAR_BUILT",
+                          return_geometry=True,page_size=2000,timeout=25)
+    return []
 
 def make_candidate(feature,node_result):
-    p=props(feature)
-    owner=sval(p,"Owner")
-    if (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
+    county=node_result.get("county") or node_county(node_result)
+    rec=normalized_parcel(feature,county)
+    owner=rec.get("owner","")
+    if not rec or (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
             or INSTITUTIONAL_OWNER.search(owner) or RESIDENTIAL_BUILDER_OWNER.search(owner)): return None
-    a=nval(p,"Acres","LglAcres")
+    a=float(rec.get("acres") or 0)
     if a<3: return None
     g=feature_shape(feature)
     if not g or g.is_empty: return None
@@ -525,25 +553,34 @@ def make_candidate(feature,node_result):
     nodep=proj(Point(node_result["lng"],node_result["lat"]))
     edge_mi=gp.distance(nodep)/5280
     if edge_mi>1.5: return None
-    raw,impr_ratio,gba=raw_land_score(p,a)
-    # Hard pre-screen obvious improved residential/multifamily.
+
+    raw,impr_ratio,gba=raw_land_score_values(rec.get("market_value"),rec.get("improvement_value"),a,
+                                             rec.get("gba",0),rec.get("houses",0))
     if a<12 and impr_ratio>.55: return None
-    if a<8 and gba/a>12000: return None
-    houses=nval(p,"Houses")
+    if a<8 and gba and gba/a>12000: return None
+    houses=float(rec.get("houses") or 0)
     if a<12 and houses>=5: return None
+
     sh,compact,aspect=geometry_shape_metrics(gp)
     dist=parcel_distance_score(edge_mi); acre=acreage_score(a)
-    # Node-first pre-ranking: location quality dominates before parcel-level enrichment.
     pre=.60*node_result["score"]+.15*dist+.10*acre+.10*raw+.05*sh
-    c=g.centroid
+    ctr=g.centroid
+    source=PARCEL_SOURCE_INFO.get(county,{})
+    pid=str(rec.get("prop_id") or "").strip()
+    if not pid: return None
     return {
-        "feature":feature,"prop_id":str(int(nval(p,"PropID"))) if nval(p,"PropID") else str(p.get("OBJECTID","")),
-        "owner":owner,"owner_key":normalize_owner(owner),"situs":sval(p,"Situs"),
-        "acres":round(a,2),"land_value":round(nval(p,"LandVal"),0),"assessed_value":round(nval(p,"TotVal"),0),
-        "improvement_value":round(nval(p,"ImprVal"),0),"improvement_ratio":round(impr_ratio,3),
-        "gba":round(gba,0),"prop_use":sval(p,"PropUse"),"legal":sval(p,"LglDesc"),
+        "feature":feature,"candidate_id":county+":"+pid,"county":county,"prop_id":pid,
+        "owner":owner,"owner_key":normalize_owner(owner),"situs":rec.get("situs",""),
+        "acres":round(a,2),"land_value":round(float(rec.get("land_value") or 0),0),
+        "assessed_value":round(float(rec.get("market_value") or 0),0),
+        "improvement_value":round(float(rec.get("improvement_value") or 0),0),
+        "improvement_ratio":round(impr_ratio,3),"gba":round(gba,0),
+        "prop_use":rec.get("prop_use",""),"legal":rec.get("legal",""),
+        "cad_record_url":rec.get("cad_record_url",""),
+        "parcel_source":source.get("label",""),"parcel_snapshot":source.get("snapshot",""),
+        "parcel_freshness":source.get("freshness","UNKNOWN"),
         "node_id":node_result["id"],"node_name":node_result["name"],"node_score":node_result["score"],
-        "node_edge_miles":round(edge_mi,3),"centroid_lat":c.y,"centroid_lng":c.x,
+        "node_edge_miles":round(edge_mi,3),"centroid_lat":ctr.y,"centroid_lng":ctr.x,
         "dist_score":dist,"acre_score":acre,"raw_score":round(raw,1),"shape_score":round(sh,1),
         "compactness":round(compact,3),"aspect_ratio":round(aspect,2),"preliminary_score":round(pre,1),
         "_geom2278":gp
