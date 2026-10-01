@@ -85,15 +85,15 @@
         "shape_score": 90.9,
         "compactness": 0.568,
         "aspect_ratio": 3.21,
-        "road_score": 94,
+        "road_score": 90,
         "frontage_roads": [
           "SH 211",
           "CATALINA PORT",
-          "CR01501767-KG",
-          "Unnamed road"
+          "Unnamed road",
+          "CR01501767-KG"
         ],
         "frontage_ft_proxy": 326.0,
-        "corner_signal": "STRONG",
+        "corner_signal": "NO",
         "major_road_signal": true,
         "mtp_row_flag": false,
         "flood_score": 100,
@@ -119,8 +119,8 @@
         "utility_context": "SAWS feature approximately 160 ft from parcel; capacity NOT verified",
         "assessed_value_per_acre": 42531.0,
         "land_value_per_acre": 42531.0,
-        "parcel_opportunity_score": 87.1,
-        "parcel_execution_score": 94.8,
+        "parcel_opportunity_score": 86.6,
+        "parcel_execution_score": 93.6,
         "parcel_fit_score": 87.9,
         "acquisition_complexity_score": 97.2,
         "utility_score": 100,
@@ -136,7 +136,7 @@
           "timing": 69.4
         },
         "parcel_component_scores": {
-          "frontage_access": 94,
+          "frontage_access": 90,
           "size_shape": 87.9,
           "utilities": 100,
           "flood": 100,
@@ -149,7 +149,7 @@
         ],
         "usable_acres_proxy": 4.82,
         "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of the node \u00b7 8132 weighted future residential lots \u00b7 0.6 mi from Culebra / SH 211 H-E-B",
+        "why_this_tract": "major-road frontage \u00b7 within \u00bd mile of the node \u00b7 8132 weighted future residential lots \u00b7 0.6 mi from Culebra / SH 211 H-E-B",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
         "bcad_geometry_verified": true,
         "geometry_source": "SARA / BCAD parcel service",
@@ -321,407 +321,6 @@
         "last_deed_date": "2009-12-08",
         "hold_years": 16.8,
         "rank": 2
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -98.78727237054399,
-              29.425648306858065
-            ],
-            [
-              -98.78721459930638,
-              29.42569730099983
-            ],
-            [
-              -98.78721047861406,
-              29.425700795369217
-            ],
-            [
-              -98.78721000882332,
-              29.425701196145482
-            ],
-            [
-              -98.7871510989938,
-              29.425752327568496
-            ],
-            [
-              -98.7870970311479,
-              29.42580855441682
-            ],
-            [
-              -98.78704824431354,
-              29.425869420131537
-            ],
-            [
-              -98.78700513463717,
-              29.425934430486382
-            ],
-            [
-              -98.78696805216698,
-              29.426003057600838
-            ],
-            [
-              -98.7869372980106,
-              29.4260747442265
-            ],
-            [
-              -98.78691312189008,
-              29.426148908271905
-            ],
-            [
-              -98.7868957201142,
-              29.426224947529068
-            ],
-            [
-              -98.78688523398444,
-              29.4263022445634
-            ],
-            [
-              -98.78688174864757,
-              29.426380171727217
-            ],
-            [
-              -98.78688529240435,
-              29.42645809625623
-            ],
-            [
-              -98.78689583647967,
-              29.426535385407533
-            ],
-            [
-              -98.78691329525623,
-              29.426611411597463
-            ],
-            [
-              -98.78693752696968,
-              29.426685557497528
-            ],
-            [
-              -98.78696833485988,
-              29.42675722104709
-            ],
-            [
-              -98.78697060617287,
-              29.42676183362861
-            ],
-            [
-              -98.78698698348515,
-              29.426794676474046
-            ],
-            [
-              -98.78698705224625,
-              29.426794818245103
-            ],
-            [
-              -98.78698731500316,
-              29.42679534651086
-            ],
-            [
-              -98.78736798662132,
-              29.427559818466605
-            ],
-            [
-              -98.78737262735109,
-              29.427568987828018
-            ],
-            [
-              -98.78741478453942,
-              29.427641615072517
-            ],
-            [
-              -98.78746295340457,
-              29.42771040246673
-            ],
-            [
-              -98.78751678637454,
-              29.427774853661575
-            ],
-            [
-              -98.78757589500685,
-              29.427834503596678
-            ],
-            [
-              -98.78763985279147,
-              29.427888921856113
-            ],
-            [
-              -98.7877081982283,
-              29.427937715774135
-            ],
-            [
-              -98.78771737135727,
-              29.42794372524539
-            ],
-            [
-              -98.78794541715499,
-              29.428091258291253
-            ],
-            [
-              -98.78821185349243,
-              29.42812003578962
-            ],
-            [
-              -98.78796139525657,
-              29.428517168353682
-            ],
-            [
-              -98.7875734133341,
-              29.429261746818792
-            ],
-            [
-              -98.78769129541804,
-              29.429719245993358
-            ],
-            [
-              -98.78771426741442,
-              29.42979858218493
-            ],
-            [
-              -98.78960362988093,
-              29.429806502184316
-            ],
-            [
-              -98.7907285919355,
-              29.427922357355932
-            ],
-            [
-              -98.79077829598113,
-              29.427614879267683
-            ],
-            [
-              -98.79077864777749,
-              29.42761270075936
-            ],
-            [
-              -98.79112622231709,
-              29.425462437831115
-            ],
-            [
-              -98.79136803473487,
-              29.423966415669685
-            ],
-            [
-              -98.7913771378738,
-              29.423910094625437
-            ],
-            [
-              -98.79138545003174,
-              29.423858550037018
-            ],
-            [
-              -98.79127269570336,
-              29.423910797685867
-            ],
-            [
-              -98.79126269546619,
-              29.423972354285315
-            ],
-            [
-              -98.79113032926578,
-              29.4247871106188
-            ],
-            [
-              -98.79112836799665,
-              29.424799191186462
-            ],
-            [
-              -98.79112754863355,
-              29.424804234678284
-            ],
-            [
-              -98.79101751739844,
-              29.425481493174654
-            ],
-            [
-              -98.79022520425228,
-              29.425212807116907
-            ],
-            [
-              -98.78891470616271,
-              29.424901494871037
-            ],
-            [
-              -98.78890918240997,
-              29.424900189533993
-            ],
-            [
-              -98.78882002227633,
-              29.424882396765526
-            ],
-            [
-              -98.78872976715917,
-              29.42487143657086
-            ],
-            [
-              -98.78863893987874,
-              29.424867372439042
-            ],
-            [
-              -98.7885480665696,
-              29.424870227912336
-            ],
-            [
-              -98.78845767363302,
-              29.424879986449866
-            ],
-            [
-              -98.78836828468755,
-              29.424896591523417
-            ],
-            [
-              -98.78828041753596,
-              29.42491994694488
-            ],
-            [
-              -98.78819458116573,
-              29.42494991742346
-            ],
-            [
-              -98.78811127280065,
-              29.42498632934936
-            ],
-            [
-              -98.78803097502055,
-              29.425028971799453
-            ],
-            [
-              -98.78795415296584,
-              29.425077597759095
-            ],
-            [
-              -98.78788125164316,
-              29.425131925553
-            ],
-            [
-              -98.78788085310454,
-              29.425132263283622
-            ],
-            [
-              -98.78787673249886,
-              29.425135737823325
-            ],
-            [
-              -98.78727237054399,
-              29.425648306858065
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "candidate_id": "Bexar:1057738",
-        "county": "Bexar",
-        "prop_id": "1057738",
-        "owner": "POTRANCO PATIENCE LLC",
-        "verified_owner": "POTRANCO PATIENCE LLC",
-        "owner_verification_match": true,
-        "situs": "14945  POTRANCO RD",
-        "acres": 40.26,
-        "reported_acres": 40.26,
-        "geometry_acres": 40.24,
-        "acres_source": "REPORTED",
-        "land_value": 17540.0,
-        "assessed_value": 17540.0,
-        "improvement_value": 0.0,
-        "improvement_ratio": 0.0,
-        "gba": 0.0,
-        "prop_use": "95",
-        "legal": "CB 4369 P-1(32.319), P-1A(0.212) & CB 4371 P-3 (7.725)  ABS 1084 2025-SPLIT PER DEED 202400574556\\ 2023 SPLIT PER DEED 20210257391/// 2022- RSVY PER DEED 20210057722, EXE 03-04-2021///2021-SPLIT PER DEED 20200319270||||2020-REMAINS PER SPLIT PER DEED 20190139145 EFF 07-19-19",
-        "cad_record_url": "",
-        "parcel_source": "SARA / Bexar CAD",
-        "parcel_snapshot": "2025-12",
-        "parcel_freshness": "RECENT",
-        "cad_geometry_verified": true,
-        "cad_verification_source": "SARA / BCAD live service",
-        "node_id": "INT-017",
-        "node_name": "Texas Research Pkwy / SH 211",
-        "node_score": 75.5,
-        "node_edge_miles": 0.572,
-        "dist_score": 78,
-        "acre_score": 100,
-        "raw_score": 100,
-        "shape_score": 81.1,
-        "compactness": 0.507,
-        "aspect_ratio": 1.78,
-        "road_score": 100,
-        "frontage_roads": [
-          "POTRANCO RD",
-          "FM 1957",
-          "CR01503509-KG"
-        ],
-        "frontage_ft_proxy": 160.0,
-        "corner_signal": "STRONG",
-        "major_road_signal": true,
-        "mtp_row_flag": true,
-        "flood_score": 75,
-        "flood_pct": 0.0,
-        "floodway_pct": 0.0,
-        "flood_zones": [
-          "AE",
-          "X"
-        ],
-        "flood_confidence": "SCREENED",
-        "future_land_use_score": 55,
-        "future_land_use": [],
-        "aadt": 22346,
-        "aadt_5yr_growth_pct": 0,
-        "aadt_station_miles": 0.3,
-        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
-        "retail_catalyst_miles": 6.75,
-        "future_residential_lots_nearby": 10209.0,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "PROXY",
-        "utility_provider": "SAWS",
-        "utility_distance_ft": 47.0,
-        "utility_snapshot": "2021-07-21",
-        "utility_context": "SAWS feature approximately 47 ft from parcel; capacity NOT verified",
-        "assessed_value_per_acre": 436.0,
-        "land_value_per_acre": 436.0,
-        "parcel_opportunity_score": 83.2,
-        "parcel_execution_score": 94.7,
-        "parcel_fit_score": 92.8,
-        "acquisition_complexity_score": 97.2,
-        "utility_score": 100,
-        "confidence_score": 100,
-        "node_confidence_score": 100,
-        "node_class": "EMERGING NODE",
-        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
-        "node_component_scores": {
-          "residential_growth": 84.3,
-          "intersection_network": 100,
-          "retail_catalyst": 28,
-          "traffic": 71.5,
-          "timing": 70.2
-        },
-        "parcel_component_scores": {
-          "frontage_access": 100,
-          "size_shape": 92.8,
-          "utilities": 100,
-          "flood": 75,
-          "acquisition": 97.2
-        },
-        "acquisition_category": "PRIORITY",
-        "decision_summary": "Investigate ownership, access, utilities and pricing now.",
-        "main_risks": [
-          "not on the immediate intersection",
-          "limited frontage proxy",
-          "utility capacity is unverified"
-        ],
-        "usable_acres_proxy": 40.26,
-        "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 10209 weighted future residential lots \u00b7 mapped SAWS feature ~47 ft from parcel",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
-        "bcad_geometry_verified": true,
-        "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "04369-000-0015",
-        "ownership_type": "Private",
-        "last_deed_date": "2021-03-04",
-        "hold_years": 5.6,
-        "rank": 3
       }
     },
     {
@@ -1124,8 +723,8 @@
         "frontage_roads": [
           "SH 211",
           "STATE HWY 211 S",
-          "CR01503527-KG",
-          "ZETA DR"
+          "ZETA DR",
+          "THETA DR"
         ],
         "frontage_ft_proxy": 1735.0,
         "corner_signal": "STRONG",
@@ -1194,7 +793,7 @@
         "ownership_type": "Private",
         "last_deed_date": "2001-04-02",
         "hold_years": 25.5,
-        "rank": 4
+        "rank": 3
       }
     },
     {
@@ -1707,6 +1306,407 @@
         "ownership_type": "Private",
         "last_deed_date": "2001-04-02",
         "hold_years": 25.5,
+        "rank": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.78727237054399,
+              29.425648306858065
+            ],
+            [
+              -98.78721459930638,
+              29.42569730099983
+            ],
+            [
+              -98.78721047861406,
+              29.425700795369217
+            ],
+            [
+              -98.78721000882332,
+              29.425701196145482
+            ],
+            [
+              -98.7871510989938,
+              29.425752327568496
+            ],
+            [
+              -98.7870970311479,
+              29.42580855441682
+            ],
+            [
+              -98.78704824431354,
+              29.425869420131537
+            ],
+            [
+              -98.78700513463717,
+              29.425934430486382
+            ],
+            [
+              -98.78696805216698,
+              29.426003057600838
+            ],
+            [
+              -98.7869372980106,
+              29.4260747442265
+            ],
+            [
+              -98.78691312189008,
+              29.426148908271905
+            ],
+            [
+              -98.7868957201142,
+              29.426224947529068
+            ],
+            [
+              -98.78688523398444,
+              29.4263022445634
+            ],
+            [
+              -98.78688174864757,
+              29.426380171727217
+            ],
+            [
+              -98.78688529240435,
+              29.42645809625623
+            ],
+            [
+              -98.78689583647967,
+              29.426535385407533
+            ],
+            [
+              -98.78691329525623,
+              29.426611411597463
+            ],
+            [
+              -98.78693752696968,
+              29.426685557497528
+            ],
+            [
+              -98.78696833485988,
+              29.42675722104709
+            ],
+            [
+              -98.78697060617287,
+              29.42676183362861
+            ],
+            [
+              -98.78698698348515,
+              29.426794676474046
+            ],
+            [
+              -98.78698705224625,
+              29.426794818245103
+            ],
+            [
+              -98.78698731500316,
+              29.42679534651086
+            ],
+            [
+              -98.78736798662132,
+              29.427559818466605
+            ],
+            [
+              -98.78737262735109,
+              29.427568987828018
+            ],
+            [
+              -98.78741478453942,
+              29.427641615072517
+            ],
+            [
+              -98.78746295340457,
+              29.42771040246673
+            ],
+            [
+              -98.78751678637454,
+              29.427774853661575
+            ],
+            [
+              -98.78757589500685,
+              29.427834503596678
+            ],
+            [
+              -98.78763985279147,
+              29.427888921856113
+            ],
+            [
+              -98.7877081982283,
+              29.427937715774135
+            ],
+            [
+              -98.78771737135727,
+              29.42794372524539
+            ],
+            [
+              -98.78794541715499,
+              29.428091258291253
+            ],
+            [
+              -98.78821185349243,
+              29.42812003578962
+            ],
+            [
+              -98.78796139525657,
+              29.428517168353682
+            ],
+            [
+              -98.7875734133341,
+              29.429261746818792
+            ],
+            [
+              -98.78769129541804,
+              29.429719245993358
+            ],
+            [
+              -98.78771426741442,
+              29.42979858218493
+            ],
+            [
+              -98.78960362988093,
+              29.429806502184316
+            ],
+            [
+              -98.7907285919355,
+              29.427922357355932
+            ],
+            [
+              -98.79077829598113,
+              29.427614879267683
+            ],
+            [
+              -98.79077864777749,
+              29.42761270075936
+            ],
+            [
+              -98.79112622231709,
+              29.425462437831115
+            ],
+            [
+              -98.79136803473487,
+              29.423966415669685
+            ],
+            [
+              -98.7913771378738,
+              29.423910094625437
+            ],
+            [
+              -98.79138545003174,
+              29.423858550037018
+            ],
+            [
+              -98.79127269570336,
+              29.423910797685867
+            ],
+            [
+              -98.79126269546619,
+              29.423972354285315
+            ],
+            [
+              -98.79113032926578,
+              29.4247871106188
+            ],
+            [
+              -98.79112836799665,
+              29.424799191186462
+            ],
+            [
+              -98.79112754863355,
+              29.424804234678284
+            ],
+            [
+              -98.79101751739844,
+              29.425481493174654
+            ],
+            [
+              -98.79022520425228,
+              29.425212807116907
+            ],
+            [
+              -98.78891470616271,
+              29.424901494871037
+            ],
+            [
+              -98.78890918240997,
+              29.424900189533993
+            ],
+            [
+              -98.78882002227633,
+              29.424882396765526
+            ],
+            [
+              -98.78872976715917,
+              29.42487143657086
+            ],
+            [
+              -98.78863893987874,
+              29.424867372439042
+            ],
+            [
+              -98.7885480665696,
+              29.424870227912336
+            ],
+            [
+              -98.78845767363302,
+              29.424879986449866
+            ],
+            [
+              -98.78836828468755,
+              29.424896591523417
+            ],
+            [
+              -98.78828041753596,
+              29.42491994694488
+            ],
+            [
+              -98.78819458116573,
+              29.42494991742346
+            ],
+            [
+              -98.78811127280065,
+              29.42498632934936
+            ],
+            [
+              -98.78803097502055,
+              29.425028971799453
+            ],
+            [
+              -98.78795415296584,
+              29.425077597759095
+            ],
+            [
+              -98.78788125164316,
+              29.425131925553
+            ],
+            [
+              -98.78788085310454,
+              29.425132263283622
+            ],
+            [
+              -98.78787673249886,
+              29.425135737823325
+            ],
+            [
+              -98.78727237054399,
+              29.425648306858065
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "candidate_id": "Bexar:1057738",
+        "county": "Bexar",
+        "prop_id": "1057738",
+        "owner": "POTRANCO PATIENCE LLC",
+        "verified_owner": "POTRANCO PATIENCE LLC",
+        "owner_verification_match": true,
+        "situs": "14945  POTRANCO RD",
+        "acres": 40.26,
+        "reported_acres": 40.26,
+        "geometry_acres": 40.24,
+        "acres_source": "REPORTED",
+        "land_value": 17540.0,
+        "assessed_value": 17540.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "95",
+        "legal": "CB 4369 P-1(32.319), P-1A(0.212) & CB 4371 P-3 (7.725)  ABS 1084 2025-SPLIT PER DEED 202400574556\\ 2023 SPLIT PER DEED 20210257391/// 2022- RSVY PER DEED 20210057722, EXE 03-04-2021///2021-SPLIT PER DEED 20200319270||||2020-REMAINS PER SPLIT PER DEED 20190139145 EFF 07-19-19",
+        "cad_record_url": "",
+        "parcel_source": "SARA / Bexar CAD",
+        "parcel_snapshot": "2025-12",
+        "parcel_freshness": "RECENT",
+        "cad_geometry_verified": true,
+        "cad_verification_source": "SARA / BCAD live service",
+        "node_id": "INT-017",
+        "node_name": "Texas Research Pkwy / SH 211",
+        "node_score": 75.5,
+        "node_edge_miles": 0.572,
+        "dist_score": 78,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 81.1,
+        "compactness": 0.507,
+        "aspect_ratio": 1.78,
+        "road_score": 84,
+        "frontage_roads": [
+          "POTRANCO RD",
+          "FM 1957",
+          "CR01503509-KG"
+        ],
+        "frontage_ft_proxy": 160.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 75,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "AE",
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 22346,
+        "aadt_5yr_growth_pct": 0,
+        "aadt_station_miles": 0.3,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 6.75,
+        "future_residential_lots_nearby": 10209.0,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_provider": "SAWS",
+        "utility_distance_ft": 47.0,
+        "utility_snapshot": "2021-07-21",
+        "utility_context": "SAWS feature approximately 47 ft from parcel; capacity NOT verified",
+        "assessed_value_per_acre": 436.0,
+        "land_value_per_acre": 436.0,
+        "parcel_opportunity_score": 81.3,
+        "parcel_execution_score": 89.9,
+        "parcel_fit_score": 92.8,
+        "acquisition_complexity_score": 97.2,
+        "utility_score": 100,
+        "confidence_score": 100,
+        "node_confidence_score": 100,
+        "node_class": "EMERGING NODE",
+        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
+        "node_component_scores": {
+          "residential_growth": 84.3,
+          "intersection_network": 100,
+          "retail_catalyst": 28,
+          "traffic": 71.5,
+          "timing": 70.2
+        },
+        "parcel_component_scores": {
+          "frontage_access": 84,
+          "size_shape": 92.8,
+          "utilities": 100,
+          "flood": 75,
+          "acquisition": 97.2
+        },
+        "acquisition_category": "PRIORITY",
+        "decision_summary": "Investigate ownership, access, utilities and pricing now.",
+        "main_risks": [
+          "not on the immediate intersection",
+          "limited frontage proxy",
+          "utility capacity is unverified"
+        ],
+        "usable_acres_proxy": 40.26,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within 1 mile of the node \u00b7 10209 weighted future residential lots \u00b7 mapped SAWS feature ~47 ft from parcel",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "04369-000-0015",
+        "ownership_type": "Private",
+        "last_deed_date": "2021-03-04",
+        "hold_years": 5.6,
         "rank": 5
       }
     },
@@ -2281,8 +2281,8 @@
         "frontage_roads": [
           "FM 1957",
           "STEVENS PKWY",
-          "CR01503548-KG",
-          "POTRANCO RD"
+          "POTRANCO RD",
+          "Unnamed road"
         ],
         "frontage_ft_proxy": 1461.0,
         "corner_signal": "STRONG",
@@ -2352,6 +2352,237 @@
         "last_deed_date": "2023-10-31",
         "hold_years": 2.9,
         "rank": 7
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.76022423139271,
+              29.372319866151837
+            ],
+            [
+              -98.76022228305257,
+              29.37300875985749
+            ],
+            [
+              -98.76022418074814,
+              29.373042006983024
+            ],
+            [
+              -98.76023001529416,
+              29.37307479311847
+            ],
+            [
+              -98.76024129036327,
+              29.37312184180481
+            ],
+            [
+              -98.76024533478828,
+              29.373143984760304
+            ],
+            [
+              -98.76024692493998,
+              29.37316643780618
+            ],
+            [
+              -98.76026211601241,
+              29.374148233289088
+            ],
+            [
+              -98.76153559544808,
+              29.374026585022857
+            ],
+            [
+              -98.7618482195123,
+              29.37395513319644
+            ],
+            [
+              -98.76202048147805,
+              29.37389870485078
+            ],
+            [
+              -98.76223873673533,
+              29.373808926679555
+            ],
+            [
+              -98.76237664246928,
+              29.373742338931585
+            ],
+            [
+              -98.76249153028239,
+              29.37368241246139
+            ],
+            [
+              -98.76269472079424,
+              29.37354236337804
+            ],
+            [
+              -98.76286342617647,
+              29.37340554978356
+            ],
+            [
+              -98.76299762010986,
+              29.373302114354363
+            ],
+            [
+              -98.76316269823414,
+              29.37312846432126
+            ],
+            [
+              -98.76337761418928,
+              29.37290133402628
+            ],
+            [
+              -98.76374993589874,
+              29.372493849287974
+            ],
+            [
+              -98.76381916080763,
+              29.37239358155653
+            ],
+            [
+              -98.76391165942313,
+              29.37198539443239
+            ],
+            [
+              -98.76418607045984,
+              29.371169081319586
+            ],
+            [
+              -98.76424860207267,
+              29.37095389401746
+            ],
+            [
+              -98.76294527846825,
+              29.370877276517067
+            ],
+            [
+              -98.76259528195405,
+              29.371988111421963
+            ],
+            [
+              -98.7622907379607,
+              29.372323543231264
+            ],
+            [
+              -98.76022423139271,
+              29.372319866151837
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "candidate_id": "Bexar:348230",
+        "county": "Bexar",
+        "prop_id": "348230",
+        "owner": "RUIZ ROY",
+        "verified_owner": "RUIZ ROY",
+        "owner_verification_match": true,
+        "situs": "13442 W US HIGHWAY 90",
+        "acres": 17.68,
+        "reported_acres": 17.68,
+        "geometry_acres": 17.86,
+        "acres_source": "REPORTED",
+        "land_value": 3527250.0,
+        "assessed_value": 3530020.0,
+        "improvement_value": 2770.0,
+        "improvement_ratio": 0.001,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB 5681 PT OF TR 3 & TR 2 ARB P-5 (0.58 AC), P-5F (17.1 AC) 2025-SPLIT PER DEED 20240221960// 2025-SPLIT PER DEED 20240159695\\ 2023 SPLIT PER DEED 20220217088 // 1 acre homesite in PID 348231//",
+        "cad_record_url": "",
+        "parcel_source": "SARA / Bexar CAD",
+        "parcel_snapshot": "2025-12",
+        "parcel_freshness": "RECENT",
+        "cad_geometry_verified": true,
+        "cad_verification_source": "SARA / BCAD live service",
+        "node_id": "INT-004",
+        "node_name": "US 90 / SH 211",
+        "node_score": 70.8,
+        "node_edge_miles": 0.167,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 99.9,
+        "shape_score": 87.5,
+        "compactness": 0.547,
+        "aspect_ratio": 2.12,
+        "road_score": 94,
+        "frontage_roads": [
+          "US HWY 90 W ACCESS RD",
+          "1671408056"
+        ],
+        "frontage_ft_proxy": 2491.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 100,
+        "future_land_use": [
+          "Mixed Use Center / West"
+        ],
+        "aadt": 11975,
+        "aadt_5yr_growth_pct": 1302.2,
+        "aadt_station_miles": 0.05,
+        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
+        "retail_catalyst_miles": 10.74,
+        "future_residential_lots_nearby": 11075.5,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_provider": "SAWS",
+        "utility_distance_ft": 242.0,
+        "utility_snapshot": "2021-07-21",
+        "utility_context": "SAWS feature approximately 242 ft from parcel; capacity NOT verified",
+        "assessed_value_per_acre": 199662.0,
+        "land_value_per_acre": 199505.0,
+        "parcel_opportunity_score": 80.2,
+        "parcel_execution_score": 94.2,
+        "parcel_fit_score": 95.2,
+        "acquisition_complexity_score": 90.1,
+        "utility_score": 92,
+        "confidence_score": 100,
+        "node_confidence_score": 100,
+        "node_class": "EMERGING NODE",
+        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
+        "node_component_scores": {
+          "residential_growth": 86.1,
+          "intersection_network": 100,
+          "retail_catalyst": 28,
+          "traffic": 40.2,
+          "timing": 68.4
+        },
+        "parcel_component_scores": {
+          "frontage_access": 94,
+          "size_shape": 95.2,
+          "utilities": 92,
+          "flood": 100,
+          "acquisition": 90.1
+        },
+        "acquisition_category": "PRIORITY",
+        "decision_summary": "Investigate ownership, access, utilities and pricing now.",
+        "main_risks": [
+          "utility capacity is unverified"
+        ],
+        "usable_acres_proxy": 17.68,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of the node \u00b7 11075 weighted future residential lots \u00b7 mapped SAWS feature ~242 ft from parcel",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05681-000-0035",
+        "ownership_type": "Private",
+        "last_deed_date": "1999-10-28",
+        "hold_years": 26.9,
+        "rank": 8
       }
     },
     {
@@ -2686,7 +2917,7 @@
         "shape_score": 72.3,
         "compactness": 0.452,
         "aspect_ratio": 2.77,
-        "road_score": 94,
+        "road_score": 90,
         "frontage_roads": [
           "W GROSENBACHER RD",
           "CR01501366-KG",
@@ -2694,7 +2925,7 @@
           "Unnamed road"
         ],
         "frontage_ft_proxy": 685.0,
-        "corner_signal": "STRONG",
+        "corner_signal": "NO",
         "major_road_signal": true,
         "mtp_row_flag": true,
         "flood_score": 100,
@@ -2722,8 +2953,8 @@
         "utility_context": "SAWS feature approximately 0 ft from parcel; capacity NOT verified",
         "assessed_value_per_acre": 66897.0,
         "land_value_per_acre": 66897.0,
-        "parcel_opportunity_score": 80.3,
-        "parcel_execution_score": 94.8,
+        "parcel_opportunity_score": 79.9,
+        "parcel_execution_score": 93.6,
         "parcel_fit_score": 89.5,
         "acquisition_complexity_score": 94.4,
         "utility_score": 100,
@@ -2739,7 +2970,7 @@
           "timing": 65.6
         },
         "parcel_component_scores": {
-          "frontage_access": 94,
+          "frontage_access": 90,
           "size_shape": 89.5,
           "utilities": 100,
           "flood": 100,
@@ -2752,7 +2983,7 @@
         ],
         "usable_acres_proxy": 23.17,
         "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of the node \u00b7 11355 weighted future residential lots \u00b7 mapped SAWS feature ~0 ft from parcel",
+        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of the node \u00b7 11355 weighted future residential lots \u00b7 mapped SAWS feature ~0 ft from parcel",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
         "bcad_geometry_verified": true,
         "geometry_source": "SARA / BCAD parcel service",
@@ -2760,7 +2991,7 @@
         "ownership_type": "Private",
         "last_deed_date": "2023-01-26",
         "hold_years": 3.7,
-        "rank": 8
+        "rank": 9
       }
     },
     {
@@ -3047,7 +3278,7 @@
         "shape_score": 70.0,
         "compactness": 0.438,
         "aspect_ratio": 2.17,
-        "road_score": 94,
+        "road_score": 90,
         "frontage_roads": [
           "W GROSENBACHER RD",
           "CR01503621-KG",
@@ -3055,7 +3286,7 @@
           "CR01503624-KG"
         ],
         "frontage_ft_proxy": 1518.0,
-        "corner_signal": "STRONG",
+        "corner_signal": "NO",
         "major_road_signal": true,
         "mtp_row_flag": true,
         "flood_score": 100,
@@ -3083,8 +3314,8 @@
         "utility_context": "SAWS feature approximately 0 ft from parcel; capacity NOT verified",
         "assessed_value_per_acre": 91002.0,
         "land_value_per_acre": 91002.0,
-        "parcel_opportunity_score": 80.3,
-        "parcel_execution_score": 94.6,
+        "parcel_opportunity_score": 79.8,
+        "parcel_execution_score": 93.4,
         "parcel_fit_score": 88.6,
         "acquisition_complexity_score": 94.4,
         "utility_score": 100,
@@ -3100,7 +3331,7 @@
           "timing": 65.6
         },
         "parcel_component_scores": {
-          "frontage_access": 94,
+          "frontage_access": 90,
           "size_shape": 88.6,
           "utilities": 100,
           "flood": 100,
@@ -3113,7 +3344,7 @@
         ],
         "usable_acres_proxy": 9.78,
         "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of the node \u00b7 11355 weighted future residential lots \u00b7 mapped SAWS feature ~0 ft from parcel",
+        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of the node \u00b7 11355 weighted future residential lots \u00b7 mapped SAWS feature ~0 ft from parcel",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
         "bcad_geometry_verified": true,
         "geometry_source": "SARA / BCAD parcel service",
@@ -3121,237 +3352,6 @@
         "ownership_type": "Private",
         "last_deed_date": "2017-09-01",
         "hold_years": 9.1,
-        "rank": 9
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -98.76022423139271,
-              29.372319866151837
-            ],
-            [
-              -98.76022228305257,
-              29.37300875985749
-            ],
-            [
-              -98.76022418074814,
-              29.373042006983024
-            ],
-            [
-              -98.76023001529416,
-              29.37307479311847
-            ],
-            [
-              -98.76024129036327,
-              29.37312184180481
-            ],
-            [
-              -98.76024533478828,
-              29.373143984760304
-            ],
-            [
-              -98.76024692493998,
-              29.37316643780618
-            ],
-            [
-              -98.76026211601241,
-              29.374148233289088
-            ],
-            [
-              -98.76153559544808,
-              29.374026585022857
-            ],
-            [
-              -98.7618482195123,
-              29.37395513319644
-            ],
-            [
-              -98.76202048147805,
-              29.37389870485078
-            ],
-            [
-              -98.76223873673533,
-              29.373808926679555
-            ],
-            [
-              -98.76237664246928,
-              29.373742338931585
-            ],
-            [
-              -98.76249153028239,
-              29.37368241246139
-            ],
-            [
-              -98.76269472079424,
-              29.37354236337804
-            ],
-            [
-              -98.76286342617647,
-              29.37340554978356
-            ],
-            [
-              -98.76299762010986,
-              29.373302114354363
-            ],
-            [
-              -98.76316269823414,
-              29.37312846432126
-            ],
-            [
-              -98.76337761418928,
-              29.37290133402628
-            ],
-            [
-              -98.76374993589874,
-              29.372493849287974
-            ],
-            [
-              -98.76381916080763,
-              29.37239358155653
-            ],
-            [
-              -98.76391165942313,
-              29.37198539443239
-            ],
-            [
-              -98.76418607045984,
-              29.371169081319586
-            ],
-            [
-              -98.76424860207267,
-              29.37095389401746
-            ],
-            [
-              -98.76294527846825,
-              29.370877276517067
-            ],
-            [
-              -98.76259528195405,
-              29.371988111421963
-            ],
-            [
-              -98.7622907379607,
-              29.372323543231264
-            ],
-            [
-              -98.76022423139271,
-              29.372319866151837
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "candidate_id": "Bexar:348230",
-        "county": "Bexar",
-        "prop_id": "348230",
-        "owner": "RUIZ ROY",
-        "verified_owner": "RUIZ ROY",
-        "owner_verification_match": true,
-        "situs": "13442 W US HIGHWAY 90",
-        "acres": 17.68,
-        "reported_acres": 17.68,
-        "geometry_acres": 17.86,
-        "acres_source": "REPORTED",
-        "land_value": 3527250.0,
-        "assessed_value": 3530020.0,
-        "improvement_value": 2770.0,
-        "improvement_ratio": 0.001,
-        "gba": 0.0,
-        "prop_use": "99",
-        "legal": "CB 5681 PT OF TR 3 & TR 2 ARB P-5 (0.58 AC), P-5F (17.1 AC) 2025-SPLIT PER DEED 20240221960// 2025-SPLIT PER DEED 20240159695\\ 2023 SPLIT PER DEED 20220217088 // 1 acre homesite in PID 348231//",
-        "cad_record_url": "",
-        "parcel_source": "SARA / Bexar CAD",
-        "parcel_snapshot": "2025-12",
-        "parcel_freshness": "RECENT",
-        "cad_geometry_verified": true,
-        "cad_verification_source": "SARA / BCAD live service",
-        "node_id": "INT-004",
-        "node_name": "US 90 / SH 211",
-        "node_score": 70.8,
-        "node_edge_miles": 0.167,
-        "dist_score": 97,
-        "acre_score": 100,
-        "raw_score": 99.9,
-        "shape_score": 87.5,
-        "compactness": 0.547,
-        "aspect_ratio": 2.12,
-        "road_score": 94,
-        "frontage_roads": [
-          "US HWY 90 W ACCESS RD",
-          "1671408056"
-        ],
-        "frontage_ft_proxy": 2491.0,
-        "corner_signal": "STRONG",
-        "major_road_signal": true,
-        "mtp_row_flag": false,
-        "flood_score": 100,
-        "flood_pct": 0.0,
-        "floodway_pct": 0.0,
-        "flood_zones": [
-          "X"
-        ],
-        "flood_confidence": "SCREENED",
-        "future_land_use_score": 100,
-        "future_land_use": [
-          "Mixed Use Center / West"
-        ],
-        "aadt": 11975,
-        "aadt_5yr_growth_pct": 1302.2,
-        "aadt_station_miles": 0.05,
-        "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
-        "retail_catalyst_miles": 10.74,
-        "future_residential_lots_nearby": 11075.5,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "PROXY",
-        "utility_provider": "SAWS",
-        "utility_distance_ft": 242.0,
-        "utility_snapshot": "2021-07-21",
-        "utility_context": "SAWS feature approximately 242 ft from parcel; capacity NOT verified",
-        "assessed_value_per_acre": 199662.0,
-        "land_value_per_acre": 199505.0,
-        "parcel_opportunity_score": 80.2,
-        "parcel_execution_score": 94.2,
-        "parcel_fit_score": 95.2,
-        "acquisition_complexity_score": 90.1,
-        "utility_score": 92,
-        "confidence_score": 100,
-        "node_confidence_score": 100,
-        "node_class": "EMERGING NODE",
-        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
-        "node_component_scores": {
-          "residential_growth": 86.1,
-          "intersection_network": 100,
-          "retail_catalyst": 28,
-          "traffic": 40.2,
-          "timing": 68.4
-        },
-        "parcel_component_scores": {
-          "frontage_access": 94,
-          "size_shape": 95.2,
-          "utilities": 92,
-          "flood": 100,
-          "acquisition": 90.1
-        },
-        "acquisition_category": "PRIORITY",
-        "decision_summary": "Investigate ownership, access, utilities and pricing now.",
-        "main_risks": [
-          "utility capacity is unverified"
-        ],
-        "usable_acres_proxy": 17.68,
-        "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of the node \u00b7 11075 weighted future residential lots \u00b7 mapped SAWS feature ~242 ft from parcel",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
-        "bcad_geometry_verified": true,
-        "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "05681-000-0035",
-        "ownership_type": "Private",
-        "last_deed_date": "1999-10-28",
-        "hold_years": 26.9,
         "rank": 10
       }
     },
@@ -3499,7 +3499,7 @@
         "shape_score": 100,
         "compactness": 0.701,
         "aspect_ratio": 1.55,
-        "road_score": 94,
+        "road_score": 90,
         "frontage_roads": [
           "W GROSENBACHER RD",
           "CR01501366-KG",
@@ -3507,7 +3507,7 @@
           "Unnamed road"
         ],
         "frontage_ft_proxy": 1953.0,
-        "corner_signal": "STRONG",
+        "corner_signal": "NO",
         "major_road_signal": true,
         "mtp_row_flag": true,
         "flood_score": 75,
@@ -3536,8 +3536,8 @@
         "utility_context": "SAWS feature approximately 0 ft from parcel; capacity NOT verified",
         "assessed_value_per_acre": 66693.0,
         "land_value_per_acre": 66693.0,
-        "parcel_opportunity_score": 79.7,
-        "parcel_execution_score": 93.1,
+        "parcel_opportunity_score": 79.2,
+        "parcel_execution_score": 91.9,
         "parcel_fit_score": 95.0,
         "acquisition_complexity_score": 94.4,
         "utility_score": 100,
@@ -3553,7 +3553,7 @@
           "timing": 65.6
         },
         "parcel_component_scores": {
-          "frontage_access": 94,
+          "frontage_access": 90,
           "size_shape": 95.0,
           "utilities": 100,
           "flood": 75,
@@ -3567,7 +3567,7 @@
         ],
         "usable_acres_proxy": 74.45,
         "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of the node \u00b7 11355 weighted future residential lots \u00b7 mapped SAWS feature ~0 ft from parcel",
+        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of the node \u00b7 11355 weighted future residential lots \u00b7 mapped SAWS feature ~0 ft from parcel",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
         "bcad_geometry_verified": true,
         "geometry_source": "SARA / BCAD parcel service",
@@ -4260,339 +4260,335 @@
         "coordinates": [
           [
             [
-              -98.77890386719632,
-              29.43519450770918
+              -98.78057608762664,
+              29.43826427566846
             ],
             [
-              -98.77898500204286,
-              29.43541765741592
+              -98.78193318446536,
+              29.440106848091865
             ],
             [
-              -98.77907141846522,
-              29.435638815406705
+              -98.78214998286249,
+              29.44039548482666
             ],
             [
-              -98.77916306762579,
-              29.435857856695755
+              -98.78656343067588,
+              29.438170861673555
             ],
             [
-              -98.77925989772973,
-              29.436074657493517
+              -98.78656402803128,
+              29.438170611788347
             ],
             [
-              -98.77936185405424,
-              29.436289095276646
+              -98.78660248469669,
+              29.438154531967488
             ],
             [
-              -98.77947924986636,
-              29.43652121737986
+              -98.78660184206893,
+              29.438153258697547
             ],
             [
-              -98.77949261775449,
-              29.43654675199631
+              -98.78656775304867,
+              29.438085717593076
             ],
             [
-              -98.77949262216084,
-              29.436547577608714
+              -98.78656666756595,
+              29.43808574112344
             ],
             [
-              -98.7794964797834,
-              29.436554081442925
+              -98.78637135552282,
+              29.437715253921603
             ],
             [
-              -98.77950956314713,
-              29.436569304234613
+              -98.7862929632357,
+              29.437746922911213
             ],
             [
-              -98.77952502619566,
-              29.436582102747163
+              -98.78613719827166,
+              29.437196803647666
             ],
             [
-              -98.77954242603849,
-              29.436592110407346
+              -98.78608081270542,
+              29.437013594847457
             ],
             [
-              -98.77956126431177,
-              29.43659904057715
+              -98.78601794409373,
+              29.436832508309532
             ],
             [
-              -98.77958100145224,
-              29.43660269476361
+              -98.7859486720538,
+              29.4366537733632
             ],
             [
-              -98.77960107215151,
-              29.436602968304026
+              -98.7858730843123,
+              29.43647761635968
             ],
             [
-              -98.77962090154736,
-              29.436599853363692
+              -98.78579127659407,
+              29.436304260385484
             ],
             [
-              -98.779639921689,
-              29.436593439160294
+              -98.78577005194323,
+              29.436262785489124
             ],
             [
-              -98.77964089061157,
-              29.4365929679528
+              -98.78576993696613,
+              29.436262560631885
             ],
             [
-              -98.7798111349132,
-              29.43652316513972
+              -98.78576905665221,
+              29.43626257275485
             ],
             [
-              -98.77990239023764,
-              29.436486784057152
+              -98.78521781200804,
+              29.435198172868002
             ],
             [
-              -98.78005278780613,
-              29.436433355036478
+              -98.7853106751914,
+              29.435753637735687
             ],
             [
-              -98.78020531538695,
-              29.43638635050535
+              -98.78530277651905,
+              29.43577321308965
             ],
             [
-              -98.78035969868398,
-              29.436345854993807
+              -98.78513998119489,
+              29.43617663891305
             ],
             [
-              -98.7805156600639,
-              29.43631194132646
+              -98.78496383654812,
+              29.436249503230336
             ],
             [
-              -98.78067291905543,
-              29.43628467049153
+              -98.78492957160735,
+              29.43626357088563
             ],
             [
-              -98.78083119285381,
-              29.436264091531207
+              -98.7849037442966,
+              29.436273880499975
             ],
             [
-              -98.78099019682924,
-              29.436250241453408
+              -98.78477162805514,
+              29.43632252404402
             ],
             [
-              -98.78114964503887,
-              29.436243145165253
+              -98.78463754140691,
+              29.436365438684916
             ],
             [
-              -98.78130925074093,
-              29.436242815428265
+              -98.78450173264342,
+              29.43640254495659
             ],
             [
-              -98.78146872691045,
-              29.436249252835424
-            ],
-            [
-              -98.78162778675541,
-              29.436262445810097
-            ],
-            [
-              -98.78172718207954,
-              29.436274038580102
-            ],
-            [
-              -98.78325795541464,
-              29.43647328008731
-            ],
-            [
-              -98.78330480375132,
-              29.436479034258916
-            ],
-            [
-              -98.7834458972044,
-              29.436492382481443
-            ],
-            [
-              -98.78357611992394,
-              29.43649941932393
-            ],
-            [
-              -98.78370651732943,
-              29.436501416940374
-            ],
-            [
-              -98.78383689449105,
-              29.43649837234456
-            ],
-            [
-              -98.78396705650917,
-              29.43649029008782
-            ],
-            [
-              -98.7840968088058,
-              29.436477182252254
+              -98.78436445324508,
+              29.436433774148444
             ],
             [
               -98.78422595741544,
               29.436459068432637
             ],
             [
-              -98.78422589192466,
-              29.436458840947108
+              -98.7840968088058,
+              29.436477182252254
             ],
             [
-              -98.78422584894376,
-              29.436458692900406
+              -98.78396705650917,
+              29.43649029008782
             ],
             [
-              -98.78421546218706,
-              29.436429389251934
+              -98.78383689449105,
+              29.43649837234456
             ],
             [
-              -98.78420160368962,
-              29.43640155886248
+              -98.78370651732943,
+              29.436501416940374
             ],
             [
-              -98.78392720278244,
-              29.435898515822505
+              -98.78357611992394,
+              29.43649941932393
             ],
             [
-              -98.78390267489308,
-              29.435862272818127
+              -98.7834458972044,
+              29.436492382481443
             ],
             [
-              -98.78387326575702,
-              29.435829864864807
+              -98.78330480375132,
+              29.436479034258916
             ],
             [
-              -98.78383956710006,
-              29.435801944025982
+              -98.78325795541464,
+              29.43647328008731
             ],
             [
-              -98.78380225695518,
-              29.4357790720822
+              -98.78172718207954,
+              29.436274038580102
             ],
             [
-              -98.78376208602027,
-              29.435761709227855
+              -98.78162778675541,
+              29.436262445810097
             ],
             [
-              -98.78371986255365,
-              29.43575020481182
+              -98.78146872691045,
+              29.436249252835424
             ],
             [
-              -98.78367685364988,
-              29.435740796367025
+              -98.78130925074093,
+              29.436242815428265
             ],
             [
-              -98.78373920835669,
-              29.435520791865347
+              -98.78114964503887,
+              29.436243145165253
             ],
             [
-              -98.78429255683534,
-              29.435146849008333
+              -98.78099019682924,
+              29.436250241453408
             ],
             [
-              -98.78348886633994,
-              29.43367345753898
+              -98.78083119285381,
+              29.436264091531207
             ],
             [
-              -98.78417539825507,
-              29.433388187021635
+              -98.78067291905543,
+              29.43628467049153
             ],
             [
-              -98.78424623081877,
-              29.43335875377544
+              -98.7805156600639,
+              29.43631194132646
             ],
             [
-              -98.78401202557859,
-              29.432914397137413
+              -98.78035969868398,
+              29.436345854993807
             ],
             [
-              -98.78387897258955,
-              29.432844952901206
+              -98.78020531538695,
+              29.43638635050535
             ],
             [
-              -98.78317921852512,
-              29.43247972607019
+              -98.78005278780613,
+              29.436433355036478
             ],
             [
-              -98.7825352836739,
-              29.431945824473715
+              -98.77990239023764,
+              29.436486784057152
             ],
             [
-              -98.78245329392077,
-              29.431911675126763
+              -98.7798111349132,
+              29.43652316513972
             ],
             [
-              -98.7820352714773,
-              29.43208258352504
+              -98.77964089061157,
+              29.4365929679528
             ],
             [
-              -98.78040976909008,
-              29.43340235064042
+              -98.77965272232463,
+              29.436613877532686
             ],
             [
-              -98.77969147794407,
-              29.43332227808163
+              -98.7798403113976,
+              29.43694538526667
             ],
             [
-              -98.7784557283159,
-              29.433665248383868
+              -98.77982667121394,
+              29.436951945234206
             ],
             [
-              -98.77842089667332,
-              29.43367491562076
+              -98.77981421773742,
+              29.436960547484322
             ],
             [
-              -98.77846280253617,
-              29.43389883475704
+              -98.77980325425936,
+              29.43697098251827
             ],
             [
-              -98.7785099306945,
-              29.434121713238792
+              -98.77979404778375,
+              29.436982996201777
             ],
             [
-              -98.778562255398,
-              29.43434342928769
+              -98.77978682252461,
+              29.436996295954213
             ],
             [
-              -98.77861974805704,
-              29.434563861760545
+              -98.77978175444554,
+              29.437010557874103
             ],
             [
-              -98.77868237725829,
-              29.434782890215516
+              -98.77977896697425,
+              29.43702543462739
             ],
             [
-              -98.77875010878182,
-              29.435000394977887
+              -98.77977903754804,
+              29.4370388451188
             ],
             [
-              -98.7788229056199,
-              29.435216257205475
+              -98.77978118328863,
+              29.43705208302112
             ],
             [
-              -98.77890229433892,
-              29.43519493821073
+              -98.77978535246207,
+              29.43706482916772
             ],
             [
-              -98.77890386719632,
-              29.43519450770918
+              -98.77979144454935,
+              29.437076776248247
+            ],
+            [
+              -98.7799328935764,
+              29.43730518921525
+            ],
+            [
+              -98.78008008140021,
+              29.437529946985467
+            ],
+            [
+              -98.78023291361902,
+              29.4377509054061
+            ],
+            [
+              -98.78039129221085,
+              29.437967922761164
+            ],
+            [
+              -98.78048553597273,
+              29.43809039391401
+            ],
+            [
+              -98.7805815093503,
+              29.438211514435515
+            ],
+            [
+              -98.78063452590636,
+              29.43821040323904
+            ],
+            [
+              -98.78063627937844,
+              29.43821036731914
+            ],
+            [
+              -98.78057608762664,
+              29.43826427566846
             ]
           ]
         ]
       },
       "properties": {
-        "candidate_id": "Bexar:1260458",
+        "candidate_id": "Bexar:1004521",
         "county": "Bexar",
-        "prop_id": "1260458",
-        "owner": "CUMBERLAND 211 NORTH LTD",
-        "verified_owner": "CUMBERLAND 211 NORTH LTD",
+        "prop_id": "1004521",
+        "owner": "CUMBERLAND 211 LTD",
+        "verified_owner": "CUMBERLAND 211 LTD",
         "owner_verification_match": true,
-        "situs": "STEVENS PKWY",
-        "acres": 48.72,
-        "reported_acres": 48.72,
-        "geometry_acres": 48.79,
+        "situs": "POTRANCO RD",
+        "acres": 45.03,
+        "reported_acres": 45.03,
+        "geometry_acres": 48.41,
         "acres_source": "REPORTED",
-        "land_value": 4500000.0,
-        "assessed_value": 4500000.0,
+        "land_value": 4300000.0,
+        "assessed_value": 4300000.0,
         "improvement_value": 0.0,
         "improvement_ratio": 0.0,
         "gba": 0.0,
         "prop_use": "9",
-        "legal": "CB 4353 P-6 (24.469), CB 4370 P-9 (13.6040), CB 4371 P-4 (5.1910), CB 4379 P-4 (2.8560) & CB 4378 P-4 (2.6020) 2017 NEW ACCT PER DEED 17880/1505 EXEC 05/27/2016.",
+        "legal": "CB 4353 P-1 (29.3421)  ABS 978. CB 4371 P-1A (0.263) ABS 1084 & CB 4379 (15.421) ABS 185 2022-RMS PER MERGED PER CR # 53542. ////2021-RMS PER SPLIT PER DEED 20200136326 EXE 06-18-2020. ///SPLIT/ MERGE PER DEED 12875/1130",
         "cad_record_url": "",
         "parcel_source": "SARA / Bexar CAD",
         "parcel_snapshot": "2025-12",
@@ -4602,26 +4598,26 @@
         "node_id": "INT-017",
         "node_name": "Texas Research Pkwy / SH 211",
         "node_score": 75.5,
-        "node_edge_miles": 0.766,
-        "dist_score": 66,
+        "node_edge_miles": 0.663,
+        "dist_score": 78,
         "acre_score": 100,
         "raw_score": 100,
-        "shape_score": 100,
-        "compactness": 0.638,
-        "aspect_ratio": 1.11,
+        "shape_score": 96.1,
+        "compactness": 0.6,
+        "aspect_ratio": 1.15,
         "road_score": 100,
         "frontage_roads": [
           "SH 211",
           "STEVENS PKWY",
-          "CR01500640-KG",
+          "STEVENS CIR",
           "Unnamed road"
         ],
-        "frontage_ft_proxy": 3050.0,
+        "frontage_ft_proxy": 506.0,
         "corner_signal": "STRONG",
         "major_road_signal": true,
         "mtp_row_flag": true,
         "flood_score": 75,
-        "flood_pct": 7.1,
+        "flood_pct": 0.7,
         "floodway_pct": 0.0,
         "flood_zones": [
           "A",
@@ -4633,23 +4629,23 @@
         "future_land_use": [],
         "aadt": 16500,
         "aadt_5yr_growth_pct": 0,
-        "aadt_station_miles": 0.46,
+        "aadt_station_miles": 0.71,
         "nearest_retail_catalyst": "Culebra / SH 211 H-E-B",
-        "retail_catalyst_miles": 6.32,
+        "retail_catalyst_miles": 6.07,
         "future_residential_lots_nearby": 10209.0,
         "recent_housing_units_180d": 0,
         "utility_confidence": "PROXY",
         "utility_provider": "SAWS",
-        "utility_distance_ft": 0.0,
+        "utility_distance_ft": 401.0,
         "utility_snapshot": "2021-07-21",
-        "utility_context": "SAWS feature approximately 0 ft from parcel; capacity NOT verified",
-        "assessed_value_per_acre": 92365.0,
-        "land_value_per_acre": 92365.0,
-        "parcel_opportunity_score": 83.8,
-        "parcel_execution_score": 96.2,
-        "parcel_fit_score": 100.0,
+        "utility_context": "SAWS feature approximately 401 ft from parcel; capacity NOT verified",
+        "assessed_value_per_acre": 95492.0,
+        "land_value_per_acre": 95492.0,
+        "parcel_opportunity_score": 83.0,
+        "parcel_execution_score": 94.2,
+        "parcel_fit_score": 98.5,
         "acquisition_complexity_score": 94.4,
-        "utility_score": 100,
+        "utility_score": 92,
         "confidence_score": 100,
         "node_confidence_score": 100,
         "node_class": "EMERGING NODE",
@@ -4663,8 +4659,8 @@
         },
         "parcel_component_scores": {
           "frontage_access": 100,
-          "size_shape": 100.0,
-          "utilities": 100,
+          "size_shape": 98.5,
+          "utilities": 92,
           "flood": 75,
           "acquisition": 94.4
         },
@@ -4673,18 +4669,18 @@
         "main_risks": [
           "not on the immediate intersection",
           "utility capacity is unverified",
-          "7.1% mapped SFHA overlap"
+          "0.7% mapped SFHA overlap"
         ],
-        "usable_acres_proxy": 45.26,
+        "usable_acres_proxy": 44.71,
         "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 10209 weighted future residential lots \u00b7 mapped SAWS feature ~0 ft from parcel",
+        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 10209 weighted future residential lots \u00b7 mapped SAWS feature ~401 ft from parcel",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
         "bcad_geometry_verified": true,
         "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "04353-000-0060",
+        "bcad_geo_id": "04353-000-0016",
         "ownership_type": "Private",
-        "last_deed_date": "2025-09-30",
-        "hold_years": 1.0,
+        "last_deed_date": "2006-09-15",
+        "hold_years": 20.0,
         "rank": 15
       }
     },
@@ -5756,9 +5752,9 @@
         "road_score": 94,
         "frontage_roads": [
           "LOWER SEGUIN RD",
-          "CS0260099-KG",
           "CITADEL PEAK",
-          "TATES DR"
+          "TATES DR",
+          "CS0260099-KG"
         ],
         "frontage_ft_proxy": 6244.0,
         "corner_signal": "STRONG",
@@ -5962,8 +5958,8 @@
         "road_score": 94,
         "frontage_roads": [
           "LOWER SEGUIN RD",
-          "CS0260099-KG",
           "CITADEL PEAK",
+          "CS0260099-KG",
           "CS0298393-KG"
         ],
         "frontage_ft_proxy": 2209.0,
@@ -6292,7 +6288,7 @@
           "IH 10",
           "IH 10 E ACCESS RD",
           "NIETO DR",
-          "CS1298530-KG"
+          "W VASQUEZ CIR"
         ],
         "frontage_ft_proxy": 4744.0,
         "corner_signal": "STRONG",
@@ -6363,190 +6359,6 @@
         "last_deed_date": "2006-03-06",
         "hold_years": 20.6,
         "rank": 23
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -98.28255749066304,
-              29.46883482873705
-            ],
-            [
-              -98.282396091035,
-              29.469022489186198
-            ],
-            [
-              -98.28227667123627,
-              29.46916090571041
-            ],
-            [
-              -98.28225602270552,
-              29.469622277953263
-            ],
-            [
-              -98.28220177966523,
-              29.47083425242793
-            ],
-            [
-              -98.28229227774543,
-              29.47091992195366
-            ],
-            [
-              -98.28243497909607,
-              29.470924842439658
-            ],
-            [
-              -98.28475139377414,
-              29.470175800628184
-            ],
-            [
-              -98.28667941535467,
-              29.46955231148669
-            ],
-            [
-              -98.2870742159723,
-              29.46942495191183
-            ],
-            [
-              -98.28726137695617,
-              29.4693645741272
-            ],
-            [
-              -98.28711897529611,
-              29.46929293543263
-            ],
-            [
-              -98.28511815469295,
-              29.468286349671317
-            ],
-            [
-              -98.28398531877806,
-              29.46865183234624
-            ],
-            [
-              -98.283882039664,
-              29.468406694143987
-            ],
-            [
-              -98.28255749066304,
-              29.46883482873705
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "candidate_id": "Bexar:1414977",
-        "county": "Bexar",
-        "prop_id": "1414977",
-        "owner": "C5LC AT INTERSTATE 10 LLC",
-        "verified_owner": "C5LC AT INTERSTATE 10 LLC",
-        "owner_verification_match": true,
-        "situs": "SCENIC LAKE DR",
-        "acres": 19.71,
-        "reported_acres": 19.71,
-        "geometry_acres": 19.71,
-        "acres_source": "REPORTED",
-        "land_value": 1131120.0,
-        "assessed_value": 1131120.0,
-        "improvement_value": 0.0,
-        "improvement_ratio": 0.0,
-        "gba": 0.0,
-        "prop_use": "99",
-        "legal": "CB 5089B (CORE5 LOGISTICS CENTER AT INTERSTATE 10), BLOCK 1 LOT 5 2024 NEW ACCT PER PLAT 20003/797-807",
-        "cad_record_url": "",
-        "parcel_source": "SARA / Bexar CAD",
-        "parcel_snapshot": "2025-12",
-        "parcel_freshness": "RECENT",
-        "cad_geometry_verified": true,
-        "cad_verification_source": "SARA / BCAD live service",
-        "node_id": "INT-009",
-        "node_name": "Schuwirth Rd / Loop 1604 East",
-        "node_score": 74.8,
-        "node_edge_miles": 0.863,
-        "dist_score": 66,
-        "acre_score": 100,
-        "raw_score": 100,
-        "shape_score": 98.0,
-        "compactness": 0.612,
-        "aspect_ratio": 2.42,
-        "road_score": 100,
-        "frontage_roads": [
-          "IH 10 E ACCESS RD",
-          "IH 10",
-          "CS1227889-KG",
-          "SCENIC LAKE DR"
-        ],
-        "frontage_ft_proxy": 1328.0,
-        "corner_signal": "STRONG",
-        "major_road_signal": true,
-        "mtp_row_flag": false,
-        "flood_score": 100,
-        "flood_pct": 0.0,
-        "floodway_pct": 0.0,
-        "flood_zones": [
-          "X"
-        ],
-        "flood_confidence": "SCREENED",
-        "future_land_use_score": 100,
-        "future_land_use": [
-          "Regional Commercial / I-10 East Corridor"
-        ],
-        "aadt": 5827,
-        "aadt_5yr_growth_pct": 1139.8,
-        "aadt_station_miles": 0.15,
-        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
-        "retail_catalyst_miles": 3.5,
-        "future_residential_lots_nearby": 5845.3,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "UNKNOWN",
-        "utility_provider": "SAWS",
-        "utility_distance_ft": null,
-        "utility_snapshot": "2021-07-21",
-        "utility_context": "No mapped sewer feature returned near parcel",
-        "assessed_value_per_acre": 57388.0,
-        "land_value_per_acre": 57388.0,
-        "parcel_opportunity_score": 78.1,
-        "parcel_execution_score": 83.1,
-        "parcel_fit_score": 99.2,
-        "acquisition_complexity_score": 94.4,
-        "utility_score": 20,
-        "confidence_score": 84,
-        "node_confidence_score": 94,
-        "node_class": "EMERGING NODE",
-        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
-        "node_component_scores": {
-          "residential_growth": 72.6,
-          "intersection_network": 88,
-          "retail_catalyst": 50,
-          "traffic": 89.1,
-          "timing": 65.3
-        },
-        "parcel_component_scores": {
-          "frontage_access": 100,
-          "size_shape": 99.2,
-          "utilities": 20,
-          "flood": 100,
-          "acquisition": 94.4
-        },
-        "acquisition_category": "WATCH",
-        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
-        "main_risks": [
-          "not on the immediate intersection",
-          "mapped sewer path is unverified"
-        ],
-        "usable_acres_proxy": 19.71,
-        "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 5845 weighted future residential lots \u00b7 mostly raw / low-improvement land",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
-        "bcad_geometry_verified": true,
-        "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "05089-201-0050",
-        "ownership_type": "Private",
-        "rank": 24
       }
     },
     {
@@ -6703,7 +6515,885 @@
         "ownership_type": "Private",
         "last_deed_date": "2018-12-06",
         "hold_years": 7.8,
+        "rank": 24
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.28424096511587,
+              29.465932907804007
+            ],
+            [
+              -98.28449356302137,
+              29.4666059813512
+            ],
+            [
+              -98.28471646270513,
+              29.467188520819334
+            ],
+            [
+              -98.28574910548164,
+              29.46686855225241
+            ],
+            [
+              -98.28588176785543,
+              29.466818762470155
+            ],
+            [
+              -98.28500738098373,
+              29.464770383446442
+            ],
+            [
+              -98.28476449614193,
+              29.46514097132482
+            ],
+            [
+              -98.28424096511587,
+              29.465932907804007
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "candidate_id": "Bexar:619314",
+        "county": "Bexar",
+        "prop_id": "619314",
+        "owner": "MARSHALL FREDERICK S",
+        "verified_owner": "MARSHALL FREDERICK S",
+        "owner_verification_match": true,
+        "situs": "10192  INTERSTATE 10 E",
+        "acres": 5.3,
+        "reported_acres": 5.3,
+        "geometry_acres": 5.62,
+        "acres_source": "REPORTED",
+        "land_value": 1199900.0,
+        "assessed_value": 1200000.0,
+        "improvement_value": 100.0,
+        "improvement_ratio": 0.0,
+        "gba": 9444.0,
+        "prop_use": "98",
+        "legal": "NCB: 16568  BLK:  LOT:  2  (GIRDLEY SUBD)",
+        "cad_record_url": "",
+        "parcel_source": "SARA / Bexar CAD",
+        "parcel_snapshot": "2025-12",
+        "parcel_freshness": "RECENT",
+        "cad_geometry_verified": true,
+        "cad_verification_source": "SARA / BCAD live service",
+        "node_id": "INT-009",
+        "node_name": "Schuwirth Rd / Loop 1604 East",
+        "node_score": 74.8,
+        "node_edge_miles": 0.629,
+        "dist_score": 78,
+        "acre_score": 100,
+        "raw_score": 97.0,
+        "shape_score": 100,
+        "compactness": 0.661,
+        "aspect_ratio": 2.02,
+        "road_score": 100,
+        "frontage_roads": [
+          "IH 10",
+          "IH 10 E ACCESS RD",
+          "WEICHOLD RD",
+          "ROSALINA LOOP"
+        ],
+        "frontage_ft_proxy": 2365.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [
+          "Urban Living / I-10 East Corridor"
+        ],
+        "aadt": 5827,
+        "aadt_5yr_growth_pct": 1139.8,
+        "aadt_station_miles": 0.1,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 3.68,
+        "future_residential_lots_nearby": 5845.3,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_provider": "SAWS",
+        "utility_distance_ft": null,
+        "utility_snapshot": "2021-07-21",
+        "utility_context": "No mapped sewer feature returned near parcel",
+        "assessed_value_per_acre": 226415.0,
+        "land_value_per_acre": 226396.0,
+        "parcel_opportunity_score": 77.7,
+        "parcel_execution_score": 82.0,
+        "parcel_fit_score": 100.0,
+        "acquisition_complexity_score": 83.8,
+        "utility_score": 20,
+        "confidence_score": 84,
+        "node_confidence_score": 94,
+        "node_class": "EMERGING NODE",
+        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
+        "node_component_scores": {
+          "residential_growth": 72.6,
+          "intersection_network": 88,
+          "retail_catalyst": 50,
+          "traffic": 89.1,
+          "timing": 65.3
+        },
+        "parcel_component_scores": {
+          "frontage_access": 100,
+          "size_shape": 100.0,
+          "utilities": 20,
+          "flood": 100,
+          "acquisition": 83.8
+        },
+        "acquisition_category": "WATCH",
+        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
+        "main_risks": [
+          "not on the immediate intersection",
+          "mapped sewer path is unverified"
+        ],
+        "usable_acres_proxy": 5.3,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 5845 weighted future residential lots \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "16568-000-0023",
+        "ownership_type": "Private",
+        "last_deed_date": "2009-05-28",
+        "hold_years": 17.3,
         "rank": 25
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.22605461150462,
+              29.48781189031619
+            ],
+            [
+              -98.22543426390673,
+              29.488016598991596
+            ],
+            [
+              -98.22475762353628,
+              29.488254032654414
+            ],
+            [
+              -98.22430899378674,
+              29.48840696752194
+            ],
+            [
+              -98.22422745414144,
+              29.48861082514951
+            ],
+            [
+              -98.22486449283447,
+              29.489572506820185
+            ],
+            [
+              -98.22497800064701,
+              29.48980417795043
+            ],
+            [
+              -98.22585347436892,
+              29.491125764086767
+            ],
+            [
+              -98.2297370840833,
+              29.48915033837685
+            ],
+            [
+              -98.2287047250718,
+              29.486777383862297
+            ],
+            [
+              -98.22869032961562,
+              29.486750347889913
+            ],
+            [
+              -98.22759570041597,
+              29.487124082826313
+            ],
+            [
+              -98.22735887930969,
+              29.487204938068814
+            ],
+            [
+              -98.22660801920033,
+              29.48757082359552
+            ],
+            [
+              -98.22624999088735,
+              29.487745284089808
+            ],
+            [
+              -98.22605461150462,
+              29.48781189031619
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "candidate_id": "Bexar:339373",
+        "county": "Bexar",
+        "prop_id": "339373",
+        "owner": "MILLER BALOUS T & JULIE",
+        "verified_owner": "MILLER BALOUS T & JULIE",
+        "owner_verification_match": true,
+        "situs": "13085 E IH 10",
+        "acres": 34.91,
+        "reported_acres": 34.91,
+        "geometry_acres": 34.95,
+        "acres_source": "REPORTED",
+        "land_value": 2800000.0,
+        "assessed_value": 2800000.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB 5193  P-23E  ABS 5   2021-SPLIT PER DEED 20200033876 EXE 1-22-2020.  SPLIT OUT 1.242 AC TOTAL FROM PIDS 339310,339311,339312,339313,339314,339373.  UPDATE LEGAL/LAND SIZE ONLY.  NO NEW ACCOUNT CREATED, TXDoT/CoSA ROW DEED.  CR # 50212.   JLF/GIS/4-12-2021.",
+        "cad_record_url": "",
+        "parcel_source": "SARA / Bexar CAD",
+        "parcel_snapshot": "2025-12",
+        "parcel_freshness": "RECENT",
+        "cad_geometry_verified": true,
+        "cad_verification_source": "SARA / BCAD live service",
+        "node_id": "INT-006",
+        "node_name": "FM 1518 / I-10",
+        "node_score": 73.6,
+        "node_edge_miles": 0.05,
+        "dist_score": 100,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.761,
+        "aspect_ratio": 1.42,
+        "road_score": 100,
+        "frontage_roads": [
+          "IH 10 E ACCESS RD",
+          "IH 10",
+          "E FM 1518 N",
+          "FM 1518"
+        ],
+        "frontage_ft_proxy": 2759.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 10714,
+        "aadt_5yr_growth_pct": 33.6,
+        "aadt_station_miles": 0.02,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 5.4,
+        "future_residential_lots_nearby": 4498.5,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_provider": "SAWS",
+        "utility_distance_ft": null,
+        "utility_snapshot": "2021-07-21",
+        "utility_context": "No mapped sewer feature returned near parcel",
+        "assessed_value_per_acre": 80206.0,
+        "land_value_per_acre": 80206.0,
+        "parcel_opportunity_score": 77.5,
+        "parcel_execution_score": 83.3,
+        "parcel_fit_score": 100.0,
+        "acquisition_complexity_score": 94.4,
+        "utility_score": 20,
+        "confidence_score": 84,
+        "node_confidence_score": 94,
+        "node_class": "EMERGING NODE",
+        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
+        "node_component_scores": {
+          "residential_growth": 65.2,
+          "intersection_network": 100,
+          "retail_catalyst": 50,
+          "traffic": 77.0,
+          "timing": 68.5
+        },
+        "parcel_component_scores": {
+          "frontage_access": 100,
+          "size_shape": 100.0,
+          "utilities": 20,
+          "flood": 100,
+          "acquisition": 94.4
+        },
+        "acquisition_category": "WATCH",
+        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
+        "main_risks": [
+          "mapped sewer path is unverified"
+        ],
+        "usable_acres_proxy": 34.91,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of the node \u00b7 4498 weighted future residential lots \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05193-000-0235",
+        "ownership_type": "Private",
+        "last_deed_date": "2024-08-02",
+        "hold_years": 2.2,
+        "rank": 26
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.23137383086159,
+              29.485851593983057
+            ],
+            [
+              -98.2301022426404,
+              29.48617505024657
+            ],
+            [
+              -98.23014262749278,
+              29.48626840396654
+            ],
+            [
+              -98.23108370306635,
+              29.488426251335014
+            ],
+            [
+              -98.23248285747377,
+              29.48774183100043
+            ],
+            [
+              -98.23175724015415,
+              29.485830062873895
+            ],
+            [
+              -98.23172157469163,
+              29.485736241398502
+            ],
+            [
+              -98.23137383086159,
+              29.485851593983057
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "candidate_id": "Bexar:339370",
+        "county": "Bexar",
+        "prop_id": "339370",
+        "owner": "HIME LIVING TRUST",
+        "verified_owner": "HIME LIVING TRUST",
+        "owner_verification_match": true,
+        "situs": "12835  INTERSTATE 10 E",
+        "acres": 10.02,
+        "reported_acres": 10.02,
+        "geometry_acres": 9.79,
+        "acres_source": "REPORTED",
+        "land_value": 754790.0,
+        "assessed_value": 754790.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "99",
+        "legal": "CB  5193  P-23B  ABS 5   2019-RSVY FROM 10.00 AC TO 10.016 AC PER DEED 18931/2401 EFF 02-15-2018",
+        "cad_record_url": "",
+        "parcel_source": "SARA / Bexar CAD",
+        "parcel_snapshot": "2025-12",
+        "parcel_freshness": "RECENT",
+        "cad_geometry_verified": true,
+        "cad_verification_source": "SARA / BCAD live service",
+        "node_id": "INT-006",
+        "node_name": "FM 1518 / I-10",
+        "node_score": 73.6,
+        "node_edge_miles": 0.407,
+        "dist_score": 90,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.738,
+        "aspect_ratio": 1.63,
+        "road_score": 100,
+        "frontage_roads": [
+          "IH 10 E ACCESS RD",
+          "IH 10"
+        ],
+        "frontage_ft_proxy": 735.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 10714,
+        "aadt_5yr_growth_pct": 33.6,
+        "aadt_station_miles": 0.39,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 5.2,
+        "future_residential_lots_nearby": 4498.5,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_provider": "SAWS",
+        "utility_distance_ft": null,
+        "utility_snapshot": "2021-07-21",
+        "utility_context": "No mapped sewer feature returned near parcel",
+        "assessed_value_per_acre": 75328.0,
+        "land_value_per_acre": 75328.0,
+        "parcel_opportunity_score": 77.5,
+        "parcel_execution_score": 83.3,
+        "parcel_fit_score": 100.0,
+        "acquisition_complexity_score": 94.4,
+        "utility_score": 20,
+        "confidence_score": 84,
+        "node_confidence_score": 94,
+        "node_class": "EMERGING NODE",
+        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
+        "node_component_scores": {
+          "residential_growth": 65.2,
+          "intersection_network": 100,
+          "retail_catalyst": 50,
+          "traffic": 77.0,
+          "timing": 68.5
+        },
+        "parcel_component_scores": {
+          "frontage_access": 100,
+          "size_shape": 100.0,
+          "utilities": 20,
+          "flood": 100,
+          "acquisition": 94.4
+        },
+        "acquisition_category": "WATCH",
+        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
+        "main_risks": [
+          "mapped sewer path is unverified"
+        ],
+        "usable_acres_proxy": 10.02,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of the node \u00b7 4498 weighted future residential lots \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05193-000-0232",
+        "ownership_type": "Private",
+        "last_deed_date": "2025-09-24",
+        "hold_years": 1.0,
+        "rank": 27
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.22839386360177,
+              29.495113960315937
+            ],
+            [
+              -98.22857152233108,
+              29.495389425006618
+            ],
+            [
+              -98.22875255987124,
+              29.49566268098362
+            ],
+            [
+              -98.22893694876623,
+              29.49593368680517
+            ],
+            [
+              -98.22899127405152,
+              29.495906017746833
+            ],
+            [
+              -98.22901300974854,
+              29.495894947262077
+            ],
+            [
+              -98.22910115146017,
+              29.49585005412045
+            ],
+            [
+              -98.22916080470816,
+              29.495819670895383
+            ],
+            [
+              -98.22987531461344,
+              29.4954557455109
+            ],
+            [
+              -98.23027553404718,
+              29.49526474718496
+            ],
+            [
+              -98.230661445749,
+              29.495055334019625
+            ],
+            [
+              -98.23056509620264,
+              29.494914851271766
+            ],
+            [
+              -98.2302414797207,
+              29.494442998173785
+            ],
+            [
+              -98.23010466429216,
+              29.49424351017016
+            ],
+            [
+              -98.22847004708116,
+              29.495075199227102
+            ],
+            [
+              -98.22839386360177,
+              29.495113960315937
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "candidate_id": "Bexar:340081",
+        "county": "Bexar",
+        "prop_id": "340081",
+        "owner": "NAJDS PROPERTY INVESTMENTS INC",
+        "verified_owner": "NAJDS PROPERTY INVESTMENTS INC",
+        "owner_verification_match": true,
+        "situs": "FM 1518",
+        "acres": 5.0,
+        "reported_acres": 5.0,
+        "geometry_acres": 5.02,
+        "acres_source": "REPORTED",
+        "land_value": 352500.0,
+        "assessed_value": 352500.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "2",
+        "legal": "CB  5193A BLK    1 LOT    1",
+        "cad_record_url": "",
+        "parcel_source": "SARA / Bexar CAD",
+        "parcel_snapshot": "2025-12",
+        "parcel_freshness": "RECENT",
+        "cad_geometry_verified": true,
+        "cad_verification_source": "SARA / BCAD live service",
+        "node_id": "INT-006",
+        "node_name": "FM 1518 / I-10",
+        "node_score": 73.6,
+        "node_edge_miles": 0.569,
+        "dist_score": 78,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 100,
+        "compactness": 0.72,
+        "aspect_ratio": 1.83,
+        "road_score": 100,
+        "frontage_roads": [
+          "FM 1518",
+          "E FM 1518 N",
+          "CS1313047-KG"
+        ],
+        "frontage_ft_proxy": 823.0,
+        "corner_signal": "STRONG",
+        "major_road_signal": true,
+        "mtp_row_flag": true,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 10714,
+        "aadt_5yr_growth_pct": 33.6,
+        "aadt_station_miles": 0.41,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 5.13,
+        "future_residential_lots_nearby": 4498.5,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_provider": "SAWS",
+        "utility_distance_ft": null,
+        "utility_snapshot": "2021-07-21",
+        "utility_context": "No mapped sewer feature returned near parcel",
+        "assessed_value_per_acre": 70500.0,
+        "land_value_per_acre": 70500.0,
+        "parcel_opportunity_score": 77.5,
+        "parcel_execution_score": 83.3,
+        "parcel_fit_score": 100.0,
+        "acquisition_complexity_score": 94.4,
+        "utility_score": 20,
+        "confidence_score": 84,
+        "node_confidence_score": 94,
+        "node_class": "EMERGING NODE",
+        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
+        "node_component_scores": {
+          "residential_growth": 65.2,
+          "intersection_network": 100,
+          "retail_catalyst": 50,
+          "traffic": 77.0,
+          "timing": 68.5
+        },
+        "parcel_component_scores": {
+          "frontage_access": 100,
+          "size_shape": 100.0,
+          "utilities": 20,
+          "flood": 100,
+          "acquisition": 94.4
+        },
+        "acquisition_category": "WATCH",
+        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
+        "main_risks": [
+          "not on the immediate intersection",
+          "mapped sewer path is unverified"
+        ],
+        "usable_acres_proxy": 5.0,
+        "eligible": true,
+        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 4498 weighted future residential lots \u00b7 mostly raw / low-improvement land",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05193-101-0010",
+        "ownership_type": "Private",
+        "last_deed_date": "2015-05-04",
+        "hold_years": 11.4,
+        "rank": 28
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.29165811066893,
+              29.494468689847814
+            ],
+            [
+              -98.29178938137596,
+              29.494411329207583
+            ],
+            [
+              -98.29192703060929,
+              29.4943579074037
+            ],
+            [
+              -98.29204946611242,
+              29.494305177262582
+            ],
+            [
+              -98.2921772951518,
+              29.49425400678082
+            ],
+            [
+              -98.29230411227812,
+              29.494198959026
+            ],
+            [
+              -98.29242655667205,
+              29.494149361392527
+            ],
+            [
+              -98.29255707627124,
+              29.494091170413768
+            ],
+            [
+              -98.29269024954225,
+              29.49403535558509
+            ],
+            [
+              -98.29281361421829,
+              29.493984168092524
+            ],
+            [
+              -98.29293967714868,
+              29.49392905890029
+            ],
+            [
+              -98.29306659368305,
+              29.493873984781807
+            ],
+            [
+              -98.2905579436352,
+              29.493182293302628
+            ],
+            [
+              -98.29037811344709,
+              29.49388669121264
+            ],
+            [
+              -98.29016066326633,
+              29.49484346968072
+            ],
+            [
+              -98.29007345372321,
+              29.495165473482643
+            ],
+            [
+              -98.29067885998677,
+              29.494876280611862
+            ],
+            [
+              -98.29096075910576,
+              29.494757894867707
+            ],
+            [
+              -98.29114907291998,
+              29.494679493359417
+            ],
+            [
+              -98.2912763811942,
+              29.494626210483606
+            ],
+            [
+              -98.29140482357643,
+              29.494572819807775
+            ],
+            [
+              -98.29153308860433,
+              29.494518360641052
+            ],
+            [
+              -98.29165811066893,
+              29.494468689847814
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "candidate_id": "Bexar:990673",
+        "county": "Bexar",
+        "prop_id": "990673",
+        "owner": "MMP VENTURES LLC",
+        "verified_owner": "MMP VENTURES LLC",
+        "owner_verification_match": true,
+        "situs": "W LOOP 1604",
+        "acres": 6.96,
+        "reported_acres": 6.96,
+        "geometry_acres": 6.96,
+        "acres_source": "REPORTED",
+        "land_value": 455510.0,
+        "assessed_value": 455510.0,
+        "improvement_value": 0.0,
+        "improvement_ratio": 0.0,
+        "gba": 0.0,
+        "prop_use": "9",
+        "legal": "CB 5069  P-3A  ABS 192 RESURVEY - SWD 11311/1800",
+        "cad_record_url": "",
+        "parcel_source": "SARA / Bexar CAD",
+        "parcel_snapshot": "2025-12",
+        "parcel_freshness": "RECENT",
+        "cad_geometry_verified": true,
+        "cad_verification_source": "SARA / BCAD live service",
+        "node_id": "INT-016",
+        "node_name": "Loop 1604 / Green Rd",
+        "node_score": 77.1,
+        "node_edge_miles": 0.13,
+        "dist_score": 97,
+        "acre_score": 100,
+        "raw_score": 100,
+        "shape_score": 87.7,
+        "compactness": 0.548,
+        "aspect_ratio": 1.14,
+        "road_score": 84,
+        "frontage_roads": [
+          "E LOOP 1604 N"
+        ],
+        "frontage_ft_proxy": 0.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 14472,
+        "aadt_5yr_growth_pct": 3.7,
+        "aadt_station_miles": 1.1,
+        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
+        "retail_catalyst_miles": 1.86,
+        "future_residential_lots_nearby": 3928.8,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "UNKNOWN",
+        "utility_provider": "SAWS",
+        "utility_distance_ft": null,
+        "utility_snapshot": "2021-07-21",
+        "utility_context": "No mapped sewer feature returned near parcel",
+        "assessed_value_per_acre": 65447.0,
+        "land_value_per_acre": 65447.0,
+        "parcel_opportunity_score": 77.2,
+        "parcel_execution_score": 77.3,
+        "parcel_fit_score": 95.3,
+        "acquisition_complexity_score": 94.4,
+        "utility_score": 20,
+        "confidence_score": 84,
+        "node_confidence_score": 94,
+        "node_class": "PRIORITY NODE",
+        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
+        "node_component_scores": {
+          "residential_growth": 58.3,
+          "intersection_network": 100,
+          "retail_catalyst": 90,
+          "traffic": 78.1,
+          "timing": 55.6
+        },
+        "parcel_component_scores": {
+          "frontage_access": 84,
+          "size_shape": 95.3,
+          "utilities": 20,
+          "flood": 100,
+          "acquisition": 94.4
+        },
+        "acquisition_category": "WATCH",
+        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
+        "main_risks": [
+          "limited frontage proxy",
+          "mapped sewer path is unverified"
+        ],
+        "usable_acres_proxy": 6.96,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of the node \u00b7 3928 weighted future residential lots \u00b7 1.9 mi from I-10 / Loop 1604 East H-E-B",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "bcad_geometry_verified": true,
+        "geometry_source": "SARA / BCAD parcel service",
+        "bcad_geo_id": "05069-000-0037",
+        "ownership_type": "Private",
+        "last_deed_date": "2007-05-09",
+        "hold_years": 19.4,
+        "rank": 29
       }
     },
     {
@@ -6936,7 +7626,7 @@
         "shape_score": 58.1,
         "compactness": 0.363,
         "aspect_ratio": 2.27,
-        "road_score": 94,
+        "road_score": 90,
         "frontage_roads": [
           "FM 1102",
           "CR04602041-KG",
@@ -6944,7 +7634,7 @@
           "CS0260122-KG"
         ],
         "frontage_ft_proxy": 1813.0,
-        "corner_signal": "STRONG",
+        "corner_signal": "NO",
         "major_road_signal": true,
         "mtp_row_flag": false,
         "flood_score": 100,
@@ -6970,8 +7660,8 @@
         "utility_context": "NBU feature approximately 48 ft from parcel; capacity NOT verified",
         "assessed_value_per_acre": 30134.0,
         "land_value_per_acre": 228.0,
-        "parcel_opportunity_score": 77.6,
-        "parcel_execution_score": 91.8,
+        "parcel_opportunity_score": 77.1,
+        "parcel_execution_score": 90.6,
         "parcel_fit_score": 79.1,
         "acquisition_complexity_score": 91.0,
         "utility_score": 100,
@@ -6987,7 +7677,7 @@
           "timing": 27.8
         },
         "parcel_component_scores": {
-          "frontage_access": 94,
+          "frontage_access": 90,
           "size_shape": 79.1,
           "utilities": 100,
           "flood": 100,
@@ -7001,733 +7691,9 @@
         ],
         "usable_acres_proxy": 58.68,
         "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of the node \u00b7 regional growth node; county housing feed incomplete \u00b7 2.0 mi from Mayfair Costco",
+        "why_this_tract": "major-road frontage \u00b7 within \u00bd mile of the node \u00b7 regional growth node; county housing feed incomplete \u00b7 2.0 mi from Mayfair Costco",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
         "geometry_source": "Comal CAD public ArcGIS parcel layer",
-        "rank": 26
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -98.22605461150462,
-              29.48781189031619
-            ],
-            [
-              -98.22543426390673,
-              29.488016598991596
-            ],
-            [
-              -98.22475762353628,
-              29.488254032654414
-            ],
-            [
-              -98.22430899378674,
-              29.48840696752194
-            ],
-            [
-              -98.22422745414144,
-              29.48861082514951
-            ],
-            [
-              -98.22486449283447,
-              29.489572506820185
-            ],
-            [
-              -98.22497800064701,
-              29.48980417795043
-            ],
-            [
-              -98.22585347436892,
-              29.491125764086767
-            ],
-            [
-              -98.2297370840833,
-              29.48915033837685
-            ],
-            [
-              -98.2287047250718,
-              29.486777383862297
-            ],
-            [
-              -98.22869032961562,
-              29.486750347889913
-            ],
-            [
-              -98.22759570041597,
-              29.487124082826313
-            ],
-            [
-              -98.22735887930969,
-              29.487204938068814
-            ],
-            [
-              -98.22660801920033,
-              29.48757082359552
-            ],
-            [
-              -98.22624999088735,
-              29.487745284089808
-            ],
-            [
-              -98.22605461150462,
-              29.48781189031619
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "candidate_id": "Bexar:339373",
-        "county": "Bexar",
-        "prop_id": "339373",
-        "owner": "MILLER BALOUS T & JULIE",
-        "verified_owner": "MILLER BALOUS T & JULIE",
-        "owner_verification_match": true,
-        "situs": "13085 E IH 10",
-        "acres": 34.91,
-        "reported_acres": 34.91,
-        "geometry_acres": 34.95,
-        "acres_source": "REPORTED",
-        "land_value": 2800000.0,
-        "assessed_value": 2800000.0,
-        "improvement_value": 0.0,
-        "improvement_ratio": 0.0,
-        "gba": 0.0,
-        "prop_use": "99",
-        "legal": "CB 5193  P-23E  ABS 5   2021-SPLIT PER DEED 20200033876 EXE 1-22-2020.  SPLIT OUT 1.242 AC TOTAL FROM PIDS 339310,339311,339312,339313,339314,339373.  UPDATE LEGAL/LAND SIZE ONLY.  NO NEW ACCOUNT CREATED, TXDoT/CoSA ROW DEED.  CR # 50212.   JLF/GIS/4-12-2021.",
-        "cad_record_url": "",
-        "parcel_source": "SARA / Bexar CAD",
-        "parcel_snapshot": "2025-12",
-        "parcel_freshness": "RECENT",
-        "cad_geometry_verified": true,
-        "cad_verification_source": "SARA / BCAD live service",
-        "node_id": "INT-006",
-        "node_name": "FM 1518 / I-10",
-        "node_score": 73.6,
-        "node_edge_miles": 0.05,
-        "dist_score": 100,
-        "acre_score": 100,
-        "raw_score": 100,
-        "shape_score": 100,
-        "compactness": 0.761,
-        "aspect_ratio": 1.42,
-        "road_score": 100,
-        "frontage_roads": [
-          "IH 10 E ACCESS RD",
-          "IH 10",
-          "E FM 1518 N",
-          "FM 1518"
-        ],
-        "frontage_ft_proxy": 2759.0,
-        "corner_signal": "STRONG",
-        "major_road_signal": true,
-        "mtp_row_flag": false,
-        "flood_score": 100,
-        "flood_pct": 0.0,
-        "floodway_pct": 0.0,
-        "flood_zones": [
-          "X"
-        ],
-        "flood_confidence": "SCREENED",
-        "future_land_use_score": 55,
-        "future_land_use": [],
-        "aadt": 10714,
-        "aadt_5yr_growth_pct": 33.6,
-        "aadt_station_miles": 0.02,
-        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
-        "retail_catalyst_miles": 5.4,
-        "future_residential_lots_nearby": 4498.5,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "UNKNOWN",
-        "utility_provider": "SAWS",
-        "utility_distance_ft": null,
-        "utility_snapshot": "2021-07-21",
-        "utility_context": "No mapped sewer feature returned near parcel",
-        "assessed_value_per_acre": 80206.0,
-        "land_value_per_acre": 80206.0,
-        "parcel_opportunity_score": 77.5,
-        "parcel_execution_score": 83.3,
-        "parcel_fit_score": 100.0,
-        "acquisition_complexity_score": 94.4,
-        "utility_score": 20,
-        "confidence_score": 84,
-        "node_confidence_score": 94,
-        "node_class": "EMERGING NODE",
-        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
-        "node_component_scores": {
-          "residential_growth": 65.2,
-          "intersection_network": 100,
-          "retail_catalyst": 50,
-          "traffic": 77.0,
-          "timing": 68.5
-        },
-        "parcel_component_scores": {
-          "frontage_access": 100,
-          "size_shape": 100.0,
-          "utilities": 20,
-          "flood": 100,
-          "acquisition": 94.4
-        },
-        "acquisition_category": "WATCH",
-        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
-        "main_risks": [
-          "mapped sewer path is unverified"
-        ],
-        "usable_acres_proxy": 34.91,
-        "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of the node \u00b7 4498 weighted future residential lots \u00b7 mostly raw / low-improvement land",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
-        "bcad_geometry_verified": true,
-        "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "05193-000-0235",
-        "ownership_type": "Private",
-        "last_deed_date": "2024-08-02",
-        "hold_years": 2.2,
-        "rank": 27
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -98.23137383086159,
-              29.485851593983057
-            ],
-            [
-              -98.2301022426404,
-              29.48617505024657
-            ],
-            [
-              -98.23014262749278,
-              29.48626840396654
-            ],
-            [
-              -98.23108370306635,
-              29.488426251335014
-            ],
-            [
-              -98.23248285747377,
-              29.48774183100043
-            ],
-            [
-              -98.23175724015415,
-              29.485830062873895
-            ],
-            [
-              -98.23172157469163,
-              29.485736241398502
-            ],
-            [
-              -98.23137383086159,
-              29.485851593983057
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "candidate_id": "Bexar:339370",
-        "county": "Bexar",
-        "prop_id": "339370",
-        "owner": "HIME LIVING TRUST",
-        "verified_owner": "HIME LIVING TRUST",
-        "owner_verification_match": true,
-        "situs": "12835  INTERSTATE 10 E",
-        "acres": 10.02,
-        "reported_acres": 10.02,
-        "geometry_acres": 9.79,
-        "acres_source": "REPORTED",
-        "land_value": 754790.0,
-        "assessed_value": 754790.0,
-        "improvement_value": 0.0,
-        "improvement_ratio": 0.0,
-        "gba": 0.0,
-        "prop_use": "99",
-        "legal": "CB  5193  P-23B  ABS 5   2019-RSVY FROM 10.00 AC TO 10.016 AC PER DEED 18931/2401 EFF 02-15-2018",
-        "cad_record_url": "",
-        "parcel_source": "SARA / Bexar CAD",
-        "parcel_snapshot": "2025-12",
-        "parcel_freshness": "RECENT",
-        "cad_geometry_verified": true,
-        "cad_verification_source": "SARA / BCAD live service",
-        "node_id": "INT-006",
-        "node_name": "FM 1518 / I-10",
-        "node_score": 73.6,
-        "node_edge_miles": 0.407,
-        "dist_score": 90,
-        "acre_score": 100,
-        "raw_score": 100,
-        "shape_score": 100,
-        "compactness": 0.738,
-        "aspect_ratio": 1.63,
-        "road_score": 100,
-        "frontage_roads": [
-          "IH 10 E ACCESS RD",
-          "IH 10"
-        ],
-        "frontage_ft_proxy": 735.0,
-        "corner_signal": "STRONG",
-        "major_road_signal": true,
-        "mtp_row_flag": false,
-        "flood_score": 100,
-        "flood_pct": 0.0,
-        "floodway_pct": 0.0,
-        "flood_zones": [
-          "X"
-        ],
-        "flood_confidence": "SCREENED",
-        "future_land_use_score": 55,
-        "future_land_use": [],
-        "aadt": 10714,
-        "aadt_5yr_growth_pct": 33.6,
-        "aadt_station_miles": 0.39,
-        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
-        "retail_catalyst_miles": 5.2,
-        "future_residential_lots_nearby": 4498.5,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "UNKNOWN",
-        "utility_provider": "SAWS",
-        "utility_distance_ft": null,
-        "utility_snapshot": "2021-07-21",
-        "utility_context": "No mapped sewer feature returned near parcel",
-        "assessed_value_per_acre": 75328.0,
-        "land_value_per_acre": 75328.0,
-        "parcel_opportunity_score": 77.5,
-        "parcel_execution_score": 83.3,
-        "parcel_fit_score": 100.0,
-        "acquisition_complexity_score": 94.4,
-        "utility_score": 20,
-        "confidence_score": 84,
-        "node_confidence_score": 94,
-        "node_class": "EMERGING NODE",
-        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
-        "node_component_scores": {
-          "residential_growth": 65.2,
-          "intersection_network": 100,
-          "retail_catalyst": 50,
-          "traffic": 77.0,
-          "timing": 68.5
-        },
-        "parcel_component_scores": {
-          "frontage_access": 100,
-          "size_shape": 100.0,
-          "utilities": 20,
-          "flood": 100,
-          "acquisition": 94.4
-        },
-        "acquisition_category": "WATCH",
-        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
-        "main_risks": [
-          "mapped sewer path is unverified"
-        ],
-        "usable_acres_proxy": 10.02,
-        "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of the node \u00b7 4498 weighted future residential lots \u00b7 mostly raw / low-improvement land",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
-        "bcad_geometry_verified": true,
-        "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "05193-000-0232",
-        "ownership_type": "Private",
-        "last_deed_date": "2025-09-24",
-        "hold_years": 1.0,
-        "rank": 28
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -98.22839386360177,
-              29.495113960315937
-            ],
-            [
-              -98.22857152233108,
-              29.495389425006618
-            ],
-            [
-              -98.22875255987124,
-              29.49566268098362
-            ],
-            [
-              -98.22893694876623,
-              29.49593368680517
-            ],
-            [
-              -98.22899127405152,
-              29.495906017746833
-            ],
-            [
-              -98.22901300974854,
-              29.495894947262077
-            ],
-            [
-              -98.22910115146017,
-              29.49585005412045
-            ],
-            [
-              -98.22916080470816,
-              29.495819670895383
-            ],
-            [
-              -98.22987531461344,
-              29.4954557455109
-            ],
-            [
-              -98.23027553404718,
-              29.49526474718496
-            ],
-            [
-              -98.230661445749,
-              29.495055334019625
-            ],
-            [
-              -98.23056509620264,
-              29.494914851271766
-            ],
-            [
-              -98.2302414797207,
-              29.494442998173785
-            ],
-            [
-              -98.23010466429216,
-              29.49424351017016
-            ],
-            [
-              -98.22847004708116,
-              29.495075199227102
-            ],
-            [
-              -98.22839386360177,
-              29.495113960315937
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "candidate_id": "Bexar:340081",
-        "county": "Bexar",
-        "prop_id": "340081",
-        "owner": "NAJDS PROPERTY INVESTMENTS INC",
-        "verified_owner": "NAJDS PROPERTY INVESTMENTS INC",
-        "owner_verification_match": true,
-        "situs": "FM 1518",
-        "acres": 5.0,
-        "reported_acres": 5.0,
-        "geometry_acres": 5.02,
-        "acres_source": "REPORTED",
-        "land_value": 352500.0,
-        "assessed_value": 352500.0,
-        "improvement_value": 0.0,
-        "improvement_ratio": 0.0,
-        "gba": 0.0,
-        "prop_use": "2",
-        "legal": "CB  5193A BLK    1 LOT    1",
-        "cad_record_url": "",
-        "parcel_source": "SARA / Bexar CAD",
-        "parcel_snapshot": "2025-12",
-        "parcel_freshness": "RECENT",
-        "cad_geometry_verified": true,
-        "cad_verification_source": "SARA / BCAD live service",
-        "node_id": "INT-006",
-        "node_name": "FM 1518 / I-10",
-        "node_score": 73.6,
-        "node_edge_miles": 0.569,
-        "dist_score": 78,
-        "acre_score": 100,
-        "raw_score": 100,
-        "shape_score": 100,
-        "compactness": 0.72,
-        "aspect_ratio": 1.83,
-        "road_score": 100,
-        "frontage_roads": [
-          "FM 1518",
-          "E FM 1518 N",
-          "CS1313047-KG"
-        ],
-        "frontage_ft_proxy": 823.0,
-        "corner_signal": "STRONG",
-        "major_road_signal": true,
-        "mtp_row_flag": true,
-        "flood_score": 100,
-        "flood_pct": 0.0,
-        "floodway_pct": 0.0,
-        "flood_zones": [
-          "X"
-        ],
-        "flood_confidence": "SCREENED",
-        "future_land_use_score": 55,
-        "future_land_use": [],
-        "aadt": 10714,
-        "aadt_5yr_growth_pct": 33.6,
-        "aadt_station_miles": 0.41,
-        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
-        "retail_catalyst_miles": 5.13,
-        "future_residential_lots_nearby": 4498.5,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "UNKNOWN",
-        "utility_provider": "SAWS",
-        "utility_distance_ft": null,
-        "utility_snapshot": "2021-07-21",
-        "utility_context": "No mapped sewer feature returned near parcel",
-        "assessed_value_per_acre": 70500.0,
-        "land_value_per_acre": 70500.0,
-        "parcel_opportunity_score": 77.5,
-        "parcel_execution_score": 83.3,
-        "parcel_fit_score": 100.0,
-        "acquisition_complexity_score": 94.4,
-        "utility_score": 20,
-        "confidence_score": 84,
-        "node_confidence_score": 94,
-        "node_class": "EMERGING NODE",
-        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
-        "node_component_scores": {
-          "residential_growth": 65.2,
-          "intersection_network": 100,
-          "retail_catalyst": 50,
-          "traffic": 77.0,
-          "timing": 68.5
-        },
-        "parcel_component_scores": {
-          "frontage_access": 100,
-          "size_shape": 100.0,
-          "utilities": 20,
-          "flood": 100,
-          "acquisition": 94.4
-        },
-        "acquisition_category": "WATCH",
-        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
-        "main_risks": [
-          "not on the immediate intersection",
-          "mapped sewer path is unverified"
-        ],
-        "usable_acres_proxy": 5.0,
-        "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 4498 weighted future residential lots \u00b7 mostly raw / low-improvement land",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
-        "bcad_geometry_verified": true,
-        "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "05193-101-0010",
-        "ownership_type": "Private",
-        "last_deed_date": "2015-05-04",
-        "hold_years": 11.4,
-        "rank": 29
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -98.29165811066893,
-              29.494468689847814
-            ],
-            [
-              -98.29178938137596,
-              29.494411329207583
-            ],
-            [
-              -98.29192703060929,
-              29.4943579074037
-            ],
-            [
-              -98.29204946611242,
-              29.494305177262582
-            ],
-            [
-              -98.2921772951518,
-              29.49425400678082
-            ],
-            [
-              -98.29230411227812,
-              29.494198959026
-            ],
-            [
-              -98.29242655667205,
-              29.494149361392527
-            ],
-            [
-              -98.29255707627124,
-              29.494091170413768
-            ],
-            [
-              -98.29269024954225,
-              29.49403535558509
-            ],
-            [
-              -98.29281361421829,
-              29.493984168092524
-            ],
-            [
-              -98.29293967714868,
-              29.49392905890029
-            ],
-            [
-              -98.29306659368305,
-              29.493873984781807
-            ],
-            [
-              -98.2905579436352,
-              29.493182293302628
-            ],
-            [
-              -98.29037811344709,
-              29.49388669121264
-            ],
-            [
-              -98.29016066326633,
-              29.49484346968072
-            ],
-            [
-              -98.29007345372321,
-              29.495165473482643
-            ],
-            [
-              -98.29067885998677,
-              29.494876280611862
-            ],
-            [
-              -98.29096075910576,
-              29.494757894867707
-            ],
-            [
-              -98.29114907291998,
-              29.494679493359417
-            ],
-            [
-              -98.2912763811942,
-              29.494626210483606
-            ],
-            [
-              -98.29140482357643,
-              29.494572819807775
-            ],
-            [
-              -98.29153308860433,
-              29.494518360641052
-            ],
-            [
-              -98.29165811066893,
-              29.494468689847814
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "candidate_id": "Bexar:990673",
-        "county": "Bexar",
-        "prop_id": "990673",
-        "owner": "MMP VENTURES LLC",
-        "verified_owner": "MMP VENTURES LLC",
-        "owner_verification_match": true,
-        "situs": "W LOOP 1604",
-        "acres": 6.96,
-        "reported_acres": 6.96,
-        "geometry_acres": 6.96,
-        "acres_source": "REPORTED",
-        "land_value": 455510.0,
-        "assessed_value": 455510.0,
-        "improvement_value": 0.0,
-        "improvement_ratio": 0.0,
-        "gba": 0.0,
-        "prop_use": "9",
-        "legal": "CB 5069  P-3A  ABS 192 RESURVEY - SWD 11311/1800",
-        "cad_record_url": "",
-        "parcel_source": "SARA / Bexar CAD",
-        "parcel_snapshot": "2025-12",
-        "parcel_freshness": "RECENT",
-        "cad_geometry_verified": true,
-        "cad_verification_source": "SARA / BCAD live service",
-        "node_id": "INT-016",
-        "node_name": "Loop 1604 / Green Rd",
-        "node_score": 77.1,
-        "node_edge_miles": 0.13,
-        "dist_score": 97,
-        "acre_score": 100,
-        "raw_score": 100,
-        "shape_score": 87.7,
-        "compactness": 0.548,
-        "aspect_ratio": 1.14,
-        "road_score": 84,
-        "frontage_roads": [
-          "E LOOP 1604 N"
-        ],
-        "frontage_ft_proxy": 0.0,
-        "corner_signal": "NO",
-        "major_road_signal": true,
-        "mtp_row_flag": false,
-        "flood_score": 100,
-        "flood_pct": 0.0,
-        "floodway_pct": 0.0,
-        "flood_zones": [
-          "X"
-        ],
-        "flood_confidence": "SCREENED",
-        "future_land_use_score": 55,
-        "future_land_use": [],
-        "aadt": 14472,
-        "aadt_5yr_growth_pct": 3.7,
-        "aadt_station_miles": 1.1,
-        "nearest_retail_catalyst": "I-10 / Loop 1604 East H-E-B",
-        "retail_catalyst_miles": 1.86,
-        "future_residential_lots_nearby": 3928.8,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "UNKNOWN",
-        "utility_provider": "SAWS",
-        "utility_distance_ft": null,
-        "utility_snapshot": "2021-07-21",
-        "utility_context": "No mapped sewer feature returned near parcel",
-        "assessed_value_per_acre": 65447.0,
-        "land_value_per_acre": 65447.0,
-        "parcel_opportunity_score": 77.2,
-        "parcel_execution_score": 77.3,
-        "parcel_fit_score": 95.3,
-        "acquisition_complexity_score": 94.4,
-        "utility_score": 20,
-        "confidence_score": 84,
-        "node_confidence_score": 94,
-        "node_class": "PRIORITY NODE",
-        "node_evidence_model": "Bexar detailed growth + statewide road/traffic evidence",
-        "node_component_scores": {
-          "residential_growth": 58.3,
-          "intersection_network": 100,
-          "retail_catalyst": 90,
-          "traffic": 78.1,
-          "timing": 55.6
-        },
-        "parcel_component_scores": {
-          "frontage_access": 84,
-          "size_shape": 95.3,
-          "utilities": 20,
-          "flood": 100,
-          "acquisition": 94.4
-        },
-        "acquisition_category": "WATCH",
-        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
-        "main_risks": [
-          "limited frontage proxy",
-          "mapped sewer path is unverified"
-        ],
-        "usable_acres_proxy": 6.96,
-        "eligible": true,
-        "why_this_tract": "major-road frontage \u00b7 within \u00bc mile of the node \u00b7 3928 weighted future residential lots \u00b7 1.9 mi from I-10 / Loop 1604 East H-E-B",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
-        "bcad_geometry_verified": true,
-        "geometry_source": "SARA / BCAD parcel service",
-        "bcad_geo_id": "05069-000-0037",
-        "ownership_type": "Private",
-        "last_deed_date": "2007-05-09",
-        "hold_years": 19.4,
         "rank": 30
       }
     },
@@ -7989,169 +7955,6 @@
         "coordinates": [
           [
             [
-              -98.1927434766075,
-              29.7309703742501
-            ],
-            [
-              -98.19274831417,
-              29.7309672117796
-            ],
-            [
-              -98.1937325383486,
-              29.7317031420141
-            ],
-            [
-              -98.1937310379111,
-              29.7317334101469
-            ],
-            [
-              -98.1937227572098,
-              29.7319012871124
-            ],
-            [
-              -98.1937153673635,
-              29.7320511159436
-            ],
-            [
-              -98.1919308524122,
-              29.7332177075802
-            ],
-            [
-              -98.191630987339,
-              29.7334319198571
-            ],
-            [
-              -98.1915776572701,
-              29.7333727497671
-            ],
-            [
-              -98.1906474042009,
-              29.7323406268641
-            ],
-            [
-              -98.1927431315151,
-              29.7309705995634
-            ],
-            [
-              -98.1927434766075,
-              29.7309703742501
-            ]
-          ]
-        ]
-      },
-      "properties": {
-        "candidate_id": "Comal:363206",
-        "county": "Comal",
-        "prop_id": "363206",
-        "owner": "STEFFEN LISA LEIGH",
-        "verified_owner": "STEFFEN LISA LEIGH",
-        "owner_verification_match": true,
-        "situs": "142 HUECO SPRINGS LOOP RD NEW BRAUNFELS TX 78132",
-        "acres": 10.02,
-        "reported_acres": 100160.0,
-        "geometry_acres": 10.02,
-        "acres_source": "GEOMETRY",
-        "land_value": 24000.0,
-        "assessed_value": 1178260.0,
-        "improvement_value": 37320.0,
-        "improvement_ratio": 0.032,
-        "gba": 0.0,
-        "prop_use": "R",
-        "legal": "A-263 SUR-454  E HERNANDEZ, ACRES 10.016",
-        "cad_record_url": "https://gis.bisclient.com/comalcad/index.html?find=363206",
-        "parcel_source": "Comal CAD public ArcGIS parcel layer",
-        "parcel_snapshot": "2024-11-22",
-        "parcel_freshness": "AGING",
-        "cad_geometry_verified": true,
-        "cad_verification_source": "Comal CAD public ArcGIS service",
-        "node_id": "INT-007",
-        "node_name": "Loop 337 / Word Pkwy (Veramendi)",
-        "node_score": 61.6,
-        "node_edge_miles": 0.744,
-        "dist_score": 78,
-        "acre_score": 100,
-        "raw_score": 96.2,
-        "shape_score": 100,
-        "compactness": 0.748,
-        "aspect_ratio": 1.82,
-        "road_score": 94,
-        "frontage_roads": [
-          "SH 46",
-          "CS0267830-KG",
-          "CR04602072-KG"
-        ],
-        "frontage_ft_proxy": 1102.0,
-        "corner_signal": "STRONG",
-        "major_road_signal": true,
-        "mtp_row_flag": false,
-        "flood_score": 100,
-        "flood_pct": 0.0,
-        "floodway_pct": 0.0,
-        "flood_zones": [
-          "X"
-        ],
-        "flood_confidence": "SCREENED",
-        "future_land_use_score": 55,
-        "future_land_use": [],
-        "aadt": 29278,
-        "aadt_5yr_growth_pct": 38.5,
-        "aadt_station_miles": 0.49,
-        "nearest_retail_catalyst": "Veramendi mixed-use / future Market Center",
-        "retail_catalyst_miles": 0.84,
-        "future_residential_lots_nearby": 0.0,
-        "recent_housing_units_180d": 0,
-        "utility_confidence": "PROXY",
-        "utility_provider": "NBU",
-        "utility_distance_ft": 865.0,
-        "utility_snapshot": "2024-01-17",
-        "utility_context": "NBU feature approximately 865 ft from parcel; capacity NOT verified",
-        "assessed_value_per_acre": 117591.0,
-        "land_value_per_acre": 2395.0,
-        "parcel_opportunity_score": 74.2,
-        "parcel_execution_score": 93.0,
-        "parcel_fit_score": 100.0,
-        "acquisition_complexity_score": 87.5,
-        "utility_score": 82,
-        "confidence_score": 72,
-        "node_confidence_score": 68,
-        "node_class": "WATCH NODE",
-        "node_evidence_model": "Regional corridor prior + statewide road/traffic; county housing feed incomplete",
-        "node_component_scores": {
-          "residential_growth": 0.0,
-          "intersection_network": 68,
-          "retail_catalyst": 100,
-          "traffic": 58.2,
-          "timing": 27.8
-        },
-        "parcel_component_scores": {
-          "frontage_access": 94,
-          "size_shape": 100.0,
-          "utilities": 82,
-          "flood": 100,
-          "acquisition": 87.5
-        },
-        "acquisition_category": "WATCH",
-        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
-        "main_risks": [
-          "not on the immediate intersection",
-          "utility capacity is unverified",
-          "county parcel snapshot is aging"
-        ],
-        "usable_acres_proxy": 10.02,
-        "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within 1 mile of the node \u00b7 regional growth node; county housing feed incomplete \u00b7 0.8 mi from Veramendi mixed-use / future Market Center",
-        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
-        "geometry_source": "Comal CAD public ArcGIS parcel layer",
-        "rank": 32
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
               -98.188230307586,
               29.729658710916
             ],
@@ -8309,7 +8112,7 @@
         "why_this_tract": "major-road frontage \u00b7 within 1 mile of the node \u00b7 regional growth node; county housing feed incomplete \u00b7 0.8 mi from Veramendi mixed-use / future Market Center",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
         "geometry_source": "Comal CAD public ArcGIS parcel layer",
-        "rank": 33
+        "rank": 32
       }
     },
     {
@@ -8612,6 +8415,169 @@
         "usable_acres_proxy": 49.55,
         "eligible": true,
         "why_this_tract": "corner exposure on a major road \u00b7 within \u00bc mile of the node \u00b7 regional growth node; county housing feed incomplete \u00b7 1.2 mi from Veramendi mixed-use / future Market Center",
+        "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
+        "geometry_source": "Comal CAD public ArcGIS parcel layer",
+        "rank": 33
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.1927434766075,
+              29.7309703742501
+            ],
+            [
+              -98.19274831417,
+              29.7309672117796
+            ],
+            [
+              -98.1937325383486,
+              29.7317031420141
+            ],
+            [
+              -98.1937310379111,
+              29.7317334101469
+            ],
+            [
+              -98.1937227572098,
+              29.7319012871124
+            ],
+            [
+              -98.1937153673635,
+              29.7320511159436
+            ],
+            [
+              -98.1919308524122,
+              29.7332177075802
+            ],
+            [
+              -98.191630987339,
+              29.7334319198571
+            ],
+            [
+              -98.1915776572701,
+              29.7333727497671
+            ],
+            [
+              -98.1906474042009,
+              29.7323406268641
+            ],
+            [
+              -98.1927431315151,
+              29.7309705995634
+            ],
+            [
+              -98.1927434766075,
+              29.7309703742501
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "candidate_id": "Comal:363206",
+        "county": "Comal",
+        "prop_id": "363206",
+        "owner": "STEFFEN LISA LEIGH",
+        "verified_owner": "STEFFEN LISA LEIGH",
+        "owner_verification_match": true,
+        "situs": "142 HUECO SPRINGS LOOP RD NEW BRAUNFELS TX 78132",
+        "acres": 10.02,
+        "reported_acres": 100160.0,
+        "geometry_acres": 10.02,
+        "acres_source": "GEOMETRY",
+        "land_value": 24000.0,
+        "assessed_value": 1178260.0,
+        "improvement_value": 37320.0,
+        "improvement_ratio": 0.032,
+        "gba": 0.0,
+        "prop_use": "R",
+        "legal": "A-263 SUR-454  E HERNANDEZ, ACRES 10.016",
+        "cad_record_url": "https://gis.bisclient.com/comalcad/index.html?find=363206",
+        "parcel_source": "Comal CAD public ArcGIS parcel layer",
+        "parcel_snapshot": "2024-11-22",
+        "parcel_freshness": "AGING",
+        "cad_geometry_verified": true,
+        "cad_verification_source": "Comal CAD public ArcGIS service",
+        "node_id": "INT-007",
+        "node_name": "Loop 337 / Word Pkwy (Veramendi)",
+        "node_score": 61.6,
+        "node_edge_miles": 0.744,
+        "dist_score": 78,
+        "acre_score": 100,
+        "raw_score": 96.2,
+        "shape_score": 100,
+        "compactness": 0.748,
+        "aspect_ratio": 1.82,
+        "road_score": 90,
+        "frontage_roads": [
+          "SH 46",
+          "CS0267830-KG",
+          "CR04602072-KG"
+        ],
+        "frontage_ft_proxy": 1102.0,
+        "corner_signal": "NO",
+        "major_road_signal": true,
+        "mtp_row_flag": false,
+        "flood_score": 100,
+        "flood_pct": 0.0,
+        "floodway_pct": 0.0,
+        "flood_zones": [
+          "X"
+        ],
+        "flood_confidence": "SCREENED",
+        "future_land_use_score": 55,
+        "future_land_use": [],
+        "aadt": 29278,
+        "aadt_5yr_growth_pct": 38.5,
+        "aadt_station_miles": 0.49,
+        "nearest_retail_catalyst": "Veramendi mixed-use / future Market Center",
+        "retail_catalyst_miles": 0.84,
+        "future_residential_lots_nearby": 0.0,
+        "recent_housing_units_180d": 0,
+        "utility_confidence": "PROXY",
+        "utility_provider": "NBU",
+        "utility_distance_ft": 865.0,
+        "utility_snapshot": "2024-01-17",
+        "utility_context": "NBU feature approximately 865 ft from parcel; capacity NOT verified",
+        "assessed_value_per_acre": 117591.0,
+        "land_value_per_acre": 2395.0,
+        "parcel_opportunity_score": 73.7,
+        "parcel_execution_score": 91.8,
+        "parcel_fit_score": 100.0,
+        "acquisition_complexity_score": 87.5,
+        "utility_score": 82,
+        "confidence_score": 72,
+        "node_confidence_score": 68,
+        "node_class": "WATCH NODE",
+        "node_evidence_model": "Regional corridor prior + statewide road/traffic; county housing feed incomplete",
+        "node_component_scores": {
+          "residential_growth": 0.0,
+          "intersection_network": 68,
+          "retail_catalyst": 100,
+          "traffic": 58.2,
+          "timing": 27.8
+        },
+        "parcel_component_scores": {
+          "frontage_access": 90,
+          "size_shape": 100.0,
+          "utilities": 82,
+          "flood": 100,
+          "acquisition": 87.5
+        },
+        "acquisition_category": "WATCH",
+        "decision_summary": "Strong enough to track closely; verify title, access and utility feasibility before elevating.",
+        "main_risks": [
+          "not on the immediate intersection",
+          "utility capacity is unverified",
+          "county parcel snapshot is aging"
+        ],
+        "usable_acres_proxy": 10.02,
+        "eligible": true,
+        "why_this_tract": "major-road frontage \u00b7 within 1 mile of the node \u00b7 regional growth node; county housing feed incomplete \u00b7 0.8 mi from Veramendi mixed-use / future Market Center",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
         "geometry_source": "Comal CAD public ArcGIS parcel layer",
         "rank": 34
@@ -9087,14 +9053,14 @@
         "shape_score": 100,
         "compactness": 0.651,
         "aspect_ratio": 1.3,
-        "road_score": 94,
+        "road_score": 90,
         "frontage_roads": [
           "FM 1863",
           "CS1179613-KG",
           "CS1179609-KG"
         ],
         "frontage_ft_proxy": 216.0,
-        "corner_signal": "STRONG",
+        "corner_signal": "NO",
         "major_road_signal": true,
         "mtp_row_flag": false,
         "flood_score": 100,
@@ -9120,8 +9086,8 @@
         "utility_context": "NBU feature approximately 1830 ft from parcel; capacity NOT verified",
         "assessed_value_per_acre": 155526.0,
         "land_value_per_acre": 0.0,
-        "parcel_opportunity_score": 71.8,
-        "parcel_execution_score": 88.7,
+        "parcel_opportunity_score": 71.4,
+        "parcel_execution_score": 87.5,
         "parcel_fit_score": 95.0,
         "acquisition_complexity_score": 90.2,
         "utility_score": 65,
@@ -9137,7 +9103,7 @@
           "timing": 27.8
         },
         "parcel_component_scores": {
-          "frontage_access": 94,
+          "frontage_access": 90,
           "size_shape": 95.0,
           "utilities": 65,
           "flood": 100,
@@ -9151,7 +9117,7 @@
         ],
         "usable_acres_proxy": 72.45,
         "eligible": true,
-        "why_this_tract": "corner exposure on a major road \u00b7 within \u00bd mile of the node \u00b7 regional growth node; county housing feed incomplete \u00b7 1.6 mi from Veramendi mixed-use / future Market Center",
+        "why_this_tract": "major-road frontage \u00b7 within \u00bd mile of the node \u00b7 regional growth node; county housing feed incomplete \u00b7 1.6 mi from Veramendi mixed-use / future Market Center",
         "verification_notes": "Frontage is a GIS proximity proxy, not legal access. Sewer distance is a mapped-line proxy, not a capacity commitment. Confirm current title/CAD, survey, curb access, median/turn movements, ROW, flood and provider capacity.",
         "geometry_source": "Comal CAD public ArcGIS parcel layer",
         "rank": 36
