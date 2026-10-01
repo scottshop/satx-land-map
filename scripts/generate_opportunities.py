@@ -27,6 +27,31 @@ FLU_URL = "https://services.arcgis.com/g1fRTDLeMgspWrYp/arcgis/rest/services/Fut
 SAWS_CIP_POINT = "https://services.arcgis.com/g7IVOf0Gf9OkqkzV/ArcGIS/rest/services/SSORP_1_25_svc/FeatureServer/0/query"
 SAWS_CIP_POLY = "https://services.arcgis.com/g7IVOf0Gf9OkqkzV/ArcGIS/rest/services/SSORP_1_25_svc/FeatureServer/1/query"
 SARA_BCAD_URL = "https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query"
+COMAL_PARCEL_URL = "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/arcgis/rest/services/COMAL_PARCELS/FeatureServer/0/query"
+GUADALUPE_PARCEL_URL = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer/83/query"
+TXDOT_ROADS_URL = "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_Roadways/FeatureServer/0/query"
+SAWS_SEWER_URL = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__GreaterSATX/MapServer/28/query"
+NBU_SEWER_URL = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Hines_SiteSelection/MapServer/512/query"
+GBRA_GRAVITY_URL = "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/170/query"
+GBRA_FORCE_URL = "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/172/query"
+NBU_LIVE_PARCELS_URL = "https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/NBU_Parcels_live/FeatureServer/0/query"
+GBRA_LIVE_PARCELS_URL = "https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/GBRA_Parcels_live/FeatureServer/0/query"
+
+NODE_COUNTIES = {
+  "INT-002":"Comal",
+  "INT-007":"Comal",
+  "INT-022":"Comal",
+  "INT-015":"Guadalupe",
+  "INT-025":"Guadalupe",
+  "INT-019":"Medina",
+  "INT-023":"Kendall",
+}
+
+PARCEL_SOURCE_INFO = {
+  "Bexar":{"label":"SARA / Bexar CAD","snapshot":"2025-12","freshness":"RECENT"},
+  "Comal":{"label":"Comal CAD public ArcGIS parcel layer","snapshot":"2024-11-22","freshness":"AGING"},
+  "Guadalupe":{"label":"Guadalupe CAD via TxGIO public extract","snapshot":"2022-02","freshness":"STALE"},
+}
 
 NODES = [
  {"id":"INT-002","name":"I-35 / Kohlenberg Rd (Mayfair)","lat":29.748,"lng":-98.079,"base":90},
@@ -176,7 +201,7 @@ def proj(g):
     except: return None
 
 def road_name(p):
-    candidates=["FULLNAME","FullName","StreetName","STREETNAME","STREET_NAME","ROAD_NAME","RoadName","NAME","Name","RD_NAME","ST_NAME"]
+    candidates=["RTE_NM","MAP_LBL","FULLNAME","FullName","StreetName","STREETNAME","STREET_NAME","ROAD_NAME","RoadName","NAME","Name","RD_NAME","ST_NAME"]
     for k in candidates:
         if p.get(k): return str(p[k]).strip()
     for k,v in p.items():
@@ -187,7 +212,7 @@ def road_name(p):
 def road_class(p):
     vals=[]
     for k,v in p.items():
-        if isinstance(v,str) and re.search(r"(function|class|type|route|system)",k,re.I):
+        if isinstance(v,str) and re.search(r"(function|class|type|route|system|rte_prfx|rdbd)",k,re.I):
             vals.append(v)
     return " | ".join(vals)
 
@@ -259,6 +284,55 @@ def raw_land_score(p,a):
     if a>0: s-=min(35,(gba/a)/600)
     if houses>1: s-=min(35,(houses-1)*8)
     return clamp(s),ratio,gba
+
+def node_county(node):
+    return NODE_COUNTIES.get(node.get("id"),"Bexar")
+
+def raw_land_score_values(total,impr,a,gba=0,houses=0):
+    tot=max(1,float(total or 0))
+    impr=float(impr or 0)
+    ratio=impr/tot
+    s=100-min(65,ratio*120)
+    if a>0 and gba:
+        s-=min(35,(gba/a)/600)
+    if houses>1:
+        s-=min(35,(houses-1)*8)
+    return clamp(s),ratio,float(gba or 0)
+
+def normalized_parcel(feature,county):
+    p=props(feature)
+    if county=="Bexar":
+        pid=str(int(nval(p,"PropID"))) if nval(p,"PropID") else str(p.get("OBJECTID",""))
+        return {
+          "prop_id":pid,"owner":sval(p,"Owner"),"situs":sval(p,"Situs"),
+          "acres":nval(p,"Acres","LglAcres"),"land_value":nval(p,"LandVal"),
+          "improvement_value":nval(p,"ImprVal"),"market_value":nval(p,"TotVal"),
+          "gba":nval(p,"TOT_GBA","GBA"),"houses":nval(p,"Houses"),
+          "prop_use":sval(p,"PropUse"),"legal":sval(p,"LglDesc"),"cad_record_url":""
+        }
+    if county=="Comal":
+        return {
+          "prop_id":sval(p,"PROP_ID","PARCELKEY","OBJECTID"),"owner":sval(p,"PY_OWNER_N"),
+          "situs":sval(p,"SITUS_ADDR"),"acres":nval(p,"LEGAL_ACRE"),
+          "land_value":nval(p,"LAND_HMSTD")+nval(p,"LAND_NON_H"),
+          "improvement_value":nval(p,"IMPRV_VAL")+nval(p,"IMPROV_NON"),
+          "market_value":nval(p,"APPRAISED","ASSESSED"),"gba":0,"houses":0,
+          "prop_use":sval(p,"PROP_TYPE_"),"legal":sval(p,"LEGAL_DESC","LEGAL_DE_1"),
+          "cad_record_url":sval(p,"CADLINK")
+        }
+    if county=="Guadalupe":
+        unit=sval(p,"LGL_AREA_UNIT").upper()
+        gis_unit=sval(p,"GIS_AREA_UNIT").upper()
+        acres=nval(p,"LEGAL_AREA") if unit=="ACRES" else nval(p,"GIS_AREA") if gis_unit=="ACRES" else 0
+        return {
+          "prop_id":sval(p,"PROP_ID","OBJECTID"),"owner":sval(p,"OWNER_NAME"),
+          "situs":sval(p,"SITUS_ADDR"),"acres":acres,
+          "land_value":nval(p,"LAND_VALUE"),"improvement_value":nval(p,"IMP_VALUE"),
+          "market_value":nval(p,"MKT_VALUE"),"gba":0,"houses":0,
+          "prop_use":sval(p,"LOC_LAND_USE","STAT_LAND_USE"),"legal":sval(p,"LEGAL_DESC"),
+          "cad_record_url":""
+        }
+    return {}
 
 def nearest_catalyst(lat,lng):
     best=None
