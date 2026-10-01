@@ -693,12 +693,17 @@ def screen_fema_candidate(c):
     if not g or g.is_empty:
         c["flood_confidence"]="UNKNOWN"; c["eligible"]=False
         return classify_candidate(c)
-    minx,miny,maxx,maxy=g.bounds
-    env={"xmin":minx,"ymin":miny,"xmax":maxx,"ymax":maxy,"spatialReference":{"wkid":4326}}
     try:
-        feats=arc_query(FEMA_URL,geom=env,geom_type="esriGeometryEnvelope",
-                        out_fields="FLD_ZONE,ZONE_SUBTY,SFHA_TF",return_geometry=True,
-                        page_size=300,timeout=25)
+        if "_fema_node_loaded" in c:
+            if not c.get("_fema_node_loaded"):
+                raise RuntimeError("node-level FEMA query unavailable")
+            feats=c.get("_fema_node_features") or []
+        else:
+            minx,miny,maxx,maxy=g.bounds
+            env={"xmin":minx,"ymin":miny,"xmax":maxx,"ymax":maxy,"spatialReference":{"wkid":4326}}
+            feats=arc_query(FEMA_URL,geom=env,geom_type="esriGeometryEnvelope",
+                            out_fields="FLD_ZONE,ZONE_SUBTY,SFHA_TF",return_geometry=True,
+                            page_size=300,timeout=25)
         flood_score,flood_pct,fw_pct,zones=flood_quality(c,{"fema":feats})
         c["flood_score"]=flood_score
         c["flood_pct"]=flood_pct
@@ -707,7 +712,6 @@ def screen_fema_candidate(c):
         c["flood_confidence"]="SCREENED"
         usable_acres=c["acres"]*(1-min(100,flood_pct)/100)
         c["usable_acres_proxy"]=round(max(0,usable_acres),2)
-        # Flood was provisionally neutral (55) in parcel execution; replace it with the screened value.
         c["parcel_execution_score"]=round(clamp(c["parcel_execution_score"] + (5/40)*(flood_score-55)),1)
         c["parcel_component_scores"]["flood"]=round(flood_score,1)
         c["parcel_opportunity_score"]=round(clamp(.60*c["node_score"]+.40*c["parcel_execution_score"]),1)
@@ -715,13 +719,12 @@ def screen_fema_candidate(c):
         why=[x for x in str(c.get("why_this_tract","")).split(" · ") if x and "FEMA" not in x]
         if flood_pct==0: why.append("no mapped FEMA SFHA overlap returned")
         elif flood_pct<25: why.append(f"{flood_pct:.1f}% mapped FEMA SFHA overlap")
-        c["why_this_tract"]=" · ".join(why[:4])
+        c["why_this_tract"]=" · ".join(why[:5])
     except Exception as e:
-        errors.append(f"fema-parcel {c.get('prop_id')}: {e}")
+        errors.append(f"fema-parcel {c.get('candidate_id') or c.get('prop_id')}: {e}")
         c["flood_confidence"]="UNKNOWN"; c["eligible"]=False
     c["confidence_score"]=candidate_confidence(c)
     return classify_candidate(c)
-
 def land_use_quality(c,support):
     poly=c["_geom2278"]; best=55; names=[]
     for f in support["flu"]:
@@ -1176,9 +1179,28 @@ def main():
         pool=sorted([x for x in enriched if x.get("county")==county and x.get("eligible_pre_flood")],
                     key=lambda x:x["parcel_opportunity_score"],reverse=True)[:cap]
         provisional.extend(pool)
-    print(f"Parcel-level FEMA screening on {len(provisional)} provisional candidates...")
+    print(f"Node-level FEMA loading for {len(provisional)} provisional candidates...")
+    fema_nodes={x["node_id"] for x in provisional}
+    def load_node_fema(node_id):
+        node=node_by[node_id]
+        try:
+            feats=arc_query(FEMA_URL,geom=envelope_geom(node,2.0),geom_type="esriGeometryEnvelope",
+                            out_fields="FLD_ZONE,ZONE_SUBTY,SFHA_TF",return_geometry=True,
+                            page_size=2000,timeout=30)
+            return node_id,True,feats
+        except Exception as e:
+            errors.append(f"fema-node {node_id}: {e}")
+            return node_id,False,[]
+    fema_cache={}
     with ThreadPoolExecutor(max_workers=2) as ex:
-        screened=list(ex.map(screen_fema_candidate,provisional))
+        for node_id,loaded,feats in ex.map(load_node_fema,sorted(fema_nodes)):
+            fema_cache[node_id]=(loaded,feats)
+    for cand in provisional:
+        loaded,feats=fema_cache.get(cand["node_id"],(False,[]))
+        cand["_fema_node_loaded"]=loaded
+        cand["_fema_node_features"]=feats
+    print(f"Parcel FEMA screening locally across {len(fema_cache)} node caches...")
+    screened=[screen_fema_candidate(cand) for cand in provisional]
 
     verify_pool=[x for x in screened if x.get("eligible")]
     print(f"County parcel verification on all {len(verify_pool)} eligible finalists...")
@@ -1247,7 +1269,7 @@ def main():
         "permits":"City of San Antonio building permits past 180 days; regional counties have lower permit-data confidence",
         "traffic":"TxDOT AADT Annuals Public View",
         "roads":"TxDOT statewide roadways plus CoSA/Bexar local road sources where available",
-        "flood":"FEMA NFHL flood hazard polygons",
+        "flood":"FEMA NFHL flood hazard polygons; fetched by node envelope and intersected parcel-by-parcel locally",
         "land_use":"City of San Antonio Future Land Use where available",
         "utilities":"Mapped existing sewer proximity: SAWS (Bexar), NBU (Comal/New Braunfels), GBRA (Guadalupe); capacity unverified"
       },

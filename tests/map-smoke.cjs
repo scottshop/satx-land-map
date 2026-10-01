@@ -28,6 +28,11 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     assert(await page.evaluate(() => v6OpportunityData.length >= 5),'Acquisition mode should load at least five qualified parcels');
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>['PRIORITY','WATCH','EARLY SPECULATION'].includes(f.properties.acquisition_category))),true,'Every highlighted parcel needs an acquisition tier');
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>Number.isFinite(Number(f.properties.confidence_score)))),true,'Every highlighted parcel needs confidence');
+    assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>['Bexar','Comal','Guadalupe'].includes(f.properties.county))),true,'Every V3 parcel needs a supported county');
+    assert.equal(await page.evaluate(() => {
+      const ids=v6OpportunityData.map(f=>f.properties.candidate_id);
+      return ids.every(Boolean) && new Set(ids).size===ids.length;
+    }),true,'V3 candidate IDs must be county-qualified and unique');
     assert.equal(await page.evaluate(() => testMap.hasLayer(tile_layer_satellite_hybrid)), true);
     for (const name of ['v3Parcels','v3ComalParcels','v3GuadalupeParcels','v3SewerService','v3FemaHazard','v3AADT','v3FutureLandUse','v3Rings','v3VerifiedTargetGeometry']) {
       assert.equal(await page.evaluate(n => testMap.hasLayer(window[n]), name), false, name + ' must default OFF');
@@ -41,10 +46,20 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     await page.setViewportSize({width:390,height:844}); await page.evaluate(()=>testMap.invalidateSize());
     await page.locator('.leaflet-control-layers').hover(); assert(await page.getByText('Exact Target Parcels',{exact:true}).isVisible());
     assert.equal(await page.locator('#v6CategoryFilter').count(),1);
+    assert.equal(await page.locator('#v6CountyFilter').count(),1);
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     await page.screenshot({path:process.env.SCREENSHOT_DIR ? path.join(process.env.SCREENSHOT_DIR,'mobile.png') : '/tmp/satx-mobile.png'});
     await page.mouse.click(60,700); await page.locator('#v6TopToggle').click(); assert(await page.locator('#v6TopPanel').isVisible());
     console.log('PASS mobile menu/panel/no overflow');await page.locator('#v6TopToggle').click();await page.setViewportSize({width:1440,height:1000});await page.evaluate(()=>testMap.invalidateSize());
+    if(await page.evaluate(()=>v6OpportunityData.some(f=>f.properties.county==='Comal'))){
+      await page.locator('#v6TopToggle').click();
+      await page.locator('#v6CountyFilter').selectOption('Comal');
+      await page.waitForFunction(()=>Array.from(document.querySelectorAll('.v6OppCard .v9County')).every(el=>el.textContent.trim()==='COMAL'));
+      assert((await page.locator('.v6OppCard').count())>0,'Comal filter should return regional candidates');
+      await page.locator('#v6CountyFilter').selectOption('');
+      await page.locator('#v6TopToggle').click();
+      console.log('PASS county filter');
+    }
     }
     await page.locator('.leaflet-control-layers').hover();
     for (const removed of ['Assemblage Opportunities','Preliminary Plats','Future Land Use','Parcel Search Results','Legacy Parcel References','Legacy References']) {
