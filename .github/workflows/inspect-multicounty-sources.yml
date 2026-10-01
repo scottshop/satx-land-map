@@ -1,0 +1,42 @@
+name: Inspect multicounty parcel sources
+
+on:
+  push:
+    branches:
+      - acquisition/v3-multicounty-20261001
+    paths:
+      - ".github/workflows/inspect-multicounty-sources.yml"
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Inspect parcel services
+        run: |
+          python - <<'PY'
+          import json, urllib.request
+          urls={
+            "comal":"https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/arcgis/rest/services/COMAL_PARCELS/FeatureServer/0",
+            "guadalupe_legacy":"https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer/83",
+            "nbu_live_root":"https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/NBU_Parcels_live/FeatureServer",
+            "gbra_live_root":"https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/GBRA_Parcels_live/FeatureServer",
+          }
+          for name,url in urls.items():
+            print("\n###",name,url)
+            try:
+              with urllib.request.urlopen(url+"?f=pjson",timeout=20) as r:
+                d=json.load(r)
+              print("name",d.get("name"),"description",d.get("description"))
+              print("layers",[(x.get("id"),x.get("name")) for x in d.get("layers",[])])
+              print("lastEditDate",d.get("editingInfo",{}).get("lastEditDate"),"dataLastEditDate",d.get("editingInfo",{}).get("dataLastEditDate"))
+              fields=d.get("fields",[])
+              if fields:
+                print("fields",[(x.get("name"),x.get("alias")) for x in fields[:80]])
+            except Exception as e:
+              print("ERROR",repr(e))
+          PY
