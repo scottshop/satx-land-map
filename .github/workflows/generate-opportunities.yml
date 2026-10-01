@@ -1,4 +1,4 @@
-name: Generate Acquisition Opportunities V2
+name: Generate Acquisition Opportunities V3
 
 on:
   push:
@@ -34,16 +34,20 @@ jobs:
         run: |
           python -m py_compile scripts/generate_opportunities.py
           python - <<'PY'
-          from scripts.generate_opportunities import road_importance
+          from scripts.generate_opportunities import road_importance, clean_road_label
           assert road_importance("GERONIMO LOOP","") < 3
           assert road_importance("REEVES LOOP","") < 3
+          assert road_importance("CR01503527-KG","") == 0
+          assert road_importance("1671408052","") == 0
           assert road_importance("LOOP 1604","") == 3
           assert road_importance("IH 10 E ACCESS RD","") == 3
           assert road_importance("STATE HWY 211 S","") == 3
-          print("Road hierarchy checks passed")
+          assert clean_road_label("FM1102-KG") == "FM 1102"
+          assert clean_road_label("IH0035-RP") == "IH 35"
+          print("V3 road hierarchy checks passed")
           PY
 
-      - name: Generate Acquisition Mode V2 datasets
+      - name: Generate Acquisition Mode V3 datasets
         run: python scripts/generate_opportunities.py
 
       - name: Validate generated acquisition data
@@ -53,16 +57,22 @@ jobs:
           from pathlib import Path
           d=json.loads(Path("data/opportunity_parcels.geojson").read_text())
           m=json.loads(Path("data/opportunity_metadata.json").read_text())
-          assert m.get("version")=="Acquisition Mode V2"
+          assert m.get("version")=="Acquisition Mode V3 Multi-County", m.get("version")
           assert d["type"]=="FeatureCollection"
           assert len(d["features"])>=5, f"Only {len(d['features'])} qualified parcels"
-          excluded=re.compile(r"(HEB GROCERY|WAL.?MART|COSTCO|CITY OF|BEXAR COUNTY|COUNTY OF|SCHOOL DISTRICT|ISD|CHURCH|MINISTR|DIOCESE|BOYSVILLE|KB HOME|CONTINENTAL HOMES|DR HORTON|LENNAR|PULTE|CENTEX|MERITAGE|PERRY HOMES)",re.I)
+          excluded=re.compile(r"(HEB GROCERY|WAL.?MART|COSTCO|CITY OF|COUNTY OF|SCHOOL DISTRICT|ISD|CHURCH|MINISTR|DIOCESE|BOYSVILLE|PREGNANCY CARE|KB HOME|CONTINENTAL HOMES|DR HORTON|LENNAR|PULTE|CENTEX|MERITAGE|PERRY HOMES|LOVE.?S TRAVEL|QUIKTRIP|QT SOUTH|DOGGETT|FREIGHTLINER|COUNTERTOPS|LOCK AWAY|SELF STORAGE)",re.I)
+          ids=set()
           for f in d["features"]:
               p=f["properties"]
+              cid=p.get("candidate_id")
+              assert cid and cid not in ids, cid
+              ids.add(cid)
+              county=p.get("county")
+              assert county in {"Bexar","Comal","Guadalupe"}, county
               assert p["acres"]>=3
               assert p["node_edge_miles"]<=1.0
               assert p["flood_confidence"]=="SCREENED"
-              assert p.get("bcad_geometry_verified") is True
+              assert p.get("cad_geometry_verified") is True, cid
               assert p["acquisition_category"] in {"PRIORITY","WATCH","EARLY SPECULATION"}
               assert 0<=p["confidence_score"]<=100
               assert p.get("parcel_execution_score") is not None
@@ -70,11 +80,23 @@ jobs:
               assert p.get("parcel_component_scores")
               assert not excluded.search(p.get("owner","")), p.get("owner")
               if p["acquisition_category"]=="PRIORITY":
-                  assert p.get("utility_confidence")=="PROXY"
-                  assert p.get("major_road_signal") is True
+                  assert county=="Bexar", cid
+                  assert p.get("parcel_freshness")=="RECENT", cid
+                  assert p.get("utility_confidence")=="PROXY", cid
+                  assert p.get("major_road_signal") is True, cid
+                  assert float(p.get("frontage_ft_proxy",0))>=200 or p.get("corner_signal")=="STRONG", cid
+                  assert float(p.get("parcel_opportunity_score",0))>=78, cid
+              if county=="Comal":
+                  assert p.get("parcel_freshness")=="AGING", cid
+                  assert p["acquisition_category"]!="PRIORITY", cid
+              if county=="Guadalupe":
+                  assert p.get("parcel_freshness")=="STALE", cid
+                  assert p["acquisition_category"]!="PRIORITY", cid
+                  if p["acquisition_category"]=="WATCH":
+                      assert p.get("live_secondary_verified") is True, cid
           rows=list(csv.DictReader(open("data/tracts_to_review.csv")))
           assert len(rows)==len(d["features"])
-          print("Validated",len(rows),"Acquisition V2 parcels")
+          print("Validated",len(rows),"Acquisition V3 parcels; county mix",m.get("highlighted_by_county"))
           PY
 
       - name: Commit generated datasets
@@ -87,7 +109,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated changes."
           else
-            git commit -m "Refresh Acquisition Mode V2 datasets"
+            git commit -m "Refresh Acquisition Mode V3 datasets"
             git push origin HEAD:${{ github.ref_name }}
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
