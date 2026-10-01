@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T21:01:42.552193+00:00",
+  "generated_at": "2026-10-01T21:11:11.492532+00:00",
   "generator": "scripts/generate_opportunities.py",
   "version": "Acquisition Mode V3 Multi-County",
   "node_count": 24,
@@ -11,18 +11,18 @@
   },
   "candidate_count": 380,
   "fema_screened_count": 141,
-  "highlighted_count": 36,
+  "highlighted_count": 12,
   "highlighted_by_county": {
-    "Bexar": 27,
+    "Bexar": 0,
     "Comal": 9,
-    "Guadalupe": 0
+    "Guadalupe": 3
   },
-  "priority_count": 11,
-  "watch_count": 25,
-  "early_speculation_count": 0,
+  "priority_count": 0,
+  "watch_count": 9,
+  "early_speculation_count": 3,
   "assemblage_count": 11,
   "sources": {
-    "parcels_bexar": "Bexar Public Works candidate universe; finalists re-verified through SARA/BCAD",
+    "parcels_bexar": "Bexar Public Works candidate universe; finalists batch re-verified through SARA/BCAD",
     "parcels_comal": "Comal CAD public ArcGIS parcel layer; data edit date November 22, 2024",
     "parcels_guadalupe": "Guadalupe CAD / TxGIO public parcel extract; February 2022 vintage; secondary GBRA project-feed corroboration attempted",
     "plats": "Bexar Public Works plat stages; comparable countywide plat feed not yet loaded for Comal/Guadalupe",
@@ -33,7 +33,11 @@
     "land_use": "City of San Antonio Future Land Use where available",
     "utilities": "Mapped existing sewer proximity: SAWS (Bexar), NBU (Comal/New Braunfels), GBRA (Guadalupe); capacity unverified"
   },
-  "errors": [],
+  "errors": [
+    "sara-bcad-batch: https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query: HTTPSConnectionPool(host='gis.sara-tx.org', port=443): Max retries exceeded with url: /ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query?f=geojson&where=Prop_id+IN+%28200735%2C201186%2C201209%2C201245%2C209006%2C209143%2C209152%2C209164%2C209214%2C310261%2C327922%2C327984%2C348230%2C348240%2C354134%2C618977%2C619294%2C685394%2C685399%2C685431%2C685535%2C1004521%2C1008643%2C1050505%2C1057738%2C1095142%2C1109564%2C1114434%2C1114436%2C1180700%2C1220148%2C1260458%2C1260459%2C1280325%2C1288929%2C1307782%2C1325733%2C1346455%2C1401059%2C1437842%29&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=500&resultOffset=0 (Caused by ConnectTimeoutError(<HTTPSConnection(host='gis.sara-tx.org', port=443) at 0x7f9986f6bb90>, 'Connection to gis.sara-tx.org timed out. (connect timeout=30)'))",
+    "sara-bcad-batch: https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query: HTTPSConnectionPool(host='gis.sara-tx.org', port=443): Max retries exceeded with url: /ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query?f=geojson&where=Prop_id+IN+%28192457%2C312393%2C322829%2C322832%2C323261%2C339359%2C339362%2C339366%2C339369%2C339370%2C339373%2C339374%2C339644%2C340040%2C340041%2C340042%2C340081%2C618978%2C619249%2C619314%2C685395%2C685398%2C685406%2C685407%2C685409%2C685462%2C685465%2C694744%2C694750%2C990673%2C1113105%2C1168231%2C1227561%2C1245396%2C1269918%2C1286015%2C1414977%2C1437714%2C1437715%29&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=500&resultOffset=0 (Caused by ConnectTimeoutError(<HTTPSConnection(host='gis.sara-tx.org', port=443) at 0x7f997f470c20>, 'Connection to gis.sara-tx.org timed out. (connect timeout=30)'))",
+    "nbu-live-batch: https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/NBU_Parcels_live/FeatureServer/0/query: {'code': 400, 'message': '', 'details': [\"'outFields' parameter is invalid\"]}"
+  ],
   "source_feature_counts": {
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/4/query": 62,
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/5/query": 247,
@@ -42,8 +46,8 @@
     "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Hines_SiteSelection/MapServer/512/query": 4866,
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/8/query": 8798,
     "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_Roadways/FeatureServer/0/query": 8067,
-    "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_AADT_Annuals_(Public_View)/FeatureServer/0/query": 233,
     "https://services.arcgis.com/g1fRTDLeMgspWrYp/ArcGIS/rest/services/Streets/FeatureServer/0/query": 13380,
+    "https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_AADT_Annuals_(Public_View)/FeatureServer/0/query": 233,
     "https://maps.bexar.org/arcgis/rest/services/PW/CountyRoads/MapServer/0/query": 3644,
     "https://services.arcgis.com/g1fRTDLeMgspWrYp/ArcGIS/rest/services/Major_Thoroughfare_Plan__MTP/FeatureServer/0/query": 266,
     "https://services.arcgis.com/g1fRTDLeMgspWrYp/arcgis/rest/services/Future_Land_Use/FeatureServer/4/query": 5132,
@@ -52,12 +56,10 @@
     "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/172/query": 0,
     "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Building_Permits_Issued_Past_180_Days/FeatureServer/0/query": 2927,
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/2/query": 1401,
-    "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer/83/query": 416,
-    "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/arcgis/rest/services/COMAL_PARCELS/FeatureServer/0/query": 482,
+    "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer/83/query": 385,
+    "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/arcgis/rest/services/COMAL_PARCELS/FeatureServer/0/query": 465,
     "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query": 1508,
-    "https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query": 79,
-    "https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/NBU_Parcels_live/FeatureServer/0/query": 0,
-    "https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/GBRA_Parcels_live/FeatureServer/0/query": 0
+    "https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/GBRA_Parcels_live/FeatureServer/0/query": 19
   },
   "methodology": {
     "architecture": "Node first -> county parcel universe -> hard filters -> 60% location / 40% parcel execution -> confidence -> category",
