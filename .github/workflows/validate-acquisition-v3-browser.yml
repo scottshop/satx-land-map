@@ -1,0 +1,34 @@
+name: Validate Acquisition V3 browser
+
+on:
+  push:
+    branches:
+      - acquisition/v3-ui-20261001
+    paths:
+      - "index.html"
+      - "tests/map-smoke.cjs"
+      - ".github/workflows/validate-acquisition-v3-browser.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Install Playwright
+        run: npm install --no-save playwright@1.55.0
+      - name: Require Chrome
+        run: test -x /usr/bin/google-chrome
+      - name: Core multicounty browser test
+        run: node tests/map-smoke.cjs
+      - name: Audit live GIS endpoints
+        run: python3 tests/audit-sources.py
+      - name: Live GIS click test
+        run: TEST_STAGE=gis node tests/map-smoke.cjs
