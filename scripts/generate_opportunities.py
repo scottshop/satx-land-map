@@ -144,7 +144,7 @@ def arc_query(url, *, where="1=1", geom=None, geom_type="esriGeometryPoint",
     for _ in range(8):
         params["resultOffset"]=str(offset)
         data=None; last_error=None
-        for attempt in range(3):
+        for attempt in range(4):
             try:
                 r=session.get(url,params=params,timeout=timeout)
                 r.raise_for_status()
@@ -152,7 +152,7 @@ def arc_query(url, *, where="1=1", geom=None, geom_type="esriGeometryPoint",
                 break
             except Exception as e:
                 last_error=e
-                if attempt<2: time.sleep(.7*(attempt+1))
+                if attempt<3: time.sleep(1.0*(2**attempt))
         if data is None:
             raise RuntimeError(f"{url}: {last_error}")
         if "error" in data:
@@ -237,6 +237,9 @@ def road_class(p):
 
 def road_importance(name,cls):
     n=(name or "").upper().strip(); t=(cls or "").upper()
+    # Internal GIS segment IDs are not evidence of usable public frontage.
+    if re.match(r"^(CS|CR)\d+(?:-[A-Z0-9]+)?$",n.replace(" ","")):
+        return 0
     # Numbered routes and true highway designations. Do not treat every street ending in "Loop" as a highway.
     if re.search(r"\b(IH|I-|INTERSTATE)\s*[- ]?\d+\b|\bUS\s*(HWY|HIGHWAY)?\s*\d+\b|\bSH\s*\d+\b|\bSTATE\s+(HWY|HIGHWAY)\s*\d+\b|\bFM\s*\d+\b|\bLOOP\s*\d+\b",n):
         return 3
@@ -1178,7 +1181,7 @@ def main():
 
     verify_pool=[x for x in screened if x.get("eligible")]
     print(f"County parcel verification on all {len(verify_pool)} eligible finalists...")
-    with ThreadPoolExecutor(max_workers=3) as ex:
+    with ThreadPoolExecutor(max_workers=2) as ex:
         list(ex.map(verify_candidate,verify_pool))
     for cand in screened:
         cand["confidence_score"]=candidate_confidence(cand)
