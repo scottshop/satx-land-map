@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T20:42:25.565478+00:00",
+  "generated_at": "2026-10-01T21:01:42.552193+00:00",
   "generator": "scripts/generate_opportunities.py",
   "version": "Acquisition Mode V3 Multi-County",
   "node_count": 24,
@@ -17,8 +17,8 @@
     "Comal": 9,
     "Guadalupe": 0
   },
-  "priority_count": 12,
-  "watch_count": 24,
+  "priority_count": 11,
+  "watch_count": 25,
   "early_speculation_count": 0,
   "assemblage_count": 11,
   "sources": {
@@ -29,7 +29,7 @@
     "permits": "City of San Antonio building permits past 180 days; regional counties have lower permit-data confidence",
     "traffic": "TxDOT AADT Annuals Public View",
     "roads": "TxDOT statewide roadways plus CoSA/Bexar local road sources where available",
-    "flood": "FEMA NFHL flood hazard polygons",
+    "flood": "FEMA NFHL flood hazard polygons; fetched by node envelope and intersected parcel-by-parcel locally",
     "land_use": "City of San Antonio Future Land Use where available",
     "utilities": "Mapped existing sewer proximity: SAWS (Bexar), NBU (Comal/New Braunfels), GBRA (Guadalupe); capacity unverified"
   },
@@ -54,7 +54,7 @@
     "https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer/2/query": 1401,
     "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer/83/query": 416,
     "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/arcgis/rest/services/COMAL_PARCELS/FeatureServer/0/query": 482,
-    "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query": 347,
+    "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query": 1508,
     "https://gis.sara-tx.org/ags1/rest/services/FW_Bexar/BCAD_Parcels_PROD/MapServer/0/query": 79,
     "https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/NBU_Parcels_live/FeatureServer/0/query": 0,
     "https://services6.arcgis.com/OCHBpyHMBFOeBqny/ArcGIS/rest/services/GBRA_Parcels_live/FeatureServer/0/query": 0
