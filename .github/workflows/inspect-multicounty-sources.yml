@@ -51,10 +51,16 @@ jobs:
           from pyproj import Transformer
           URL="https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/TxDOT_Roadways/FeatureServer/0/query"
           nodes=[
-            ("I-10 / SH 46 Seguin",29.579,-97.949,("IH",10),("SH",46)),
-            ("SH 46 / FM 1863",29.750,-98.270,("SH",46),("FM",1863)),
+            ("Culebra / SH 211",29.524162,-98.802373,("FM",471),("SH",211)),
+            ("I-10 / Loop 1604 East",29.514,-98.312,("IH",10),("LP",1604)),
             ("US 90 / SH 211",29.380,-98.800,("US",90),("SH",211)),
             ("Potranco / SH 211",29.4214,-98.7826,("FM",1957),("SH",211)),
+            ("FM 1518 / I-10",29.489044,-98.223251,("FM",1518),("IH",10)),
+            ("FM 1516 / I-10 East",29.514,-98.252,("FM",1516),("IH",10)),
+            ("US 90 / Loop 1604 West",29.394,-98.682,("US",90),("LP",1604)),
+            ("US 90 / FM 471 Castroville",29.356,-98.879,("US",90),("FM",471)),
+            ("I-10 / SH 46 Seguin",29.579,-97.949,("IH",10),("SH",46)),
+            ("SH 46 / FM 1863",29.750,-98.270,("SH",46),("FM",1863)),
           ]
           def key(v):
             import re
