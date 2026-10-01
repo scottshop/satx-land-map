@@ -84,6 +84,8 @@ CATALYSTS = [
  {"name":"Culebra / SH 211 H-E-B","lat":29.524162,"lng":-98.802373},
  {"name":"I-10 / Loop 1604 East H-E-B","lat":29.514,"lng":-98.312},
  {"name":"Mayfair Costco","lat":29.747031,"lng":-98.056017},
+ {"name":"Veramendi mixed-use / future Market Center","lat":29.736,"lng":-98.179},
+ {"name":"Seguin Exchange / planned Target","lat":29.579,"lng":-97.949},
  {"name":"H-E-B Foster campus","lat":29.41984,"lng":-98.36083},
 ]
 
@@ -91,6 +93,7 @@ PUBLIC_OWNER = re.compile(r"(CITY OF|COUNTY OF|(BEXAR|COMAL|GUADALUPE|MEDINA|KEN
 ANCHOR_OWNER = re.compile(r"(HEB GROCERY|H E B GROCERY|WAL.?MART|WALMART|COSTCO|TARGET CORPORATION|LOWE.?S|HOME DEPOT)", re.I)
 INSTITUTIONAL_OWNER = re.compile(r"(CHURCH|MINISTR|TEMPLE|DIOCESE|PARISH|SYNAGOGUE|MOSQUE|FOUNDATION|BOYSVILLE|YMCA|Y W C A|SALVATION ARMY|BAPTIST|METHODIST|CATHOLIC|LUTHERAN|PRESBYTERIAN|EPISCOPAL)", re.I)
 RESIDENTIAL_BUILDER_OWNER = re.compile(r"(KB HOME|KB HOMES|CONTINENTAL HOMES|D\s*R\s*HORTON|DR HORTON|LENNAR|PULTE|CENTEX|MERITAGE|PERRY HOMES|CASTLEROCK|CHESMAR|DAVID WEEKLEY|TOLL BROTHERS|M/I HOMES|MI HOMES)", re.I)
+OPERATING_USER_OWNER = re.compile(r"(LOVE.?S TRAVEL|QUIKTRIP|QT SOUTH|BUC.?EE|PILOT|FLYING J|DOGGETT|FREIGHTLINER|COUNTERTOPS|MURPHY USA|7.?ELEVEN|CIRCLE K|STRIPES)", re.I)
 
 T4326_2278 = Transformer.from_crs("EPSG:4326","EPSG:2278",always_xy=True).transform
 
@@ -504,7 +507,7 @@ def score_node(node,support):
     if county!="Bexar":
         # Comparable plat/permit feeds are not yet loaded countywide outside Bexar.
         # Use the curated corridor prior conservatively, and cap confidence.
-        node_score=.70*evidence_score+.30*float(node.get("base",50))
+        node_score=.55*evidence_score+.45*float(node.get("base",50))
         confidence=min(confidence,68)
         evidence_model="Regional corridor prior + statewide road/traffic; county housing feed incomplete"
 
@@ -553,7 +556,8 @@ def make_candidate(feature,node_result):
     rec=normalized_parcel(feature,county)
     owner=rec.get("owner","")
     if not rec or (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
-            or INSTITUTIONAL_OWNER.search(owner) or RESIDENTIAL_BUILDER_OWNER.search(owner)): return None
+            or INSTITUTIONAL_OWNER.search(owner) or RESIDENTIAL_BUILDER_OWNER.search(owner)
+            or OPERATING_USER_OWNER.search(owner)): return None
     reported_acres=float(rec.get("acres") or 0)
     g=feature_shape(feature)
     if not g or g.is_empty: return None
@@ -645,7 +649,10 @@ def road_quality(c,support):
     elif collectors: score=70
     elif meaningful: score=60
     else: score=20
-    return round(score,1),[x[0] for x in unique[:4]],round(frontage,0),strong_corner,major,mtp_cross
+    display=[]
+    for item in primary+collectors+meaningful+unique:
+        if item[0] not in display: display.append(item[0])
+    return round(score,1),display[:4],round(frontage,0),strong_corner,major,mtp_cross
 def flood_quality(c,support):
     poly=c["_geom2278"]; area=max(1,poly.area)
     sfha_area=fw_area=0
@@ -715,21 +722,38 @@ def land_use_quality(c,support):
             names.append(name); best=max(best,flu_score(name))
     return round(best,1),names[:3]
 
-def traffic_for_parcel(c,support):
-    best=None
+def route_key(name):
+    s=str(name or "").upper()
+    m=re.search(r"\b(IH|I|US|SH|FM|LOOP)\s*[- ]?0*(\d+)\b",s)
+    if not m: return ""
+    p="IH" if m.group(1)=="I" else m.group(1)
+    return f"{p}:{int(m.group(2))}"
+
+def traffic_for_parcel(c,support,frontage_roads=None):
+    matched=[]; fallback=[]
+    parcel=c["_geom2278"]
+    frontage_keys={route_key(x) for x in (frontage_roads or []) if route_key(x)}
     for f in support["traffic"]:
         g=feature_shape(f)
         if not g: continue
-        ctr=g.centroid
-        d=haversine(c["centroid_lat"],c["centroid_lng"],ctr.y,ctr.x)
-        p=props(f); cur=nval(p,"AADT_RPT_QTY","AADT_RPT_CURR_QTY","AADT_2025","AADT"); old=nval(p,"AADT_RPT_HIST_05_QTY","AADT_2020")
+        gp=proj(g)
+        if not gp: continue
+        d=parcel.distance(gp)/5280
+        p=props(f)
+        cur=nval(p,"AADT_RPT_QTY","AADT_RPT_CURR_QTY","AADT_2025","AADT")
+        old=nval(p,"AADT_RPT_HIST_05_QTY","AADT_2020")
         if cur<=0: continue
-        if best is None or d<best[0]:
-            growth=((cur-old)/old*100) if old else 0
-            best=(d,cur,growth)
-    if not best: return 0,0,99
+        growth=((cur-old)/old*100) if old else 0
+        rkey=route_key(road_name(p))
+        rec=(d,cur,growth,rkey)
+        fallback.append(rec)
+        if rkey and rkey in frontage_keys and d<=1.25:
+            matched.append(rec)
+    pool=matched if matched else fallback
+    if not pool: return 0,0,99
+    # Same-route station wins; among those use the closest count station to the parcel.
+    best=min(pool,key=lambda x:x[0])
     return int(best[1]),round(best[2],1),round(best[0],2)
-
 def value_score(c):
     v=c["assessed_value"]/c["acres"] if c["acres"] else 0
     c["assessed_value_per_acre"]=round(v,0)
@@ -832,7 +856,7 @@ def enrich_candidate(c,support,node_result):
     flood_score,flood_pct,fw_pct,zones=55,None,None,[]
     flood_confidence="PENDING"
     flu,flu_names=land_use_quality(c,support)
-    aadt,growth,aadt_dist=traffic_for_parcel(c,support)
+    aadt,growth,aadt_dist=traffic_for_parcel(c,support,roads)
     val=value_score(c)
     catalyst_d,catalyst_name=nearest_catalyst(c["centroid_lat"],c["centroid_lng"])
     utility_score,utility_conf,utility_ft,utility_provider,utility_snapshot=utility_for_parcel(c,support)
@@ -984,7 +1008,8 @@ def verify_candidate(c):
         c["owner"]=verified
         c["owner_key"]=normalize_owner(verified)
         if (PUBLIC_OWNER.search(verified) or ANCHOR_OWNER.search(verified)
-                or INSTITUTIONAL_OWNER.search(verified) or RESIDENTIAL_BUILDER_OWNER.search(verified)):
+                or INSTITUTIONAL_OWNER.search(verified) or RESIDENTIAL_BUILDER_OWNER.search(verified)
+                or OPERATING_USER_OWNER.search(verified)):
             c["eligible"]=False
             c["verification_exclusion"]="verified owner falls in an excluded ownership class"
     c["confidence_score"]=candidate_confidence(c)
@@ -1087,8 +1112,8 @@ def main():
     active_nodes=[]
     county_rules={
       "Bexar":{"min_score":55,"min_conf":55,"cap":10},
-      "Comal":{"min_score":48,"min_conf":45,"cap":3},
-      "Guadalupe":{"min_score":48,"min_conf":45,"cap":3},
+      "Comal":{"min_score":45,"min_conf":45,"cap":3},
+      "Guadalupe":{"min_score":45,"min_conf":45,"cap":3},
     }
     for county,rule in county_rules.items():
         pool=[x for x in node_results if x.get("county")==county and x.get("search_supported")
