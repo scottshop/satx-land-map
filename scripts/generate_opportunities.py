@@ -960,11 +960,17 @@ def verify_candidate(c):
                 c["secondary_verification_source"]="GBRA live project parcel feed"
                 c["verified_owner"]=live_owner
 
+    verified=c.get("verified_owner")
+    if verified:
+        c["owner"]=verified
+        c["owner_key"]=normalize_owner(verified)
+        if (PUBLIC_OWNER.search(verified) or ANCHOR_OWNER.search(verified)
+                or INSTITUTIONAL_OWNER.search(verified) or RESIDENTIAL_BUILDER_OWNER.search(verified)):
+            c["eligible"]=False
+            c["verification_exclusion"]="verified owner falls in an excluded ownership class"
     c["confidence_score"]=candidate_confidence(c)
     classify_candidate(c)
     return c
-else_dummy = None
-
 else_dummy = None
 
 def select_top(candidates,limit=36,node_cap=3):
@@ -1044,27 +1050,38 @@ def main():
                 sup=fut.result()
             except Exception as e:
                 errors.append(f"node-support {node['name']}: {e}")
-                sup={"plats":[],"permits":[],"traffic":[],"roads":[],"mtp":[],"fema":[],"flu":[],"cip":[]}
+                county=node_county(node)
+                sup={"county":county,"plats":[],"permits":[],"traffic":[],"roads":[],"mtp":[],"fema":[],"flu":[],
+                     "utility":[],"utility_provider":"","utility_snapshot":""}
             supports[node["id"]]=sup
             node_results.append(score_node(node,sup))
             print(f"[{idx}/{len(NODES)}] {node['name']}")
-    print("Fetching recent permits once and assigning to nodes...")
+
+    print("Fetching recent CoSA permits once and assigning where geographically relevant...")
     recent_permits=fetch_recent_permits()
     assign_permits_to_nodes(recent_permits,supports)
-    # Re-score nodes now that permit momentum has been assigned.
     node_results=[score_node(node,supports[node["id"]]) for node in NODES]
     node_results.sort(key=lambda x:x["score"],reverse=True)
     node_by={x["id"]:x for x in node_results}
-    # Acquisition Mode V2 searches parcels only after identifying credible nodes.
-    active_nodes=[x for x in node_results if x["score"]>=55 and x.get("confidence_score",0)>=55][:14]
-    if len(active_nodes)<8:
-        active_nodes=node_results[:min(12,len(node_results))]
+
+    # Preserve quality while preventing Bexar from crowding out the regional counties.
+    active_nodes=[]
+    county_rules={
+      "Bexar":{"min_score":55,"min_conf":55,"cap":10},
+      "Comal":{"min_score":48,"min_conf":45,"cap":3},
+      "Guadalupe":{"min_score":48,"min_conf":45,"cap":3},
+    }
+    for county,rule in county_rules.items():
+        pool=[x for x in node_results if x.get("county")==county and x.get("search_supported")
+              and x["score"]>=rule["min_score"] and x.get("confidence_score",0)>=rule["min_conf"]]
+        active_nodes.extend(pool[:rule["cap"]])
     active_ids={x["id"] for x in active_nodes}
     for n in node_results:
         n["selected_for_parcel_search"]=n["id"] in active_ids
-    print("Active parcel-search nodes:",", ".join(x["name"] for x in active_nodes))
+    active_nodes.sort(key=lambda x:x["score"],reverse=True)
+    print("Active parcel-search nodes:",", ".join(f"{x['county']}:{x['name']}" for x in active_nodes))
 
-    print("Querying parcel universe around selected nodes in parallel...")
+    print("Querying parcel universes around selected nodes in parallel...")
     by_pid={}
     with ThreadPoolExecutor(max_workers=6) as ex:
         futs={ex.submit(query_parcels,node):node for node in active_nodes}
@@ -1076,36 +1093,48 @@ def main():
             for feat in feats:
                 cand=make_candidate(feat,node)
                 if not cand: continue
-                old=by_pid.get(cand["prop_id"])
+                key=cand["candidate_id"]
+                old=by_pid.get(key)
                 if old is None or cand["preliminary_score"]>old["preliminary_score"]:
-                    by_pid[cand["prop_id"]]=cand
-    candidates=sorted(by_pid.values(),key=lambda x:x["preliminary_score"],reverse=True)[:180]
-    print(f"Base candidates: {len(candidates)}")
+                    by_pid[key]=cand
 
-    print("Enriching parcel quality...")
+    all_candidates=list(by_pid.values())
+    candidates=[]
+    county_candidate_caps={"Bexar":180,"Comal":100,"Guadalupe":100}
+    for county,cap in county_candidate_caps.items():
+        county_pool=sorted([x for x in all_candidates if x.get("county")==county],
+                           key=lambda x:x["preliminary_score"],reverse=True)[:cap]
+        candidates.extend(county_pool)
+        print(f"Base candidates {county}: {len(county_pool)}")
+    candidates.sort(key=lambda x:x["preliminary_score"],reverse=True)
+    print(f"Base candidates total: {len(candidates)}")
+
+    print("Enriching parcel execution quality...")
     enriched=[]
     for i,cand in enumerate(candidates,1):
-        if i%20==0: print(f"  {i}/{len(candidates)}")
+        if i%25==0: print(f"  {i}/{len(candidates)}")
         enriched.append(enrich_candidate(cand,supports[cand["node_id"]],node_by[cand["node_id"]]))
 
-    provisional=sorted([x for x in enriched if x.get("eligible_pre_flood")],
-                       key=lambda x:x["parcel_opportunity_score"],reverse=True)[:100]
+    provisional=[]
+    fema_caps={"Bexar":90,"Comal":45,"Guadalupe":45}
+    for county,cap in fema_caps.items():
+        pool=sorted([x for x in enriched if x.get("county")==county and x.get("eligible_pre_flood")],
+                    key=lambda x:x["parcel_opportunity_score"],reverse=True)[:cap]
+        provisional.extend(pool)
     print(f"Parcel-level FEMA screening on {len(provisional)} provisional candidates...")
     with ThreadPoolExecutor(max_workers=3) as ex:
         screened=list(ex.map(screen_fema_candidate,provisional))
 
-    # Verify a broader finalist pool against SARA/BCAD before category/rank selection.
-    sara_pool=sorted([x for x in screened if x.get("eligible")],
-                     key=lambda x:x["parcel_opportunity_score"],reverse=True)
-    print(f"SARA/BCAD verification on all {len(sara_pool)} eligible finalists...")
+    verify_pool=[x for x in screened if x.get("eligible")]
+    print(f"County parcel verification on all {len(verify_pool)} eligible finalists...")
     with ThreadPoolExecutor(max_workers=5) as ex:
-        list(ex.map(sara_enrich,sara_pool))
+        list(ex.map(verify_candidate,verify_pool))
     for cand in screened:
         cand["confidence_score"]=candidate_confidence(cand)
         classify_candidate(cand)
 
-    top=select_top(screened,30,3)
-    print(f"Acquisition Mode V2 highlighted parcels: {len(top)}")
+    top=select_top(screened,36,3)
+    print(f"Acquisition Mode V3 highlighted parcels: {len(top)}")
     category_order={"PRIORITY":0,"WATCH":1,"EARLY SPECULATION":2}
     top.sort(key=lambda x:(category_order.get(x.get("acquisition_category"),9),
                            -x["parcel_opportunity_score"],-x.get("confidence_score",0)))
@@ -1116,21 +1145,24 @@ def main():
         for i,cand in enumerate(top,1)
     ]}
     (DATA/"opportunity_parcels.geojson").write_text(json.dumps(fc,indent=2))
+
     all_fc={"type":"FeatureCollection","features":[
         {"type":"Feature","geometry":cand["feature"]["geometry"],"properties":public_props(cand)}
-        for cand in sorted(screened,key=lambda x:x["parcel_opportunity_score"],reverse=True)[:120]
+        for cand in sorted(screened,key=lambda x:x["parcel_opportunity_score"],reverse=True)[:180]
     ]}
     (DATA/"opportunity_parcels_all.geojson").write_text(json.dumps(all_fc,indent=2))
     (DATA/"opportunity_nodes.json").write_text(json.dumps(node_results,indent=2))
     ass=assemblages(screened)
     (DATA/"assemblages.geojson").write_text(json.dumps({"type":"FeatureCollection","features":ass},indent=2))
 
-    cols=["rank","acquisition_category","parcel_opportunity_score","confidence_score","parcel_execution_score",
-          "node_score","node_class","owner","prop_id","situs","acres","usable_acres_proxy","node_name","node_edge_miles",
-          "frontage_roads","frontage_ft_proxy","corner_signal","raw_score","shape_score","future_residential_lots_nearby",
-          "aadt","aadt_5yr_growth_pct","nearest_retail_catalyst","retail_catalyst_miles","flood_pct","floodway_pct",
-          "assessed_value","assessed_value_per_acre","land_value_per_acre","last_deed_date","hold_years",
-          "utility_confidence","decision_summary","why_this_tract","main_risks","verification_notes"]
+    cols=["rank","acquisition_category","county","candidate_id","parcel_opportunity_score","confidence_score",
+          "parcel_execution_score","node_score","node_class","owner","prop_id","situs","acres","usable_acres_proxy",
+          "node_name","node_edge_miles","frontage_roads","frontage_ft_proxy","corner_signal","raw_score","shape_score",
+          "future_residential_lots_nearby","aadt","aadt_5yr_growth_pct","nearest_retail_catalyst","retail_catalyst_miles",
+          "flood_pct","floodway_pct","parcel_source","parcel_snapshot","parcel_freshness","cad_geometry_verified",
+          "live_secondary_verified","assessed_value","assessed_value_per_acre","land_value_per_acre","last_deed_date",
+          "hold_years","utility_provider","utility_distance_ft","utility_confidence","decision_summary","why_this_tract",
+          "main_risks","verification_notes"]
     with (DATA/"tracts_to_review.csv").open("w",newline="") as fh:
         w=csv.DictWriter(fh,fieldnames=cols); w.writeheader()
         for cand in top:
@@ -1139,39 +1171,45 @@ def main():
                 if isinstance(row.get(k),list): row[k]=" | ".join(map(str,row[k]))
             w.writerow(row)
 
+    by_county={county:sum(1 for x in top if x.get("county")==county) for county in ("Bexar","Comal","Guadalupe")}
+    active_by_county={county:sum(1 for x in active_nodes if x.get("county")==county) for county in ("Bexar","Comal","Guadalupe")}
     meta={
       "generated_at":datetime.now(timezone.utc).isoformat(),
       "generator":"scripts/generate_opportunities.py",
-      "version":"Acquisition Mode V2",
-      "node_count":len(node_results),"active_node_count":len(active_nodes),
+      "version":"Acquisition Mode V3 Multi-County",
+      "node_count":len(node_results),"active_node_count":len(active_nodes),"active_nodes_by_county":active_by_county,
       "candidate_count":len(enriched),"fema_screened_count":len(screened),"highlighted_count":len(top),
+      "highlighted_by_county":by_county,
       "priority_count":sum(1 for x in top if x.get("acquisition_category")=="PRIORITY"),
       "watch_count":sum(1 for x in top if x.get("acquisition_category")=="WATCH"),
       "early_speculation_count":sum(1 for x in top if x.get("acquisition_category")=="EARLY SPECULATION"),
       "assemblage_count":len(ass),
       "sources":{
-        "parcels":"Bexar County Public Works PlatsMDPs parcel layer; top parcels optionally re-verified against SARA/BCAD",
-        "plats":"Bexar County Public Works Plat Applications / Working / Staff Accepted / CC Approved / Recorded",
-        "permits":"City of San Antonio Building Permits Issued Past 180 Days",
+        "parcels_bexar":"Bexar Public Works candidate universe; finalists re-verified through SARA/BCAD",
+        "parcels_comal":"Comal CAD public ArcGIS parcel layer; data edit date November 22, 2024",
+        "parcels_guadalupe":"Guadalupe CAD / TxGIO public parcel extract; February 2022 vintage; secondary GBRA project-feed corroboration attempted",
+        "plats":"Bexar Public Works plat stages; comparable countywide plat feed not yet loaded for Comal/Guadalupe",
+        "permits":"City of San Antonio building permits past 180 days; regional counties have lower permit-data confidence",
         "traffic":"TxDOT AADT Annuals Public View",
-        "roads":"CoSA Streets + Bexar County Roads + CoSA Major Thoroughfare Plan",
+        "roads":"TxDOT statewide roadways plus CoSA/Bexar local road sources where available",
         "flood":"FEMA NFHL flood hazard polygons",
-        "land_use":"City of San Antonio Future Land Use",
-        "utilities":"SAWS CIP proximity proxy only; capacity unverified"
+        "land_use":"City of San Antonio Future Land Use where available",
+        "utilities":"Mapped existing sewer proximity: SAWS (Bexar), NBU (Comal/New Braunfels), GBRA (Guadalupe); capacity unverified"
       },
-      "errors":errors[:100],"source_feature_counts":dict(source_stats),
+      "errors":errors[:120],"source_feature_counts":dict(source_stats),
       "methodology":{
-        "architecture":"Node first -> parcel second -> hard filters -> 60% location / 40% parcel execution -> confidence -> category",
+        "architecture":"Node first -> county parcel universe -> hard filters -> 60% location / 40% parcel execution -> confidence -> category",
         "node_weights":{"residential_growth":20,"intersection_network":15,"retail_catalyst":10,"traffic":10,"timing":5},
         "parcel_weights":{"frontage_access":12,"size_shape":10,"utilities":8,"flood":5,"acquisition_complexity":5},
         "parcel_query_radius_miles":1.5,"hard_highlight_distance_miles":1.0,"min_acres":3,
-        "active_node_limit":14,"top_limit":30,"per_node_cap":3,
-        "hard_gate":"3+ ac; <=1 mi by parcel-edge distance; actual road signal; raw-land >=60; shape >=30; node >=55 with confidence >=50; FEMA screen required with <10% floodway, <50% SFHA and >=3 usable-acre proxy; public/institutional/major-anchor owners excluded",
-        "category_rules":"PRIORITY requires score >=78, confidence >=68, <=0.60 mi to node, road >=78, flood >=75 and parcel execution >=68. WATCH requires score >=68/confidence >=52. EARLY SPECULATION requires strong node thesis with score >=59."
+        "active_node_caps":{"Bexar":10,"Comal":3,"Guadalupe":3},"top_limit":36,"per_node_cap":3,
+        "freshness_policy":"Only recent Bexar parcel data can earn PRIORITY. Aging Comal data is capped at WATCH. Guadalupe 2022 data is capped at EARLY unless corroborated by a newer GBRA project parcel feed, then WATCH is possible.",
+        "hard_gate":"3+ ac; <=1 mi parcel-edge distance; road signal >=66; raw-land >=60; shape >=30; node >=52/confidence >=45; FEMA <10% floodway/<50% SFHA and >=3 usable-acre proxy; excluded public/institutional/major-anchor/homebuilder ownership.",
+        "priority_rule":"Bexar only; recent parcel source; score >=78; confidence >=68; <=0.60 mi to node; major-road access proxy; flood >=75; parcel execution >=68; mapped sewer within 1,000 ft proxy."
       }
     }
     (DATA/"opportunity_metadata.json").write_text(json.dumps(meta,indent=2))
-    print(json.dumps({"highlighted":len(top),"assemblages":len(ass),"errors":len(errors)},indent=2))
+    print(json.dumps({"highlighted":len(top),"by_county":by_county,"assemblages":len(ass),"errors":len(errors)},indent=2))
 
 if __name__=="__main__":
     main()
