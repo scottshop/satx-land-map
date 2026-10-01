@@ -342,29 +342,48 @@ def nearest_catalyst(lat,lng):
     return best or (99,"")
 
 def node_support(node):
-    support={"plats":[],"permits":[],"traffic":[],"roads":[],"mtp":[],"fema":[],"flu":[],"cip":[]}
-    # Plat stages within 5 mi.
-    for layer,stage_w in PLAT_LAYERS.items():
-        feats=safe_query(f"plats-{layer}",f"{BEXAR}/{layer}/query",geom=point_geom(node),distance=8046.72,
-                         out_fields="*",return_geometry=True)
-        for f in feats: f["_stage_weight"]=stage_w
-        support["plats"].extend(feats)
-    # Permits are fetched once citywide in main() and assigned locally to nodes.
+    county=node_county(node)
+    support={"county":county,"plats":[],"permits":[],"traffic":[],"roads":[],"mtp":[],"fema":[],"flu":[],
+             "utility":[],"utility_provider":"","utility_snapshot":""}
+
+    # Detailed plat/permit/FLU signals are currently strongest in Bexar.
+    if county=="Bexar":
+        for layer,stage_w in PLAT_LAYERS.items():
+            feats=safe_query(f"plats-{layer}",f"{BEXAR}/{layer}/query",geom=point_geom(node),distance=8046.72,
+                             out_fields="*",return_geometry=True)
+            for f in feats: f["_stage_weight"]=stage_w
+            support["plats"].extend(feats)
+        support["roads"]+=safe_query("cosa-streets",STREETS_URL,geom=point_geom(node),distance=3218.688,
+                                     out_fields="*",return_geometry=True)
+        support["roads"]+=safe_query("county-roads",COUNTY_ROADS_URL,geom=point_geom(node),distance=3218.688,
+                                     out_fields="*",return_geometry=True)
+        support["mtp"]=safe_query("mtp",COSA_MTP_URL,geom=point_geom(node),distance=3218.688,
+                                  out_fields="*",return_geometry=True)
+        support["flu"]=safe_query("flu",FLU_URL,geom=point_geom(node),distance=2414.016,
+                                  out_fields="*",return_geometry=True)
+        support["utility"]=safe_query("saws-sewer",SAWS_SEWER_URL,geom=point_geom(node),distance=3218.688,
+                                      out_fields="*",return_geometry=True,page_size=2000,timeout=25)
+        support["utility_provider"]="SAWS"
+        support["utility_snapshot"]="2021-07-21"
+    elif county=="Comal":
+        support["utility"]=safe_query("nbu-sewer",NBU_SEWER_URL,geom=point_geom(node),distance=3218.688,
+                                      out_fields="*",return_geometry=True,page_size=2000,timeout=25)
+        support["utility_provider"]="NBU"
+        support["utility_snapshot"]="2024-01-17"
+    elif county=="Guadalupe":
+        support["utility"]=safe_query("gbra-sewer-gravity",GBRA_GRAVITY_URL,geom=point_geom(node),distance=3218.688,
+                                      out_fields="*",return_geometry=True,page_size=2000,timeout=25)
+        support["utility"]+=safe_query("gbra-sewer-force",GBRA_FORCE_URL,geom=point_geom(node),distance=3218.688,
+                                       out_fields="*",return_geometry=True,page_size=2000,timeout=25)
+        support["utility_provider"]="GBRA"
+        support["utility_snapshot"]="Not published"
+
+    # Statewide road and traffic coverage is used for every county.
+    support["roads"]+=safe_query("txdot-roadways",TXDOT_ROADS_URL,geom=point_geom(node),distance=3218.688,
+                                 out_fields="RTE_NM,RTE_PRFX,RTE_NBR,RDBD_TYPE,COUNTY,MAP_LBL,SYSTEM,EXT_DATE",
+                                 return_geometry=True,page_size=2000,timeout=25)
     support["traffic"]=safe_query("aadt",AADT_URL,geom=point_geom(node),distance=3218.688,
                                   out_fields="*",return_geometry=True)
-    support["roads"]=safe_query("cosa-streets",STREETS_URL,geom=point_geom(node),distance=3218.688,
-                                out_fields="*",return_geometry=True)
-    support["roads"]+=safe_query("county-roads",COUNTY_ROADS_URL,geom=point_geom(node),distance=3218.688,
-                                 out_fields="*",return_geometry=True)
-    support["mtp"]=safe_query("mtp",COSA_MTP_URL,geom=point_geom(node),distance=3218.688,
-                              out_fields="*",return_geometry=True)
-    # FEMA is screened later, parcel-by-parcel, to avoid broad-service throttling.
-    support["flu"]=safe_query("flu",FLU_URL,geom=point_geom(node),distance=2414.016,
-                              out_fields="*",return_geometry=True)
-    support["cip"]=safe_query("saws-cip-points",SAWS_CIP_POINT,geom=point_geom(node),distance=1609.344,
-                              out_fields="*",return_geometry=True)
-    support["cip"]+=safe_query("saws-cip-polys",SAWS_CIP_POLY,geom=point_geom(node),distance=1609.344,
-                               out_fields="*",return_geometry=True)
     return support
 
 def fetch_recent_permits():
@@ -394,7 +413,7 @@ def node_network_quality(node,support):
         if not gp or gp.distance(nodep)>2640: continue
         p=props(f); name=road_name(p) or "Unnamed road"; cls=road_class(p)
         all_names.add(name)
-        if re.search(r"arterial|collector|express|principal|major|interstate|highway|state|us |fm |loop|sh ",name+" "+cls,re.I):
+        if road_importance(name,cls)>=3:
             major_names.add(name)
     for f in support["mtp"]:
         g=feature_shape(f); gp=proj(g) if g else None
