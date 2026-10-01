@@ -55,14 +55,14 @@ PARCEL_SOURCE_INFO = {
 
 NODES = [
  {"id":"INT-002","name":"I-35 / Kohlenberg Rd (Mayfair)","lat":29.748,"lng":-98.079,"base":90},
- {"id":"INT-001","name":"Culebra Rd / SH 211","lat":29.524162,"lng":-98.802373,"base":89},
+ {"id":"INT-001","name":"Culebra Rd / SH 211","lat":29.522725,"lng":-98.805837,"base":89},
  {"id":"INT-003","name":"I-10 / Loop 1604 East","lat":29.514,"lng":-98.312,"base":88},
- {"id":"INT-004","name":"US 90 / SH 211","lat":29.380,"lng":-98.800,"base":86},
- {"id":"INT-005","name":"Potranco Rd / SH 211","lat":29.4214,"lng":-98.7826,"base":84},
+ {"id":"INT-004","name":"US 90 / SH 211","lat":29.3748152,"lng":-98.7651618,"base":86},
+ {"id":"INT-005","name":"Potranco Rd / SH 211","lat":29.4212674,"lng":-98.7826287,"base":84},
  {"id":"INT-009","name":"Schuwirth Rd / Loop 1604 East","lat":29.456,"lng":-98.2879,"base":82},
- {"id":"INT-006","name":"FM 1518 / I-10","lat":29.489044,"lng":-98.223251,"base":81},
+ {"id":"INT-006","name":"FM 1518 / I-10","lat":29.4879614,"lng":-98.2236575,"base":81},
  {"id":"INT-007","name":"Loop 337 / Word Pkwy (Veramendi)","lat":29.736,"lng":-98.179,"base":81},
- {"id":"INT-010","name":"FM 1516 / I-10 East","lat":29.514,"lng":-98.252,"base":81},
+ {"id":"INT-010","name":"FM 1516 / I-10 East","lat":29.4587922,"lng":-98.3171707,"base":81},
  {"id":"INT-011","name":"US 90 / Loop 1604 West","lat":29.394,"lng":-98.682,"base":81},
  {"id":"INT-012","name":"SH 211 / Briggs Ranch Rd","lat":29.410,"lng":-98.813,"base":79},
  {"id":"INT-013","name":"S Zarzamora / Mitra Way (VIDA)","lat":29.318,"lng":-98.530,"base":79},
@@ -70,13 +70,13 @@ NODES = [
  {"id":"INT-015","name":"FM 1103 / Orth Rd","lat":29.597,"lng":-98.228,"base":77},
  {"id":"INT-016","name":"Loop 1604 / Green Rd","lat":29.496,"lng":-98.293,"base":74},
  {"id":"INT-017","name":"Texas Research Pkwy / SH 211","lat":29.435,"lng":-98.797,"base":73},
- {"id":"INT-019","name":"US 90 / FM 471 (Castroville)","lat":29.356,"lng":-98.879,"base":72},
+ {"id":"INT-019","name":"US 90 / FM 471 (Castroville)","lat":29.3557074,"lng":-98.8714514,"base":72},
  {"id":"INT-018","name":"Louis Bauer Dr / Laser Dr (Brooks)","lat":29.346,"lng":-98.443,"base":72},
- {"id":"INT-022","name":"SH 46 / FM 1863","lat":29.750,"lng":-98.270,"base":71},
+ {"id":"INT-022","name":"SH 46 / FM 1863","lat":29.7213978,"lng":-98.1781374,"base":71},
  {"id":"INT-023","name":"Old San Antonio Rd / Cascade Caverns Rd","lat":29.744,"lng":-98.686,"base":65},
  {"id":"INT-020","name":"Applewhite Rd / Lone Star Pass","lat":29.297,"lng":-98.552,"base":64},
  {"id":"INT-021","name":"Chavaneaux Rd / S Zarzamora","lat":29.284,"lng":-98.529,"base":61},
- {"id":"INT-025","name":"I-10 / SH 46 (Seguin Exchange)","lat":29.579,"lng":-97.949,"base":80},
+ {"id":"INT-025","name":"I-10 / SH 46 (Seguin Exchange)","lat":29.5843613,"lng":-97.9932498,"base":80},
  {"id":"INT-024","name":"Talley Rd / Potranco Rd","lat":29.414,"lng":-98.744,"base":78},
 ]
 
@@ -85,15 +85,15 @@ CATALYSTS = [
  {"name":"I-10 / Loop 1604 East H-E-B","lat":29.514,"lng":-98.312},
  {"name":"Mayfair Costco","lat":29.747031,"lng":-98.056017},
  {"name":"Veramendi mixed-use / future Market Center","lat":29.736,"lng":-98.179},
- {"name":"Seguin Exchange / planned Target","lat":29.579,"lng":-97.949},
+ {"name":"Seguin Exchange / planned Target","lat":29.5843613,"lng":-97.9932498},
  {"name":"H-E-B Foster campus","lat":29.41984,"lng":-98.36083},
 ]
 
 PUBLIC_OWNER = re.compile(r"(CITY OF|COUNTY OF|(BEXAR|COMAL|GUADALUPE|MEDINA|KENDALL|WILSON|ATASCOSA) COUNTY|STATE OF TEXAS|UNITED STATES|US GOVERNMENT|U S GOVERNMENT|SCHOOL DISTRICT|ISD|I S D|SCHOOL|MONTESSORI|ACADEMY|SAWS|CPS ENERGY|RIVER AUTHORITY|TXDOT|TEXAS DEPARTMENT|HOUSING AUTHORITY|HOUSING TRUST|PUBLIC FACILITY CORPORATION|PUBLIC FACILITY CORP|DEVELOPMENT AUTHORITY|FIRE AND RESCUE|EMERGENCY SERVICES DISTRICT|ESD|UNIVERSITY SYSTEM|UNIVERSITY OF|TEXAS A.*M|HOMEOWNERS|HOME OWNER|PROPERTY OWNERS|OWNERS ASSN|OWNERS ASSOCIATION|PLACE ASSOCIATION|MASTER COMMUNITY|LAND TRUST|HOSPITAL|HEALTHCARE SYSTEM|MEDICAL CENTER| HOA| POA)", re.I)
 ANCHOR_OWNER = re.compile(r"(HEB GROCERY|H E B GROCERY|WAL.?MART|WALMART|COSTCO|TARGET CORPORATION|LOWE.?S|HOME DEPOT)", re.I)
-INSTITUTIONAL_OWNER = re.compile(r"(CHURCH|MINISTR|TEMPLE|DIOCESE|PARISH|SYNAGOGUE|MOSQUE|FOUNDATION|BOYSVILLE|YMCA|Y W C A|SALVATION ARMY|BAPTIST|METHODIST|CATHOLIC|LUTHERAN|PRESBYTERIAN|EPISCOPAL)", re.I)
+INSTITUTIONAL_OWNER = re.compile(r"(CHURCH|MINISTR|TEMPLE|DIOCESE|PARISH|SYNAGOGUE|MOSQUE|FOUNDATION|BOYSVILLE|YMCA|Y W C A|SALVATION ARMY|BAPTIST|METHODIST|CATHOLIC|LUTHERAN|PRESBYTERIAN|EPISCOPAL|PREGNANCY CARE|CHARITY)", re.I)
 RESIDENTIAL_BUILDER_OWNER = re.compile(r"(KB HOME|KB HOMES|CONTINENTAL HOMES|D\s*R\s*HORTON|DR HORTON|LENNAR|PULTE|CENTEX|MERITAGE|PERRY HOMES|CASTLEROCK|CHESMAR|DAVID WEEKLEY|TOLL BROTHERS|M/I HOMES|MI HOMES)", re.I)
-OPERATING_USER_OWNER = re.compile(r"(LOVE.?S TRAVEL|QUIKTRIP|QT SOUTH|BUC.?EE|PILOT|FLYING J|DOGGETT|FREIGHTLINER|COUNTERTOPS|MURPHY USA|7.?ELEVEN|CIRCLE K|STRIPES)", re.I)
+OPERATING_USER_OWNER = re.compile(r"(LOVE.?S TRAVEL|QUIKTRIP|QT SOUTH|BUC.?EE|PILOT|FLYING J|DOGGETT|FREIGHTLINER|COUNTERTOPS|MURPHY USA|7.?ELEVEN|CIRCLE K|STRIPES|LOCK AWAY|SELF STORAGE|STORAGE LLC|STORAGE INC)", re.I)
 
 T4326_2278 = Transformer.from_crs("EPSG:4326","EPSG:2278",always_xy=True).transform
 
@@ -143,12 +143,18 @@ def arc_query(url, *, where="1=1", geom=None, geom_type="esriGeometryPoint",
     features=[]; offset=0
     for _ in range(8):
         params["resultOffset"]=str(offset)
-        try:
-            r=session.get(url,params=params,timeout=timeout)
-            r.raise_for_status()
-            data=r.json()
-        except Exception as e:
-            raise RuntimeError(f"{url}: {e}")
+        data=None; last_error=None
+        for attempt in range(3):
+            try:
+                r=session.get(url,params=params,timeout=timeout)
+                r.raise_for_status()
+                data=r.json()
+                break
+            except Exception as e:
+                last_error=e
+                if attempt<2: time.sleep(.7*(attempt+1))
+        if data is None:
+            raise RuntimeError(f"{url}: {last_error}")
         if "error" in data:
             raise RuntimeError(f"{url}: {data['error']}")
         batch=data.get("features",[])
@@ -554,8 +560,9 @@ def query_parcels(node):
 def make_candidate(feature,node_result):
     county=node_result.get("county") or node_county(node_result)
     rec=normalized_parcel(feature,county)
-    owner=rec.get("owner","")
-    if not rec or (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
+    owner=rec.get("owner","").strip()
+    if not rec or not owner: return None
+    if (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
             or INSTITUTIONAL_OWNER.search(owner) or RESIDENTIAL_BUILDER_OWNER.search(owner)
             or OPERATING_USER_OWNER.search(owner)): return None
     reported_acres=float(rec.get("acres") or 0)
@@ -1166,12 +1173,12 @@ def main():
                     key=lambda x:x["parcel_opportunity_score"],reverse=True)[:cap]
         provisional.extend(pool)
     print(f"Parcel-level FEMA screening on {len(provisional)} provisional candidates...")
-    with ThreadPoolExecutor(max_workers=3) as ex:
+    with ThreadPoolExecutor(max_workers=2) as ex:
         screened=list(ex.map(screen_fema_candidate,provisional))
 
     verify_pool=[x for x in screened if x.get("eligible")]
     print(f"County parcel verification on all {len(verify_pool)} eligible finalists...")
-    with ThreadPoolExecutor(max_workers=5) as ex:
+    with ThreadPoolExecutor(max_workers=3) as ex:
         list(ex.map(verify_candidate,verify_pool))
     for cand in screened:
         cand["confidence_score"]=candidate_confidence(cand)
