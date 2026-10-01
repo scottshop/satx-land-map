@@ -238,7 +238,7 @@ def road_class(p):
 def road_importance(name,cls):
     n=(name or "").upper().strip(); t=(cls or "").upper()
     # Internal GIS segment IDs are not evidence of usable public frontage.
-    if re.match(r"^(CS|CR)\d+(?:-[A-Z0-9]+)?$",n.replace(" ","")):
+    if re.match(r"^(CS|CR)\d+(?:-[A-Z0-9]+)?$",n.replace(" ","")) or re.match(r"^\d+$",n):
         return 0
     # Numbered routes and true highway designations. Do not treat every street ending in "Loop" as a highway.
     if re.search(r"\b(IH|I-|INTERSTATE)\s*[- ]?\d+\b|\bUS\s*(HWY|HIGHWAY)?\s*\d+\b|\bSH\s*\d+\b|\bSTATE\s+(HWY|HIGHWAY)\s*\d+\b|\bFM\s*\d+\b|\bLOOP\s*\d+\b",n):
@@ -660,8 +660,9 @@ def road_quality(c,support):
     elif meaningful: score=60
     else: score=20
     display=[]
-    for item in primary+collectors+meaningful+unique:
-        if item[0] not in display: display.append(item[0])
+    for item in primary+collectors+meaningful:
+        if item[4]>=1 and item[0]!="Unnamed road" and item[0] not in display:
+            display.append(item[0])
     return round(score,1),display[:4],round(frontage,0),strong_corner,major,mtp_cross
 def flood_quality(c,support):
     poly=c["_geom2278"]; area=max(1,poly.area)
@@ -754,16 +755,16 @@ def traffic_for_parcel(c,support,frontage_roads=None):
         old=nval(p,"AADT_RPT_HIST_05_QTY","AADT_2020")
         if cur<=0: continue
         growth=((cur-old)/old*100) if old else 0
-        rkey=route_key(road_name(p))
-        rec=(d,cur,growth,rkey)
+        label=road_name(p) or sval(p,"RTE_NM","ROAD_NAME","STREET_NAME","NAME") or "nearest TxDOT count station"
+        rkey=route_key(label)
+        rec=(d,cur,growth,rkey,clean_road_label(label))
         fallback.append(rec)
         if rkey and rkey in frontage_keys and d<=1.25:
             matched.append(rec)
     pool=matched if matched else fallback
-    if not pool: return 0,0,99
-    # Same-route station wins; among those use the closest count station to the parcel.
+    if not pool: return 0,0,99,""
     best=min(pool,key=lambda x:x[0])
-    return int(best[1]),round(best[2],1),round(best[0],2)
+    return int(best[1]),round(best[2],1),round(best[0],2),best[4]
 def value_score(c):
     v=c["assessed_value"]/c["acres"] if c["acres"] else 0
     c["assessed_value_per_acre"]=round(v,0)
@@ -836,7 +837,7 @@ def classify_candidate(c):
     score=float(c.get("parcel_opportunity_score") or 0)
     conf=float(c.get("confidence_score") or 0)
     access_ready=(c.get("major_road_signal") and c.get("road_score",0)>=84
-                  and (c.get("frontage_ft_proxy",0)>=150 or c.get("corner_signal")=="STRONG"))
+                  and (c.get("frontage_ft_proxy",0)>=200 or c.get("corner_signal")=="STRONG"))
     priority=(county=="Bexar" and c.get("parcel_freshness")=="RECENT" and c.get("eligible")
               and score>=78 and conf>=68 and c.get("node_edge_miles",99)<=.60
               and access_ready and c.get("flood_score",0)>=75 and c.get("parcel_execution_score",0)>=68
@@ -866,7 +867,7 @@ def enrich_candidate(c,support,node_result):
     flood_score,flood_pct,fw_pct,zones=55,None,None,[]
     flood_confidence="PENDING"
     flu,flu_names=land_use_quality(c,support)
-    aadt,growth,aadt_dist=traffic_for_parcel(c,support,roads)
+    aadt,growth,aadt_dist,aadt_route=traffic_for_parcel(c,support,roads)
     val=value_score(c)
     catalyst_d,catalyst_name=nearest_catalyst(c["centroid_lat"],c["centroid_lng"])
     utility_score,utility_conf,utility_ft,utility_provider,utility_snapshot=utility_for_parcel(c,support)
@@ -900,7 +901,7 @@ def enrich_candidate(c,support,node_result):
         "major_road_signal":major,"mtp_row_flag":mtp,
         "flood_score":flood_score,"flood_pct":flood_pct,"floodway_pct":fw_pct,"flood_zones":zones,"flood_confidence":flood_confidence,
         "future_land_use_score":flu,"future_land_use":flu_names,
-        "aadt":aadt,"aadt_5yr_growth_pct":growth,"aadt_station_miles":aadt_dist,
+        "aadt":aadt,"aadt_5yr_growth_pct":growth,"aadt_station_miles":aadt_dist,"aadt_route":aadt_route,
         "nearest_retail_catalyst":catalyst_name,"retail_catalyst_miles":round(catalyst_d,2),
         "future_residential_lots_nearby":node_result["weighted_future_res_lots"],
         "recent_housing_units_180d":node_result["net_new_housing_units_180d"],
@@ -1081,7 +1082,7 @@ def public_props(c,rank=None):
       "node_id","node_name","node_score","node_edge_miles","dist_score","acre_score","raw_score",
       "shape_score","compactness","aspect_ratio","road_score","frontage_roads","frontage_ft_proxy","corner_signal",
       "major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","flood_confidence",
-      "future_land_use_score","future_land_use","aadt","aadt_5yr_growth_pct","aadt_station_miles",
+      "future_land_use_score","future_land_use","aadt","aadt_5yr_growth_pct","aadt_station_miles","aadt_route",
       "nearest_retail_catalyst","retail_catalyst_miles","future_residential_lots_nearby","recent_housing_units_180d",
       "utility_confidence","utility_provider","utility_distance_ft","utility_snapshot","utility_context",
       "assessed_value_per_acre","land_value_per_acre","parcel_opportunity_score","parcel_execution_score",
