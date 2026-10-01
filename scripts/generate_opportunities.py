@@ -200,13 +200,23 @@ def proj(g):
     try: return transform(T4326_2278,g)
     except: return None
 
+def clean_road_label(v):
+    s=str(v or "").strip().upper()
+    if not s: return ""
+    # TxDOT route codes often include roadway-direction suffixes, e.g. FM1102-KG or IH0035-RP.
+    m=re.match(r"^(IH|US|SH|FM|SL|LP)0*(\d+)(?:-[A-Z0-9]+)?$",s.replace(" ",""))
+    if m:
+        prefix={"IH":"IH","US":"US","SH":"SH","FM":"FM","SL":"SL","LP":"LOOP"}.get(m.group(1),m.group(1))
+        return f"{prefix} {int(m.group(2))}"
+    return str(v or "").strip()
+
 def road_name(p):
     candidates=["RTE_NM","MAP_LBL","FULLNAME","FullName","StreetName","STREETNAME","STREET_NAME","ROAD_NAME","RoadName","NAME","Name","RD_NAME","ST_NAME"]
     for k in candidates:
-        if p.get(k): return str(p[k]).strip()
+        if p.get(k): return clean_road_label(p[k])
     for k,v in p.items():
         if isinstance(v,str) and v.strip() and re.search(r"(name|street|road)",k,re.I):
-            return v.strip()
+            return clean_road_label(v)
     return ""
 
 def road_class(p):
@@ -544,12 +554,19 @@ def make_candidate(feature,node_result):
     owner=rec.get("owner","")
     if not rec or (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
             or INSTITUTIONAL_OWNER.search(owner) or RESIDENTIAL_BUILDER_OWNER.search(owner)): return None
-    a=float(rec.get("acres") or 0)
-    if a<3: return None
+    reported_acres=float(rec.get("acres") or 0)
     g=feature_shape(feature)
     if not g or g.is_empty: return None
     gp=proj(g)
     if not gp or gp.is_empty: return None
+    geometry_acres=max(0,gp.area/43560.0)
+    # County feeds are inconsistent about area units. Trust the legal/reported acres only
+    # when it is reasonably consistent with the polygon; otherwise use GIS geometry acres.
+    if reported_acres>0 and geometry_acres>0 and .60 <= reported_acres/geometry_acres <= 1.67:
+        a=reported_acres; acres_source="REPORTED"
+    else:
+        a=geometry_acres; acres_source="GEOMETRY"
+    if a<3: return None
     nodep=proj(Point(node_result["lng"],node_result["lat"]))
     edge_mi=gp.distance(nodep)/5280
     if edge_mi>1.5: return None
@@ -571,7 +588,9 @@ def make_candidate(feature,node_result):
     return {
         "feature":feature,"candidate_id":county+":"+pid,"county":county,"prop_id":pid,
         "owner":owner,"owner_key":normalize_owner(owner),"situs":rec.get("situs",""),
-        "acres":round(a,2),"land_value":round(float(rec.get("land_value") or 0),0),
+        "acres":round(a,2),"reported_acres":round(reported_acres,2) if reported_acres else None,
+        "geometry_acres":round(geometry_acres,2),"acres_source":acres_source,
+        "land_value":round(float(rec.get("land_value") or 0),0),
         "assessed_value":round(float(rec.get("market_value") or 0),0),
         "improvement_value":round(float(rec.get("improvement_value") or 0),0),
         "improvement_ratio":round(impr_ratio,3),"gba":round(gba,0),
@@ -1021,7 +1040,7 @@ def assemblages(candidates):
 def public_props(c,rank=None):
     keys=[
       "candidate_id","county","prop_id","owner","verified_owner","owner_verification_match","situs","acres",
-      "land_value","assessed_value","improvement_value","improvement_ratio","gba","prop_use","legal","cad_record_url",
+      "reported_acres","geometry_acres","acres_source","land_value","assessed_value","improvement_value","improvement_ratio","gba","prop_use","legal","cad_record_url",
       "parcel_source","parcel_snapshot","parcel_freshness","cad_geometry_verified","cad_verification_source",
       "live_secondary_verified","secondary_verification_source",
       "node_id","node_name","node_score","node_edge_miles","dist_score","acre_score","raw_score",
