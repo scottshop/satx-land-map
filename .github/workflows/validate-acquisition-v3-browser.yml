@@ -3,7 +3,7 @@ name: Validate Acquisition V3 browser
 on:
   push:
     branches:
-      - acquisition/v3-ui-20261001
+      - acquisition/v3-production-20261001
     paths:
       - "index.html"
       - "tests/map-smoke.cjs"
