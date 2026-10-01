@@ -24,9 +24,9 @@
     "catalyst_miles": 0.0,
     "major_node_roads": [
       "CULEBRA RD",
-      "FM0471-KG",
+      "FM 471",
       "PVT RD AT 15464 FM 471 W",
-      "SH0211-KG"
+      "SH 211"
     ],
     "mtp_near_node": true,
     "utility_provider": "SAWS",
@@ -103,7 +103,7 @@
     "nearest_catalyst": "Culebra / SH 211 H-E-B",
     "catalyst_miles": 6.17,
     "major_node_roads": [
-      "FM1957-KG",
+      "FM 1957",
       "POTRANCO RD"
     ],
     "mtp_near_node": false,
@@ -219,9 +219,9 @@
     "catalyst_miles": 5.61,
     "major_node_roads": [
       "E FM 1518 N",
-      "FM1518-KG",
-      "IH 10 E",
-      "IH 10 E ACCESS RD"
+      "FM 1518",
+      "IH 10",
+      "IH 10 E"
     ],
     "mtp_near_node": true,
     "utility_provider": "SAWS",
@@ -259,9 +259,9 @@
     "nearest_catalyst": "Culebra / SH 211 H-E-B",
     "catalyst_miles": 7.2,
     "major_node_roads": [
-      "FM1957-KG",
+      "FM 1957",
       "POTRANCO RD",
-      "SH0211-KG",
+      "SH 211",
       "STATE HWY 211 S"
     ],
     "mtp_near_node": true,
@@ -300,10 +300,10 @@
     "nearest_catalyst": "Culebra / SH 211 H-E-B",
     "catalyst_miles": 11.55,
     "major_node_roads": [
+      "US 90",
       "US HWY 90 W",
       "US HWY 90 W ACCESS RD",
-      "US HWY 90 WEST",
-      "US0090-LG"
+      "US HWY 90 WEST"
     ],
     "mtp_near_node": false,
     "utility_provider": "SAWS",
@@ -416,9 +416,9 @@
     "catalyst_miles": 0.0,
     "major_node_roads": [
       "AVENUE A",
+      "FM 1516",
       "FM 1976",
-      "FM 78",
-      "FM0078-CN"
+      "FM 78"
     ],
     "mtp_near_node": true,
     "utility_provider": "SAWS",
@@ -494,7 +494,7 @@
     "nearest_catalyst": "Mayfair Costco",
     "catalyst_miles": 1.38,
     "major_node_roads": [
-      "FM1102-KG"
+      "FM 1102"
     ],
     "mtp_near_node": false,
     "utility_provider": "NBU",
@@ -568,10 +568,9 @@
     "nearest_catalyst": "Mayfair Costco",
     "catalyst_miles": 13.27,
     "major_node_roads": [
-      "FM0466-KG",
-      "SH0123-CN",
-      "SH0123-KG",
-      "SH0123-LG"
+      "FM 466",
+      "SH 123",
+      "US 90"
     ],
     "mtp_near_node": false,
     "utility_provider": "GBRA",
@@ -609,10 +608,10 @@
     "nearest_catalyst": "H-E-B Foster campus",
     "catalyst_miles": 12.38,
     "major_node_roads": [
-      "IH0410-AG",
-      "IH0410-KG",
-      "IH0410-LG",
-      "IH0410-RG"
+      "IH 410",
+      "S ZARZAMORA",
+      "S Zarzamora St",
+      "SW LOOP 410"
     ],
     "mtp_near_node": true,
     "utility_provider": "SAWS",
@@ -651,7 +650,7 @@
     "catalyst_miles": 4.01,
     "major_node_roads": [
       "E FM 1518 N",
-      "FM1518-KG",
+      "FM 1518",
       "LOWER SEGUIN RD"
     ],
     "mtp_near_node": true,
@@ -663,47 +662,6 @@
       "retail_catalyst": 50,
       "traffic": 48.4,
       "timing": 42.3
-    },
-    "selected_for_parcel_search": false
-  },
-  {
-    "id": "INT-023",
-    "name": "Old San Antonio Rd / Cascade Caverns Rd",
-    "lat": 29.744,
-    "lng": -98.686,
-    "base": 65,
-    "county": "Kendall",
-    "search_supported": false,
-    "score": 52.5,
-    "evidence_score": 47.2,
-    "confidence_score": 62,
-    "node_class": "WATCH NODE",
-    "evidence_model": "Regional corridor prior + statewide road/traffic; county housing feed incomplete",
-    "weighted_future_res_lots": 0.0,
-    "weighted_future_commercial_lots": 0.0,
-    "recent_progress_res_lots": 0.0,
-    "active_plat_signals": 0,
-    "net_new_housing_units_180d": 0,
-    "residential_permits_180d": 0,
-    "aadt": 75766,
-    "aadt_5yr_growth_pct": 46.5,
-    "nearest_catalyst": "Culebra / SH 211 H-E-B",
-    "catalyst_miles": 16.72,
-    "major_node_roads": [
-      "IH0010-AG",
-      "IH0010-BG",
-      "IH0010-KG",
-      "IH0010-LG"
-    ],
-    "mtp_near_node": false,
-    "utility_provider": "",
-    "mapped_utility_features": 0,
-    "component_scores": {
-      "residential_growth": 0.0,
-      "intersection_network": 100,
-      "retail_catalyst": 28,
-      "traffic": 91.1,
-      "timing": 27.8
     },
     "selected_for_parcel_search": false
   },
@@ -731,8 +689,8 @@
     "nearest_catalyst": "Culebra / SH 211 H-E-B",
     "catalyst_miles": 12.5,
     "major_node_roads": [
-      "FM0471-KG",
-      "US0090-KG"
+      "FM 471",
+      "US 90"
     ],
     "mtp_near_node": false,
     "utility_provider": "",
@@ -742,6 +700,44 @@
       "intersection_network": 100,
       "retail_catalyst": 28,
       "traffic": 63.6,
+      "timing": 27.8
+    },
+    "selected_for_parcel_search": false
+  },
+  {
+    "id": "INT-023",
+    "name": "Old San Antonio Rd / Cascade Caverns Rd",
+    "lat": 29.744,
+    "lng": -98.686,
+    "base": 65,
+    "county": "Kendall",
+    "search_supported": false,
+    "score": 50.4,
+    "evidence_score": 44.2,
+    "confidence_score": 62,
+    "node_class": "LOWER CONFIDENCE",
+    "evidence_model": "Regional corridor prior + statewide road/traffic; county housing feed incomplete",
+    "weighted_future_res_lots": 0.0,
+    "weighted_future_commercial_lots": 0.0,
+    "recent_progress_res_lots": 0.0,
+    "active_plat_signals": 0,
+    "net_new_housing_units_180d": 0,
+    "residential_permits_180d": 0,
+    "aadt": 75766,
+    "aadt_5yr_growth_pct": 46.5,
+    "nearest_catalyst": "Culebra / SH 211 H-E-B",
+    "catalyst_miles": 16.72,
+    "major_node_roads": [
+      "IH 10"
+    ],
+    "mtp_near_node": false,
+    "utility_provider": "",
+    "mapped_utility_features": 0,
+    "component_scores": {
+      "residential_growth": 0.0,
+      "intersection_network": 88,
+      "retail_catalyst": 28,
+      "traffic": 91.1,
       "timing": 27.8
     },
     "selected_for_parcel_search": false
@@ -771,9 +767,9 @@
     "catalyst_miles": 14.3,
     "major_node_roads": [
       "S ZARZAMORA",
-      "SH0016-AG",
-      "SH0016-KG",
-      "SH0016-LG"
+      "SH 16",
+      "STATE HWY 16 S ACCESS RD",
+      "State Hwy 16 S"
     ],
     "mtp_near_node": false,
     "utility_provider": "SAWS",
@@ -847,7 +843,7 @@
     "nearest_catalyst": "I-10 / Loop 1604 East H-E-B",
     "catalyst_miles": 7.64,
     "major_node_roads": [
-      "FM1103-KG"
+      "FM 1103"
     ],
     "mtp_near_node": false,
     "utility_provider": "GBRA",
