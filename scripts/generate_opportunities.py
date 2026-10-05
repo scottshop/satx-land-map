@@ -67,6 +67,12 @@ ANCHOR_OWNER = re.compile(r"(HEB GROCERY|H E B GROCERY|WAL.?MART|WALMART|COSTCO|
 INSTITUTIONAL_OWNER = re.compile(r"(CHURCH|MINISTR|TEMPLE|DIOCESE|PARISH|SYNAGOGUE|MOSQUE|FOUNDATION|BOYSVILLE|YMCA|Y W C A|SALVATION ARMY|BAPTIST|METHODIST|CATHOLIC|LUTHERAN|PRESBYTERIAN|EPISCOPAL)", re.I)
 RESIDENTIAL_BUILDER_OWNER = re.compile(r"(KB HOME|KB HOMES|CONTINENTAL HOMES|D\s*R\s*HORTON|DR HORTON|LENNAR|PULTE|CENTEX|MERITAGE|PERRY HOMES|CASTLEROCK|CHESMAR|DAVID WEEKLEY|TOLL BROTHERS|M/I HOMES|MI HOMES)", re.I)
 
+MANUAL_REJECTS = {
+    "338017":"developer review: inadequate commercial frontage",
+    "338011":"developer review: inadequate commercial frontage",
+    "163835":"developer review: inadequate commercial frontage",
+}
+
 T4326_2278 = Transformer.from_crs("EPSG:4326","EPSG:2278",always_xy=True).transform
 
 session = requests.Session()
@@ -438,6 +444,9 @@ def query_parcels(node):
 
 def make_candidate(feature,node_result):
     p=props(feature)
+    pid=str(int(nval(p,"PropID"))) if nval(p,"PropID") else str(p.get("OBJECTID",""))
+    if pid in MANUAL_REJECTS:
+        return None
     owner=sval(p,"Owner")
     if (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
             or INSTITUTIONAL_OWNER.search(owner) or RESIDENTIAL_BUILDER_OWNER.search(owner)): return None
@@ -462,7 +471,7 @@ def make_candidate(feature,node_result):
     pre=.60*node_result["score"]+.15*dist+.10*acre+.10*raw+.05*sh
     c=g.centroid
     return {
-        "feature":feature,"prop_id":str(int(nval(p,"PropID"))) if nval(p,"PropID") else str(p.get("OBJECTID","")),
+        "feature":feature,"prop_id":pid,
         "owner":owner,"owner_key":normalize_owner(owner),"situs":sval(p,"Situs"),
         "acres":round(a,2),"land_value":round(nval(p,"LandVal"),0),"assessed_value":round(nval(p,"TotVal"),0),
         "improvement_value":round(nval(p,"ImprVal"),0),"improvement_ratio":round(impr_ratio,3),
@@ -967,6 +976,7 @@ def main():
         "land_use":"City of San Antonio Future Land Use",
         "utilities":"SAWS CIP proximity proxy only; capacity unverified"
       },
+      "manual_rejects":MANUAL_REJECTS,
       "errors":errors[:100],"source_feature_counts":dict(source_stats),
       "methodology":{
         "architecture":"Node first -> parcel second -> hard filters -> 60% location / 40% parcel execution -> confidence -> category",
