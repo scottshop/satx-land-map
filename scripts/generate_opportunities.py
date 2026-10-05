@@ -67,6 +67,12 @@ ANCHOR_OWNER = re.compile(r"(HEB GROCERY|H E B GROCERY|WAL.?MART|WALMART|COSTCO|
 INSTITUTIONAL_OWNER = re.compile(r"(CHURCH|MINISTR|TEMPLE|DIOCESE|PARISH|SYNAGOGUE|MOSQUE|FOUNDATION|BOYSVILLE|YMCA|Y W C A|SALVATION ARMY|BAPTIST|METHODIST|CATHOLIC|LUTHERAN|PRESBYTERIAN|EPISCOPAL)", re.I)
 RESIDENTIAL_BUILDER_OWNER = re.compile(r"(KB HOME|KB HOMES|CONTINENTAL HOMES|D\s*R\s*HORTON|DR HORTON|LENNAR|PULTE|CENTEX|MERITAGE|PERRY HOMES|CASTLEROCK|CHESMAR|DAVID WEEKLEY|TOLL BROTHERS|M/I HOMES|MI HOMES)", re.I)
 
+MANUAL_REJECTS = {
+    "338017":"developer review: inadequate commercial frontage",
+    "338011":"developer review: inadequate commercial frontage",
+    "163835":"developer review: inadequate commercial frontage",
+}
+
 T4326_2278 = Transformer.from_crs("EPSG:4326","EPSG:2278",always_xy=True).transform
 
 session = requests.Session()
@@ -203,6 +209,24 @@ def road_importance(name,cls):
     if name and name!="Unnamed road":
         return 1
     return 0
+
+def road_is_commercial_frontage(name,cls):
+    n=(name or "").upper().strip()
+    if not n or n=="UNNAMED ROAD": return False
+    if re.search(r"\b(PVT|PRIVATE)\b",n): return False
+    if re.match(r"^(CS|CR)\d+(?:-[A-Z0-9]+)?$",n.replace(" ","")) or re.match(r"^\d+$",n):
+        return False
+    # Acquisition frontage must be arterial/highway caliber. Collector/local frontage alone
+    # does not qualify a tract for the highlighted acquisition list.
+    return road_importance(name,cls)>=3
+
+def longest_line_length(g):
+    if g is None or g.is_empty: return 0.0
+    if g.geom_type in ("LineString","LinearRing"): return float(g.length)
+    if hasattr(g,"geoms"):
+        vals=[longest_line_length(x) for x in g.geoms]
+        return max(vals) if vals else 0.0
+    return 0.0
 
 def flu_score(name):
     s=(name or "").lower()
@@ -420,6 +444,9 @@ def query_parcels(node):
 
 def make_candidate(feature,node_result):
     p=props(feature)
+    pid=str(int(nval(p,"PropID"))) if nval(p,"PropID") else str(p.get("OBJECTID",""))
+    if pid in MANUAL_REJECTS:
+        return None
     owner=sval(p,"Owner")
     if (PUBLIC_OWNER.search(owner) or ANCHOR_OWNER.search(owner)
             or INSTITUTIONAL_OWNER.search(owner) or RESIDENTIAL_BUILDER_OWNER.search(owner)): return None
@@ -444,7 +471,7 @@ def make_candidate(feature,node_result):
     pre=.60*node_result["score"]+.15*dist+.10*acre+.10*raw+.05*sh
     c=g.centroid
     return {
-        "feature":feature,"prop_id":str(int(nval(p,"PropID"))) if nval(p,"PropID") else str(p.get("OBJECTID","")),
+        "feature":feature,"prop_id":pid,
         "owner":owner,"owner_key":normalize_owner(owner),"situs":sval(p,"Situs"),
         "acres":round(a,2),"land_value":round(nval(p,"LandVal"),0),"assessed_value":round(nval(p,"TotVal"),0),
         "improvement_value":round(nval(p,"ImprVal"),0),"improvement_ratio":round(impr_ratio,3),
@@ -458,45 +485,77 @@ def make_candidate(feature,node_result):
 
 def road_quality(c,support):
     poly=c["_geom2278"]; boundary=poly.boundary
-    roads=[]; frontage=0
+    grouped=defaultdict(list); meta={}
+
     for f in support["roads"]:
         g=feature_shape(f)
         if not g: continue
         gp=proj(g)
         if not gp: continue
+        p=props(f); name=road_name(p) or ""; cls=road_class(p)
+        if not road_is_commercial_frontage(name,cls): continue
+        importance=road_importance(name,cls)
+        # A commercially meaningful road centerline must be close enough to the parcel edge
+        # to represent direct adjacency, not merely a nearby/second-row road.
+        max_gap=95 if importance>=3 else 70
         d=boundary.distance(gp)
-        if d<=90:
-            p=props(f); name=road_name(p) or "Unnamed road"; cls=road_class(p)
-            try: near_len=boundary.intersection(gp.buffer(55)).length
-            except: near_len=0
-            roads.append((name,cls,d,near_len,road_importance(name,cls)))
-            frontage+=near_len
-    unique=[]; seen=set()
-    for name,cls,d,l,importance in sorted(roads,key=lambda x:x[2]):
-        k=name.upper()
-        if k not in seen:
-            unique.append((name,cls,d,l,importance)); seen.add(k)
-    primary=[x for x in unique if x[4]>=3]
-    collectors=[x for x in unique if x[4]>=2]
-    meaningful=[x for x in unique if x[4]>=1 and x[3]>=40]
-    major=bool(primary)
-    strong_corner=bool(primary and len(meaningful)>=2)
-    secondary_corner=bool(collectors and len(meaningful)>=2)
+        if d>max_gap: continue
+        key=re.sub(r"\s+"," ",name.upper()).strip()
+        grouped[key].append(gp)
+        if key not in meta or importance>meta[key]["importance"]:
+            meta[key]={"name":name,"cls":cls,"importance":importance,"min_gap":d,"max_gap":max_gap}
+        else:
+            meta[key]["min_gap"]=min(meta[key]["min_gap"],d)
+
+    frontage_records=[]
+    for key,geoms in grouped.items():
+        info=meta[key]
+        try:
+            merged=unary_union(geoms)
+            contact=boundary.intersection(merged.buffer(info["max_gap"],cap_style=2,join_style=2))
+            continuous=longest_line_length(contact)
+            total=float(contact.length) if not contact.is_empty else 0.0
+        except Exception:
+            continuous=total=0.0
+        if continuous<=0: continue
+        frontage_records.append({
+            "name":info["name"],"importance":info["importance"],
+            "continuous_ft":continuous,"total_ft":total,"gap_ft":info["min_gap"]
+        })
+
+    frontage_records.sort(key=lambda x:(x["continuous_ft"],x["importance"]),reverse=True)
+    best=frontage_records[0] if frontage_records else None
+    qualified_ft=round(best["continuous_ft"],0) if best else 0
+    qualified_road=best["name"] if best else ""
+    qualified_importance=best["importance"] if best else 0
+    qualified_gap=round(best["gap_ft"],0) if best else None
+    roads=[x["name"] for x in frontage_records[:4]]
+
+    # A corner is only real for acquisition screening when TWO commercially meaningful
+    # roads each provide >=100 continuous feet of direct parcel-edge frontage.
+    strong_frontages=[x for x in frontage_records if x["continuous_ft"]>=100]
+    major=bool(best and best["importance"]>=3 and qualified_ft>=100)
+    strong_corner=len(strong_frontages)>=2 and any(x["importance"]>=3 for x in strong_frontages[:2])
+
     mtp_cross=False
     for f in support["mtp"]:
         g=feature_shape(f); gp=proj(g) if g else None
         if gp and gp.distance(poly)<=60:
             mtp_cross=True; break
-    if len(collectors)>=2 and strong_corner: score=100
-    elif strong_corner: score=94
-    elif major and frontage>=200: score=90
-    elif major: score=84
-    elif secondary_corner: score=80
-    elif collectors and frontage>=200: score=75
-    elif collectors: score=70
-    elif meaningful: score=60
+
+    if strong_corner: score=100
+    elif qualified_ft>=400 and qualified_importance>=3: score=96
+    elif qualified_ft>=200 and qualified_importance>=3: score=92
+    elif qualified_ft>=100 and qualified_importance>=3: score=86
+    elif qualified_ft>=300 and qualified_importance>=2: score=82
+    elif qualified_ft>=100 and qualified_importance>=2: score=74
     else: score=20
-    return round(score,1),[x[0] for x in unique[:4]],round(frontage,0),strong_corner,major,mtp_cross
+
+    return (round(score,1),roads,qualified_ft,strong_corner,major,mtp_cross,
+            qualified_road,qualified_importance,qualified_gap,
+            [{"road":x["name"],"continuous_ft":round(x["continuous_ft"],0),
+              "gap_ft":round(x["gap_ft"],0),"importance":x["importance"]}
+             for x in frontage_records[:4]])
 def flood_quality(c,support):
     poly=c["_geom2278"]; area=max(1,poly.area)
     sfha_area=fw_area=0
@@ -610,7 +669,7 @@ def classify_candidate(c):
     risks=[]
     if c.get("node_edge_miles",99)>.5: risks.append("not on the immediate intersection")
     if not c.get("major_road_signal"): risks.append("major-road exposure needs confirmation")
-    if c.get("frontage_ft_proxy",0)<200: risks.append("limited frontage proxy")
+    if c.get("qualified_frontage_ft",0)<200: risks.append("commercial frontage is under 200 ft")
     if c.get("utility_confidence")!="PROXY": risks.append("utility path is unverified")
     else: risks.append("utility capacity is unverified")
     if c.get("flood_pct") is None: risks.append("flood screen unavailable")
@@ -621,7 +680,7 @@ def classify_candidate(c):
     score=float(c.get("parcel_opportunity_score") or 0)
     conf=float(c.get("confidence_score") or 0)
     access_ready=(c.get("major_road_signal") and c.get("road_score",0)>=84
-                  and (c.get("frontage_ft_proxy",0)>=150 or c.get("corner_signal")=="STRONG"))
+                  and c.get("qualified_frontage_ft",0)>=100)
     priority=(c.get("eligible") and score>=78 and conf>=68 and c.get("node_edge_miles",99)<=.60
               and access_ready and c.get("flood_score",0)>=75 and c.get("parcel_execution_score",0)>=68
               and c.get("utility_confidence")=="PROXY")
@@ -645,7 +704,7 @@ def classify_candidate(c):
     return c
 
 def enrich_candidate(c,support,node_result):
-    road_score,roads,frontage,corner,major,mtp=road_quality(c,support)
+    road_score,roads,frontage,corner,major,mtp,frontage_road,frontage_importance,frontage_gap,frontage_detail=road_quality(c,support)
     flood_score,flood_pct,fw_pct,zones=55,None,None,[]
     flood_confidence="PENDING"
     flu,flu_names=land_use_quality(c,support)
@@ -658,13 +717,13 @@ def enrich_candidate(c,support,node_result):
     parcel_execution=(12*road_score+10*parcel_fit+8*utility_score+5*flood_score+5*acquisition)/40
     score=.60*c["node_score"]+.40*parcel_execution
 
-    eligible_pre_flood=(c["acres"]>=3 and c["node_edge_miles"]<=1.0 and road_score>=66 and c["raw_score"]>=60
+    eligible_pre_flood=(c["acres"]>=3 and c["node_edge_miles"]<=1.0
+                        and frontage>=100 and frontage_importance>=3 and road_score>=66 and c["raw_score"]>=60
                         and flu>=35 and c["shape_score"]>=30 and c["node_score"]>=55
-                        and node_result.get("confidence_score",0)>=50 and bool(roads))
+                        and node_result.get("confidence_score",0)>=50 and bool(frontage_road))
     reasons=[]
-    if corner and major: reasons.append("corner exposure on a major road")
-    elif major: reasons.append("major-road frontage")
-    elif roads: reasons.append("road frontage")
+    if corner and major: reasons.append(f"{int(frontage)} ft+ commercial frontage with major-road corner exposure")
+    elif frontage_road: reasons.append(f"{int(frontage)} ft continuous frontage on {frontage_road}")
     if c["node_edge_miles"]<=.25: reasons.append("within ¼ mile of the node")
     elif c["node_edge_miles"]<=.5: reasons.append("within ½ mile of the node")
     else: reasons.append("within 1 mile of the node")
@@ -675,6 +734,9 @@ def enrich_candidate(c,support,node_result):
 
     c.update({
         "road_score":road_score,"frontage_roads":roads,"frontage_ft_proxy":frontage,
+        "qualified_frontage_ft":frontage,"qualified_frontage_road":frontage_road,
+        "qualified_frontage_importance":frontage_importance,"frontage_centerline_gap_ft":frontage_gap,
+        "frontage_detail":frontage_detail,"frontage_standard":"100+ continuous ft on arterial/highway-caliber public road",
         "corner_signal":"STRONG" if corner and major else "YES" if corner else "NO",
         "major_road_signal":major,"mtp_row_flag":mtp,
         "flood_score":flood_score,"flood_pct":flood_pct,"floodway_pct":fw_pct,"flood_zones":zones,"flood_confidence":flood_confidence,
@@ -772,8 +834,9 @@ def public_props(c,rank=None):
     keys=[
       "prop_id","owner","situs","acres","land_value","assessed_value","improvement_value","improvement_ratio","gba",
       "prop_use","legal","node_id","node_name","node_score","node_edge_miles","dist_score","acre_score","raw_score",
-      "shape_score","compactness","aspect_ratio","road_score","frontage_roads","frontage_ft_proxy","corner_signal",
-      "major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","flood_confidence","future_land_use_score",
+      "shape_score","compactness","aspect_ratio","road_score","frontage_roads","frontage_ft_proxy",
+      "qualified_frontage_ft","qualified_frontage_road","qualified_frontage_importance","frontage_centerline_gap_ft",
+      "frontage_detail","frontage_standard","corner_signal","major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","flood_confidence","future_land_use_score",
       "future_land_use","aadt","aadt_5yr_growth_pct","aadt_station_miles","nearest_retail_catalyst","retail_catalyst_miles",
       "future_residential_lots_nearby","recent_housing_units_180d","utility_confidence","utility_context",
       "assessed_value_per_acre","land_value_per_acre","parcel_opportunity_score","parcel_execution_score","parcel_fit_score",
@@ -880,7 +943,8 @@ def main():
 
     cols=["rank","acquisition_category","parcel_opportunity_score","confidence_score","parcel_execution_score",
           "node_score","node_class","owner","prop_id","situs","acres","usable_acres_proxy","node_name","node_edge_miles",
-          "frontage_roads","frontage_ft_proxy","corner_signal","raw_score","shape_score","future_residential_lots_nearby",
+          "frontage_roads","frontage_ft_proxy","qualified_frontage_road","qualified_frontage_ft","frontage_centerline_gap_ft",
+          "corner_signal","raw_score","shape_score","future_residential_lots_nearby",
           "aadt","aadt_5yr_growth_pct","nearest_retail_catalyst","retail_catalyst_miles","flood_pct","floodway_pct",
           "assessed_value","assessed_value_per_acre","land_value_per_acre","last_deed_date","hold_years",
           "utility_confidence","decision_summary","why_this_tract","main_risks","verification_notes"]
@@ -912,6 +976,7 @@ def main():
         "land_use":"City of San Antonio Future Land Use",
         "utilities":"SAWS CIP proximity proxy only; capacity unverified"
       },
+      "manual_rejects":MANUAL_REJECTS,
       "errors":errors[:100],"source_feature_counts":dict(source_stats),
       "methodology":{
         "architecture":"Node first -> parcel second -> hard filters -> 60% location / 40% parcel execution -> confidence -> category",
@@ -919,8 +984,8 @@ def main():
         "parcel_weights":{"frontage_access":12,"size_shape":10,"utilities":8,"flood":5,"acquisition_complexity":5},
         "parcel_query_radius_miles":1.5,"hard_highlight_distance_miles":1.0,"min_acres":3,
         "active_node_limit":14,"top_limit":30,"per_node_cap":3,
-        "hard_gate":"3+ ac; <=1 mi by parcel-edge distance; actual road signal; raw-land >=60; shape >=30; node >=55 with confidence >=50; FEMA screen required with <10% floodway, <50% SFHA and >=3 usable-acre proxy; public/institutional/major-anchor owners excluded",
-        "category_rules":"PRIORITY requires score >=78, confidence >=68, <=0.60 mi to node, road >=78, flood >=75 and parcel execution >=68. WATCH requires score >=68/confidence >=52. EARLY SPECULATION requires strong node thesis with score >=59."
+        "hard_gate":"3+ ac; <=1 mi by parcel-edge distance; >=100 continuous ft on an arterial/highway-caliber public road; raw-land >=60; shape >=30; node >=55 with confidence >=50; FEMA screen required with <10% floodway, <50% SFHA and >=3 usable-acre proxy; public/institutional/major-anchor owners excluded",
+        "category_rules":"Every highlighted parcel must first clear the 100-ft qualified commercial frontage gate. PRIORITY requires score >=78, confidence >=68, <=0.60 mi to node, major-road access, flood >=75 and parcel execution >=68. WATCH requires score >=68/confidence >=52. EARLY SPECULATION requires strong node thesis with score >=59."
       }
     }
     (DATA/"opportunity_metadata.json").write_text(json.dumps(meta,indent=2))
