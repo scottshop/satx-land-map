@@ -823,8 +823,9 @@ def public_props(c,rank=None):
     keys=[
       "prop_id","owner","situs","acres","land_value","assessed_value","improvement_value","improvement_ratio","gba",
       "prop_use","legal","node_id","node_name","node_score","node_edge_miles","dist_score","acre_score","raw_score",
-      "shape_score","compactness","aspect_ratio","road_score","frontage_roads","frontage_ft_proxy","corner_signal",
-      "major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","flood_confidence","future_land_use_score",
+      "shape_score","compactness","aspect_ratio","road_score","frontage_roads","frontage_ft_proxy",
+      "qualified_frontage_ft","qualified_frontage_road","qualified_frontage_importance","frontage_centerline_gap_ft",
+      "frontage_detail","frontage_standard","corner_signal","major_road_signal","mtp_row_flag","flood_score","flood_pct","floodway_pct","flood_zones","flood_confidence","future_land_use_score",
       "future_land_use","aadt","aadt_5yr_growth_pct","aadt_station_miles","nearest_retail_catalyst","retail_catalyst_miles",
       "future_residential_lots_nearby","recent_housing_units_180d","utility_confidence","utility_context",
       "assessed_value_per_acre","land_value_per_acre","parcel_opportunity_score","parcel_execution_score","parcel_fit_score",
@@ -931,7 +932,8 @@ def main():
 
     cols=["rank","acquisition_category","parcel_opportunity_score","confidence_score","parcel_execution_score",
           "node_score","node_class","owner","prop_id","situs","acres","usable_acres_proxy","node_name","node_edge_miles",
-          "frontage_roads","frontage_ft_proxy","corner_signal","raw_score","shape_score","future_residential_lots_nearby",
+          "frontage_roads","frontage_ft_proxy","qualified_frontage_road","qualified_frontage_ft","frontage_centerline_gap_ft",
+          "corner_signal","raw_score","shape_score","future_residential_lots_nearby",
           "aadt","aadt_5yr_growth_pct","nearest_retail_catalyst","retail_catalyst_miles","flood_pct","floodway_pct",
           "assessed_value","assessed_value_per_acre","land_value_per_acre","last_deed_date","hold_years",
           "utility_confidence","decision_summary","why_this_tract","main_risks","verification_notes"]
@@ -970,8 +972,8 @@ def main():
         "parcel_weights":{"frontage_access":12,"size_shape":10,"utilities":8,"flood":5,"acquisition_complexity":5},
         "parcel_query_radius_miles":1.5,"hard_highlight_distance_miles":1.0,"min_acres":3,
         "active_node_limit":14,"top_limit":30,"per_node_cap":3,
-        "hard_gate":"3+ ac; <=1 mi by parcel-edge distance; actual road signal; raw-land >=60; shape >=30; node >=55 with confidence >=50; FEMA screen required with <10% floodway, <50% SFHA and >=3 usable-acre proxy; public/institutional/major-anchor owners excluded",
-        "category_rules":"PRIORITY requires score >=78, confidence >=68, <=0.60 mi to node, road >=78, flood >=75 and parcel execution >=68. WATCH requires score >=68/confidence >=52. EARLY SPECULATION requires strong node thesis with score >=59."
+        "hard_gate":"3+ ac; <=1 mi by parcel-edge distance; >=100 continuous ft on a named collector/arterial/highway; raw-land >=60; shape >=30; node >=55 with confidence >=50; FEMA screen required with <10% floodway, <50% SFHA and >=3 usable-acre proxy; public/institutional/major-anchor owners excluded",
+        "category_rules":"Every highlighted parcel must first clear the 100-ft qualified commercial frontage gate. PRIORITY requires score >=78, confidence >=68, <=0.60 mi to node, major-road access, flood >=75 and parcel execution >=68. WATCH requires score >=68/confidence >=52. EARLY SPECULATION requires strong node thesis with score >=59."
       }
     }
     (DATA/"opportunity_metadata.json").write_text(json.dumps(meta,indent=2))
