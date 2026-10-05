@@ -49,15 +49,12 @@ jobs:
           assert not bad, bad
           old={"338017","338011","163835"}
           survivors=[f["properties"] for f in d["features"] if str(f["properties"].get("prop_id")) in old]
-          for p in survivors:
-              assert float(p["qualified_frontage_ft"])>=100
-              assert int(p["qualified_frontage_importance"])>=3
+          assert not survivors, [(p["prop_id"],p.get("qualified_frontage_road"),p.get("qualified_frontage_ft")) for p in survivors]
           print("Highlighted parcels:",len(d["features"]))
           print("Top 10:")
           for f in d["features"][:10]:
               p=f["properties"]
               print(p["rank"],p["prop_id"],p["situs"],p["qualified_frontage_road"],p["qualified_frontage_ft"],p["acquisition_category"],p["parcel_opportunity_score"])
-          print("Former top-3 survivors:",[(p["prop_id"],p["qualified_frontage_road"],p["qualified_frontage_ft"]) for p in survivors])
           PY
       - name: Commit regenerated data
         run: |
