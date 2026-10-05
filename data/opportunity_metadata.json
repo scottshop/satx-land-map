@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-30T20:34:15.783323+00:00",
+  "generated_at": "2026-10-05T20:17:00Z",
   "generator": "scripts/generate_opportunities.py",
-  "version": "Acquisition Mode V2",
+  "version": "Acquisition Mode V2 — Frontage-Gated Refresh",
   "node_count": 24,
   "active_node_count": 13,
   "candidate_count": 180,
   "fema_screened_count": 78,
   "highlighted_count": 24,
-  "priority_count": 3,
-  "watch_count": 21,
+  "priority_count": 11,
+  "watch_count": 13,
   "early_speculation_count": 0,
   "assemblage_count": 7,
   "sources": {
@@ -57,12 +57,23 @@
       "acquisition_complexity": 5
     },
     "parcel_query_radius_miles": 1.5,
-    "hard_highlight_distance_miles": 1.0,
+    "hard_highlight_distance_miles": 1,
     "min_acres": 3,
     "active_node_limit": 14,
     "top_limit": 30,
     "per_node_cap": 3,
-    "hard_gate": "3+ ac; <=1 mi by parcel-edge distance; actual road signal; raw-land >=60; shape >=30; node >=55 with confidence >=50; FEMA screen required with <10% floodway, <50% SFHA and >=3 usable-acre proxy; public/institutional/major-anchor owners excluded",
+    "hard_gate": "3+ ac; <=1 mi parcel-edge distance; 100+ continuous ft on arterial/highway-caliber public road; raw-land and shape filters; FEMA screen; excluded ownership classes. Immediate published seed uses >=200 ft live-GIS frontage proxy.",
     "category_rules": "PRIORITY requires score >=78, confidence >=68, <=0.60 mi to node, road >=78, flood >=75 and parcel execution >=68. WATCH requires score >=68/confidence >=52. EARLY SPECULATION requires strong node thesis with score >=59."
+  },
+  "manual_rejects": {
+    "163835": "developer review: inadequate commercial frontage",
+    "338011": "developer review: inadequate commercial frontage",
+    "338017": "developer review: inadequate commercial frontage"
+  },
+  "frontage_refresh": {
+    "source": "Successfully generated 2026-10-01 live-GIS V3 Bexar candidate set",
+    "immediate_gate": "200+ ft frontage proxy on arterial/highway-type road",
+    "production_gate": "100+ ft continuous frontage on arterial/highway-caliber public road",
+    "note": "The immediate live refresh uses a stricter 200-ft proxy threshold as a conservative bridge while the new continuous-frontage generator is awaiting runner availability."
   }
 }
