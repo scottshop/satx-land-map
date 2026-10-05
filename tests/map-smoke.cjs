@@ -28,6 +28,9 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     assert(await page.evaluate(() => v6OpportunityData.length >= 5),'Acquisition mode should load at least five qualified parcels');
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>['PRIORITY','WATCH','EARLY SPECULATION'].includes(f.properties.acquisition_category))),true,'Every highlighted parcel needs an acquisition tier');
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>Number.isFinite(Number(f.properties.confidence_score)))),true,'Every highlighted parcel needs confidence');
+    assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>Number(f.properties.qualified_frontage_ft)>=100)),true,'Every highlighted parcel needs at least 100 ft qualified frontage');
+    assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>Number(f.properties.qualified_frontage_importance)>=2)),true,'Every highlighted parcel needs collector-or-better frontage');
+    assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>String(f.properties.qualified_frontage_road||'').trim().length>0)),true,'Every highlighted parcel needs a named qualifying frontage road');
     assert.equal(await page.evaluate(() => testMap.hasLayer(tile_layer_satellite_hybrid)), true);
     for (const name of ['v3Parcels','v3ComalParcels','v3GuadalupeParcels','v3SewerService','v3FemaHazard','v3AADT','v3FutureLandUse','v3Rings','v3VerifiedTargetGeometry']) {
       assert.equal(await page.evaluate(n => testMap.hasLayer(window[n]), name), false, name + ' must default OFF');
@@ -133,7 +136,9 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     await page.evaluate(() => { v3Parcels.addTo(testMap); });
     await clickFeature('testTarget', 'WHY THIS TRACT');
     await page.evaluate(() => { testMap.removeLayer(v3Parcels); testMap.removeLayer(v6OpportunityLayer); });
-    await page.locator('#v6TopToggle').click(); await page.locator('.v6OppCard').first().click();
+    await page.locator('#v6TopToggle').click();
+    assert((await page.locator('.v6OppCard').first().innerText()).toLowerCase().includes('ft frontage'),'Top Land card should show qualified frontage');
+    await page.locator('.v6OppCard').first().click();
     assert(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)));
     await page.locator('.leaflet-popup-close-button').click(); await page.waitForFunction(()=>document.querySelectorAll('.leaflet-popup').length===0); await page.locator('#v6TopToggle').click();
     console.log('PASS Top Land');
