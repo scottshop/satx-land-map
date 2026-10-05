@@ -42,7 +42,7 @@ jobs:
               ft=float(p.get("qualified_frontage_ft") or 0)
               road=str(p.get("qualified_frontage_road") or "")
               imp=int(p.get("qualified_frontage_importance") or 0)
-              if ft < 100 or imp < 2 or not road:
+              if ft < 100 or imp < 3 or not road:
                   bad.append((p.get("rank"),p.get("prop_id"),ft,road,imp))
               assert "UNNAMED" not in road.upper(), (p.get("prop_id"),road)
               assert not re.search(r"\b(PVT|PRIVATE)\b",road,re.I), (p.get("prop_id"),road)
@@ -51,7 +51,7 @@ jobs:
           survivors=[f["properties"] for f in d["features"] if str(f["properties"].get("prop_id")) in old]
           for p in survivors:
               assert float(p["qualified_frontage_ft"])>=100
-              assert int(p["qualified_frontage_importance"])>=2
+              assert int(p["qualified_frontage_importance"])>=3
           print("Highlighted parcels:",len(d["features"]))
           print("Top 10:")
           for f in d["features"][:10]:
