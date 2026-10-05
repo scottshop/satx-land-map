@@ -68,10 +68,15 @@ jobs:
               assert p.get("parcel_execution_score") is not None
               assert p.get("node_component_scores")
               assert p.get("parcel_component_scores")
+              assert float(p.get("qualified_frontage_ft") or 0) >= 100, (p.get("prop_id"),p.get("qualified_frontage_ft"))
+              assert int(p.get("qualified_frontage_importance") or 0) >= 3, (p.get("prop_id"),p.get("qualified_frontage_road"))
+              assert str(p.get("qualified_frontage_road") or "").strip(), p.get("prop_id")
               assert not excluded.search(p.get("owner","")), p.get("owner")
               if p["acquisition_category"]=="PRIORITY":
                   assert p.get("utility_confidence")=="PROXY"
                   assert p.get("major_road_signal") is True
+          rejected={"338017","338011","163835"}
+          assert not any(str(f["properties"].get("prop_id")) in rejected for f in d["features"]), "Developer-rejected frontage sites reappeared"
           rows=list(csv.DictReader(open("data/tracts_to_review.csv")))
           assert len(rows)==len(d["features"])
           print("Validated",len(rows),"Acquisition V2 parcels")
