@@ -40,7 +40,7 @@ A highlighted parcel must:
 
 - contain at least 3 acres;
 - be within 1 mile of a selected node by parcel-edge distance;
-- have a credible road/frontage signal;
+- prove at least **100 continuous feet of frontage on an arterial/highway-caliber public road**; local, private, unnamed, or GIS-only segment frontage does not satisfy the acquisition gate;
 - remain predominantly raw or low-improvement land;
 - meet minimum shape quality;
 - pass FEMA screening with less than 10% floodway, less than 50% SFHA, and at least a 3-acre usable-area proxy;
@@ -78,6 +78,12 @@ Gray outline. Strong node thesis but lower parcel certainty. The generator does 
 Confidence is separate from opportunity. It reflects the completeness/reliability of node data, BCAD geometry, road evidence, FEMA screening, traffic, utility context and ownership verification.
 
 A high opportunity score with weaker diligence data does not automatically become Priority.
+
+## Developer feedback loop
+
+Specific parcels rejected during developer review can be persisted as manual acquisition exclusions with the reason for rejection. This prevents a known bad tract from returning later merely because another model component or source update increases its numerical score.
+
+Current frontage-reviewed exclusions include the former top three parcels 338017, 338011 and 163835, rejected for inadequate commercial frontage.
 
 ## Important limitations
 
