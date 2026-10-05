@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-22.04
+    runs-on: macos-15
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v6
