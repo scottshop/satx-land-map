@@ -210,7 +210,9 @@ def road_is_commercial_frontage(name,cls):
     if re.search(r"\b(PVT|PRIVATE)\b",n): return False
     if re.match(r"^(CS|CR)\d+(?:-[A-Z0-9]+)?$",n.replace(" ","")) or re.match(r"^\d+$",n):
         return False
-    return road_importance(name,cls)>=2
+    # Acquisition frontage must be arterial/highway caliber. Collector/local frontage alone
+    # does not qualify a tract for the highlighted acquisition list.
+    return road_importance(name,cls)>=3
 
 def longest_line_length(g):
     if g is None or g.is_empty: return 0.0
@@ -707,7 +709,7 @@ def enrich_candidate(c,support,node_result):
     score=.60*c["node_score"]+.40*parcel_execution
 
     eligible_pre_flood=(c["acres"]>=3 and c["node_edge_miles"]<=1.0
-                        and frontage>=100 and frontage_importance>=2 and road_score>=66 and c["raw_score"]>=60
+                        and frontage>=100 and frontage_importance>=3 and road_score>=66 and c["raw_score"]>=60
                         and flu>=35 and c["shape_score"]>=30 and c["node_score"]>=55
                         and node_result.get("confidence_score",0)>=50 and bool(frontage_road))
     reasons=[]
@@ -725,7 +727,7 @@ def enrich_candidate(c,support,node_result):
         "road_score":road_score,"frontage_roads":roads,"frontage_ft_proxy":frontage,
         "qualified_frontage_ft":frontage,"qualified_frontage_road":frontage_road,
         "qualified_frontage_importance":frontage_importance,"frontage_centerline_gap_ft":frontage_gap,
-        "frontage_detail":frontage_detail,"frontage_standard":"100+ continuous ft on named collector/arterial/highway",
+        "frontage_detail":frontage_detail,"frontage_standard":"100+ continuous ft on arterial/highway-caliber public road",
         "corner_signal":"STRONG" if corner and major else "YES" if corner else "NO",
         "major_road_signal":major,"mtp_row_flag":mtp,
         "flood_score":flood_score,"flood_pct":flood_pct,"floodway_pct":fw_pct,"flood_zones":zones,"flood_confidence":flood_confidence,
@@ -972,7 +974,7 @@ def main():
         "parcel_weights":{"frontage_access":12,"size_shape":10,"utilities":8,"flood":5,"acquisition_complexity":5},
         "parcel_query_radius_miles":1.5,"hard_highlight_distance_miles":1.0,"min_acres":3,
         "active_node_limit":14,"top_limit":30,"per_node_cap":3,
-        "hard_gate":"3+ ac; <=1 mi by parcel-edge distance; >=100 continuous ft on a named collector/arterial/highway; raw-land >=60; shape >=30; node >=55 with confidence >=50; FEMA screen required with <10% floodway, <50% SFHA and >=3 usable-acre proxy; public/institutional/major-anchor owners excluded",
+        "hard_gate":"3+ ac; <=1 mi by parcel-edge distance; >=100 continuous ft on an arterial/highway-caliber public road; raw-land >=60; shape >=30; node >=55 with confidence >=50; FEMA screen required with <10% floodway, <50% SFHA and >=3 usable-acre proxy; public/institutional/major-anchor owners excluded",
         "category_rules":"Every highlighted parcel must first clear the 100-ft qualified commercial frontage gate. PRIORITY requires score >=78, confidence >=68, <=0.60 mi to node, major-road access, flood >=75 and parcel execution >=68. WATCH requires score >=68/confidence >=52. EARLY SPECULATION requires strong node thesis with score >=59."
       }
     }
