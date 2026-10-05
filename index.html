@@ -164,7 +164,7 @@
     
 <div id="v7Header">
   <div class="v7Title">San Antonio Land Acquisition Map</div>
-  <div class="v7Sub">Bright yellow = PRIORITY · Amber = WATCH · Gray outline = EARLY</div>
+  <div class="v7Sub">Bright yellow = PRIORITY · Every highlighted tract requires 100+ ft qualified commercial frontage</div>
 </div>
 
 <button id="v7ModeToggle" data-mode="acquisition">ACQUISITION MODE</button>
@@ -3938,7 +3938,8 @@
             "<div class='v7Section'><div class='v7SectionTitle'>Node / Access</div>"+
               "<b>Node:</b> "+v6h(p.node_name)+" · "+Number(p.node_edge_miles||0).toFixed(2)+" mi<br>"+
               "<b>Node class:</b> "+v6h(p.node_class||"—")+" · "+v6h(p.node_score||"—")+"/100<br>"+
-              "<b>Frontage:</b> "+v6h(v6arr(p.frontage_roads))+" · "+v6h(p.frontage_ft_proxy||0)+" ft proxy<br>"+
+              "<b>Qualified frontage:</b> "+v6h(p.qualified_frontage_ft||0)+" ft on "+v6h(p.qualified_frontage_road||"—")+"<br>"+
+              "<b>Road frontage set:</b> "+v6h(v6arr(p.frontage_roads))+"<br>"+
               "<b>Corner:</b> "+v6h(p.corner_signal||"—")+
             "</div>"+
             "<div class='v7Section'><div class='v7SectionTitle'>Demand</div>"+
@@ -4004,7 +4005,7 @@
               "<div style='margin-top:5px'><span class='v8Category' data-cat='"+v6h(category)+"'>"+v6h(category)+"</span><span class='v8Confidence'>CONF "+v6h(p.confidence_score||"—")+"</span></div>"+
               "<div class='v7Node'>"+v6h(p.node_name)+"</div>"+
               "<div class='v6Tiny'>"+v6h(p.owner||"—")+" · "+Number(p.node_edge_miles||0).toFixed(2)+" mi to node</div>"+
-              "<div class='v7Signals'><span class='v7Signal'>"+lots+" future lots</span><span class='v7Signal'>"+v6h(cat)+" · "+catMi+"</span></div>"+
+              "<div class='v7Signals'><span class='v7Signal'>"+v6h(p.qualified_frontage_ft||0)+" ft frontage · "+v6h(p.qualified_frontage_road||"—")+"</span><span class='v7Signal'>"+lots+" future lots</span><span class='v7Signal'>"+v6h(cat)+" · "+catMi+"</span></div>"+
               "<div class='v7Why'><b>"+v6h(p.decision_summary||"")+"</b><br>"+v6h(p.why_this_tract||"")+"</div></div>";
           }).join("");
           Array.prototype.forEach.call(list.querySelectorAll(".v6OppCard"),function(el){
