@@ -2979,7 +2979,7 @@
                   var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
                   var group=parts.length>1?parts.shift():'RESEARCH';
                   span.textContent=' '+parts.join(' — ');
-                  var colors={'Exact Target Parcels':'#fff200','H-E-B Owned Parcels':'#e31b23','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Approximate Utility Corridors':'#7c3aed'};
+                  var colors={'Exact Target Parcels':'#fff200','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Approximate Utility Corridors':'#7c3aed'};
                   if(colors[parts.join(' — ')]){span.style.borderLeft='4px '+(parts[0]==='Approximate Utility Corridors'?'dashed':'solid')+' '+colors[parts.join(' — ')];span.style.paddingLeft='6px';}
                   (groups[group]||(groups[group]=[])).push(label);
                 });
@@ -3502,8 +3502,9 @@
             "<span style='color:#666'>Official FEMA NFHL screening. Confirm effective map/LOMR status during diligence.</span></div>";
         });
 
-        // NEW HOUSING PLATS — exact Bexar County residential plat polygons only.
-        // One toggle combines the active plat lifecycle and recent recorded residential plats.
+        // NEW HOUSING PLATS — residential plat/subdivision polygons.
+        // One toggle combines Bexar County's active plat lifecycle + recent recorded housing plats
+        // with recent City of Schertz residential subdivision polygons (including the FM 1518 / I-10 growth area).
         function v10HousingPlatDate(v){
           if(!v)return "—";
           try{return new Date(v).toLocaleDateString();}catch(e){return "—";}
@@ -3515,7 +3516,7 @@
           var submitted=v10HousingPlatDate(p.INIT_SUBMIT_DT);
           var recorded=v10HousingPlatDate(p.PLAT_RCRD_DT);
           return "<div class='v7Popup' style='min-width:270px'>"+
-            "<div style='font-size:10px;font-weight:900;letter-spacing:.5px;color:#2563eb'>NEW HOUSING PLAT · "+v3esc(status)+"</div>"+
+            "<div style='font-size:10px;font-weight:900;letter-spacing:.5px;color:#2563eb'>NEW HOUSING PLAT · BEXAR · "+v3esc(status)+"</div>"+
             "<div style='font-size:15px;font-weight:900;margin:3px 0'>"+v3esc(p.PLAT_NM||"Residential Plat")+"</div>"+
             "<dl class='popup-facts'>"+
               "<dt>New home lots</dt><dd><b>"+lots.toLocaleString()+"</b></dd>"+
@@ -3545,7 +3546,7 @@
           layer.bindPopup(function(l){return v10HousingPlatPopup(l,status);},{maxWidth:360});
           layer.bindTooltip(function(l){
             var p=l.feature.properties||{}, lots=Number(p.NBR_NEW_SINGLE_LOTS||0);
-            return "<b>"+v3esc(p.PLAT_NM||status)+"</b><br>"+lots.toLocaleString()+" new-home lots · "+v3esc(status);
+            return "<b>"+v3esc(p.PLAT_NM||status)+"</b><br>"+lots.toLocaleString()+" new-home lots · Bexar · "+v3esc(status);
           },{sticky:true,className:"bcad-hover"});
           return layer;
         }
@@ -3557,14 +3558,56 @@
           8,"Recorded 2024+","#2563eb",
           "NBR_NEW_SINGLE_LOTS > 0 AND PLAT_RCRD_DT >= DATE '2024-01-01'"
         );
+
+        // City of Schertz GIS subdivision polygons. TYPE=0 is the service's Residential subtype.
+        // Use 2022+ approvals so multi-year subdivisions that are still delivering homes are not missed.
+        var v10SchertzHousingUrl="https://maps.schertz.com/hosting/rest/services/PublicFolder/CV_Workspace_View/MapServer/5";
+        var v10SchertzHousingPlats=L.esri.featureLayer({
+          pane:"diligence",
+          minZoom:10,
+          url:v10SchertzHousingUrl,
+          where:"TYPE = 0 AND APPROVEDDATE >= DATE '2022-01-01'",
+          simplifyFactor:0.30,
+          precision:5,
+          style:function(){
+            return {color:"#7c3aed",weight:3,opacity:.98,fillColor:"#8b5cf6",fillOpacity:.17,lineJoin:"round"};
+          },
+          attribution:"City of Schertz GIS - Residential Subdivisions"
+        });
+        v10SchertzHousingPlats.bindPopup(function(layer){
+          var p=layer.feature.properties||{};
+          var acres=Number(p.SUBACRE);
+          return "<div class='v7Popup' style='min-width:270px'>"+
+            "<div style='font-size:10px;font-weight:900;letter-spacing:.5px;color:#7c3aed'>NEW HOUSING PLAT · SCHERTZ RESIDENTIAL</div>"+
+            "<div style='font-size:15px;font-weight:900;margin:3px 0'>"+v3esc(p.SUBDIVNAME||"Residential Subdivision")+"</div>"+
+            "<dl class='popup-facts'>"+
+              "<dt>Plat status</dt><dd>"+v3esc(p.SUBDIVSTATUS||"—")+"</dd>"+
+              "<dt>Subdivision</dt><dd>"+v3esc(p.SUBDIVTYPE||"Residential")+"</dd>"+
+              "<dt>Approved</dt><dd>"+v3esc(v10HousingPlatDate(p.APPROVEDDATE))+"</dd>"+
+              "<dt>Area</dt><dd>"+(isFinite(acres)?acres.toFixed(1)+" acres":"—")+"</dd>"+
+              "<dt>Last update</dt><dd>"+v3esc(v10HousingPlatDate(p.LASTUPDATE||p.last_edited_date))+"</dd>"+
+            "</dl>"+
+            "<div class='popup-source'>City of Schertz GIS subdivision polygon. Filter: Residential subtype, approved 2022+. This source does not publish a housing-lot count, so no lot total is inferred.</div>"+
+          "</div>";
+        },{maxWidth:360});
+        v10SchertzHousingPlats.bindTooltip(function(layer){
+          var p=layer.feature.properties||{}, acres=Number(p.SUBACRE);
+          return "<b>"+v3esc(p.SUBDIVNAME||"Schertz residential subdivision")+"</b><br>"+
+            v3esc(p.SUBDIVSTATUS||"Residential plat")+
+            (isFinite(acres)?" · "+acres.toFixed(1)+" ac":"")+
+            " · Schertz";
+        },{sticky:true,className:"bcad-hover"});
+
         var v10NewHousingPlats=L.layerGroup([
           v10HousingPlatApplications,
           v10HousingPlatWorking,
           v10HousingPlatStaff,
           v10HousingPlatApproved,
-          v10HousingPlatRecorded
+          v10HousingPlatRecorded,
+          v10SchertzHousingPlats
         ]);
         window.v10NewHousingPlats=v10NewHousingPlats;
+        window.v10SchertzHousingPlats=v10SchertzHousingPlats;
 
         // City of San Antonio adopted Future Land Use / SA Tomorrow planning context.
         var v3FutureLandUse = L.esri.featureLayer({
@@ -3774,7 +3817,7 @@
           d.style.cssText="background:white;padding:7px 9px;max-width:285px;font:11px/1.35 Arial;color:#333";
           d.innerHTML="<b>Source notes</b><br>"+
             "Parcel polygons/owner screen: BCAD via SARA (Dec. 2025)<br>"+
-            "New housing plats: Bexar Public Works residential plat lifecycle (100% housing-lot filtered)<br>"+
+            "New housing plats: Bexar Public Works residential plat lifecycle + City of Schertz residential subdivisions (2022+ approvals)<br>"+
             "Traffic: TxDOT historical AADT<br>"+
             "FEMA NFHL: unavailable at Sept. 29 audit<br>"+
             "Flood buffer: Bexar Public Works 100-ft screen<br>"+
@@ -3823,6 +3866,7 @@
         [
           [v3Parcels,'Bexar CAD'],[v3ComalParcels,'Comal CAD'],[v3GuadalupeParcels,'Guadalupe CAD'],
           [v3HEBOwnedParcels,'H-E-B Bexar'],[v3HEBComalParcels,'H-E-B Comal'],[v3HEBGuadalupeParcels,'H-E-B Guadalupe'],
+          [v10SchertzHousingPlats,'Schertz housing plats'],
           [v3SewerSAWS,'SAWS sewer'],[v3SewerNBU,'NBU sewer'],[v3SewerGBRAGravity,'GBRA gravity'],[v3SewerGBRAForce,'GBRA force mains'],
           [v3FemaHazard,'FEMA flood'],[v3AADT,'Traffic counts']
         ].forEach(function(item){
