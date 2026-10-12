@@ -3502,33 +3502,69 @@
             "<span style='color:#666'>Official FEMA NFHL screening. Confirm effective map/LOMR status during diligence.</span></div>";
         });
 
-        // Bexar County development pipeline: plat applications, working/staff-accepted plats and MDP amendments.
-        var v3BexarDevelopment = L.esri.dynamicMapLayer({
-          url:v3BexarDevUrl,
-          layers:[4,5,6,12],
-          opacity:0.58,
-          attribution:"Bexar County Public Works - Plats / MDPs"
-        });
-        // Current City of San Antonio preliminary plats. Feature service was edited 2026-09-21.
-        var v3PrelimPlats = L.esri.featureLayer({
-          pane:"diligence", minZoom:12,
-          url:v3PlatUrl,
-          simplifyFactor:0.45,
-          precision:5,
-          style:function(){
-            return {color:"#2866b1",weight:2,opacity:0.9,fillColor:"#73b2ff",fillOpacity:0.22};
-          },
-          attribution:"City of San Antonio Development Services"
-        });
-        v3PrelimPlats.bindPopup(function(layer){
+        // NEW HOUSING PLATS — exact Bexar County residential plat polygons only.
+        // One toggle combines the active plat lifecycle and recent recorded residential plats.
+        function v10HousingPlatDate(v){
+          if(!v)return "—";
+          try{return new Date(v).toLocaleDateString();}catch(e){return "—";}
+        }
+        function v10HousingPlatPopup(layer,status){
           var p=layer.feature.properties||{};
-          var edited=p.last_edited_date ? new Date(p.last_edited_date).toLocaleDateString() : "—";
-          return "<div style='min-width:245px'><b>"+v3esc(p.PlatName||"Preliminary Plat")+"</b><br>"+
-                 "<b>Plat #:</b> "+v3esc(p.PlatNumber||"—")+"<br>"+
-                 "<b>Last edited:</b> "+v3esc(edited)+"<br>"+
-                 "<b>Source:</b> CoSA Development Services<br>"+
-                 "<span style='color:#666'>Polygon is an official preliminary-plat screening layer; verify current approval/status before underwriting.</span></div>";
-        });
+          var lots=Number(p.NBR_NEW_SINGLE_LOTS||0);
+          var commercial=Number(p.NBR_NEW_COMMERCIAL_LOTS||0);
+          var submitted=v10HousingPlatDate(p.INIT_SUBMIT_DT);
+          var recorded=v10HousingPlatDate(p.PLAT_RCRD_DT);
+          return "<div class='v7Popup' style='min-width:270px'>"+
+            "<div style='font-size:10px;font-weight:900;letter-spacing:.5px;color:#2563eb'>NEW HOUSING PLAT · "+v3esc(status)+"</div>"+
+            "<div style='font-size:15px;font-weight:900;margin:3px 0'>"+v3esc(p.PLAT_NM||"Residential Plat")+"</div>"+
+            "<dl class='popup-facts'>"+
+              "<dt>New home lots</dt><dd><b>"+lots.toLocaleString()+"</b></dd>"+
+              "<dt>Plat #</dt><dd>"+v3esc(p.PLAT_NBR||"—")+"</dd>"+
+              "<dt>Unit / phase</dt><dd>"+v3esc([p.UNIT_NBR,p.PHASE,p.SECTION_].filter(Boolean).join(" / ")||"—")+"</dd>"+
+              "<dt>Submitted</dt><dd>"+v3esc(submitted)+"</dd>"+
+              "<dt>Recorded</dt><dd>"+v3esc(recorded)+"</dd>"+
+              (commercial?"<dt>Commercial lots</dt><dd>"+commercial.toLocaleString()+"</dd>":"")+
+              "<dt>Location</dt><dd>"+v3esc(p.LOCATION_DESCRIPTION||"—")+"</dd>"+
+            "</dl>"+
+            "<div class='popup-source'>Bexar County Public Works plat service. Residential filter requires NBR_NEW_SINGLE_LOTS &gt; 0. Verify current entitlement/recording status before underwriting.</div>"+
+          "</div>";
+        }
+        function v10HousingPlatLayer(layerId,status,color,where){
+          var layer=L.esri.featureLayer({
+            pane:"diligence",
+            minZoom:10,
+            url:v3BexarDevUrl+"/"+layerId,
+            where:where||"NBR_NEW_SINGLE_LOTS > 0 AND RETIRED_DT IS NULL",
+            simplifyFactor:0.35,
+            precision:5,
+            style:function(){
+              return {color:color,weight:2.6,opacity:.96,fillColor:color,fillOpacity:.16,lineJoin:"round"};
+            },
+            attribution:"Bexar County Public Works - Residential Plats"
+          });
+          layer.bindPopup(function(l){return v10HousingPlatPopup(l,status);},{maxWidth:360});
+          layer.bindTooltip(function(l){
+            var p=l.feature.properties||{}, lots=Number(p.NBR_NEW_SINGLE_LOTS||0);
+            return "<b>"+v3esc(p.PLAT_NM||status)+"</b><br>"+lots.toLocaleString()+" new-home lots · "+v3esc(status);
+          },{sticky:true,className:"bcad-hover"});
+          return layer;
+        }
+        var v10HousingPlatApplications=v10HousingPlatLayer(4,"Application","#ef4444");
+        var v10HousingPlatWorking=v10HousingPlatLayer(5,"Working","#f97316");
+        var v10HousingPlatStaff=v10HousingPlatLayer(6,"Staff Accepted","#eab308");
+        var v10HousingPlatApproved=v10HousingPlatLayer(7,"Approved","#22c55e");
+        var v10HousingPlatRecorded=v10HousingPlatLayer(
+          8,"Recorded 2024+","#2563eb",
+          "NBR_NEW_SINGLE_LOTS > 0 AND PLAT_RCRD_DT >= DATE '2024-01-01'"
+        );
+        var v10NewHousingPlats=L.layerGroup([
+          v10HousingPlatApplications,
+          v10HousingPlatWorking,
+          v10HousingPlatStaff,
+          v10HousingPlatApproved,
+          v10HousingPlatRecorded
+        ]);
+        window.v10NewHousingPlats=v10NewHousingPlats;
 
         // City of San Antonio adopted Future Land Use / SA Tomorrow planning context.
         var v3FutureLandUse = L.esri.featureLayer({
@@ -3738,7 +3774,7 @@
           d.style.cssText="background:white;padding:7px 9px;max-width:285px;font:11px/1.35 Arial;color:#333";
           d.innerHTML="<b>Source notes</b><br>"+
             "Parcel polygons/owner screen: BCAD via SARA (Dec. 2025)<br>"+
-            "County plats/MDPs: Bexar Public Works<br>"+
+            "New housing plats: Bexar Public Works residential plat lifecycle (100% housing-lot filtered)<br>"+
             "Traffic: TxDOT historical AADT<br>"+
             "FEMA NFHL: unavailable at Sept. 29 audit<br>"+
             "Flood buffer: Bexar Public Works 100-ft screen<br>"+
@@ -3751,7 +3787,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"PARCEL DATA — Comal CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"PARCEL DATA — Guadalupe CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"LAND — H-E-B Owned Parcels");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BexarDevelopment,"GROWTH — Bexar Plats / MDPs");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v10NewHousingPlats,"GROWTH — New Housing Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"INFRASTRUCTURE — Existing Sewer Mains");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BulverdeVerifiedSewer,"INFRASTRUCTURE — Approximate Utility Corridors");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3AADT,"INFRASTRUCTURE — Traffic Counts");
@@ -4083,7 +4119,7 @@
           var researchLayers=[
             feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
             feature_group_370786adb15c6d6d865f189609798696,
-            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v3BexarDevelopment,v3SewerService,v3BulverdeVerifiedSewer,
+            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v10NewHousingPlats,v3SewerService,v3BulverdeVerifiedSewer,
             v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings
           ];
 
