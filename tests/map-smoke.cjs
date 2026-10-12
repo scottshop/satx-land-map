@@ -54,6 +54,36 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
       assert.equal(await page.getByText(removed,{exact:true}).count(),0, removed+' should be removed from Layers');
     }
     for (const title of ['BASEMAPS','LAND','PARCEL DATA','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH']) assert(await page.getByText(title, {exact: true}).isVisible());
+    const housingLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'New Housing Plats'});
+    assert.equal(await housingLabel.count(),1,'New Housing Plats toggle should exist');
+    const housingBox=housingLabel.locator('input');
+    if(await housingBox.isChecked()) await housingBox.uncheck();
+    await page.evaluate(()=>testMap.setView([29.48,-98.30],13,{animate:false}));
+    await housingBox.check();
+    await page.waitForFunction(()=>{
+      let count=0;
+      if(!window.v10NewHousingPlats)return false;
+      window.v10NewHousingPlats.eachLayer(src=>{
+        if(src.eachFeature)src.eachFeature(l=>{if(l.feature&&Number((l.feature.properties||{}).NBR_NEW_SINGLE_LOTS||0)>0)count++;});
+      });
+      return count>0;
+    },{timeout:45000});
+    const housingSample=await page.evaluate(()=>{
+      let out=null;
+      window.v10NewHousingPlats.eachLayer(src=>{
+        if(out||!src.eachFeature)return;
+        src.eachFeature(l=>{
+          if(out)return;
+          const p=(l.feature&&l.feature.properties)||{};
+          if(Number(p.NBR_NEW_SINGLE_LOTS||0)>0)out={name:p.PLAT_NM,lots:Number(p.NBR_NEW_SINGLE_LOTS||0)};
+        });
+      });
+      return out;
+    });
+    assert(housingSample&&housingSample.lots>0,'Housing plat should report new-home lots');
+    await housingBox.uncheck();
+    console.log('PASS New Housing Plats toggle',housingSample);
+
     const targetLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Exact Target Parcels'});
     await targetLabel.locator('input').uncheck(); assert.equal(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)), false);
     await targetLabel.locator('input').check(); assert.equal(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)), true);
