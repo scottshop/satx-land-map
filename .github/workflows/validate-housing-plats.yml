@@ -1,0 +1,51 @@
+name: Validate new housing plats toggle
+
+on:
+  push:
+    branches:
+      - feature/new-housing-plats-toggle-20261012
+    paths:
+      - "index.html"
+      - "tests/map-smoke.cjs"
+      - ".github/workflows/validate-housing-plats.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Install Playwright
+        run: npm install --no-save playwright@1.55.0
+      - name: Require Chrome
+        run: test -x /usr/bin/google-chrome
+      - name: Browser smoke test
+        run: node tests/map-smoke.cjs
+      - name: Verify housing-only source filters
+        run: |
+          python - <<'PY'
+          import requests
+          base="https://maps.bexar.org/arcgis/rest/services/PW/PlatsMDPs/MapServer"
+          checks=[
+            (4,"NBR_NEW_SINGLE_LOTS > 0 AND RETIRED_DT IS NULL"),
+            (5,"NBR_NEW_SINGLE_LOTS > 0 AND RETIRED_DT IS NULL"),
+            (6,"NBR_NEW_SINGLE_LOTS > 0 AND RETIRED_DT IS NULL"),
+            (7,"NBR_NEW_SINGLE_LOTS > 0 AND RETIRED_DT IS NULL"),
+            (8,"NBR_NEW_SINGLE_LOTS > 0 AND PLAT_RCRD_DT >= DATE '2024-01-01'"),
+          ]
+          for layer,where in checks:
+            r=requests.get(f"{base}/{layer}/query",params={
+              "f":"json","where":where,"returnCountOnly":"true"
+            },timeout=30)
+            r.raise_for_status()
+            d=r.json()
+            assert "error" not in d,(layer,d)
+            print(layer,where,"count",d.get("count"))
+          PY
