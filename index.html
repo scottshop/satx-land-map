@@ -3503,8 +3503,9 @@
         });
 
         // NEW HOUSING PLATS — residential plat/subdivision polygons.
-        // One toggle combines Bexar County's active plat lifecycle + recent recorded housing plats
-        // with recent City of Schertz residential subdivision polygons (including the FM 1518 / I-10 growth area).
+        // One toggle combines Bexar County's active plat lifecycle + recent recorded housing plats,
+        // City of Schertz residential subdivision polygons, and recent Comal County subdivision plats.
+        // Comal coverage includes Bulverde; Bulverde's platting guidance directs recorded subdivision plats to Comal County.
         function v10HousingPlatDate(v){
           if(!v)return "—";
           try{return new Date(v).toLocaleDateString();}catch(e){return "—";}
@@ -3598,16 +3599,61 @@
             " · Schertz";
         },{sticky:true,className:"bcad-hover"});
 
+        // COMAL COUNTY + BULVERDE — recent recorded subdivision plat polygons.
+        // This public polygon layer is sourced from the Comal County Engineer's Office (CCEO).
+        // The available mirror snapshot is dated 9/19/2024, so the popup explicitly preserves that date.
+        // A broad 2+ lot screen avoids one-lot plat noise without pretending the source publishes a housing-only flag.
+        var v11ComalHousingUrl="https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Hines_SiteSelection/MapServer/577";
+        var v11ComalHousingPlats=L.esri.featureLayer({
+          pane:"diligence",
+          minZoom:10,
+          url:v11ComalHousingUrl,
+          where:"YEAR >= 2022 AND Total_Lots >= 2",
+          simplifyFactor:0.30,
+          precision:5,
+          style:function(){
+            return {color:"#0891b2",weight:3,opacity:.98,fillColor:"#06b6d4",fillOpacity:.16,lineJoin:"round"};
+          },
+          attribution:"Comal County Engineer's Office plats (CCEO source; public mirror)"
+        });
+        v11ComalHousingPlats.bindPopup(function(layer){
+          var p=layer.feature.properties||{};
+          var lots=Number(p.Total_Lots||0);
+          var link=String(p.LINK||"");
+          var linkHtml=link && /^https?:\/\//i.test(link) ? "<br><a href='"+v3esc(link)+"' target='_blank' rel='noopener'>Open plat record</a>" : "";
+          return "<div class='v7Popup' style='min-width:275px'>"+
+            "<div style='font-size:10px;font-weight:900;letter-spacing:.5px;color:#0891b2'>RECENT SUBDIVISION PLAT · COMAL / BULVERDE</div>"+
+            "<div style='font-size:15px;font-weight:900;margin:3px 0'>"+v3esc(p.SubName||"Comal County subdivision")+"</div>"+
+            "<dl class='popup-facts'>"+
+              "<dt>Total lots</dt><dd><b>"+(isFinite(lots)?lots.toLocaleString():"—")+"</b></dd>"+
+              "<dt>Plat year</dt><dd>"+v3esc(p.YEAR||"—")+"</dd>"+
+              "<dt>Accepted</dt><dd>"+v3esc(v10HousingPlatDate(p.Accepted_D))+"</dd>"+
+              "<dt>Recorded</dt><dd>"+v3esc(v10HousingPlatDate(p.RECORDED_D))+"</dd>"+
+              "<dt>Plat type</dt><dd>"+v3esc(p.TYPE||"—")+"</dd>"+
+              "<dt>Tract / lot</dt><dd>"+v3esc(p.tract_or_l||"—")+"</dd>"+
+            "</dl>"+
+            "<div class='popup-source'>CCEO-sourced Comal County plat polygon; includes Bulverde. Screen: 2022+ and 2+ total lots. Public polygon mirror snapshot: 9/19/2024. Treat as a housing-growth screen and verify land use/current status with the plat document and Comal County Active Plats Dashboard."+linkHtml+"</div>"+
+          "</div>";
+        },{maxWidth:370});
+        v11ComalHousingPlats.bindTooltip(function(layer){
+          var p=layer.feature.properties||{}, lots=Number(p.Total_Lots||0);
+          return "<b>"+v3esc(p.SubName||"Comal County subdivision")+"</b><br>"+
+            (isFinite(lots)?lots.toLocaleString()+" lots · ":"")+
+            "Comal / Bulverde · "+v3esc(p.YEAR||"recent");
+        },{sticky:true,className:"bcad-hover"});
+
         var v10NewHousingPlats=L.layerGroup([
           v10HousingPlatApplications,
           v10HousingPlatWorking,
           v10HousingPlatStaff,
           v10HousingPlatApproved,
           v10HousingPlatRecorded,
-          v10SchertzHousingPlats
+          v10SchertzHousingPlats,
+          v11ComalHousingPlats
         ]);
         window.v10NewHousingPlats=v10NewHousingPlats;
         window.v10SchertzHousingPlats=v10SchertzHousingPlats;
+        window.v11ComalHousingPlats=v11ComalHousingPlats;
 
         // City of San Antonio adopted Future Land Use / SA Tomorrow planning context.
         var v3FutureLandUse = L.esri.featureLayer({
@@ -3817,7 +3863,7 @@
           d.style.cssText="background:white;padding:7px 9px;max-width:285px;font:11px/1.35 Arial;color:#333";
           d.innerHTML="<b>Source notes</b><br>"+
             "Parcel polygons/owner screen: BCAD via SARA (Dec. 2025)<br>"+
-            "New housing plats: Bexar Public Works residential plat lifecycle + City of Schertz residential subdivisions (2022+ approvals)<br>"+
+            "New housing plats: Bexar Public Works + City of Schertz residential subdivisions + CCEO-sourced Comal/Bulverde subdivision plats (Comal polygon mirror snapshot 9/19/2024)<br>"+
             "Traffic: TxDOT historical AADT<br>"+
             "FEMA NFHL: unavailable at Sept. 29 audit<br>"+
             "Flood buffer: Bexar Public Works 100-ft screen<br>"+
@@ -3866,7 +3912,7 @@
         [
           [v3Parcels,'Bexar CAD'],[v3ComalParcels,'Comal CAD'],[v3GuadalupeParcels,'Guadalupe CAD'],
           [v3HEBOwnedParcels,'H-E-B Bexar'],[v3HEBComalParcels,'H-E-B Comal'],[v3HEBGuadalupeParcels,'H-E-B Guadalupe'],
-          [v10SchertzHousingPlats,'Schertz housing plats'],
+          [v10SchertzHousingPlats,'Schertz housing plats'],[v11ComalHousingPlats,'Comal / Bulverde housing plats'],
           [v3SewerSAWS,'SAWS sewer'],[v3SewerNBU,'NBU sewer'],[v3SewerGBRAGravity,'GBRA gravity'],[v3SewerGBRAForce,'GBRA force mains'],
           [v3FemaHazard,'FEMA flood'],[v3AADT,'Traffic counts']
         ].forEach(function(item){
