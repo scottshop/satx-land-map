@@ -151,6 +151,10 @@
 .bcad-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
 .bcad-actions a,.bcad-actions button{border:1px solid #d1d5db;background:#fff;color:#111827;border-radius:6px;padding:6px 8px;font:800 10px Arial;text-decoration:none;cursor:pointer}
 .bcad-actions a:hover,.bcad-actions button:hover{background:#f9fafb}
+.save-to-tracker{border-color:#111827!important;background:#111827!important;color:#fff!important}
+.save-to-tracker:hover{background:#374151!important}
+.save-to-tracker.is-sent{background:#166534!important;border-color:#166534!important}
+.save-to-tracker:disabled{opacity:.65;cursor:default}
 .bcad-note{margin-top:9px;padding-top:8px;border-top:1px solid #e5e7eb;font-size:9px;line-height:1.35;color:#6b7280}
 .leaflet-tooltip.bcad-hover{background:rgba(255,255,255,.97);color:#111827;border:1px solid rgba(17,24,39,.10);padding:7px 9px;box-shadow:0 4px 14px rgba(0,0,0,.20)}
 .leaflet-tooltip.bcad-hover:before{display:none}
@@ -158,6 +162,7 @@
 .bcad-hover-meta{font-size:9px;color:#6b7280;margin-top:2px}
 @media(max-width:700px){#v7Header{right:10px}.leaflet-control-layers-expanded{max-height:calc(100dvh - 160px)}.v7Popup{width:250px}#v6Filters select{min-width:0}#v6TopPanel{max-height:calc(100dvh - 120px)!important}}
 </style>
+<script src="data/tracker-config.js"></script>
 </head>
 <body>
     
@@ -3041,10 +3046,105 @@
           return "$"+Number(v).toLocaleString();
         }
 
-        function factPopup(title, rows, note, url){
+        // ---- MAP -> DEAL TRACKER BRIDGE ----
+        // The public map contains only the Apps Script endpoint URL.
+        // The private tracker key is entered once by the user and stored only in this browser.
+        function v12TrackerEndpoint(){
+          return String(window.LAND_TRACKER_WEBAPP_URL||"").trim();
+        }
+        function v12TrackerMapLink(county,parcelId){
+          var base=window.location.origin+window.location.pathname;
+          return base+"?county="+encodeURIComponent(county||"")+"&parcel="+encodeURIComponent(parcelId||"");
+        }
+        function v12ParcelTrackerData(p,county){
+          p=p||{};
+          var bexar=county==="Bexar",comal=county==="Comal";
+          var acres=bexar?p.Land_acres:comal?p.LEGAL_ACRE:p.LEGAL_AREA;
+          if(!bexar&&!comal&&p.LGL_AREA_UNIT&&p.LGL_AREA_UNIT!=="ACRES")acres="";
+          var parcelId=bexar?(p.Prop_id||p.Geo_id):(p.PROP_ID||p.GEO_ID);
+          var owner=bexar?p.Owner_name:comal?p.PY_OWNER_N:p.OWNER_NAME;
+          var situs=p.Situs||p.SITUS_ADDR||p.SITUS||"";
+          return {
+            dealSite:situs||((county||"County")+" parcel "+(parcelId||"")),
+            acres:acres==null?"":acres,
+            stage:"Pursuing",
+            nextAction:"Contact owner",
+            owner:owner||"",
+            county:county||"",
+            parcelId:parcelId||"",
+            mapLink:v12TrackerMapLink(county,parcelId),
+            notes:"Saved from San Antonio Land Acquisition Map"
+          };
+        }
+        function v12OpportunityTrackerData(p){
+          p=p||{};
+          var situs=(p.situs&&p.situs!=="—")?p.situs:(p.node_name||"Bexar County target parcel");
+          return {
+            dealSite:situs,
+            acres:p.acres||"",
+            stage:"Pursuing",
+            nextAction:"Contact owner",
+            owner:p.owner||"",
+            county:"Bexar",
+            parcelId:p.prop_id||"",
+            mapLink:v12TrackerMapLink("Bexar",p.prop_id||""),
+            notes:"Acquisition target · "+(p.acquisition_category||"WATCH")+" · score "+(p.parcel_opportunity_score||"—")+"/100 · "+(p.node_name||"")
+          };
+        }
+        function v12TrackerButton(data){
+          if(!v12TrackerEndpoint())return "";
+          var payload=encodeURIComponent(JSON.stringify(data||{}));
+          return "<button type='button' class='save-to-tracker' data-tracker-payload='"+v3esc(payload)+"'>Save to Tracker</button>";
+        }
+        function v12TrackerKey(){
+          var key="";
+          try{key=localStorage.getItem("landTrackerKey")||"";}catch(e){}
+          if(key)return key;
+          key=window.prompt("Enter your private tracker key. You only do this once on this browser.")||"";
+          key=String(key).trim();
+          if(key){try{localStorage.setItem("landTrackerKey",key);}catch(e){}}
+          return key;
+        }
+        function v12SaveToTracker(button){
+          if(!button||button.disabled)return;
+          var endpoint=v12TrackerEndpoint();
+          if(!endpoint){button.textContent="Tracker not connected";return;}
+          var key=v12TrackerKey();
+          if(!key){button.textContent="Tracker key required";return;}
+          var data={};
+          try{data=JSON.parse(decodeURIComponent(button.getAttribute("data-tracker-payload")||""));}catch(e){
+            button.textContent="Save unavailable";return;
+          }
+          if(!data.parcelId||!data.county){button.textContent="Parcel ID missing";return;}
+          var body=new URLSearchParams();
+          body.set("key",key);
+          Object.keys(data).forEach(function(k){body.set(k,String(data[k]==null?"":data[k]));});
+          button.disabled=true;
+          button.textContent="Saving…";
+          fetch(endpoint,{method:"POST",mode:"no-cors",body:body})
+            .then(function(){
+              button.textContent="✓ Sent to Tracker";
+              button.classList.add("is-sent");
+              button.disabled=true;
+            })
+            .catch(function(){
+              button.textContent="Save failed — retry";
+              button.disabled=false;
+            });
+        }
+        function v12BindTrackerButtons(root){
+          if(!root)return;
+          Array.prototype.forEach.call(root.querySelectorAll(".save-to-tracker"),function(button){
+            if(button.dataset.trackerBound==="1")return;
+            button.dataset.trackerBound="1";
+            button.addEventListener("click",function(){v12SaveToTracker(button);});
+          });
+        }
+
+        function factPopup(title, rows, note, url, actionsHtml){
           return "<div class='v7Popup'><b>"+v3esc(title)+"</b><dl class='popup-facts'>"+
             rows.map(function(row){return '<dt>'+v3esc(row[0])+'</dt><dd>'+v3esc(row[1]==null||String(row[1]).trim()===''?'Not reported':row[1])+'</dd>';}).join('')+
-            "</dl><div class='popup-source'>"+v3esc(note||'')+
+            "</dl>"+(actionsHtml||"")+"<div class='popup-source'>"+v3esc(note||'')+
             (url&&/^https?:\/\//i.test(url)?" <a target='_blank' rel='noopener' href='"+v3esc(url)+"'>Source record</a>":'')+"</div></div>";
         }
         function parcelPopup(p,county,heb){
@@ -3056,7 +3156,8 @@
             ['County',county],['Owner',bexar?p.Owner_name:comal?p.PY_OWNER_N:p.OWNER_NAME],
             ['Acres',acres==null?'Not reported':Number(acres).toFixed(2)],['Property ID',bexar?p.Prop_id:p.PROP_ID],
             ['Situs',p.Situs||p.SITUS_ADDR],['Value',v3money(bexar?p.Market_val:comal?p.APPRAISED:p.MKT_VALUE)]
-          ],'Snapshot: '+date+'. Confirm current ownership and value with CAD.',p.CADLINK);
+          ],'Snapshot: '+date+'. Confirm current ownership and value with CAD.',p.CADLINK,
+            "<div class='v7PopupActions'>"+v12TrackerButton(v12ParcelTrackerData(p,county))+"</div>");
         }
 
         function v3growth(now,old){
@@ -3106,6 +3207,7 @@
               "<div class='bcad-actions'>"+
                 "<a href='https://www.google.com/maps/search/?api=1&query="+mapQuery+"' target='_blank' rel='noopener'>Google Maps</a>"+
                 "<button type='button' class='copy-property-id' data-property-id='"+v3esc(pid)+"'>Copy Property ID</button>"+
+                v12TrackerButton(v12ParcelTrackerData(p,"Bexar"))+
                 (cadLink?"<a href='"+v3esc(cadLink)+"' target='_blank' rel='noopener'>CAD Record</a>":"")+
               "</div>"+
               "<div class='bcad-note'>BCAD parcel screening data via SARA, December 2025 snapshot. Parcel lines are reference geometry; verify current ownership, legal description, survey and boundary information before acquisition.</div>"+
@@ -4099,17 +4201,22 @@
             "<div class='v7PopupActions'>"+
               "<a href='https://www.google.com/maps/search/?api=1&query="+mapQuery+"' target='_blank'>Google Maps</a>"+
               "<button type='button' class='copy-property-id' data-property-id='"+v6h(p.prop_id)+"'>Copy Property ID</button>"+
+              v12TrackerButton(v12OpportunityTrackerData(p))+
             "</div>"+
             "<div style='font-size:9px;color:#777;margin-top:7px'>Opportunity snapshot: "+v6h(window.parcelSnapshotDate)+". "+v6h(geom)+". "+v6h(p.verification_notes||"Verify title, survey, access, flood and utility capacity.")+"</div>"+
           "</div>";
         }
 
         map_33cc2c2ac68d72d2971fbb7de3650b24.on('popupopen',function(e){
-          var button=e.popup.getElement().querySelector('.copy-property-id');
-          if(button)button.onclick=async function(){
-            try{await navigator.clipboard.writeText(button.dataset.propertyId);button.textContent='Copied';}
-            catch(error){button.textContent='Copy unavailable';}
-          };
+          var root=e.popup&&e.popup.getElement?e.popup.getElement():null;
+          if(!root)return;
+          Array.prototype.forEach.call(root.querySelectorAll('.copy-property-id'),function(button){
+            button.onclick=async function(){
+              try{await navigator.clipboard.writeText(button.dataset.propertyId);button.textContent='Copied';}
+              catch(error){button.textContent='Copy unavailable';}
+            };
+          });
+          v12BindTrackerButtons(root);
         });
 
         function v6style(feature){
