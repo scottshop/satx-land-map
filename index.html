@@ -4472,17 +4472,18 @@
         function v9Sql(v){return String(v||"").trim().replace(/'/g,"''");}
         function v9SearchConfig(){
           return [
-            {county:"Bexar",layer:v3Parcels,id:"Prop_id",idNumeric:true,geo:"Geo_id",owner:"Owner_name",situs:"Situs",acres:"Land_acres"},
-            {county:"Comal",layer:v3ComalParcels,id:"PROP_ID",idNumeric:true,geo:"",owner:"PY_OWNER_N",situs:"SITUS_ADDR",acres:"LEGAL_ACRE"},
-            {county:"Guadalupe",layer:v3GuadalupeParcels,id:"PROP_ID",idNumeric:false,geo:"GEO_ID",owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"}
+            {county:"Bexar",url:v3ParcelUrl+"/0",id:"Prop_id",idNumeric:true,geo:"Geo_id",owner:"Owner_name",situs:"Situs",acres:"Land_acres"},
+            {county:"Comal",url:v3ComalCadUrl,id:"PROP_ID",idNumeric:true,geo:"",owner:"PY_OWNER_N",situs:"SITUS_ADDR",acres:"LEGAL_ACRE"},
+            {county:"Guadalupe",url:v3GuadalupeCadUrl,id:"PROP_ID",idNumeric:false,geo:"GEO_ID",owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"}
           ];
         }
         function v9SearchWhere(cfg,term){
-          var t=v9Sql(term), q="'"+t+"'", clauses=[cfg.owner+" LIKE '%"+t+"%'",cfg.situs+" LIKE '%"+t+"%'"];
-          if(/^\d+$/.test(t))clauses.push(cfg.id+(cfg.idNumeric?" = "+Number(t):" = "+q));
-          else if(!cfg.idNumeric)clauses.push(cfg.id+" = "+q);
-          if(cfg.geo)clauses.push(cfg.geo+" = "+q);
-          return "("+clauses.join(" OR ")+")";
+          var t=v9Sql(term), q="'"+t+"'";
+          // Parcel IDs get an exact query. Keeping numeric IDs separate avoids mixed-type
+          // OR clauses on ArcGIS services, which can silently return zero features.
+          if(/^\d+$/.test(t))return cfg.id+(cfg.idNumeric?" = "+Number(t):" = "+q);
+          if(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+$/.test(t)&&cfg.geo)return "("+cfg.geo+" = "+q+" OR "+(!cfg.idNumeric?cfg.id+" = "+q:"1=0")+")";
+          return "("+cfg.owner+" LIKE '%"+t+"%' OR "+cfg.situs+" LIKE '%"+t+"%')";
         }
         function v9RenderParcelSearchResults(){
           var box=document.getElementById("v9SearchResults"),status=document.getElementById("v9SearchStatus");
@@ -4511,7 +4512,7 @@
           if(status)status.textContent="Searching "+(county||"Bexar, Comal and Guadalupe")+"…";
           var pending=configs.length;
           configs.forEach(function(cfg){
-            cfg.layer.query().where(v9SearchWhere(cfg,term)).run(function(error,fc){
+            L.esri.query({url:cfg.url}).where(v9SearchWhere(cfg,term)).run(function(error,fc){
               if(!error&&fc&&Array.isArray(fc.features)){
                 fc.features.slice(0,15).forEach(function(feature){
                   var p=feature.properties||{};
