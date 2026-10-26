@@ -44,6 +44,9 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     await page.setViewportSize({width:390,height:844}); await page.evaluate(()=>testMap.invalidateSize());
     await page.locator('.leaflet-control-layers').hover(); assert(await page.getByText('Exact Target Parcels',{exact:true}).isVisible());
     assert.equal(await page.locator('#v6CategoryFilter').count(),1);
+    for (const id of ['v9ParcelSearch','v9CountySearch','v9FitFilter','v9FrontageFilter','v9LotsFilter','v9DistanceFilter','v9ConfidenceFilter','v9SavedFilterSelect']) {
+      assert.equal(await page.locator('#'+id).count(),1,'Phase 2 control '+id+' should exist');
+    }
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     await page.screenshot({path:process.env.SCREENSHOT_DIR ? path.join(process.env.SCREENSHOT_DIR,'mobile.png') : '/tmp/satx-mobile.png'});
     await page.mouse.click(60,700); await page.locator('#v6TopToggle').click(); assert(await page.locator('#v6TopPanel').isVisible());
@@ -172,6 +175,21 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     assert(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)));
     await page.locator('.leaflet-popup-close-button').click(); await page.waitForFunction(()=>document.querySelectorAll('.leaflet-popup').length===0); await page.locator('#v6TopToggle').click();
     console.log('PASS Top Land');
+    await page.locator('#v6TopToggle').click();
+    await page.locator('#v9BestFitBtn').click();
+    assert.equal(await page.locator('#v6AcresFilter').inputValue(),'5');
+    assert.equal(await page.locator('#v9MaxAcresFilter').inputValue(),'50');
+    assert.equal(await page.locator('#v9FrontageFilter').inputValue(),'200');
+    assert.equal(await page.evaluate(()=>v9FilteredOpportunityData.every(f=>{
+      const p=f.properties||{};
+      return Number(p.acres)>=5 && Number(p.acres)<=50 && Number(p.qualified_frontage_ft)>=200 &&
+        Number(p.future_residential_lots_nearby)>=1000 && Number(p.node_edge_miles)<=1 &&
+        Number(p.developer_fit_score)>=80;
+    })),true,'Best Fit must enforce the developer acquisition profile');
+    await page.locator('#v9ClearFiltersBtn').click();
+    assert.equal(await page.locator('#v6AcresFilter').inputValue(),'3');
+    await page.locator('#v6TopToggle').click();
+    console.log('PASS Phase 2 Land Finder filters');
     const before = await page.evaluate(() => testMap.getCenter());
     await page.mouse.move(650,800); await page.mouse.down(); await page.mouse.move(830,850,{steps:10}); await page.mouse.up(); await page.waitForTimeout(400);
     assert.notDeepEqual(await page.evaluate(() => testMap.getCenter()),before);

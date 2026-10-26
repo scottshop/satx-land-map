@@ -69,6 +69,37 @@
 #v6TopHead b{font-size:14px;letter-spacing:.2px}
 #v6Filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}
 #v6Filters select{flex:1;font:11px Arial;padding:5px;border-radius:4px;border:1px solid #888;background:#fff}
+#v6Filters input,#v6Filters button{font:11px Arial}
+.v9FinderSection{margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,.22)}
+.v9FinderLabel{font:900 9px Arial;letter-spacing:.8px;color:#FFD400;margin-bottom:5px}
+.v9FinderLabel span{float:right;color:#d1d5db;letter-spacing:0;font-weight:700}
+.v9SearchRow{display:grid;grid-template-columns:minmax(0,1fr) 105px 64px;gap:5px}
+.v9SearchRow input,.v9SearchRow select{min-width:0;border:1px solid #777;border-radius:4px;padding:6px;font:11px Arial;background:#fff;color:#111}
+.v9SearchRow button,.v9PresetRow button,#v9QuickLayers button{border:1px solid #666;border-radius:4px;padding:6px 7px;font:800 9px Arial;cursor:pointer}
+.v9SearchRow button{background:#FFD400;color:#111;border-color:#FFD400}
+.v9SearchStatus{font-size:9px;line-height:1.35;color:#cbd5e1;margin-top:5px}
+#v9SearchResults{max-height:175px;overflow:auto;margin-top:4px}
+.v9SearchResult{background:#fff;color:#111;border-radius:5px;padding:6px 7px;margin:4px 0;cursor:pointer;border-left:4px solid #22d3ee}
+.v9SearchResult:hover{background:#ecfeff}
+.v9SearchResult b{display:block;font-size:10px}
+.v9SearchResult span{font-size:9px;color:#64748b}
+.v9PresetRow{display:flex;gap:5px;margin-top:6px}
+.v9PresetRow button{background:#fff;color:#111}
+.v9PresetRow #v9BestFitBtn{background:#FFD400;border-color:#FFD400}
+#v9QuickLayers{display:flex;gap:5px;flex-wrap:wrap}
+#v9QuickLayers button{background:#1f2937;color:#e5e7eb;border-color:#4b5563}
+#v9QuickLayers button.is-active{background:#0ea5e9;color:#fff;border-color:#38bdf8}
+.v9FinderFooter{margin-top:8px;font-size:9px}
+.v9FinderFooter a{color:#FFD400;text-decoration:none;font-weight:800}
+.v9FitBadge{display:inline-block;margin-left:5px;background:#0f172a;color:#fff;border-radius:4px;padding:3px 5px;font-size:9px;font-weight:900}
+.v9ScoreExplain{margin-top:7px;border-top:1px solid #e5e7eb;padding-top:7px}
+.v9ScoreModel{font-size:9px;color:#64748b;margin-bottom:5px}
+.v9ScoreBar{display:grid;grid-template-columns:86px 1fr 28px;align-items:center;gap:5px;margin:3px 0;font-size:9px}
+.v9ScoreBarTrack{height:5px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+.v9ScoreBarFill{height:100%;background:#111827}
+.v9ScoreBarValue{text-align:right;font-weight:800;color:#111}
+@media(max-width:700px){.v9SearchRow{grid-template-columns:minmax(0,1fr) 92px}.v9SearchRow button{grid-column:1/-1}.v9PresetRow{flex-wrap:wrap}}
+
 #v6OppList{padding:8px;background:#f5f5f5}
 .v6OppCard{border:1px solid #d8d8d8;border-left:6px solid #FFD400;border-radius:7px;padding:9px 9px;margin:7px 0;background:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.05)}
 .v6OppCard:hover{background:#fffce0;box-shadow:0 2px 8px rgba(0,0,0,.10)}
@@ -173,19 +204,71 @@
 </div>
 
 <button id="v7ModeToggle" data-mode="acquisition">ACQUISITION MODE</button>
-<button id="v6TopToggle">TOP LAND</button>
+<button id="v6TopToggle">LAND FINDER</button>
 <div id="v6TopPanel">
   <div id="v6TopHead">
-    <b>TOP LAND OPPORTUNITIES</b>
-    <div style="font-size:10px;color:#ddd;margin-top:2px">Ranked acquisition candidates — click a tract to zoom.</div>
+    <b>LAND FINDER</b>
+    <div style="font-size:10px;color:#ddd;margin-top:2px">Find CAD parcels or narrow the acquisition engine to the tracts worth pursuing.</div>
     <div id="parcelDataDate" class="v6Tiny" style="color:#ddd"></div>
-    <div id="v6Filters">
-      <select id="v6AcresFilter"><option value="3">3+ ac</option><option value="5">5+ ac</option><option value="10">10+ ac</option><option value="20">20+ ac</option></select>
-      <select id="v6CategoryFilter"><option value="">All tiers</option><option value="PRIORITY">Priority</option><option value="WATCH">Watch</option><option value="EARLY SPECULATION">Early</option></select>
-      <select id="v6ScoreFilter"><option value="0">Any score</option><option value="70">70+</option><option value="75">75+</option><option value="80">80+</option><option value="85">85+</option></select>
-      <select id="v6NodeFilter"><option value="">All corridors</option></select>
+
+    <div class="v9FinderSection">
+      <div class="v9FinderLabel">SEARCH CAD PARCELS</div>
+      <div class="v9SearchRow">
+        <input id="v9ParcelSearch" type="search" placeholder="Owner, address or parcel ID" autocomplete="off">
+        <select id="v9CountySearch">
+          <option value="">All 3 counties</option>
+          <option value="Bexar">Bexar</option>
+          <option value="Comal">Comal</option>
+          <option value="Guadalupe">Guadalupe</option>
+        </select>
+        <button id="v9SearchBtn" type="button">SEARCH</button>
+      </div>
+      <div id="v9SearchStatus" class="v9SearchStatus">Search the live parcel layers without changing your acquisition filters.</div>
+      <div id="v9SearchResults"></div>
     </div>
-    <div style="margin-top:6px"><a href="data/tracts_to_review.csv" target="_blank" style="color:#FFD400;text-decoration:none;font-weight:700">Download Tracts to Review CSV</a></div>
+
+    <div class="v9FinderSection">
+      <div class="v9FinderLabel">ACQUISITION FILTERS <span id="v9FilterCount"></span></div>
+      <div id="v6Filters">
+        <select id="v6AcresFilter" title="Minimum acreage"><option value="3">Min 3 ac</option><option value="5">Min 5 ac</option><option value="10">Min 10 ac</option><option value="20">Min 20 ac</option></select>
+        <select id="v9MaxAcresFilter" title="Maximum acreage"><option value="0">No max acres</option><option value="10">Max 10 ac</option><option value="25">Max 25 ac</option><option value="50">Max 50 ac</option><option value="100">Max 100 ac</option></select>
+        <select id="v9FitFilter" title="Minimum developer-fit score"><option value="0">Any developer fit</option><option value="70">Fit 70+</option><option value="80">Fit 80+</option><option value="90">Fit 90+</option></select>
+        <select id="v6ScoreFilter" title="Minimum opportunity score"><option value="0">Any opportunity score</option><option value="70">Opportunity 70+</option><option value="75">Opportunity 75+</option><option value="80">Opportunity 80+</option><option value="85">Opportunity 85+</option></select>
+        <select id="v9FrontageFilter" title="Minimum qualified frontage"><option value="100">100+ ft frontage</option><option value="200">200+ ft frontage</option><option value="300">300+ ft frontage</option><option value="500">500+ ft frontage</option></select>
+        <select id="v9LotsFilter" title="Minimum weighted future residential lots"><option value="0">Any housing growth</option><option value="500">500+ future lots</option><option value="1000">1,000+ future lots</option><option value="2500">2,500+ future lots</option><option value="5000">5,000+ future lots</option></select>
+        <select id="v9DistanceFilter" title="Maximum distance to target node"><option value="0">Any node distance</option><option value=".25">≤ 0.25 mi to node</option><option value=".5">≤ 0.50 mi to node</option><option value="1">≤ 1.00 mi to node</option><option value="1.5">≤ 1.50 mi to node</option></select>
+        <select id="v9ConfidenceFilter" title="Minimum data confidence"><option value="0">Any confidence</option><option value="70">Confidence 70+</option><option value="80">Confidence 80+</option><option value="90">Confidence 90+</option></select>
+        <select id="v6CategoryFilter"><option value="">All tiers</option><option value="PRIORITY">Priority only</option><option value="WATCH">Watch only</option><option value="EARLY SPECULATION">Early only</option></select>
+        <select id="v6NodeFilter"><option value="">All corridors</option></select>
+        <select id="v9SortFilter" title="Sort results">
+          <option value="rank">Sort: Acquisition rank</option>
+          <option value="fit">Sort: Developer fit</option>
+          <option value="score">Sort: Opportunity score</option>
+          <option value="frontage">Sort: Frontage</option>
+          <option value="lots">Sort: Housing growth</option>
+        </select>
+        <select id="v9SavedFilterSelect" title="Saved local filter">
+          <option value="">Saved filters…</option>
+        </select>
+      </div>
+      <div class="v9PresetRow">
+        <button id="v9BestFitBtn" type="button">BEST FIT</button>
+        <button id="v9ClearFiltersBtn" type="button">CLEAR</button>
+        <button id="v9SaveFiltersBtn" type="button">SAVE FILTER</button>
+      </div>
+    </div>
+
+    <div class="v9FinderSection">
+      <div class="v9FinderLabel">QUICK CONTEXT</div>
+      <div id="v9QuickLayers">
+        <button type="button" data-layer="housing">Housing Plats</button>
+        <button type="button" data-layer="traffic">Traffic</button>
+        <button type="button" data-layer="sewer">Sewer</button>
+        <button type="button" data-layer="flood">Flood</button>
+      </div>
+    </div>
+
+    <div class="v9FinderFooter"><a href="data/tracts_to_review.csv" target="_blank">Download Tracts to Review CSV</a></div>
   </div>
   <div id="v6OppList"><div class="v6Tiny">Loading exact parcel opportunities…</div></div>
 </div>
@@ -4160,6 +4243,26 @@
         }
         function v6arr(v){return Array.isArray(v)?v.join(" / "):(v||"—");}
 
+        // Phase 2 developer-fit score: intentionally tuned to this acquisition profile.
+        // It complements, rather than replaces, the broader opportunity score generated from GIS evidence.
+        function v9DeveloperFit(p){
+          p=p||{};
+          var acres=Number(p.acres||0), frontage=Number(p.qualified_frontage_ft||0);
+          var dist=Number(p.node_edge_miles||99), lots=Number(p.future_residential_lots_nearby||0);
+          var raw=Number(p.raw_score||0), aadt=Number(p.aadt||0);
+          var size=(acres>=5&&acres<=50)?100:(acres>=3&&acres<5?82:(acres>50&&acres<=100?76:55));
+          var front=frontage>=500?100:frontage>=300?95:frontage>=200?86:frontage>=100?70:30;
+          var node=dist<=.25?100:dist<=.5?95:dist<=1?82:dist<=1.5?62:35;
+          var housing=lots>=5000?100:lots>=2500?92:lots>=1000?78:lots>=500?62:40;
+          var traffic=aadt>=20000?100:aadt>=15000?90:aadt>=10000?76:aadt>=5000?58:42;
+          var fit=.15*size+.25*front+.20*node+.20*housing+.10*Math.max(0,Math.min(100,raw))+.10*traffic;
+          return Math.round(fit);
+        }
+        function v9ScoreBar(label,value){
+          var n=Math.max(0,Math.min(100,Number(value)||0));
+          return "<div class='v9ScoreBar'><span>"+v6h(label)+"</span><span class='v9ScoreBarTrack'><span class='v9ScoreBarFill' style='display:block;width:"+n+"%'></span></span><span class='v9ScoreBarValue'>"+Math.round(n)+"</span></div>";
+        }
+
         function v6popup(p){
           var geom=p.bcad_geometry_verified ? "BCAD geometry verified through SARA parcel service" : (p.geometry_source||"Bexar County parcel geometry; current BCAD title/geometry should be re-verified");
           var situs=(p.situs&&p.situs!=="—")?p.situs:(p.node_name||"San Antonio");
@@ -4169,15 +4272,19 @@
           var traffic=Number(p.aadt||0)?Number(p.aadt).toLocaleString()+" AADT"+(Number(p.aadt_5yr_growth_pct||0)?" · "+Number(p.aadt_5yr_growth_pct).toFixed(1)+"% 5-yr growth":""):"—";
           var catalyst=v6h(p.nearest_retail_catalyst||"—")+(isFinite(Number(p.retail_catalyst_miles))?" · "+Number(p.retail_catalyst_miles).toFixed(1)+" mi":"");
           var risks=Array.isArray(p.main_risks)?p.main_risks:[];
+          var fit=Number(p.developer_fit_score||v9DeveloperFit(p));
+          var nodeParts=p.node_component_scores||{}, parcelParts=p.parcel_component_scores||{};
           return "<div class='v7Popup'>"+
-            "<div class='v7PopupHead'><span class='v7PopupRank'>"+v6h(p.rank)+"</span><span class='v7PopupAcres'>"+v6h(p.acres)+" AC</span><span class='v7PopupScore'>"+v6h(p.parcel_opportunity_score)+"/100</span></div>"+
+            "<div class='v7PopupHead'><span class='v7PopupRank'>"+v6h(p.rank)+"</span><span class='v7PopupAcres'>"+v6h(p.acres)+" AC</span><span class='v9FitBadge'>FIT "+fit+"</span><span class='v7PopupScore'>"+v6h(p.parcel_opportunity_score)+"/100</span></div>"+
             "<div><span class='v8Category' data-cat='"+v6h(category)+"'>"+v6h(category)+"</span><span class='v8Confidence'>CONFIDENCE "+v6h(p.confidence_score||"—")+"/100</span></div>"+
             "<div class='v8Decision'><b>"+v6h(p.decision_summary||"Acquisition screen")+"</b></div>"+
             "<div class='v7Section'><div class='v7SectionTitle'>Property</div>"+
               "<b>Owner:</b> "+v6h(p.owner||"—")+"<br>"+
               "<b>Property ID:</b> "+v6h(p.prop_id||"—")+(p.bcad_geo_id?" / "+v6h(p.bcad_geo_id):"")+"<br>"+
               "<b>Situs:</b> "+v6h(p.situs||"—")+"<br>"+
-              "<b>Assessed:</b> "+v6money(p.assessed_value)+" · "+v6money(p.assessed_value_per_acre)+"/ac"+
+              "<b>Assessed:</b> "+v6money(p.assessed_value)+" · "+v6money(p.assessed_value_per_acre)+"/ac<br>"+
+              "<b>Improvements:</b> "+Math.round(Number(p.improvement_ratio||0)*100)+"% of value · raw-land score "+v6h(p.raw_score||"—")+"/100<br>"+
+              "<b>Last deed:</b> "+v6h(p.last_deed_date||"—")+(Number(p.hold_years||0)?" · "+Number(p.hold_years).toFixed(1)+" yr hold":"")+
             "</div>"+
             "<div class='v7Section'><div class='v7SectionTitle'>Node / Access</div>"+
               "<b>Node:</b> "+v6h(p.node_name)+" · "+Number(p.node_edge_miles||0).toFixed(2)+" mi<br>"+
@@ -4196,6 +4303,14 @@
               "<div class='v8ScoreBox'>SIZE / SHAPE<b>"+v6h(p.parcel_fit_score||"—")+"/100</b></div>"+
               "<div class='v8ScoreBox'>ACCESS / FRONTAGE<b>"+v6h(p.road_score||"—")+"/100</b></div>"+
               "<div class='v8ScoreBox'>UTILITY PROXY<b>"+v6h(p.utility_score||"—")+"/100</b></div>"+
+            "</div>"+
+            "<div class='v9ScoreExplain'><div class='v9ScoreModel'><b>WHY IT SCORES:</b> opportunity score uses the GIS location + parcel model; Developer Fit is tuned to 5–50 ac, strong arterial frontage, near-node position, housing growth, raw land and traffic.</div>"+
+              v9ScoreBar("Growth",nodeParts.residential_growth)+
+              v9ScoreBar("Road network",nodeParts.intersection_network)+
+              v9ScoreBar("Retail catalyst",nodeParts.retail_catalyst)+
+              v9ScoreBar("Frontage",parcelParts.frontage_access)+
+              v9ScoreBar("Size / shape",parcelParts.size_shape)+
+              v9ScoreBar("Acquisition",parcelParts.acquisition)+
             "</div>"+
             "<div class='v7Section'><div class='v7SectionTitle'>Risk / Diligence</div>"+
               "<b>Flood:</b> "+v6h(flood)+"<br>"+
@@ -4237,30 +4352,76 @@
           return {pane:"v6ExactParcelPane",color:"#94a3b8",weight:2.5,opacity:.95,fillColor:"#cbd5e1",fillOpacity:.025,dashArray:"7,5",lineCap:"round",lineJoin:"round"};
         }
 
+        function v9FilterState(){
+          function val(id,fallback){var el=document.getElementById(id);return el?el.value:fallback;}
+          return {
+            minAcres:val("v6AcresFilter","3"),maxAcres:val("v9MaxAcresFilter","0"),
+            minFit:val("v9FitFilter","0"),minScore:val("v6ScoreFilter","0"),
+            minFrontage:val("v9FrontageFilter","100"),minLots:val("v9LotsFilter","0"),
+            maxDistance:val("v9DistanceFilter","0"),minConfidence:val("v9ConfidenceFilter","0"),
+            category:val("v6CategoryFilter",""),node:val("v6NodeFilter",""),sort:val("v9SortFilter","rank")
+          };
+        }
+        function v9FilteredOpportunities(){
+          var s=v9FilterState();
+          var rows=window.v6OpportunityData.filter(function(f){
+            var p=f.properties||{}, acres=Number(p.acres||0), maxA=Number(s.maxAcres||0), maxD=Number(s.maxDistance||0);
+            return acres>=Number(s.minAcres||0) && (!maxA||acres<=maxA) &&
+              Number(p.developer_fit_score||v9DeveloperFit(p))>=Number(s.minFit||0) &&
+              Number(p.parcel_opportunity_score||0)>=Number(s.minScore||0) &&
+              Number(p.qualified_frontage_ft||0)>=Number(s.minFrontage||0) &&
+              Number(p.future_residential_lots_nearby||0)>=Number(s.minLots||0) &&
+              (!maxD||Number(p.node_edge_miles||99)<=maxD) &&
+              Number(p.confidence_score||0)>=Number(s.minConfidence||0) &&
+              (!s.category||p.acquisition_category===s.category) && (!s.node||p.node_id===s.node);
+          });
+          rows.sort(function(a,b){
+            var ap=a.properties||{},bp=b.properties||{};
+            if(s.sort==="fit")return Number(bp.developer_fit_score||0)-Number(ap.developer_fit_score||0);
+            if(s.sort==="score")return Number(bp.parcel_opportunity_score||0)-Number(ap.parcel_opportunity_score||0);
+            if(s.sort==="frontage")return Number(bp.qualified_frontage_ft||0)-Number(ap.qualified_frontage_ft||0);
+            if(s.sort==="lots")return Number(bp.future_residential_lots_nearby||0)-Number(ap.future_residential_lots_nearby||0);
+            return Number(ap.rank||999)-Number(bp.rank||999);
+          });
+          return rows;
+        }
+        function v9RefreshOpportunityMap(rows){
+          if(!window.v6OpportunityLayer||!window.v6OpportunityMarkers)return;
+          window.v6OpportunityLayer.clearLayers();
+          window.v6OpportunityMarkers.clearLayers();
+          rows.forEach(function(f){
+            var p=f.properties||{}, rec=window.v6OpportunityById[String(p.prop_id)];
+            if(rec&&rec.layer)rec.layer.addTo(window.v6OpportunityLayer);
+          });
+          rows.slice(0,10).forEach(function(f){
+            var p=f.properties||{}, rec=window.v6OpportunityById[String(p.prop_id)];
+            if(!rec||!rec.layer)return;
+            var ctr=rec.layer.getBounds().getCenter();
+            L.marker(ctr,{interactive:false,icon:L.divIcon({className:"parcel-number",html:"<div class='v6Num'>"+v6h(p.rank)+"</div>",iconSize:[25,25],iconAnchor:[12,12]})}).addTo(window.v6OpportunityMarkers);
+          });
+        }
         function v6renderCardList(){
           var list=document.getElementById("v6OppList"); if(!list)return;
-          var minA=Number((document.getElementById("v6AcresFilter")||{}).value||3);
-          var minS=Number((document.getElementById("v6ScoreFilter")||{}).value||0);
-          var catFilter=(document.getElementById("v6CategoryFilter")||{}).value||"";
-          var node=(document.getElementById("v6NodeFilter")||{}).value||"";
-          var rows=window.v6OpportunityData.filter(function(f){
-            var p=f.properties||{};
-            return Number(p.acres||0)>=minA && Number(p.parcel_opportunity_score||0)>=minS &&
-              (!catFilter||p.acquisition_category===catFilter) && (!node||p.node_id===node);
-          });
-          if(!rows.length){list.innerHTML="<div class='v6Tiny'>No acquisition candidate matches those filters.</div>";return;}
+          var rows=v9FilteredOpportunities();
+          window.v9FilteredOpportunityData=rows;
+          v9RefreshOpportunityMap(rows);
+          var count=document.getElementById("v9FilterCount");
+          if(count)count.textContent=rows.length+" / "+window.v6OpportunityData.length+" tracts";
+          if(!rows.length){list.innerHTML="<div class='v6Tiny'><b>No tract matches those filters.</b><br>Try CLEAR or reduce frontage / housing / score thresholds.</div>";return;}
           list.innerHTML=rows.map(function(f){
             var p=f.properties||{}, category=p.acquisition_category||"WATCH";
             var lots=Math.round(Number(p.future_residential_lots_nearby||0)).toLocaleString();
+            var fit=Number(p.developer_fit_score||v9DeveloperFit(p));
             var cat=p.nearest_retail_catalyst||"No catalyst loaded";
             var catMi=isFinite(Number(p.retail_catalyst_miles))?Number(p.retail_catalyst_miles).toFixed(1)+" mi":"—";
+            var aadt=Number(p.aadt||0)?Math.round(Number(p.aadt)).toLocaleString()+" AADT":"AADT —";
             return "<div class='v6OppCard' data-pid='"+v6h(p.prop_id)+"' data-category='"+v6h(category)+"'>"+
-              "<span class='v6Rank'>"+v6h(p.rank)+"</span><span class='v6Score'>"+v6h(p.parcel_opportunity_score)+"/100</span>"+
+              "<span class='v6Rank'>"+v6h(p.rank)+"</span><span class='v9FitBadge'>FIT "+fit+"</span><span class='v6Score'>"+v6h(p.parcel_opportunity_score)+"/100</span>"+
               "<span class='v7Acres'>"+v6h(p.acres)+" AC</span>"+
               "<div style='margin-top:5px'><span class='v8Category' data-cat='"+v6h(category)+"'>"+v6h(category)+"</span><span class='v8Confidence'>CONF "+v6h(p.confidence_score||"—")+"</span></div>"+
               "<div class='v7Node'>"+v6h(p.node_name)+"</div>"+
               "<div class='v6Tiny'>"+v6h(p.owner||"—")+" · "+Number(p.node_edge_miles||0).toFixed(2)+" mi to node</div>"+
-              "<div class='v7Signals'><span class='v7Signal'>"+v6h(p.qualified_frontage_ft||0)+" ft frontage · "+v6h(p.qualified_frontage_road||"—")+"</span><span class='v7Signal'>"+lots+" future lots</span><span class='v7Signal'>"+v6h(cat)+" · "+catMi+"</span></div>"+
+              "<div class='v7Signals'><span class='v7Signal'>"+v6h(p.qualified_frontage_ft||0)+" ft · "+v6h(p.qualified_frontage_road||"—")+"</span><span class='v7Signal'>"+lots+" future lots</span><span class='v7Signal'>"+aadt+"</span><span class='v7Signal'>"+v6h(cat)+" · "+catMi+"</span></div>"+
               "<div class='v7Why'><b>"+v6h(p.decision_summary||"")+"</b><br>"+v6h(p.why_this_tract||"")+"</div></div>";
           }).join("");
           Array.prototype.forEach.call(list.querySelectorAll(".v6OppCard"),function(el){
@@ -4270,6 +4431,110 @@
                 try{v7safeAdd(window.v6OpportunityLayer);map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(rec.layer.getBounds().pad(.8),{maxZoom:16});rec.layer.openPopup();}catch(e){}
               }
             };
+          });
+        }
+
+        function v9SetFilterState(s){
+          if(!s)return;
+          Object.keys({minAcres:"v6AcresFilter",maxAcres:"v9MaxAcresFilter",minFit:"v9FitFilter",minScore:"v6ScoreFilter",minFrontage:"v9FrontageFilter",minLots:"v9LotsFilter",maxDistance:"v9DistanceFilter",minConfidence:"v9ConfidenceFilter",category:"v6CategoryFilter",node:"v6NodeFilter",sort:"v9SortFilter"}).forEach(function(k){
+            var map={minAcres:"v6AcresFilter",maxAcres:"v9MaxAcresFilter",minFit:"v9FitFilter",minScore:"v6ScoreFilter",minFrontage:"v9FrontageFilter",minLots:"v9LotsFilter",maxDistance:"v9DistanceFilter",minConfidence:"v9ConfidenceFilter",category:"v6CategoryFilter",node:"v6NodeFilter",sort:"v9SortFilter"};
+            var el=document.getElementById(map[k]);if(el&&s[k]!=null)el.value=String(s[k]);
+          });
+          v6renderCardList();
+        }
+        function v9BestFit(){
+          v9SetFilterState({minAcres:"5",maxAcres:"50",minFit:"80",minScore:"70",minFrontage:"200",minLots:"1000",maxDistance:"1",minConfidence:"70",category:"",node:"",sort:"fit"});
+        }
+        function v9ClearFilters(){
+          v9SetFilterState({minAcres:"3",maxAcres:"0",minFit:"0",minScore:"0",minFrontage:"100",minLots:"0",maxDistance:"0",minConfidence:"0",category:"",node:"",sort:"rank"});
+        }
+        function v9SavedFilters(){
+          try{return JSON.parse(localStorage.getItem("landFinderSavedFiltersV1")||"{}")||{};}catch(e){return {};}
+        }
+        function v9RefreshSavedFilterSelect(){
+          var sel=document.getElementById("v9SavedFilterSelect");if(!sel)return;
+          var saved=v9SavedFilters(), current=sel.value;
+          sel.innerHTML="<option value=''>Saved filters…</option>"+Object.keys(saved).sort().map(function(name){return "<option value='"+v6h(name)+"'>"+v6h(name)+"</option>";}).join("");
+          if(saved[current])sel.value=current;
+        }
+        function v9SaveCurrentFilter(){
+          var name=String(window.prompt("Name this land-finder filter:")||"").trim();if(!name)return;
+          var saved=v9SavedFilters();saved[name]=v9FilterState();
+          try{localStorage.setItem("landFinderSavedFiltersV1",JSON.stringify(saved));}catch(e){}
+          v9RefreshSavedFilterSelect();
+          var sel=document.getElementById("v9SavedFilterSelect");if(sel)sel.value=name;
+        }
+
+        // Live CAD search across the three parcel sources. Results are temporary cyan outlines
+        // and never modify the acquisition-engine dataset.
+        window.v9ParcelSearchLayer=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        window.v9ParcelSearchResults=[];
+        function v9Sql(v){return String(v||"").trim().replace(/'/g,"''");}
+        function v9SearchConfig(){
+          return [
+            {county:"Bexar",layer:v3Parcels,id:"Prop_id",idNumeric:true,geo:"Geo_id",owner:"Owner_name",situs:"Situs",acres:"Land_acres"},
+            {county:"Comal",layer:v3ComalParcels,id:"PROP_ID",idNumeric:true,geo:"",owner:"PY_OWNER_N",situs:"SITUS_ADDR",acres:"LEGAL_ACRE"},
+            {county:"Guadalupe",layer:v3GuadalupeParcels,id:"PROP_ID",idNumeric:false,geo:"GEO_ID",owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"}
+          ];
+        }
+        function v9SearchWhere(cfg,term){
+          var t=v9Sql(term), q="'"+t+"'", clauses=[cfg.owner+" LIKE '%"+t+"%'",cfg.situs+" LIKE '%"+t+"%'"];
+          if(/^\d+$/.test(t))clauses.push(cfg.id+(cfg.idNumeric?" = "+Number(t):" = "+q));
+          else if(!cfg.idNumeric)clauses.push(cfg.id+" = "+q);
+          if(cfg.geo)clauses.push(cfg.geo+" = "+q);
+          return "("+clauses.join(" OR ")+")";
+        }
+        function v9RenderParcelSearchResults(){
+          var box=document.getElementById("v9SearchResults"),status=document.getElementById("v9SearchStatus");
+          if(!box)return;
+          var rows=window.v9ParcelSearchResults;
+          if(status)status.textContent=rows.length?rows.length+" matching parcels · click a result to zoom":"No matching parcels found.";
+          box.innerHTML=rows.slice(0,30).map(function(rec,i){
+            var p=rec.feature.properties||{},cfg=rec.cfg, acres=Number(p[cfg.acres]), pid=p[cfg.id], owner=p[cfg.owner]||"Owner not reported", situs=p[cfg.situs]||"Address not reported";
+            return "<div class='v9SearchResult' data-search-index='"+i+"'><b>"+v6h(situs)+"</b><span>"+v6h(cfg.county)+" · "+(isFinite(acres)?acres.toFixed(2)+" ac · ":"")+"ID "+v6h(pid)+" · "+v6h(owner)+"</span></div>";
+          }).join("");
+          Array.prototype.forEach.call(box.querySelectorAll(".v9SearchResult"),function(el){
+            el.onclick=function(){
+              var rec=window.v9ParcelSearchResults[Number(el.getAttribute("data-search-index"))];
+              if(!rec||!rec.layer)return;
+              try{map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(rec.layer.getBounds().pad(.35),{maxZoom:17});rec.layer.openPopup();}catch(e){}
+            };
+          });
+        }
+        function v9RunParcelSearch(){
+          var input=document.getElementById("v9ParcelSearch"), status=document.getElementById("v9SearchStatus");
+          var term=String(input&&input.value||"").trim();
+          if(term.length<2){if(status)status.textContent="Enter at least 2 characters.";return;}
+          var county=(document.getElementById("v9CountySearch")||{}).value||"";
+          var configs=v9SearchConfig().filter(function(x){return !county||x.county===county;});
+          window.v9ParcelSearchResults=[];window.v9ParcelSearchLayer.clearLayers();
+          if(status)status.textContent="Searching "+(county||"Bexar, Comal and Guadalupe")+"…";
+          var pending=configs.length;
+          configs.forEach(function(cfg){
+            cfg.layer.query().where(v9SearchWhere(cfg,term)).run(function(error,fc){
+              if(!error&&fc&&Array.isArray(fc.features)){
+                fc.features.slice(0,15).forEach(function(feature){
+                  var p=feature.properties||{};
+                  var layer=L.geoJSON(feature,{pane:"cadSelected",style:{color:"#22d3ee",weight:4,opacity:1,fillColor:"#22d3ee",fillOpacity:.10}});
+                  layer.bindPopup(function(){return parcelPopup(p,cfg.county,false);},{maxWidth:360});
+                  layer.addTo(window.v9ParcelSearchLayer);
+                  window.v9ParcelSearchResults.push({feature:feature,cfg:cfg,layer:layer});
+                });
+              }
+              pending--;
+              if(pending===0)v9RenderParcelSearchResults();
+            });
+          });
+        }
+
+        function v9QuickLayerMap(){
+          return {housing:v10NewHousingPlats,traffic:v3AADT,sewer:v3SewerService,flood:v3FemaHazard};
+        }
+        function v9SyncQuickLayerButtons(){
+          var layers=v9QuickLayerMap();
+          Array.prototype.forEach.call(document.querySelectorAll("#v9QuickLayers button"),function(btn){
+            var layer=layers[btn.getAttribute("data-layer")];
+            btn.classList.toggle("is-active",!!(layer&&map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(layer)));
           });
         }
 
@@ -4291,6 +4556,7 @@
             var nodeSel=document.getElementById("v6NodeFilter"), seen={};
             window.v6OpportunityData.forEach(function(f){
               var p=f.properties||{};
+              p.developer_fit_score=v9DeveloperFit(p);
               var layer=L.geoJSON(f,{style:v6style,pane:"v6ExactParcelPane",interactive:true});
               layer.bindPopup(function(){return v6popup(p);},{maxWidth:390});
               layer.bindTooltip("#"+p.rank+" · "+(p.acquisition_category||"WATCH")+" · "+p.acres+" AC · "+(p.owner||"Target parcel"),{sticky:true});
@@ -4299,10 +4565,6 @@
               layer.addTo(window.v6OpportunityLayer);
               if(layer.bringToFront)layer.bringToFront();
               window.v6OpportunityById[String(p.prop_id)]={feature:f,layer:layer};
-              if(Number(p.rank)<=10){
-                var ctr=layer.getBounds().getCenter();
-                L.marker(ctr,{interactive:false,icon:L.divIcon({className:"parcel-number",html:"<div class='v6Num'>"+p.rank+"</div>",iconSize:[25,25],iconAnchor:[12,12]})}).addTo(window.v6OpportunityMarkers);
-              }
               if(nodeSel&&p.node_id&&!seen[p.node_id]){
                 var o=document.createElement("option");o.value=p.node_id;o.textContent=p.node_name;nodeSel.appendChild(o);seen[p.node_id]=1;
               }
@@ -4325,7 +4587,26 @@
         setTimeout(function(){
           var toggle=document.getElementById("v6TopToggle"), panel=document.getElementById("v6TopPanel");
           if(toggle)toggle.onclick=function(){panel.style.display=panel.style.display==="block"?"none":"block";};
-          ["v6AcresFilter","v6CategoryFilter","v6ScoreFilter","v6NodeFilter"].forEach(function(id){var el=document.getElementById(id);if(el)el.onchange=v6renderCardList;});
+          ["v6AcresFilter","v9MaxAcresFilter","v9FitFilter","v6CategoryFilter","v6ScoreFilter","v9FrontageFilter","v9LotsFilter","v9DistanceFilter","v9ConfidenceFilter","v6NodeFilter","v9SortFilter"].forEach(function(id){
+            var el=document.getElementById(id);if(el)el.onchange=v6renderCardList;
+          });
+          var searchBtn=document.getElementById("v9SearchBtn"), searchInput=document.getElementById("v9ParcelSearch");
+          if(searchBtn)searchBtn.onclick=v9RunParcelSearch;
+          if(searchInput)searchInput.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();v9RunParcelSearch();}};
+          var best=document.getElementById("v9BestFitBtn"), clear=document.getElementById("v9ClearFiltersBtn"), save=document.getElementById("v9SaveFiltersBtn");
+          if(best)best.onclick=v9BestFit;if(clear)clear.onclick=v9ClearFilters;if(save)save.onclick=v9SaveCurrentFilter;
+          var savedSel=document.getElementById("v9SavedFilterSelect");
+          if(savedSel)savedSel.onchange=function(){var saved=v9SavedFilters();if(saved[savedSel.value])v9SetFilterState(saved[savedSel.value]);};
+          v9RefreshSavedFilterSelect();
+          Array.prototype.forEach.call(document.querySelectorAll("#v9QuickLayers button"),function(btn){
+            btn.onclick=function(){
+              var layer=v9QuickLayerMap()[btn.getAttribute("data-layer")];if(!layer)return;
+              if(map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(layer))v7safeRemove(layer);else v7safeAdd(layer);
+              v9SyncQuickLayerButtons();
+            };
+          });
+          map_33cc2c2ac68d72d2971fbb7de3650b24.on("layeradd layerremove",v9SyncQuickLayerButtons);
+          v9SyncQuickLayerButtons();
           v6loadOpportunities();
         },0);
 
