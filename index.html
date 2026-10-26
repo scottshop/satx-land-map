@@ -3105,6 +3105,10 @@
           if(key){try{localStorage.setItem("landTrackerKey",key);}catch(e){}}
           return key;
         }
+        function v12ResetTrackerKey(){
+          try{localStorage.removeItem("landTrackerKey");}catch(e){}
+          window.alert("Tracker key cleared. The next Save to Tracker click will ask for it again.");
+        }
         function v12SaveToTracker(button){
           if(!button||button.disabled)return;
           var endpoint=v12TrackerEndpoint();
@@ -3123,7 +3127,7 @@
           button.textContent="Saving…";
           fetch(endpoint,{method:"POST",mode:"no-cors",body:body})
             .then(function(){
-              button.textContent="✓ Sent to Tracker";
+              button.textContent="Sent — check tracker";
               button.classList.add("is-sent");
               button.disabled=true;
             })
@@ -3157,7 +3161,7 @@
             ['Acres',acres==null?'Not reported':Number(acres).toFixed(2)],['Property ID',bexar?p.Prop_id:p.PROP_ID],
             ['Situs',p.Situs||p.SITUS_ADDR],['Value',v3money(bexar?p.Market_val:comal?p.APPRAISED:p.MKT_VALUE)]
           ],'Snapshot: '+date+'. Confirm current ownership and value with CAD.',p.CADLINK,
-            "<div class='v7PopupActions'>"+v12TrackerButton(v12ParcelTrackerData(p,county))+"</div>");
+            "<div class='v7PopupActions'>"+v12TrackerButton(v12ParcelTrackerData(p,county))+"<button type='button' class='reset-tracker-key'>Reset Tracker Key</button></div>");
         }
 
         function v3growth(now,old){
@@ -3208,6 +3212,7 @@
                 "<a href='https://www.google.com/maps/search/?api=1&query="+mapQuery+"' target='_blank' rel='noopener'>Google Maps</a>"+
                 "<button type='button' class='copy-property-id' data-property-id='"+v3esc(pid)+"'>Copy Property ID</button>"+
                 v12TrackerButton(v12ParcelTrackerData(p,"Bexar"))+
+                "<button type='button' class='reset-tracker-key'>Reset Tracker Key</button>"+
                 (cadLink?"<a href='"+v3esc(cadLink)+"' target='_blank' rel='noopener'>CAD Record</a>":"")+
               "</div>"+
               "<div class='bcad-note'>BCAD parcel screening data via SARA, December 2025 snapshot. Parcel lines are reference geometry; verify current ownership, legal description, survey and boundary information before acquisition.</div>"+
@@ -4202,6 +4207,7 @@
               "<a href='https://www.google.com/maps/search/?api=1&query="+mapQuery+"' target='_blank'>Google Maps</a>"+
               "<button type='button' class='copy-property-id' data-property-id='"+v6h(p.prop_id)+"'>Copy Property ID</button>"+
               v12TrackerButton(v12OpportunityTrackerData(p))+
+              "<button type='button' class='reset-tracker-key'>Reset Tracker Key</button>"+
             "</div>"+
             "<div style='font-size:9px;color:#777;margin-top:7px'>Opportunity snapshot: "+v6h(window.parcelSnapshotDate)+". "+v6h(geom)+". "+v6h(p.verification_notes||"Verify title, survey, access, flood and utility capacity.")+"</div>"+
           "</div>";
@@ -4217,6 +4223,11 @@
             };
           });
           v12BindTrackerButtons(root);
+          Array.prototype.forEach.call(root.querySelectorAll(".reset-tracker-key"),function(button){
+            if(button.dataset.resetBound==="1")return;
+            button.dataset.resetBound="1";
+            button.addEventListener("click",v12ResetTrackerKey);
+          });
         });
 
         function v6style(feature){
