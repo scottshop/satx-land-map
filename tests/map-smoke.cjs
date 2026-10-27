@@ -32,7 +32,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>Number(f.properties.qualified_frontage_importance)>=2)),true,'Every highlighted parcel needs collector-or-better frontage');
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>String(f.properties.qualified_frontage_road||'').trim().length>0)),true,'Every highlighted parcel needs a named qualifying frontage road');
     assert.equal(await page.evaluate(() => testMap.hasLayer(tile_layer_satellite_hybrid)), true);
-    for (const name of ['v3Parcels','v3ComalParcels','v3GuadalupeParcels','v3SewerService','v3FemaHazard','v3AADT','v3FutureLandUse','v3Rings','v3VerifiedTargetGeometry']) {
+    for (const name of ['v3Parcels','v3ComalParcels','v3GuadalupeParcels','v3SewerService','v3FemaHazard','v3AADT','v3FutureLandUse','v3Rings','v3VerifiedTargetGeometry','v13FutureRoads']) {
       assert.equal(await page.evaluate(n => testMap.hasLayer(window[n]), name), false, name + ' must default OFF');
     }
     console.log('PASS page/GeoJSON/defaults');
@@ -57,6 +57,9 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
       assert.equal(await page.getByText(removed,{exact:true}).count(),0, removed+' should be removed from Layers');
     }
     for (const title of ['BASEMAPS','LAND','PARCEL DATA','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH']) assert(await page.getByText(title, {exact: true}).isVisible());
+    const futureRoadsLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Future / New Roads'});
+    assert.equal(await futureRoadsLabel.count(),1,'Future / New Roads toggle should exist');
+    assert.equal(await page.locator('#v9QuickLayers button[data-layer="futureRoads"]').count(),1,'Land Finder Future Roads quick toggle should exist');
     const housingLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'New Housing Plats'});
     assert.equal(await housingLabel.count(),1,'New Housing Plats toggle should exist');
     const housingBox=housingLabel.locator('input');
