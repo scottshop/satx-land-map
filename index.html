@@ -262,6 +262,7 @@
       <div class="v9FinderLabel">QUICK CONTEXT</div>
       <div id="v9QuickLayers">
         <button type="button" data-layer="housing">Housing Plats</button>
+        <button type="button" data-layer="futureRoads">Future Roads</button>
         <button type="button" data-layer="traffic">Traffic</button>
         <button type="button" data-layer="sewer">Sewer</button>
         <button type="button" data-layer="flood">Flood</button>
@@ -2995,6 +2996,105 @@
               description:"TxDOT's 23-mile Loop 1604 North Expansion corridor.",
               source:"https://www.txdot.gov/projects/projects-studies/san-antonio/loop1604.html"
             });
+
+            // ---- V13 FUTURE / NEW ROADS ----
+            // Purpose: separate genuinely proposed/new alignments from orange active widenings.
+            // Geometry comes from official public GIS sources; Texas Highwayman is used only
+            // for San Antonio-specific project context/status cross-checks.
+            var v13TxDOTProposedUrl="https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_Proposed_Functional_Classification/FeatureServer/0";
+            var v13MtpUrl="https://services.arcgis.com/g1fRTDLeMgspWrYp/ArcGIS/rest/services/Major_Thoroughfare_Plan__MTP/FeatureServer/0";
+
+            var v13TxDOTProposedRoutes=L.esri.featureLayer({
+              url:v13TxDOTProposedUrl,
+              pane:"infrastructure",
+              simplifyFactor:.35,
+              precision:6,
+              style:function(){
+                return {color:"#00d65a",weight:5,opacity:.95,dashArray:"10,7",lineCap:"round",lineJoin:"round"};
+              },
+              attribution:"TxDOT proposed functional classification"
+            });
+            v13TxDOTProposedRoutes.bindTooltip(function(layer){
+              var p=layer.feature.properties||{};
+              return "<b>"+v3esc(p.RTE_NM||p.ASSET_NM||"TxDOT proposed route")+"</b><br>"+v3esc(p.PRPS_FC_DESC||"Future route");
+            },{sticky:true,className:"bcad-hover"});
+            v13TxDOTProposedRoutes.bindPopup(function(layer){
+              var p=layer.feature.properties||{};
+              return "<div style='min-width:260px'>"+
+                "<b>"+v3esc(p.RTE_NM||p.ASSET_NM||"TxDOT proposed route")+"</b><br>"+
+                "<b>Classification:</b> "+v3esc(p.PRPS_FC_DESC||"—")+"<br>"+
+                "<b>Approval date:</b> "+v3esc(p.APRV_DT||"—")+"<br>"+
+                "<b>Source:</b> TxDOT GRID Proposed Functional Classification<br>"+
+                "<span style='color:#64748b'>Monthly official dataset for routes proposed to be added to the TxDOT roadway system. This is planning geometry, not a construction commitment.</span>"+
+              "</div>";
+            },{maxWidth:380});
+
+            var v13CuratedMtp=L.esri.featureLayer({
+              url:v13MtpUrl,
+              where:"StreetName='South Texas Parkway' OR UPPER(StreetName) LIKE '%ALAMO RANCH%' OR UPPER(StreetName) LIKE '%GALM%'",
+              pane:"infrastructure",
+              simplifyFactor:.25,
+              precision:6,
+              style:function(feature){
+                var n=String((feature.properties||{}).StreetName||"").toUpperCase();
+                var isSouth=n.indexOf("SOUTH TEXAS PARKWAY")>=0;
+                return {
+                  color:isSouth?"#00ff66":"#32cd32",
+                  weight:isSouth?7:5,
+                  opacity:.96,
+                  dashArray:isSouth?"14,8":"8,6",
+                  lineCap:"round",
+                  lineJoin:"round"
+                };
+              },
+              attribution:"City of San Antonio Major Thoroughfare Plan"
+            });
+            function v13MtpProjectInfo(p){
+              var name=String(p.StreetName||"Future road");
+              var up=name.toUpperCase();
+              if(up.indexOf("SOUTH TEXAS PARKWAY")>=0){
+                return {
+                  status:"LONG-RANGE FUTURE FREEWAY",
+                  timing:"Planning / alignment development; no construction funding or committed build date.",
+                  note:"~15-mile future high-capacity corridor between I-35 and I-37. City Council added the freeway corridor to the MTP in 2025; detailed alignment remains subject to change.",
+                  source:"https://www.texashighwayman.com/south-texas-parkway.shtml"
+                };
+              }
+              if(up.indexOf("ALAMO RANCH")>=0){
+                return {
+                  status:"IN DESIGN / WESTWARD EXTENSION",
+                  timing:"Mainlane project east of Calaveras is targeted around 2028; western extension pieces are developer/county-led and phased.",
+                  note:"Future high-capacity Alamo Ranch Parkway corridor and westward connection toward Talley Rd / SH 211. Some mapped segments already exist as surface roadway; green indicates the future corridor/project context, not that every foot is unbuilt.",
+                  source:"https://www.texashighwayman.com/prj-arp.shtml"
+                };
+              }
+              return {
+                status:"NEW CONNECTION / EXTENSION",
+                timing:"Developer-led Galm-area extensions are active/phased; verify current construction limits.",
+                note:"Official MTP alignment used for the future Galm connection. Texas Highwayman reports a new Galm Road connecting segment targeted for 2027.",
+                source:"https://www.texashighwayman.com/west-bexar-projects.shtml"
+              };
+            }
+            v13CuratedMtp.bindTooltip(function(layer){
+              var p=layer.feature.properties||{}, info=v13MtpProjectInfo(p);
+              return "<b>"+v3esc(p.StreetName||"Future road")+"</b><br>"+v3esc(info.status);
+            },{sticky:true,className:"bcad-hover"});
+            v13CuratedMtp.bindPopup(function(layer){
+              var p=layer.feature.properties||{}, info=v13MtpProjectInfo(p);
+              return "<div style='min-width:275px'>"+
+                "<b>"+v3esc(p.StreetName||"Future road")+"</b><br>"+
+                "<b>Status:</b> "+v3esc(info.status)+"<br>"+
+                "<b>MTP type:</b> "+v3esc(p.Type||"—")+"<br>"+
+                "<b>Planned ROW:</b> "+v3esc(p.PropRow||p.CurrentRow||"—")+"<br>"+
+                "<b>Timing:</b> "+v3esc(info.timing)+"<br>"+
+                "<div style='margin-top:6px;color:#475569'>"+v3esc(info.note)+"</div>"+
+                "<div style='margin-top:6px'><a href='"+v3esc(info.source)+"' target='_blank'>Texas Highwayman project context</a> · official geometry: CoSA MTP</div>"+
+              "</div>";
+            },{maxWidth:410});
+
+            window.v13FutureRoads=L.layerGroup([v13TxDOTProposedRoutes,v13CuratedMtp]);
+            window.v13TxDOTProposedRoutes=v13TxDOTProposedRoutes;
+            window.v13CuratedMtp=v13CuratedMtp;
         
     
             L.control.fullscreen(
@@ -3049,6 +3149,7 @@
                     "GROWTH — Major Developments" : feature_group_a226874f9972842eec65b43be2a10db9,
                     "GROWTH — Retail / Employment Anchors" : feature_group_18e326aa803143ba3330a0ba600b718a,
                     "INFRASTRUCTURE — Active Road Improvements" : feature_group_370786adb15c6d6d865f189609798696,
+                    "INFRASTRUCTURE — Future / New Roads" : window.v13FutureRoads,
                 },
             };
 
@@ -3067,7 +3168,7 @@
                   var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
                   var group=parts.length>1?parts.shift():'RESEARCH';
                   span.textContent=' '+parts.join(' — ');
-                  var colors={'Exact Target Parcels':'#fff200','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Approximate Utility Corridors':'#7c3aed'};
+                  var colors={'Exact Target Parcels':'#fff200','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
                   if(colors[parts.join(' — ')]){span.style.borderLeft='4px '+(parts[0]==='Approximate Utility Corridors'?'dashed':'solid')+' '+colors[parts.join(' — ')];span.style.paddingLeft='6px';}
                   (groups[group]||(groups[group]=[])).push(label);
                 });
@@ -3075,7 +3176,7 @@
                 headings.forEach(function(group){
                   if(!groups[group])return;
                   var title=L.DomUtil.create('div','layer-heading',container);title.textContent=group;
-                  var order=['Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
+                  var order=['Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
                   groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(label){container.appendChild(label);});
                 });
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
@@ -4529,7 +4630,7 @@
         }
 
         function v9QuickLayerMap(){
-          return {housing:v10NewHousingPlats,traffic:v3AADT,sewer:v3SewerService,flood:v3FemaHazard};
+          return {housing:v10NewHousingPlats,futureRoads:window.v13FutureRoads,traffic:v3AADT,sewer:v3SewerService,flood:v3FemaHazard};
         }
         function v9SyncQuickLayerButtons(){
           var layers=v9QuickLayerMap();
@@ -4621,7 +4722,7 @@
             feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
             feature_group_370786adb15c6d6d865f189609798696,
             v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v10NewHousingPlats,v3SewerService,v3BulverdeVerifiedSewer,
-            v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings
+            window.v13FutureRoads,v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings
           ];
 
           if(mode==="research"){
