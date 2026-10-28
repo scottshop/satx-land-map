@@ -3168,7 +3168,7 @@
                   var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
                   var group=parts.length>1?parts.shift():'RESEARCH';
                   span.textContent=' '+parts.join(' — ');
-                  var colors={'Exact Target Parcels':'#fff200','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
+                  var colors={'Exact Target Parcels':'#fff200','Active Deals':'#1677ff','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
                   if(colors[parts.join(' — ')]){span.style.borderLeft='4px '+(parts[0]==='Approximate Utility Corridors'?'dashed':'solid')+' '+colors[parts.join(' — ')];span.style.paddingLeft='6px';}
                   (groups[group]||(groups[group]=[])).push(label);
                 });
@@ -3176,13 +3176,13 @@
                 headings.forEach(function(group){
                   if(!groups[group])return;
                   var title=L.DomUtil.create('div','layer-heading',container);title.textContent=group;
-                  var order=['Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
+                  var order=['Active Deals','Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
                   groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(label){container.appendChild(label);});
                 });
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
                 this._baseLayersList.prepend(title);
                 var help=L.DomUtil.create('div','layer-help',container);
-                help.textContent='CAD appears at zoom 14+. Sewer and detailed GIS layers appear at zoom 12+. Snapshot dates are shown in popups.';
+                help.textContent='Active Deals: yellow Watch List · blue LOI · green Under Contract. CAD appears at zoom 14+. Sewer and detailed GIS layers appear at zoom 12+.';
                 var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
                 updateSourceStatus();
                 return this;
@@ -3567,6 +3567,153 @@
           v3HEBComalParcels,
           v3HEBGuadalupeParcels
         ]);
+
+        // ---- V14 ACTIVE DEALS ----
+        // Secure tracker-backed overlay. The private tracker key stays in localStorage.
+        // Pursuing / Watch List = yellow, LOI = blue, Under Contract = green.
+        window.v14ActiveDeals=L.featureGroup();
+        window.v14ActiveDealsLoadedAt=0;
+        window.v14ActiveDealsPendingScript=null;
+        window.v14ActiveDealsTimeout=null;
+
+        function v14StageMeta(stage){
+          var s=String(stage||"").trim().toLowerCase();
+          if(s==="loi")return {key:"LOI",label:"LOI",color:"#1677ff",fill:"#1677ff"};
+          if(s==="under contract")return {key:"CONTRACT",label:"UNDER CONTRACT",color:"#16a34a",fill:"#22c55e"};
+          return {key:"WATCH",label:"WATCH LIST",color:"#d4a000",fill:"#ffd400"};
+        }
+        function v14DealConfig(county){
+          if(county==="Bexar")return {url:v3ParcelUrl+"/0",id:"Prop_id",numeric:true,acres:"Land_acres",owner:"Owner_name",situs:"Situs"};
+          if(county==="Comal")return {url:v3ComalCadUrl,id:"PROP_ID",numeric:true,acres:"LEGAL_ACRE",owner:"PY_OWNER_N",situs:"SITUS_ADDR"};
+          if(county==="Guadalupe")return {url:v3GuadalupeCadUrl,id:"PROP_ID",numeric:false,acres:"LEGAL_AREA",owner:"OWNER_NAME",situs:"SITUS_ADDR"};
+          return null;
+        }
+        function v14SqlText(v){return String(v==null?"":v).replace(/'/g,"''");}
+        function v14DealWhere(cfg,parcelId){
+          var id=String(parcelId||"").trim();
+          if(cfg.numeric&&/^\d+(?:\.0+)?$/.test(id))return cfg.id+" = "+Number(id);
+          return cfg.id+" = '"+v14SqlText(id)+"'";
+        }
+        function v14DealPopup(deal,p,cfg){
+          var meta=v14StageMeta(deal.stage), acres=Number(p&&p[cfg.acres]);
+          var next=(deal.nextAction||"—")+(deal.nextActionDate?" · "+deal.nextActionDate:"");
+          return "<div class='v7Popup'>"+
+            "<div style='display:flex;align-items:center;gap:7px;margin-bottom:7px'>"+
+              "<span style='width:11px;height:11px;border-radius:50%;background:"+meta.fill+";border:2px solid "+meta.color+"'></span>"+
+              "<b>"+v3esc(meta.label)+"</b>"+
+            "</div>"+
+            "<div style='font-size:14px;font-weight:800;margin-bottom:7px'>"+v3esc(deal.dealSite||p[cfg.situs]||"Active deal")+"</div>"+
+            "<dl class='popup-facts'>"+
+              "<dt>County</dt><dd>"+v3esc(deal.county)+"</dd>"+
+              "<dt>Parcel ID</dt><dd>"+v3esc(deal.parcelId)+"</dd>"+
+              "<dt>CAD acreage</dt><dd>"+(isFinite(acres)?acres.toFixed(2)+" ac":"Not reported")+"</dd>"+
+              "<dt>Owner</dt><dd>"+v3esc(deal.owner||p[cfg.owner]||"Not reported")+"</dd>"+
+              "<dt>Next action</dt><dd>"+v3esc(next)+"</dd>"+
+            "</dl>"+
+            "<div class='popup-source'>Stage and next action come from the private Land Deal Tracker. Parcel geometry comes from the county CAD screening layer.</div>"+
+          "</div>";
+        }
+        function v14RenderActiveDeals(deals){
+          window.v14ActiveDeals.clearLayers();
+          var pending=0, found=0, missing=0;
+          (Array.isArray(deals)?deals:[]).forEach(function(deal){
+            var cfg=v14DealConfig(String(deal.county||"").trim());
+            if(!cfg||!deal.parcelId){missing++;return;}
+            pending++;
+            L.esri.query({url:cfg.url}).where(v14DealWhere(cfg,deal.parcelId)).run(function(err,fc){
+              pending--;
+              if(err||!fc||!Array.isArray(fc.features)||!fc.features.length){
+                missing++;
+              }else{
+                found++;
+                fc.features.forEach(function(feature){
+                  var meta=v14StageMeta(deal.stage);
+                  var layer=L.geoJSON(feature,{
+                    pane:"cadSelected",
+                    style:{color:meta.color,weight:5,opacity:1,fillColor:meta.fill,fillOpacity:.30,lineJoin:"round"}
+                  });
+                  layer.bindTooltip("<b>"+v3esc(meta.label)+"</b> · "+v3esc(deal.dealSite||deal.parcelId),{sticky:true,className:"bcad-hover"});
+                  layer.bindPopup(function(){return v14DealPopup(deal,feature.properties||{},cfg);},{maxWidth:360});
+                  layer.on("mouseover",function(){layer.setStyle({weight:7,fillOpacity:.42});});
+                  layer.on("mouseout",function(){layer.setStyle({color:meta.color,weight:5,opacity:1,fillColor:meta.fill,fillOpacity:.30});});
+                  layer.eachLayer(function(x){x.addTo(window.v14ActiveDeals);});
+                });
+              }
+              if(pending===0){
+                delete sourceLoadErrors["Active Deals"];
+                if(missing)sourceLoadErrors["Active Deals"]=missing+" tracker parcel"+(missing===1?"":"s")+" could not be matched to current CAD geometry.";
+                updateSourceStatus();
+                window.v14ActiveDealsLoadedAt=Date.now();
+              }
+            });
+          });
+          if(!pending){
+            delete sourceLoadErrors["Active Deals"];
+            if(missing)sourceLoadErrors["Active Deals"]=missing+" tracker parcel"+(missing===1?"":"s")+" could not be matched to current CAD geometry.";
+            updateSourceStatus();
+            window.v14ActiveDealsLoadedAt=Date.now();
+          }
+        }
+        function v14CleanupJsonp(){
+          if(window.v14ActiveDealsPendingScript){
+            try{window.v14ActiveDealsPendingScript.remove();}catch(e){}
+            window.v14ActiveDealsPendingScript=null;
+          }
+          if(window.v14ActiveDealsTimeout){
+            clearTimeout(window.v14ActiveDealsTimeout);
+            window.v14ActiveDealsTimeout=null;
+          }
+        }
+        function v14LoadActiveDeals(){
+          var endpoint=v12TrackerEndpoint();
+          if(!endpoint){
+            sourceLoadErrors["Active Deals"]="Tracker bridge is not connected.";
+            updateSourceStatus();return;
+          }
+          var key=v12TrackerKey();
+          if(!key){
+            sourceLoadErrors["Active Deals"]="Tracker key required.";
+            updateSourceStatus();return;
+          }
+          v14CleanupJsonp();
+          sourceLoadErrors["Active Deals"]="Loading private tracker…";
+          updateSourceStatus();
+          window.__landActiveDealsCallback=function(payload){
+            v14CleanupJsonp();
+            if(!payload||payload.ok!==true){
+              if(payload&&payload.error==="unauthorized"){
+                try{localStorage.removeItem("landTrackerKey");}catch(e){}
+                sourceLoadErrors["Active Deals"]="Tracker key rejected. Toggle the layer again to enter the current key.";
+              }else{
+                sourceLoadErrors["Active Deals"]="Tracker read failed"+(payload&&payload.error?": "+payload.error:".");
+              }
+              updateSourceStatus();return;
+            }
+            v14RenderActiveDeals(payload.deals||[]);
+          };
+          var src=endpoint+(endpoint.indexOf("?")>=0?"&":"?")+
+            "action=activeDeals&callback=__landActiveDealsCallback&key="+encodeURIComponent(key)+"&_="+Date.now();
+          var script=document.createElement("script");
+          script.src=src;script.async=true;
+          script.onerror=function(){
+            v14CleanupJsonp();
+            sourceLoadErrors["Active Deals"]="Tracker read endpoint unavailable. Apps Script may need to be redeployed.";
+            updateSourceStatus();
+          };
+          window.v14ActiveDealsPendingScript=script;
+          document.head.appendChild(script);
+          window.v14ActiveDealsTimeout=setTimeout(function(){
+            v14CleanupJsonp();
+            sourceLoadErrors["Active Deals"]="Tracker read timed out. Apps Script may need the active-deals update.";
+            updateSourceStatus();
+          },10000);
+        }
+        window.v14ActiveDeals.on("add",function(){v14LoadActiveDeals();});
+        window.v14ActiveDeals.on("remove",function(){
+          v14CleanupJsonp();
+          delete sourceLoadErrors["Active Deals"];
+          updateSourceStatus();
+        });
 
         // Existing sewer mains — physical wastewater pipe alignments across Bexar, Comal and Guadalupe.
         // Sources are public utility/municipal GIS line datasets; no CCN/service-territory polygons are used.
@@ -4178,6 +4325,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"PARCEL DATA — Comal CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"PARCEL DATA — Guadalupe CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"LAND — H-E-B Owned Parcels");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v14ActiveDeals,"LAND — Active Deals");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v10NewHousingPlats,"GROWTH — New Housing Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"INFRASTRUCTURE — Existing Sewer Mains");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BulverdeVerifiedSewer,"INFRASTRUCTURE — Approximate Utility Corridors");
