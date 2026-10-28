@@ -21,8 +21,74 @@ function setupTrackerKey() {
   return key;
 }
 
-function doGet() {
-  return json_({ ok: true, service: 'land-deal-tracker-bridge' });
+function doGet(e) {
+  try {
+    const p = (e && e.parameter) || {};
+    if (clean_(p.action) !== 'activeDeals') {
+      return json_({ ok: true, service: 'land-deal-tracker-bridge' });
+    }
+
+    const expected = PropertiesService.getScriptProperties().getProperty('TRACKER_KEY');
+    if (!expected || !p.key || p.key !== expected) {
+      return output_(p.callback, { ok: false, error: 'unauthorized' });
+    }
+
+    const ss = SpreadsheetApp.openById(TRACKER_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(TRACKER_SHEET_NAME);
+    if (!sheet) return output_(p.callback, { ok: false, error: 'Deals sheet not found' });
+
+    const lastRow = Math.max(sheet.getLastRow(), FIRST_DATA_ROW - 1);
+    if (lastRow < FIRST_DATA_ROW) {
+      return output_(p.callback, { ok: true, deals: [], generatedAt: new Date().toISOString() });
+    }
+
+    const rows = sheet
+      .getRange(FIRST_DATA_ROW, 1, lastRow - FIRST_DATA_ROW + 1, 14)
+      .getDisplayValues();
+
+    const allowed = {
+      'pursuing': true,
+      'watch list': true,
+      'watchlist': true,
+      'loi': true,
+      'under contract': true
+    };
+
+    const deals = rows
+      .map(function(r, i) {
+        const stage = clean_(r[2]);
+        if (!allowed[stage.toLowerCase()]) return null;
+        const county = clean_(r[9]);
+        const parcelId = clean_(r[10]);
+        if (!county || !parcelId) return null;
+
+        return {
+          row: FIRST_DATA_ROW + i,
+          dealSite: clean_(r[0]),
+          acres: clean_(r[1]),
+          stage: stage,
+          nextAction: clean_(r[4]),
+          nextActionDate: clean_(r[5]),
+          owner: clean_(r[8]),
+          county: county,
+          parcelId: parcelId,
+          mapLink: clean_(r[11])
+        };
+      })
+      .filter(Boolean);
+
+    return output_(p.callback, {
+      ok: true,
+      deals: deals,
+      generatedAt: new Date().toISOString()
+    });
+  } catch (err) {
+    const p = (e && e.parameter) || {};
+    return output_(p.callback, {
+      ok: false,
+      error: String(err && err.message || err)
+    });
+  }
 }
 
 function doPost(e) {
@@ -86,6 +152,16 @@ function doPost(e) {
 
 function clean_(value) {
   return String(value == null ? '' : value).trim().slice(0, 2000);
+}
+
+function output_(callback, obj) {
+  const cb = clean_(callback);
+  if (cb && /^[A-Za-z_$][0-9A-Za-z_$\.]*$/.test(cb)) {
+    return ContentService
+      .createTextOutput(cb + '(' + JSON.stringify(obj) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return json_(obj);
 }
 
 function json_(obj) {
