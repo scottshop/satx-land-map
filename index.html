@@ -3168,7 +3168,7 @@
                   var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
                   var group=parts.length>1?parts.shift():'RESEARCH';
                   span.textContent=' '+parts.join(' — ');
-                  var colors={'Exact Target Parcels':'#fff200','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
+                  var colors={'Exact Target Parcels':'#fff200','LandGlide Saved Sites':'#7e22ce','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
                   if(colors[parts.join(' — ')]){span.style.borderLeft='4px '+(parts[0]==='Approximate Utility Corridors'?'dashed':'solid')+' '+colors[parts.join(' — ')];span.style.paddingLeft='6px';}
                   (groups[group]||(groups[group]=[])).push(label);
                 });
@@ -3176,7 +3176,7 @@
                 headings.forEach(function(group){
                   if(!groups[group])return;
                   var title=L.DomUtil.create('div','layer-heading',container);title.textContent=group;
-                  var order=['Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
+                  var order=['LandGlide Saved Sites','Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
                   groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(label){container.appendChild(label);});
                 });
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
@@ -3567,6 +3567,140 @@
           v3HEBComalParcels,
           v3HEBGuadalupeParcels
         ]);
+
+        // ---- V15 LANDGLIDE SAVED SITES IMPORT ----
+        // Imported 2026-11-02 from the user's LandGlide saved-locations CSV.
+        // Exact CAD polygons are resolved for Bexar, Comal and Guadalupe.
+        // Other counties stay as source-coordinate markers rather than guessed parcel boundaries.
+        window.v15LandGlideSites=L.featureGroup();
+        window.v15LandGlideData=[];
+        window.v15LandGlideByKey={};
+        window.v15LandGlideLoaded=false;
+        window.v15LandGlideMatchStats={polygons:0,markers:0,total:0};
+
+        function v15Key(county,parcelId){
+          return String(county||"").trim().toLowerCase()+"|"+String(parcelId||"").trim();
+        }
+        function v15Config(county){
+          if(county==="Bexar")return {url:v3ParcelUrl+"/0",id:"Prop_id",numeric:true};
+          if(county==="Comal")return {url:v3ComalCadUrl,id:"PROP_ID",numeric:true};
+          if(county==="Guadalupe")return {url:v3GuadalupeCadUrl,id:"PROP_ID",numeric:false};
+          return null;
+        }
+        function v15Popup(rec,geometryType){
+          return "<div class='v7Popup'>"+
+            "<div style='font-size:9px;font-weight:900;letter-spacing:.8px;color:#7e22ce'>LANDGLIDE SAVED SITE</div>"+
+            "<div style='font-size:14px;font-weight:800;margin:4px 0 7px'>"+v3esc(rec.address||rec.owner||(rec.county+" parcel "+rec.parcelId))+"</div>"+
+            "<dl class='popup-facts'>"+
+              "<dt>County</dt><dd>"+v3esc(rec.county)+"</dd>"+
+              "<dt>Parcel ID</dt><dd>"+v3esc(rec.parcelId)+"</dd>"+
+              "<dt>Acreage</dt><dd>"+v3esc(Number(rec.acreage).toFixed(2))+" ac</dd>"+
+              "<dt>Owner</dt><dd>"+v3esc(rec.owner||"Not reported")+"</dd>"+
+              "<dt>Land use</dt><dd>"+v3esc([rec.landUseClass,rec.landUseCode].filter(Boolean).join(" · ")||"Not reported")+"</dd>"+
+              "<dt>Map geometry</dt><dd>"+v3esc(geometryType)+"</dd>"+
+            "</dl>"+
+            "<div class='popup-source'>Imported from LandGlide saved locations on Nov. 2, 2026. Tracker status is managed in the Land Deal Tracker.</div>"+
+          "</div>";
+        }
+        function v15AddMarker(rec,reason){
+          var key=v15Key(rec.county,rec.parcelId);
+          if(window.v15LandGlideByKey[key])return;
+          var marker=L.circleMarker([Number(rec.latitude),Number(rec.longitude)],{
+            pane:"cadSelected",radius:8,color:"#7e22ce",weight:3,opacity:1,fillColor:"#c084fc",fillOpacity:.72
+          });
+          marker.bindTooltip("<b>LandGlide</b> · "+v3esc(rec.address||rec.owner||rec.parcelId)+" · "+v3esc(rec.acreage)+" ac",{sticky:true,className:"bcad-hover"});
+          marker.bindPopup(function(){return v15Popup(rec,reason||"LandGlide coordinate marker");},{maxWidth:360});
+          marker.addTo(window.v15LandGlideSites);
+          window.v15LandGlideByKey[key]=marker;
+          window.v15LandGlideMatchStats.markers++;
+        }
+        function v15AddPolygon(rec,feature){
+          var key=v15Key(rec.county,rec.parcelId);
+          if(window.v15LandGlideByKey[key])return;
+          var layer=L.geoJSON(feature,{
+            pane:"cadSelected",
+            style:{color:"#7e22ce",weight:4,opacity:1,fillColor:"#c084fc",fillOpacity:.20,lineJoin:"round"}
+          });
+          layer.bindTooltip("<b>LandGlide</b> · "+v3esc(rec.address||rec.owner||rec.parcelId)+" · "+v3esc(rec.acreage)+" ac",{sticky:true,className:"bcad-hover"});
+          layer.bindPopup(function(){return v15Popup(rec,"Matched county CAD parcel polygon");},{maxWidth:360});
+          layer.on("mouseover",function(){layer.setStyle({weight:6,fillOpacity:.32});});
+          layer.on("mouseout",function(){layer.setStyle({color:"#7e22ce",weight:4,opacity:1,fillColor:"#c084fc",fillOpacity:.20});});
+          layer.addTo(window.v15LandGlideSites);
+          window.v15LandGlideByKey[key]=layer;
+          window.v15LandGlideMatchStats.polygons++;
+        }
+        function v15Where(cfg,records){
+          var ids=records.map(function(r){return String(r.parcelId||"").trim();}).filter(Boolean);
+          if(cfg.numeric)return cfg.id+" IN ("+ids.filter(function(x){return /^\d+(?:\.0+)?$/.test(x);}).map(Number).join(",")+")";
+          return cfg.id+" IN ("+ids.map(function(x){return "'"+String(x).replace(/'/g,"''")+"'";}).join(",")+")";
+        }
+        function v15FocusFromUrl(){
+          var params=new URLSearchParams(location.search), county=params.get("importCounty"), parcel=params.get("importParcel");
+          if(!county||!parcel)return;
+          var layer=window.v15LandGlideByKey[v15Key(county,parcel)];
+          if(!layer)return;
+          try{
+            if(layer.getBounds&&layer.getBounds().isValid())map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(layer.getBounds().pad(.5),{maxZoom:17});
+            else if(layer.getLatLng)map_33cc2c2ac68d72d2971fbb7de3650b24.setView(layer.getLatLng(),16);
+            layer.openPopup();
+          }catch(e){}
+        }
+        function v15RenderLandGlideSites(sites){
+          window.v15LandGlideData=Array.isArray(sites)?sites:[];
+          window.v15LandGlideMatchStats={polygons:0,markers:0,total:window.v15LandGlideData.length};
+          window.v15LandGlideSites.clearLayers();
+          window.v15LandGlideByKey={};
+
+          var supported={"Bexar":[],"Comal":[],"Guadalupe":[]};
+          window.v15LandGlideData.forEach(function(rec){
+            if(supported[rec.county])supported[rec.county].push(rec);
+            else v15AddMarker(rec,"LandGlide coordinate marker — county CAD geometry is not connected to this map yet");
+          });
+
+          var pending=0;
+          Object.keys(supported).forEach(function(county){
+            var records=supported[county],cfg=v15Config(county);
+            if(!records.length||!cfg)return;
+            pending++;
+            L.esri.query({url:cfg.url}).where(v15Where(cfg,records)).run(function(err,fc){
+              var matched={};
+              if(!err&&fc&&Array.isArray(fc.features)){
+                fc.features.forEach(function(feature){
+                  var raw=(feature.properties||{})[cfg.id], key=v15Key(county,raw);
+                  var rec=records.find(function(r){return v15Key(county,r.parcelId)===key;});
+                  if(rec){matched[key]=true;v15AddPolygon(rec,feature);}
+                });
+              }
+              records.forEach(function(rec){
+                var key=v15Key(county,rec.parcelId);
+                if(!matched[key])v15AddMarker(rec,err?"LandGlide coordinate marker — CAD query unavailable":"LandGlide coordinate marker — parcel ID was not matched in current CAD layer");
+              });
+              pending--;
+              if(pending===0){window.v15LandGlideLoaded=true;v15FocusFromUrl();}
+            });
+          });
+          if(!pending){window.v15LandGlideLoaded=true;v15FocusFromUrl();}
+        }
+        function v15LoadLandGlideSites(){
+          if(window.v15LandGlideLoaded||window.v15LandGlideLoading)return;
+          window.v15LandGlideLoading=true;
+          fetch("data/landglide_saved_sites.json",{cache:"no-store"})
+            .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+            .then(function(data){window.v15LandGlideLoading=false;v15RenderLandGlideSites(data.sites||[]);})
+            .catch(function(err){
+              window.v15LandGlideLoading=false;
+              sourceLoadErrors["LandGlide Saved Sites"]="Import dataset failed to load.";
+              updateSourceStatus();
+              console.error("LandGlide import failed",err);
+            });
+        }
+        window.v15LandGlideSites.on("add",v15LoadLandGlideSites);
+        setTimeout(function(){
+          var p=new URLSearchParams(location.search);
+          if(p.get("importCounty")&&p.get("importParcel")){
+            try{window.v15LandGlideSites.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);}catch(e){}
+          }
+        },0);
 
         // Existing sewer mains — physical wastewater pipe alignments across Bexar, Comal and Guadalupe.
         // Sources are public utility/municipal GIS line datasets; no CCN/service-territory polygons are used.
@@ -4178,6 +4312,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"PARCEL DATA — Comal CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"PARCEL DATA — Guadalupe CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"LAND — H-E-B Owned Parcels");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v15LandGlideSites,"LAND — LandGlide Saved Sites");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v10NewHousingPlats,"GROWTH — New Housing Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"INFRASTRUCTURE — Existing Sewer Mains");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BulverdeVerifiedSewer,"INFRASTRUCTURE — Approximate Utility Corridors");
