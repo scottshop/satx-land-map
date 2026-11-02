@@ -3184,7 +3184,7 @@
                   var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
                   var group=parts.length>1?parts.shift():'RESEARCH';
                   span.textContent=' '+parts.join(' — ');
-                  var colors={'Exact Target Parcels':'#fff200','Tracker Sites':'#ff2bd6','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
+                  var colors={'Tracker Sites':'#ff2bd6','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
                   if(colors[parts.join(' — ')]){span.style.borderLeft='4px '+(parts[0]==='Approximate Utility Corridors'?'dashed':'solid')+' '+colors[parts.join(' — ')];span.style.paddingLeft='6px';}
                   (groups[group]||(groups[group]=[])).push(label);
                 });
@@ -3201,7 +3201,7 @@
                   var items=L.DomUtil.create('div','layer-group-items',container);
                   var collapsed=!!self._groupCollapsed[group];
                   if(collapsed){items.style.display='none';title.classList.add('is-collapsed');}
-                  var order=['Bexar CAD','Comal CAD','Guadalupe CAD','Kendall CAD','Medina CAD','Blanco CAD','Kerr CAD','Webb CAD','Tracker Sites','Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
+                  var order=['Bexar CAD','Comal CAD','Guadalupe CAD','Kendall CAD','Medina CAD','Blanco CAD','Kerr CAD','Webb CAD','Tracker Sites','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
                   groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(row){items.appendChild(row);});
                   L.DomEvent.on(title,'click',function(e){
                     L.DomEvent.stop(e);
@@ -4817,8 +4817,8 @@
         }
         window.v6OpportunityData=[];
         window.v6OpportunityById={};
-        window.v6OpportunityLayer=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
-        window.v6OpportunityMarkers=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        window.v6OpportunityLayer=L.featureGroup();
+        window.v6OpportunityMarkers=L.featureGroup();
         window.v6OppLoaded=false;
         window.parcelSnapshotDate="Not reported";
 
@@ -5155,8 +5155,6 @@
                 var o=document.createElement("option");o.value=p.node_id;o.textContent=p.node_name;nodeSel.appendChild(o);seen[p.node_id]=1;
               }
             });
-            layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v6OpportunityLayer,"LAND — Exact Target Parcels");
-            layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v6OpportunityMarkers,"LAND — Top 10 Parcel Numbers");
             window.v6OppLoaded=true;
             v6renderCardList();
             if(window.v6OpportunityData.length){
@@ -5207,7 +5205,8 @@
             feature_group_370786adb15c6d6d865f189609798696,
             v3Parcels,v3ComalParcels,v3GuadalupeParcels,window.v16KendallParcels,window.v16MedinaParcels,window.v16BlancoParcels,window.v16KerrParcels,window.v16WebbParcels,window.v15TrackerSites,
             v3HEBOwnedAllCounties,v10NewHousingPlats,v3SewerService,v3BulverdeVerifiedSewer,
-            window.v13FutureRoads,v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings
+            window.v13FutureRoads,v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings,
+            window.v6OpportunityLayer,window.v6OpportunityMarkers
           ];
 
           if(mode==="research"){
@@ -5229,8 +5228,8 @@
             v7safeAdd(feature_group_faeb81c75b71b2840ca70907d2e58065);
             v7safeAdd(feature_group_a226874f9972842eec65b43be2a10db9);
             v7safeAdd(feature_group_18e326aa803143ba3330a0ba600b718a);
-            if(window.v6OpportunityLayer)v7safeAdd(window.v6OpportunityLayer);
-            if(window.v6OpportunityMarkers)v7safeAdd(window.v6OpportunityMarkers);
+            // Target parcel polygons and Top 10 number markers are intentionally not auto-displayed.
+            // Land Finder retains the underlying acquisition data without cluttering the map.
           }
         }
 
