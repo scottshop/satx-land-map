@@ -3543,20 +3543,20 @@
         function v16TrackerParcelPopup(p,cfg){
           var id=v16First(p,cfg.idFields||[]);
           var owner=v16First(p,cfg.ownerFields||[]);
-          var acres=Number(v16First(p,cfg.acreFields||[]));
+          var acresRaw=v16First(p,cfg.acreFields||[]), acres=Number(acresRaw);
           var addr=v16First(p,cfg.addressFields||[]);
           if(!addr&&cfg.addressParts){
             addr=cfg.addressParts.map(function(k){return p&&p[k];}).filter(function(v){return v!=null&&String(v).trim()!=="";}).join(" ");
           }
-          var value=Number(v16First(p,cfg.valueFields||[]));
+          var valueRaw=v16First(p,cfg.valueFields||[]), value=Number(valueRaw);
           var link=v16First(p,cfg.linkFields||[]);
           return factPopup("CAD parcel · "+cfg.county,[
             ["County",cfg.county],
             ["Owner",owner||"Not reported"],
-            ["Acres",isFinite(acres)?acres.toFixed(2):"Not reported"],
+            ["Acres",String(acresRaw).trim()!==""&&isFinite(acres)?acres.toFixed(2):"Not reported"],
             ["Property ID",id||"Not reported"],
             ["Situs",addr||"Not reported"],
-            ["Market value",isFinite(value)&&value>0?v3money(value):"Not reported"]
+            ["Market value",String(valueRaw).trim()!==""&&isFinite(value)&&value>0?v3money(value):"Not reported"]
           ],cfg.note+(cfg.vintage?" · "+cfg.vintage:""),/^https?:\/\//i.test(String(link||""))?link:null);
         }
         function v16MakeTrackerParcelLayer(cfg){
@@ -3567,8 +3567,8 @@
           });
           layer.bindTooltip(function(x){
             var p=x.feature&&x.feature.properties||{};
-            var acres=Number(v16First(p,cfg.acreFields||[]));
-            return cfg.county+" CAD"+(isFinite(acres)?" · "+acres.toFixed(2)+" AC":"");
+            var acresRaw=v16First(p,cfg.acreFields||[]), acres=Number(acresRaw);
+            return cfg.county+" CAD"+(String(acresRaw).trim()!==""&&isFinite(acres)?" · "+acres.toFixed(2)+" AC":"");
           },{sticky:true});
           layer.bindPopup(function(x){return v16TrackerParcelPopup(x.feature&&x.feature.properties||{},cfg);},{maxWidth:340});
           layer.on("mouseover",function(e){if(e&&e.layer&&e.layer.setStyle)e.layer.setStyle(v16ParcelHover());});
