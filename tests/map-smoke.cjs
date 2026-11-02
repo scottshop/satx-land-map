@@ -42,7 +42,9 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     console.log('PASS actual satellite imagery');
     await page.screenshot({path: process.env.SCREENSHOT_DIR ? path.join(process.env.SCREENSHOT_DIR,'desktop.png') : '/tmp/satx-desktop.png'});
     await page.setViewportSize({width:390,height:844}); await page.evaluate(()=>testMap.invalidateSize());
-    await page.locator('.leaflet-control-layers').hover(); assert(await page.getByText('Exact Target Parcels',{exact:true}).isVisible());
+    await page.locator('.leaflet-control-layers').hover();
+    assert.equal(await page.getByText('Exact Target Parcels',{exact:true}).count(),0);
+    assert.equal(await page.getByText('Top 10 Parcel Numbers',{exact:true}).count(),0);
     assert.equal(await page.locator('#v6CategoryFilter').count(),1);
     for (const id of ['v9ParcelSearch','v9CountySearch','v9FitFilter','v9FrontageFilter','v9LotsFilter','v9DistanceFilter','v9ConfidenceFilter','v9SavedFilterSelect']) {
       assert.equal(await page.locator('#'+id).count(),1,'Phase 2 control '+id+' should exist');
@@ -53,7 +55,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     console.log('PASS mobile menu/panel/no overflow');await page.locator('#v6TopToggle').click();await page.setViewportSize({width:1440,height:1000});await page.evaluate(()=>testMap.invalidateSize());
     }
     await page.locator('.leaflet-control-layers').hover();
-    for (const removed of ['Assemblage Opportunities','Preliminary Plats','Future Land Use','Parcel Search Results','Legacy Parcel References','Legacy References']) {
+    for (const removed of ['Assemblage Opportunities','Preliminary Plats','Future Land Use','Parcel Search Results','Legacy Parcel References','Legacy References','Exact Target Parcels','Top 10 Parcel Numbers']) {
       assert.equal(await page.getByText(removed,{exact:true}).count(),0, removed+' should be removed from Layers');
     }
     for (const title of ['BASEMAPS','LAND','PARCEL DATA','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH']) assert(await page.getByText(title, {exact: true}).isVisible());
@@ -145,10 +147,6 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     assert(housingSample&&housingSample.lots>0,'Housing plat should report new-home lots');
     await housingBox.uncheck();
     console.log('PASS New Housing Plats toggle',housingSample);
-
-    const targetLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Exact Target Parcels'});
-    await targetLabel.locator('input').uncheck(); assert.equal(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)), false);
-    await targetLabel.locator('input').check(); assert.equal(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)), true);
 
     if(process.env.TEST_STAGE!=='gis') {
       const parcelHeading=page.locator('.layer-heading-toggle').filter({hasText:'PARCEL DATA'});
