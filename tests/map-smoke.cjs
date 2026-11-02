@@ -86,6 +86,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     assert.equal(trackerStages.LOI,3,'Tracker snapshot should have 3 LOI rows');
     assert.equal(await page.evaluate(()=>typeof v15RefreshTrackerSites),'function','Live tracker refresh function should exist');
     assert.equal(await page.evaluate(()=>typeof v15ApplyLiveTrackerPayload),'function','Live tracker payload applier should exist');
+    assert.equal(await page.evaluate(()=>String(v15RefreshTrackerSites).includes('landTrackerKey')),false,'Read-only tracker sync should not require the private tracker key');
 
     const livePatch=await page.evaluate(()=>{
       const payload=window.v15TrackerData.map(r=>Object.assign({},r));
