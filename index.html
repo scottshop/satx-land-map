@@ -63,7 +63,14 @@
 .leaflet-control-layers-expanded{padding:9px 11px;max-height:70vh;overflow:auto;min-width:235px}
 .leaflet-popup-content{font:12px/1.45 Arial;margin:12px 14px}
 .leaflet-tooltip{font:600 11px/1.2 Arial;border:0;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,.16)}
-#v6TopToggle{position:fixed;top:58px;right:12px;z-index:11000;background:#111;color:#FFD400;border:0;border-radius:7px;padding:8px 11px;font:700 11px Arial;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+#v17TopTools{position:fixed;top:58px;right:12px;z-index:11000;display:flex;gap:6px;align-items:center}
+#v6TopToggle,#v7ModeToggle{position:static!important;box-sizing:border-box;min-height:30px;border-radius:7px;padding:7px 9px;font:800 9px Arial;letter-spacing:.15px;cursor:pointer;box-shadow:0 2px 9px rgba(0,0,0,.18)}
+#v6TopToggle{background:#111;color:#FFD400;border:1px solid #111}
+#v7ModeToggle{background:#fff;color:#111;border:1px solid rgba(17,17,17,.45)}
+#v7ModeToggle[data-mode="research"]{background:#17365D;color:#fff;border-color:#17365D}
+#v17TrackerLink{position:fixed;left:12px;bottom:18px;z-index:11000;display:inline-flex;align-items:center;gap:7px;background:#111;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:9px 12px;font:800 11px Arial;text-decoration:none;box-shadow:0 3px 14px rgba(0,0,0,.28)}
+#v17TrackerLink:hover{background:#262626}
+#v17TrackerLink .v17Dot{width:8px;height:8px;border-radius:50%;background:#ff2bd6;box-shadow:0 0 0 2px rgba(255,43,214,.18)}
 #v6TopPanel{display:none;position:fixed;top:100px;right:12px;width:380px;max-height:calc(100vh - 120px);overflow:auto;z-index:10990;background:rgba(255,255,255,.98);border:1px solid #222;border-radius:9px;box-shadow:0 6px 24px rgba(0,0,0,.28);font:11px/1.35 Arial;color:#222}
 #v6TopHead{position:sticky;top:0;z-index:2;background:#111;color:#fff;padding:11px 12px}
 #v6TopHead b{font-size:14px;letter-spacing:.2px}
@@ -112,8 +119,6 @@
 #v7Header{position:fixed;top:12px;left:55px;z-index:10020;background:rgba(17,17,17,.92);color:#fff;border-radius:8px;padding:8px 11px;box-shadow:0 3px 14px rgba(0,0,0,.22);font-family:Arial;pointer-events:none}
 #v7Header .v7Title{font-size:15px;font-weight:800;letter-spacing:.1px}
 #v7Header .v7Sub{font-size:10px;margin-top:2px;color:#e9e9e9}
-#v7ModeToggle{position:fixed;top:58px;right:94px;z-index:11000;background:#fff;color:#111;border:1px solid #111;border-radius:7px;padding:8px 10px;font:800 10px Arial;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.20)}
-#v7ModeToggle[data-mode="research"]{background:#17365D;color:#fff;border-color:#17365D}
 .v7Acres{font-size:16px;font-weight:900;color:#111}
 .v7Node{font-weight:800;margin-top:4px;color:#222}
 .v7Signals{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px;font-size:10px;color:#555}
@@ -145,22 +150,28 @@
 @media (max-width:700px){
   #v7Header{left:48px;right:10px;padding:7px 9px}
   #v7Header .v7Title{font-size:13px}
-  #v7ModeToggle{top:56px;right:92px;padding:7px 8px;font-size:9px}
-  #v6TopToggle{top:56px!important}
+  #v17TopTools{top:56px;right:10px;gap:4px}
+  #v6TopToggle,#v7ModeToggle{padding:6px 7px;font-size:8px}
   #v6TopPanel{left:8px!important;right:8px!important;width:auto!important;max-height:72vh!important}
+  #v17TrackerLink{left:8px;bottom:14px;padding:8px 10px;font-size:10px}
 }
 
 .parcel-number{pointer-events:none}
 .leaflet-popup-content{max-height:60vh;overflow-y:auto;max-width:calc(100vw - 70px)}
 .leaflet-popup-content [style*="min-width"]{min-width:0!important}
-.layer-heading{font:700 10px Arial;letter-spacing:1px;color:#64748b;margin:14px 0 6px;padding-top:8px;border-top:1px solid #e2e8f0}
+.layer-heading{display:flex;align-items:center;justify-content:space-between;font:800 9px Arial;letter-spacing:.8px;color:#475569;margin:9px 0 4px;padding:7px 2px 3px;border-top:1px solid #e2e8f0;user-select:none}
 .layer-heading:first-child{margin-top:0;border:0}
-.leaflet-control-layers label{display:flex;align-items:center;gap:7px;padding:5px 0;cursor:pointer}
+.layer-heading-toggle{cursor:pointer}
+.layer-heading-toggle:hover{color:#111827}
+.layer-chevron{font:900 10px Arial;color:#94a3b8;transition:transform .15s ease}
+.layer-heading.is-collapsed .layer-chevron{transform:rotate(-90deg)}
+.layer-group-items{display:block}
+.leaflet-control-layers label{display:flex;align-items:center;gap:6px;padding:3px 0;cursor:pointer;font-size:10px}
 .leaflet-control-layers input{margin:0;flex-shrink:0}
-.leaflet-control-layers-expanded{max-height:calc(100dvh - 130px);width:265px}
-.leaflet-top.leaflet-right{top:90px}
-.layer-service-status{font:11px/1.4 Arial;color:#9a3412;max-width:240px;margin-top:7px}
-.layer-help{font:11px/1.4 Arial;color:#64748b;margin-top:10px;max-width:240px}
+.leaflet-control-layers-expanded{max-height:calc(100dvh - 118px);width:238px;padding:8px 9px}
+.leaflet-top.leaflet-right{top:96px;right:2px}
+.layer-service-status{font:10px/1.35 Arial;color:#9a3412;max-width:215px;margin-top:6px}
+.layer-help{font:9px/1.35 Arial;color:#64748b;margin-top:7px;max-width:215px;padding-top:6px;border-top:1px solid #e2e8f0}
 .popup-facts{display:grid;grid-template-columns:95px 1fr;gap:5px 10px;margin:10px 0}
 .popup-facts dt{font-weight:600;color:#64748b}.popup-facts dd{margin:0;overflow-wrap:anywhere}
 .popup-source{font-size:10px;color:#64748b;border-top:1px solid #ddd;padding-top:7px}
@@ -203,8 +214,13 @@
   <div class="v7Sub">Bright yellow = PRIORITY · Every highlighted tract requires 100+ ft qualified commercial frontage</div>
 </div>
 
-<button id="v7ModeToggle" data-mode="acquisition">ACQUISITION MODE</button>
-<button id="v6TopToggle">LAND FINDER</button>
+<div id="v17TopTools" aria-label="Map tools">
+  <button id="v7ModeToggle" data-mode="acquisition">ACQUISITION</button>
+  <button id="v6TopToggle">LAND FINDER</button>
+</div>
+<a id="v17TrackerLink" href="https://docs.google.com/spreadsheets/d/1BUdhXHCmsmaTCWZI5mYTmlabQ7rePN7acsLsbLLZJzI/edit" target="_blank" rel="noopener noreferrer" title="Open Land Deal Tracker">
+  <span class="v17Dot" aria-hidden="true"></span><span>OPEN TRACKER ↗</span>
+</a>
 <div id="v6TopPanel">
   <div id="v6TopHead">
     <b>LAND FINDER</b>
@@ -3173,16 +3189,32 @@
                   (groups[group]||(groups[group]=[])).push(label);
                 });
                 container.textContent='';
+                this._groupCollapsed=this._groupCollapsed||{
+                  'LAND':false,'PARCEL DATA':true,'GROWTH':true,'INFRASTRUCTURE':true,'DUE DILIGENCE':true,'RESEARCH':true
+                };
+                var self=this;
                 headings.forEach(function(group){
                   if(!groups[group])return;
-                  var title=L.DomUtil.create('div','layer-heading',container);title.textContent=group;
+                  var title=L.DomUtil.create('div','layer-heading layer-heading-toggle',container);
+                  var label=L.DomUtil.create('span','',title);label.textContent=group;
+                  var chevron=L.DomUtil.create('span','layer-chevron',title);chevron.textContent='▾';
+                  var items=L.DomUtil.create('div','layer-group-items',container);
+                  var collapsed=!!self._groupCollapsed[group];
+                  if(collapsed){items.style.display='none';title.classList.add('is-collapsed');}
                   var order=['Bexar CAD','Comal CAD','Guadalupe CAD','Kendall CAD','Medina CAD','Blanco CAD','Kerr CAD','Webb CAD','Tracker Sites','Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
-                  groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(label){container.appendChild(label);});
+                  groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(row){items.appendChild(row);});
+                  L.DomEvent.on(title,'click',function(e){
+                    L.DomEvent.stop(e);
+                    self._groupCollapsed[group]=!self._groupCollapsed[group];
+                    var nowCollapsed=self._groupCollapsed[group];
+                    items.style.display=nowCollapsed?'none':'block';
+                    title.classList.toggle('is-collapsed',nowCollapsed);
+                  });
                 });
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
                 this._baseLayersList.prepend(title);
                 var help=L.DomUtil.create('div','layer-help',container);
-                help.textContent='Tracker Sites auto-syncs from Google Sheets every 30 sec while on. Bright pink = tracking / pursuing · green = LOI or under contract.';
+                help.textContent='Pink = tracking · Green = LOI / contract · CAD lines @ zoom 14+';
                 var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
                 updateSourceStatus();
                 return this;
