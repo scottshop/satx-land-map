@@ -5,8 +5,9 @@
  * - Execute as: Me
  * - Who has access: Anyone
  *
- * The private TRACKER_KEY stays in Apps Script Script Properties and in the
- * user's browser localStorage. It is never committed to GitHub.
+ * Read-only Tracker Sites sync is public because it returns only map-safe
+ * fields already displayed on the public land map. Write/save requests remain
+ * protected by the private TRACKER_KEY in Apps Script Script Properties.
  */
 
 const TRACKER_SPREADSHEET_ID = '1BUdhXHCmsmaTCWZI5mYTmlabQ7rePN7acsLsbLLZJzI';
@@ -26,11 +27,6 @@ function doGet(e) {
     const p = (e && e.parameter) || {};
     if (clean_(p.action) !== 'trackerSites') {
       return json_({ ok: true, service: 'land-deal-tracker-bridge' });
-    }
-
-    const expected = PropertiesService.getScriptProperties().getProperty('TRACKER_KEY');
-    if (!expected || !p.key || p.key !== expected) {
-      return output_(p.callback, { ok: false, error: 'unauthorized' });
     }
 
     const ss = SpreadsheetApp.openById(TRACKER_SPREADSHEET_ID);

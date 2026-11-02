@@ -3918,10 +3918,7 @@
         function v15RefreshTrackerSites(promptForKey){
           if(window.v15TrackerLoading)return;
           var endpoint=v12TrackerEndpoint();
-          var key="";
-          try{key=localStorage.getItem("landTrackerKey")||"";}catch(e){}
-          if(!key&&promptForKey)key=v12TrackerKey();
-          if(!endpoint||!key){
+          if(!endpoint){
             v15ScheduleTrackerRefresh();
             return;
           }
@@ -3933,9 +3930,6 @@
             window.v15TrackerLoading=false;
             if(payload&&payload.ok===true){
               v15ApplyLiveTrackerPayload(payload);
-            }else if(payload&&payload.error==="unauthorized"){
-              sourceLoadErrors["Tracker Sites"]="Tracker key rejected. Use Reset Tracker Key, then reopen Tracker Sites.";
-              updateSourceStatus();
             }else{
               sourceLoadErrors["Tracker Sites"]="Live tracker sync failed; showing last known tracker snapshot.";
               updateSourceStatus();
@@ -3944,7 +3938,7 @@
           };
 
           var src=endpoint+(endpoint.indexOf("?")>=0?"&":"?")+
-            "action=trackerSites&callback=__landTrackerSitesCallback&key="+encodeURIComponent(key)+"&_="+Date.now();
+            "action=trackerSites&callback=__landTrackerSitesCallback&_="+Date.now();
           var script=document.createElement("script");
           script.src=src;
           script.async=true;
