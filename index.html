@@ -3286,7 +3286,14 @@
           if(key)return key;
           key=window.prompt("Enter your private tracker key. You only do this once on this browser.")||"";
           key=String(key).trim();
-          if(key){try{localStorage.setItem("landTrackerKey",key);}catch(e){}}
+          if(key){
+            try{localStorage.setItem("landTrackerKey",key);}catch(e){}
+            setTimeout(function(){
+              try{
+                if(window.v15TrackerSites&&map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v15TrackerSites))v15RefreshTrackerSites(false);
+              }catch(e){}
+            },0);
+          }
           return key;
         }
         function v12ResetTrackerKey(){
@@ -3968,7 +3975,7 @@
               window.v15TrackerSnapshot=Array.isArray(data.sites)?data.sites:[];
               v15RenderTrackerSites(window.v15TrackerSnapshot);
               window.v15TrackerLastSync=Date.now();
-              setTimeout(function(){v15RefreshTrackerSites(true);},0);
+              setTimeout(function(){v15RefreshTrackerSites(false);},0);
             })
             .catch(function(err){
               window.v15TrackerLoading=false;
@@ -3979,7 +3986,7 @@
             });
         }
         window.v15TrackerSites.on("add",function(){
-          if(window.v15TrackerLoaded)v15RefreshTrackerSites(true);
+          if(window.v15TrackerLoaded)v15RefreshTrackerSites(false);
           else v15LoadTrackerSites();
         });
         window.v15TrackerSites.on("remove",function(){
