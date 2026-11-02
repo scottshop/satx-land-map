@@ -32,7 +32,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>Number(f.properties.qualified_frontage_importance)>=2)),true,'Every highlighted parcel needs collector-or-better frontage');
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>String(f.properties.qualified_frontage_road||'').trim().length>0)),true,'Every highlighted parcel needs a named qualifying frontage road');
     assert.equal(await page.evaluate(() => testMap.hasLayer(tile_layer_satellite_hybrid)), true);
-    for (const name of ['v3Parcels','v3ComalParcels','v3GuadalupeParcels','v3SewerService','v3FemaHazard','v3AADT','v3FutureLandUse','v3Rings','v3VerifiedTargetGeometry','v13FutureRoads','v15LandGlideSites']) {
+    for (const name of ['v3Parcels','v3ComalParcels','v3GuadalupeParcels','v16KendallParcels','v16MedinaParcels','v16BlancoParcels','v16KerrParcels','v16WebbParcels','v3SewerService','v3FemaHazard','v3AADT','v3FutureLandUse','v3Rings','v3VerifiedTargetGeometry','v13FutureRoads','v15LandGlideSites']) {
       assert.equal(await page.evaluate(n => testMap.hasLayer(window[n]), name), false, name + ' must default OFF');
     }
     console.log('PASS page/GeoJSON/defaults');
@@ -57,6 +57,17 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
       assert.equal(await page.getByText(removed,{exact:true}).count(),0, removed+' should be removed from Layers');
     }
     for (const title of ['BASEMAPS','LAND','PARCEL DATA','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH']) assert(await page.getByText(title, {exact: true}).isVisible());
+    for (const county of ['Bexar','Comal','Guadalupe','Kendall','Medina','Blanco','Kerr','Webb']) {
+      assert.equal(
+        await page.locator('.leaflet-control-layers label').filter({hasText: county+' CAD'}).count(),
+        1,
+        county+' CAD toggle should exist'
+      );
+    }
+    assert.equal(await page.evaluate(()=>Object.keys(window.v16TrackerCadByCounty).sort().join(',')),
+      'Bexar,Blanco,Comal,Guadalupe,Kendall,Kerr,Medina,Webb',
+      'Tracker county CAD registry should cover every county currently represented in the tracker');
+
     const landGlideLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'LandGlide Saved Sites'});
     assert.equal(await landGlideLabel.count(),1,'LandGlide Saved Sites toggle should exist');
     const lgBox=landGlideLabel.locator('input');
@@ -107,7 +118,11 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     await targetLabel.locator('input').check(); assert.equal(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)), true);
 
     if(process.env.TEST_STAGE!=='gis') {
-      for (const [labelText,layerName] of [['Bexar CAD','v3Parcels'],['Comal CAD','v3ComalParcels'],['Guadalupe CAD','v3GuadalupeParcels']]) {
+      for (const [labelText,layerName] of [
+        ['Bexar CAD','v3Parcels'],['Comal CAD','v3ComalParcels'],['Guadalupe CAD','v3GuadalupeParcels'],
+        ['Kendall CAD','v16KendallParcels'],['Medina CAD','v16MedinaParcels'],['Blanco CAD','v16BlancoParcels'],
+        ['Kerr CAD','v16KerrParcels'],['Webb CAD','v16WebbParcels']
+      ]) {
         const label=page.locator('.leaflet-control-layers label').filter({hasText:labelText});
         const box=label.locator('input');
         if(await box.isChecked()) await box.uncheck();
