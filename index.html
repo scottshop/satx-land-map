@@ -3661,23 +3661,32 @@
           Object.keys(supported).forEach(function(county){
             var records=supported[county],cfg=v15Config(county);
             if(!records.length||!cfg)return;
-            pending++;
-            L.esri.query({url:cfg.url}).where(v15Where(cfg,records)).run(function(err,fc){
-              var matched={};
-              if(!err&&fc&&Array.isArray(fc.features)){
-                fc.features.forEach(function(feature){
-                  var raw=(feature.properties||{})[cfg.id], key=v15Key(county,raw);
-                  var rec=records.find(function(r){return v15Key(county,r.parcelId)===key;});
-                  if(rec){matched[key]=true;v15AddPolygon(rec,feature);}
+            // Keep each ArcGIS request small. The Bexar service can time out on one
+            // large IN-clause plus full polygon geometry.
+            var chunkSize=county==="Bexar"?6:10;
+            for(var start=0;start<records.length;start+=chunkSize){
+              (function(batch){
+                pending++;
+                var q=L.esri.query({url:cfg.url}).where(v15Where(cfg,batch));
+                if(q.fields)q.fields([cfg.id]);
+                q.run(function(err,fc){
+                  var matched={};
+                  if(!err&&fc&&Array.isArray(fc.features)){
+                    fc.features.forEach(function(feature){
+                      var raw=(feature.properties||{})[cfg.id], key=v15Key(county,raw);
+                      var rec=batch.find(function(r){return v15Key(county,r.parcelId)===key;});
+                      if(rec){matched[key]=true;v15AddPolygon(rec,feature);}
+                    });
+                  }
+                  batch.forEach(function(rec){
+                    var key=v15Key(county,rec.parcelId);
+                    if(!matched[key])v15AddMarker(rec,err?"LandGlide coordinate marker — CAD query unavailable":"LandGlide coordinate marker — parcel ID was not matched in current CAD layer");
+                  });
+                  pending--;
+                  if(pending===0){window.v15LandGlideLoaded=true;v15FocusFromUrl();}
                 });
-              }
-              records.forEach(function(rec){
-                var key=v15Key(county,rec.parcelId);
-                if(!matched[key])v15AddMarker(rec,err?"LandGlide coordinate marker — CAD query unavailable":"LandGlide coordinate marker — parcel ID was not matched in current CAD layer");
-              });
-              pending--;
-              if(pending===0){window.v15LandGlideLoaded=true;v15FocusFromUrl();}
-            });
+              })(records.slice(start,start+chunkSize));
+            }
           });
           if(!pending){window.v15LandGlideLoaded=true;v15FocusFromUrl();}
         }
