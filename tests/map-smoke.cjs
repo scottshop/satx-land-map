@@ -68,6 +68,10 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
       'Bexar,Blanco,Comal,Guadalupe,Kendall,Kerr,Medina,Webb',
       'Tracker county CAD registry should cover every county currently represented in the tracker');
 
+    assert.equal(await page.locator('#v17TopTools').count(),1,'Compact top-right tools container should exist');
+    assert.equal(await page.locator('#v17TrackerLink').count(),1,'Open Tracker button should exist');
+    assert.ok((await page.locator('#v17TrackerLink').getAttribute('href')||'').includes('1BUdhXHCmsmaTCWZI5mYTmlabQ7rePN7acsLsbLLZJzI'),'Tracker button should link to Land Deal Tracker');
+    assert.ok(await page.locator('.layer-heading-toggle').count()>=4,'Layer sections should be collapsible');
     const trackerLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Tracker Sites'});
     assert.equal(await trackerLabel.count(),1,'Tracker Sites toggle should exist');
     assert.equal(await page.locator('.leaflet-control-layers label').filter({hasText:'LandGlide Saved Sites'}).count(),0,'Old LandGlide layer name should be removed');
@@ -147,6 +151,8 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     await targetLabel.locator('input').check(); assert.equal(await page.evaluate(() => testMap.hasLayer(v6OpportunityLayer)), true);
 
     if(process.env.TEST_STAGE!=='gis') {
+      const parcelHeading=page.locator('.layer-heading-toggle').filter({hasText:'PARCEL DATA'});
+      if(await parcelHeading.count() && (await parcelHeading.getAttribute('class')||'').includes('is-collapsed')) await parcelHeading.click();
       for (const [labelText,layerName] of [
         ['Bexar CAD','v3Parcels'],['Comal CAD','v3ComalParcels'],['Guadalupe CAD','v3GuadalupeParcels'],
         ['Kendall CAD','v16KendallParcels'],['Medina CAD','v16MedinaParcels'],['Blanco CAD','v16BlancoParcels'],
