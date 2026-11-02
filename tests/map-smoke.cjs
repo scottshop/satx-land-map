@@ -84,6 +84,27 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     const trackerStages=await page.evaluate(()=>window.v15TrackerData.reduce((a,r)=>(a[r.stage]=(a[r.stage]||0)+1,a),{}));
     assert.equal(trackerStages.Pursuing,78,'Tracker snapshot should have 78 Pursuing rows');
     assert.equal(trackerStages.LOI,3,'Tracker snapshot should have 3 LOI rows');
+    assert.equal(await page.evaluate(()=>typeof v15RefreshTrackerSites),'function','Live tracker refresh function should exist');
+    assert.equal(await page.evaluate(()=>typeof v15ApplyLiveTrackerPayload),'function','Live tracker payload applier should exist');
+
+    const livePatch=await page.evaluate(()=>{
+      const payload=window.v15TrackerData.map(r=>Object.assign({},r));
+      const target=payload.find(r=>r.county==='Bexar'&&String(r.parcelId)==='1258842');
+      if(!target)return {ok:false,reason:'target missing'};
+      target.stage='LOI';
+      const applied=v15ApplyLiveTrackerPayload({ok:true,sites:payload});
+      const rec=window.v15TrackerData.find(r=>r.county==='Bexar'&&String(r.parcelId)==='1258842');
+      const layer=window.v15TrackerByKey[v15Key('Bexar','1258842')];
+      let fill=null;
+      if(layer){
+        if(layer.eachLayer)layer.eachLayer(x=>{if(fill==null&&x.options)fill=x.options.fillColor||null;});
+        else if(layer.options)fill=layer.options.fillColor||null;
+      }
+      return {ok:applied,stage:rec&&rec.stage,fill};
+    });
+    assert.equal(livePatch.ok,true,'Live tracker payload should apply');
+    assert.equal(livePatch.stage,'LOI','Live stage change should update tracker record in place');
+    assert.equal(livePatch.fill,'#22c55e','Live LOI stage should recolor parcel green');
     await trackerBox.uncheck();
     console.log('PASS Tracker Sites stage colors',trackerStats,trackerStages);
 
