@@ -71,7 +71,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     const trackerLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Tracker Sites'});
     assert.equal(await trackerLabel.count(),1,'Tracker Sites toggle should exist');
     assert.equal(await page.locator('.leaflet-control-layers label').filter({hasText:'LandGlide Saved Sites'}).count(),0,'Old LandGlide layer name should be removed');
-    assert.deepEqual(await page.evaluate(()=>v15StageMeta('Pursuing')), {label:'TRACKING',color:'#c59a00',fill:'#ffd400'});
+    assert.deepEqual(await page.evaluate(()=>v15StageMeta('Pursuing')), {label:'TRACKING',color:'#d100b8',fill:'#ff2bd6'});
     assert.deepEqual(await page.evaluate(()=>v15StageMeta('LOI')), {label:'LOI',color:'#15803d',fill:'#22c55e'});
     assert.equal(await page.evaluate(()=>v15StageMeta('Under Contract').fill),'#22c55e');
     const trackerBox=trackerLabel.locator('input');
