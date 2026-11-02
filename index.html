@@ -3176,13 +3176,13 @@
                 headings.forEach(function(group){
                   if(!groups[group])return;
                   var title=L.DomUtil.create('div','layer-heading',container);title.textContent=group;
-                  var order=['LandGlide Saved Sites','Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
+                  var order=['Bexar CAD','Comal CAD','Guadalupe CAD','Kendall CAD','Medina CAD','Blanco CAD','Kerr CAD','Webb CAD','LandGlide Saved Sites','Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
                   groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(label){container.appendChild(label);});
                 });
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
                 this._baseLayersList.prepend(title);
                 var help=L.DomUtil.create('div','layer-help',container);
-                help.textContent='CAD appears at zoom 14+. Sewer and detailed GIS layers appear at zoom 12+. Snapshot dates are shown in popups.';
+                help.textContent='Tracker county CAD coverage: Bexar, Comal, Guadalupe, Kendall, Medina, Blanco, Kerr and Webb. Parcel lines appear at zoom 14+.';
                 var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
                 updateSourceStatus();
                 return this;
@@ -3192,7 +3192,7 @@
                 var self=this;
                 (this._layerControlInputs||[]).forEach(function(input){
                   var obj=self._getLayer(input.layerId);
-                  if(obj && /^PARCEL DATA — (Bexar|Comal|Guadalupe) CAD$/.test(obj.name||""))input.disabled=false;
+                  if(obj && /^PARCEL DATA — .* CAD$/.test(obj.name||""))input.disabled=false;
                 });
               }
             });
@@ -3524,6 +3524,106 @@
         },{sticky:true});
         v3GuadalupeParcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Guadalupe",false);});
 
+        // ---- V16 TRACKER COUNTY CAD COVERAGE ----
+        // Every Texas county currently represented in the Land Deal Tracker has parcel outlines.
+        // Bexar / Comal / Guadalupe keep their existing county-specific layers above.
+        function v16First(p,keys){
+          for(var i=0;i<keys.length;i++){
+            var v=p&&p[keys[i]];
+            if(v!=null&&String(v).trim()!=="")return v;
+          }
+          return "";
+        }
+        function v16ParcelStyle(){
+          return {color:"#f5ef9a",weight:1.45,opacity:.94,fillColor:"#fff7b2",fillOpacity:.018,lineJoin:"round"};
+        }
+        function v16ParcelHover(){
+          return {color:"#fff7b2",weight:2.5,opacity:1,fillColor:"#fff7b2",fillOpacity:.08,lineJoin:"round"};
+        }
+        function v16TrackerParcelPopup(p,cfg){
+          var id=v16First(p,cfg.idFields||[]);
+          var owner=v16First(p,cfg.ownerFields||[]);
+          var acresRaw=v16First(p,cfg.acreFields||[]), acres=Number(acresRaw);
+          var addr=v16First(p,cfg.addressFields||[]);
+          if(!addr&&cfg.addressParts){
+            addr=cfg.addressParts.map(function(k){return p&&p[k];}).filter(function(v){return v!=null&&String(v).trim()!=="";}).join(" ");
+          }
+          var valueRaw=v16First(p,cfg.valueFields||[]), value=Number(valueRaw);
+          var link=v16First(p,cfg.linkFields||[]);
+          return factPopup("CAD parcel · "+cfg.county,[
+            ["County",cfg.county],
+            ["Owner",owner||"Not reported"],
+            ["Acres",String(acresRaw).trim()!==""&&isFinite(acres)?acres.toFixed(2):"Not reported"],
+            ["Property ID",id||"Not reported"],
+            ["Situs",addr||"Not reported"],
+            ["Market value",String(valueRaw).trim()!==""&&isFinite(value)&&value>0?v3money(value):"Not reported"]
+          ],cfg.note+(cfg.vintage?" · "+cfg.vintage:""),/^https?:\/\//i.test(String(link||""))?link:null);
+        }
+        function v16MakeTrackerParcelLayer(cfg){
+          var layer=L.esri.featureLayer({
+            pane:"cad",minZoom:14,url:cfg.url,
+            simplifyFactor:.42,precision:5,style:v16ParcelStyle,
+            attribution:cfg.attribution
+          });
+          layer.bindTooltip(function(x){
+            var p=x.feature&&x.feature.properties||{};
+            var acresRaw=v16First(p,cfg.acreFields||[]), acres=Number(acresRaw);
+            return cfg.county+" CAD"+(String(acresRaw).trim()!==""&&isFinite(acres)?" · "+acres.toFixed(2)+" AC":"");
+          },{sticky:true});
+          layer.bindPopup(function(x){return v16TrackerParcelPopup(x.feature&&x.feature.properties||{},cfg);},{maxWidth:340});
+          layer.on("mouseover",function(e){if(e&&e.layer&&e.layer.setStyle)e.layer.setStyle(v16ParcelHover());});
+          layer.on("mouseout",function(e){if(e&&e.layer&&e.layer.setStyle)e.layer.setStyle(v16ParcelStyle());});
+          return layer;
+        }
+
+        var v16KendallCadUrl="https://services2.arcgis.com/KenzhPpScXZWWBrv/arcgis/rest/services/Parcel/FeatureServer/0";
+        var v16KerrCadUrl="https://services1.arcgis.com/Ijqs2ihddUy84otW/arcgis/rest/services/Tax_Parcel_2026/FeatureServer/0";
+        var v16MedinaCadUrl="https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/261";
+        var v16BlancoCadUrl="https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_Webmap__Austin_External/MapServer/68";
+        var v16WebbCadUrl="https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__LaredoEDC_SiteSelection/MapServer/55";
+
+        window.v16KendallParcels=v16MakeTrackerParcelLayer({
+          county:"Kendall",url:v16KendallCadUrl,idFields:["geo_id","propidtxt","prop_id"],
+          ownerFields:["file_as_na"],acreFields:["legal_acre"],addressFields:["situs_full"],
+          valueFields:["market"],linkFields:["Weblink"],
+          attribution:"Kendall CAD public parcel service",
+          note:"Public Kendall County parcel screening layer.",vintage:"2026"
+        });
+        window.v16KerrParcels=v16MakeTrackerParcelLayer({
+          county:"Kerr",url:v16KerrCadUrl,idFields:["prop_id","account_id"],
+          ownerFields:["owner_name"],acreFields:["legal_acres"],addressParts:["addr_num","addr_street"],
+          valueFields:["market_val"],linkFields:[],
+          attribution:"Kerr CAD / City of Kerrville parcel data",
+          note:"Kerr CAD tax parcels via City of Kerrville public GIS.",vintage:"2026"
+        });
+        window.v16MedinaParcels=v16MakeTrackerParcelLayer({
+          county:"Medina",url:v16MedinaCadUrl,idFields:["PROP_ID","Prop_ID"],
+          ownerFields:["OWNER_NAME"],acreFields:["LEGAL_AREA"],addressFields:["SITUS_ADDR"],
+          valueFields:["MKT_VALUE"],linkFields:[],
+          attribution:"Medina Appraisal District parcels via public GIS",
+          note:"Medina Appraisal District parcel screening data.",vintage:"2025"
+        });
+        window.v16BlancoParcels=v16MakeTrackerParcelLayer({
+          county:"Blanco",url:v16BlancoCadUrl,idFields:["Prop_ID","PROP_ID"],
+          ownerFields:["OWNER_NAME"],acreFields:["LEGAL_AREA"],addressFields:["SITUS_ADDR"],
+          valueFields:["MKT_VALUE"],linkFields:[],
+          attribution:"Blanco Appraisal District parcels via public GIS",
+          note:"Blanco Appraisal District parcel screening data.",vintage:"2025"
+        });
+        window.v16WebbParcels=v16MakeTrackerParcelLayer({
+          county:"Webb",url:v16WebbCadUrl,idFields:["Prop_ID","PROP_ID"],
+          ownerFields:["OWNER_NAME"],acreFields:["LEGAL_AREA"],addressFields:["SITUS_ADDR"],
+          valueFields:["MKT_VALUE"],linkFields:[],
+          attribution:"Webb Appraisal District parcels via public GIS",
+          note:"Webb Appraisal District parcel screening data.",vintage:"2025"
+        });
+
+        window.v16TrackerCadByCounty={
+          Bexar:v3Parcels,Comal:v3ComalParcels,Guadalupe:v3GuadalupeParcels,
+          Kendall:window.v16KendallParcels,Kerr:window.v16KerrParcels,
+          Medina:window.v16MedinaParcels,Blanco:window.v16BlancoParcels,Webb:window.v16WebbParcels
+        };
+
         // H-E-B ownership — Comal + Guadalupe CAD screening.
         // Multiple legal-name patterns are included because appraisal districts may abbreviate H-E-B differently.
         var v3HEBComalParcels = L.esri.featureLayer({
@@ -3570,8 +3670,8 @@
 
         // ---- V15 LANDGLIDE SAVED SITES IMPORT ----
         // Imported 2026-11-02 from the user's LandGlide saved-locations CSV.
-        // Exact CAD polygons are resolved for Bexar, Comal and Guadalupe.
-        // Other counties stay as source-coordinate markers rather than guessed parcel boundaries.
+        // Exact CAD polygons are resolved for every county currently represented in the tracker.
+        // A coordinate marker is used only when a parcel ID cannot be matched to the county layer.
         window.v15LandGlideSites=L.featureGroup();
         window.v15LandGlideData=[];
         window.v15LandGlideByKey={};
@@ -3585,6 +3685,11 @@
           if(county==="Bexar")return {url:v3ParcelUrl+"/0",id:"Prop_id",numeric:true};
           if(county==="Comal")return {url:v3ComalCadUrl,id:"PROP_ID",numeric:true};
           if(county==="Guadalupe")return {url:v3GuadalupeCadUrl,id:"PROP_ID",numeric:false};
+          if(county==="Kendall")return {url:v16KendallCadUrl,id:"geo_id",numeric:false};
+          if(county==="Kerr")return {url:v16KerrCadUrl,id:"prop_id",numeric:false};
+          if(county==="Medina")return {url:v16MedinaCadUrl,id:"PROP_ID",numeric:false};
+          if(county==="Blanco")return {url:v16BlancoCadUrl,id:"Prop_ID",numeric:false};
+          if(county==="Webb")return {url:v16WebbCadUrl,id:"Prop_ID",numeric:false};
           return null;
         }
         function v15Popup(rec,geometryType){
@@ -3651,7 +3756,7 @@
           window.v15LandGlideSites.clearLayers();
           window.v15LandGlideByKey={};
 
-          var supported={"Bexar":[],"Comal":[],"Guadalupe":[]};
+          var supported={"Bexar":[],"Comal":[],"Guadalupe":[],"Kendall":[],"Kerr":[],"Medina":[],"Blanco":[],"Webb":[]};
           window.v15LandGlideData.forEach(function(rec){
             if(supported[rec.county])supported[rec.county].push(rec);
             else v15AddMarker(rec,"LandGlide coordinate marker — county CAD geometry is not connected to this map yet");
@@ -4320,6 +4425,11 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"PARCEL DATA — Bexar CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"PARCEL DATA — Comal CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"PARCEL DATA — Guadalupe CAD");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16KendallParcels,"PARCEL DATA — Kendall CAD");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16MedinaParcels,"PARCEL DATA — Medina CAD");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16BlancoParcels,"PARCEL DATA — Blanco CAD");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16KerrParcels,"PARCEL DATA — Kerr CAD");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16WebbParcels,"PARCEL DATA — Webb CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"LAND — H-E-B Owned Parcels");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v15LandGlideSites,"LAND — LandGlide Saved Sites");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v10NewHousingPlats,"GROWTH — New Housing Plats");
@@ -4336,7 +4446,12 @@
         var v9CadFocus={
           "Bexar CAD":{lat:29.4241,lng:-98.4936,bounds:[[29.10,-98.90],[29.80,-98.10]]},
           "Comal CAD":{lat:29.7030,lng:-98.1245,bounds:[[29.50,-98.60],[30.20,-97.95]]},
-          "Guadalupe CAD":{lat:29.5688,lng:-97.9647,bounds:[[29.20,-98.25],[29.90,-97.55]]}
+          "Guadalupe CAD":{lat:29.5688,lng:-97.9647,bounds:[[29.20,-98.25],[29.90,-97.55]]},
+          "Kendall CAD":{lat:29.94,lng:-98.73,bounds:[[29.68,-99.08],[30.18,-98.42]]},
+          "Medina CAD":{lat:29.36,lng:-99.10,bounds:[[29.02,-99.55],[29.73,-98.72]]},
+          "Blanco CAD":{lat:30.27,lng:-98.40,bounds:[[30.02,-98.75],[30.55,-98.12]]},
+          "Kerr CAD":{lat:30.05,lng:-99.14,bounds:[[29.75,-99.82],[30.36,-98.88]]},
+          "Webb CAD":{lat:27.66,lng:-99.45,bounds:[[27.18,-100.10],[28.30,-98.78]]}
         };
         function v9ActivateCadFromToggle(name){
           var cfg=v9CadFocus[name]; if(!cfg)return;
@@ -4357,6 +4472,8 @@
 
         [
           [v3Parcels,'Bexar CAD'],[v3ComalParcels,'Comal CAD'],[v3GuadalupeParcels,'Guadalupe CAD'],
+          [window.v16KendallParcels,'Kendall CAD'],[window.v16MedinaParcels,'Medina CAD'],[window.v16BlancoParcels,'Blanco CAD'],
+          [window.v16KerrParcels,'Kerr CAD'],[window.v16WebbParcels,'Webb CAD'],
           [v3HEBOwnedParcels,'H-E-B Bexar'],[v3HEBComalParcels,'H-E-B Comal'],[v3HEBGuadalupeParcels,'H-E-B Guadalupe'],
           [v10SchertzHousingPlats,'Schertz housing plats'],[v11ComalHousingPlats,'Comal / Bulverde housing plats'],
           [v3SewerSAWS,'SAWS sewer'],[v3SewerNBU,'NBU sewer'],[v3SewerGBRAGravity,'GBRA gravity'],[v3SewerGBRAForce,'GBRA force mains'],
@@ -4865,7 +4982,8 @@
           var researchLayers=[
             feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
             feature_group_370786adb15c6d6d865f189609798696,
-            v3Parcels,v3ComalParcels,v3GuadalupeParcels,v3HEBOwnedAllCounties,v10NewHousingPlats,v3SewerService,v3BulverdeVerifiedSewer,
+            v3Parcels,v3ComalParcels,v3GuadalupeParcels,window.v16KendallParcels,window.v16MedinaParcels,window.v16BlancoParcels,window.v16KerrParcels,window.v16WebbParcels,
+            v3HEBOwnedAllCounties,v10NewHousingPlats,v3SewerService,v3BulverdeVerifiedSewer,
             window.v13FutureRoads,v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings
           ];
 
