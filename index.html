@@ -3168,7 +3168,7 @@
                   var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
                   var group=parts.length>1?parts.shift():'RESEARCH';
                   span.textContent=' '+parts.join(' — ');
-                  var colors={'Exact Target Parcels':'#fff200','LandGlide Saved Sites':'#7e22ce','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
+                  var colors={'Exact Target Parcels':'#fff200','Tracker Sites':'#ffd400','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
                   if(colors[parts.join(' — ')]){span.style.borderLeft='4px '+(parts[0]==='Approximate Utility Corridors'?'dashed':'solid')+' '+colors[parts.join(' — ')];span.style.paddingLeft='6px';}
                   (groups[group]||(groups[group]=[])).push(label);
                 });
@@ -3176,13 +3176,13 @@
                 headings.forEach(function(group){
                   if(!groups[group])return;
                   var title=L.DomUtil.create('div','layer-heading',container);title.textContent=group;
-                  var order=['Bexar CAD','Comal CAD','Guadalupe CAD','Kendall CAD','Medina CAD','Blanco CAD','Kerr CAD','Webb CAD','LandGlide Saved Sites','Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
+                  var order=['Bexar CAD','Comal CAD','Guadalupe CAD','Kendall CAD','Medina CAD','Blanco CAD','Kerr CAD','Webb CAD','Tracker Sites','Exact Target Parcels','Top 10 Parcel Numbers','H-E-B Owned Parcels','Existing Sewer Mains','Future / New Roads','Active Road Improvements','Traffic Counts','Approximate Utility Corridors'];
                   groups[group].sort(function(a,b){var x=order.indexOf(a.textContent.trim()),y=order.indexOf(b.textContent.trim());return (x<0?99:x)-(y<0?99:y);}).forEach(function(label){container.appendChild(label);});
                 });
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
                 this._baseLayersList.prepend(title);
                 var help=L.DomUtil.create('div','layer-help',container);
-                help.textContent='Tracker county CAD coverage: Bexar, Comal, Guadalupe, Kendall, Medina, Blanco, Kerr and Webb. Parcel lines appear at zoom 14+.';
+                help.textContent='Tracker Sites: yellow = tracking / pursuing · green = LOI or under contract. County parcel lines appear at zoom 14+.';
                 var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
                 updateSourceStatus();
                 return this;
@@ -3668,18 +3668,27 @@
           v3HEBGuadalupeParcels
         ]);
 
-        // ---- V15 LANDGLIDE SAVED SITES IMPORT ----
-        // Imported 2026-11-02 from the user's LandGlide saved-locations CSV.
+        // ---- V15 TRACKER SITES ----
+        // Deal-stage parcel view sourced from the Land Deal Tracker snapshot.
+        // Yellow = Tracking / Pursuing. Green = LOI or Under Contract.
         // Exact CAD polygons are resolved for every county currently represented in the tracker.
-        // A coordinate marker is used only when a parcel ID cannot be matched to the county layer.
-        window.v15LandGlideSites=L.featureGroup();
-        window.v15LandGlideData=[];
-        window.v15LandGlideByKey={};
-        window.v15LandGlideLoaded=false;
-        window.v15LandGlideMatchStats={polygons:0,markers:0,total:0};
+        window.v15TrackerSites=L.featureGroup();
+        window.v15LandGlideSites=window.v15TrackerSites; // legacy alias
+        window.v15TrackerData=[];
+        window.v15TrackerByKey={};
+        window.v15TrackerLoaded=false;
+        window.v15TrackerLoading=false;
+        window.v15TrackerMatchStats={polygons:0,markers:0,missing:0,total:0};
 
         function v15Key(county,parcelId){
           return String(county||"").trim().toLowerCase()+"|"+String(parcelId||"").trim();
+        }
+        function v15StageMeta(stage){
+          var s=String(stage||"").trim().toLowerCase();
+          if(s==="loi"||s==="under contract"||s==="contract"){
+            return {label:s==="loi"?"LOI":"UNDER CONTRACT",color:"#15803d",fill:"#22c55e"};
+          }
+          return {label:"TRACKING",color:"#c59a00",fill:"#ffd400"};
         }
         function v15Config(county){
           if(county==="Bexar")return {url:v3ParcelUrl+"/0",id:"Prop_id",numeric:true};
@@ -3693,46 +3702,58 @@
           return null;
         }
         function v15Popup(rec,geometryType){
+          var meta=v15StageMeta(rec.stage);
+          var acres=String(rec.acres==null?"":rec.acres).trim();
+          var next=[rec.nextAction,rec.nextActionDate].filter(function(x){return String(x||"").trim()!=="";}).join(" · ");
           return "<div class='v7Popup'>"+
-            "<div style='font-size:9px;font-weight:900;letter-spacing:.8px;color:#7e22ce'>LANDGLIDE SAVED SITE</div>"+
-            "<div style='font-size:14px;font-weight:800;margin:4px 0 7px'>"+v3esc(rec.address||rec.owner||(rec.county+" parcel "+rec.parcelId))+"</div>"+
+            "<div style='display:flex;align-items:center;gap:7px;margin-bottom:6px'>"+
+              "<span style='width:11px;height:11px;border-radius:50%;background:"+meta.fill+";border:2px solid "+meta.color+"'></span>"+
+              "<div style='font-size:9px;font-weight:900;letter-spacing:.8px;color:"+meta.color+"'>TRACKER SITE · "+v3esc(meta.label)+"</div>"+
+            "</div>"+
+            "<div style='font-size:14px;font-weight:800;margin:4px 0 7px'>"+v3esc(rec.dealSite||rec.owner||(rec.county+" parcel "+rec.parcelId))+"</div>"+
             "<dl class='popup-facts'>"+
+              "<dt>Stage</dt><dd>"+v3esc(rec.stage||meta.label)+"</dd>"+
               "<dt>County</dt><dd>"+v3esc(rec.county)+"</dd>"+
               "<dt>Parcel ID</dt><dd>"+v3esc(rec.parcelId)+"</dd>"+
-              "<dt>Acreage</dt><dd>"+v3esc(Number(rec.acreage).toFixed(2))+" ac</dd>"+
+              "<dt>Acres</dt><dd>"+v3esc(acres||"Not reported")+"</dd>"+
               "<dt>Owner</dt><dd>"+v3esc(rec.owner||"Not reported")+"</dd>"+
-              "<dt>Land use</dt><dd>"+v3esc([rec.landUseClass,rec.landUseCode].filter(Boolean).join(" · ")||"Not reported")+"</dd>"+
+              "<dt>Next action</dt><dd>"+v3esc(next||"Not set")+"</dd>"+
               "<dt>Map geometry</dt><dd>"+v3esc(geometryType)+"</dd>"+
             "</dl>"+
-            "<div class='popup-source'>Imported from LandGlide saved locations on Nov. 2, 2026. Tracker status is managed in the Land Deal Tracker.</div>"+
+            "<div class='popup-source'>Deal status comes from the Land Deal Tracker. Yellow = tracking; green = LOI / contract.</div>"+
           "</div>";
         }
         function v15AddMarker(rec,reason){
           var key=v15Key(rec.county,rec.parcelId);
-          if(window.v15LandGlideByKey[key])return;
-          var marker=L.circleMarker([Number(rec.latitude),Number(rec.longitude)],{
-            pane:"cadSelected",radius:8,color:"#7e22ce",weight:3,opacity:1,fillColor:"#c084fc",fillOpacity:.72
+          if(window.v15TrackerByKey[key])return;
+          var lat=Number(rec.latitude),lng=Number(rec.longitude);
+          if(!isFinite(lat)||!isFinite(lng)){
+            window.v15TrackerMatchStats.missing++;
+            return;
+          }
+          var meta=v15StageMeta(rec.stage);
+          var marker=L.circleMarker([lat,lng],{
+            pane:"cadSelected",radius:8,color:meta.color,weight:3,opacity:1,fillColor:meta.fill,fillOpacity:.72
           });
-          marker.bindTooltip("<b>LandGlide</b> · "+v3esc(rec.address||rec.owner||rec.parcelId)+" · "+v3esc(rec.acreage)+" ac",{sticky:true,className:"bcad-hover"});
-          marker.bindPopup(function(){return v15Popup(rec,reason||"LandGlide coordinate marker");},{maxWidth:360});
-          marker.addTo(window.v15LandGlideSites);
-          window.v15LandGlideByKey[key]=marker;
-          window.v15LandGlideMatchStats.markers++;
+          marker.bindTooltip("<b>"+v3esc(meta.label)+"</b> · "+v3esc(rec.dealSite||rec.owner||rec.parcelId),{sticky:true,className:"bcad-hover"});
+          marker.bindPopup(function(){return v15Popup(rec,reason||"Tracker coordinate marker");},{maxWidth:360});
+          marker.addTo(window.v15TrackerSites);
+          window.v15TrackerByKey[key]=marker;
+          window.v15TrackerMatchStats.markers++;
         }
         function v15AddPolygon(rec,feature){
           var key=v15Key(rec.county,rec.parcelId);
-          if(window.v15LandGlideByKey[key])return;
-          var layer=L.geoJSON(feature,{
-            pane:"cadSelected",
-            style:{color:"#7e22ce",weight:4,opacity:1,fillColor:"#c084fc",fillOpacity:.20,lineJoin:"round"}
-          });
-          layer.bindTooltip("<b>LandGlide</b> · "+v3esc(rec.address||rec.owner||rec.parcelId)+" · "+v3esc(rec.acreage)+" ac",{sticky:true,className:"bcad-hover"});
+          if(window.v15TrackerByKey[key])return;
+          var meta=v15StageMeta(rec.stage);
+          var baseStyle={color:meta.color,weight:5,opacity:1,fillColor:meta.fill,fillOpacity:.28,lineJoin:"round"};
+          var layer=L.geoJSON(feature,{pane:"cadSelected",style:baseStyle});
+          layer.bindTooltip("<b>"+v3esc(meta.label)+"</b> · "+v3esc(rec.dealSite||rec.owner||rec.parcelId),{sticky:true,className:"bcad-hover"});
           layer.bindPopup(function(){return v15Popup(rec,"Matched county CAD parcel polygon");},{maxWidth:360});
-          layer.on("mouseover",function(){layer.setStyle({weight:6,fillOpacity:.32});});
-          layer.on("mouseout",function(){layer.setStyle({color:"#7e22ce",weight:4,opacity:1,fillColor:"#c084fc",fillOpacity:.20});});
-          layer.addTo(window.v15LandGlideSites);
-          window.v15LandGlideByKey[key]=layer;
-          window.v15LandGlideMatchStats.polygons++;
+          layer.on("mouseover",function(){layer.setStyle({color:meta.color,weight:7,opacity:1,fillColor:meta.fill,fillOpacity:.42});});
+          layer.on("mouseout",function(){layer.setStyle(baseStyle);});
+          layer.addTo(window.v15TrackerSites);
+          window.v15TrackerByKey[key]=layer;
+          window.v15TrackerMatchStats.polygons++;
         }
         function v15Where(cfg,records){
           var ids=records.map(function(r){return String(r.parcelId||"").trim();}).filter(Boolean);
@@ -3740,9 +3761,11 @@
           return cfg.id+" IN ("+ids.map(function(x){return "'"+String(x).replace(/'/g,"''")+"'";}).join(",")+")";
         }
         function v15FocusFromUrl(){
-          var params=new URLSearchParams(location.search), county=params.get("importCounty"), parcel=params.get("importParcel");
+          var params=new URLSearchParams(location.search);
+          var county=params.get("county")||params.get("importCounty");
+          var parcel=params.get("parcel")||params.get("importParcel");
           if(!county||!parcel)return;
-          var layer=window.v15LandGlideByKey[v15Key(county,parcel)];
+          var layer=window.v15TrackerByKey[v15Key(county,parcel)];
           if(!layer)return;
           try{
             if(layer.getBounds&&layer.getBounds().isValid())map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(layer.getBounds().pad(.5),{maxZoom:17});
@@ -3750,25 +3773,23 @@
             layer.openPopup();
           }catch(e){}
         }
-        function v15RenderLandGlideSites(sites){
-          window.v15LandGlideData=Array.isArray(sites)?sites:[];
-          window.v15LandGlideMatchStats={polygons:0,markers:0,total:window.v15LandGlideData.length};
-          window.v15LandGlideSites.clearLayers();
-          window.v15LandGlideByKey={};
+        function v15RenderTrackerSites(sites){
+          window.v15TrackerData=Array.isArray(sites)?sites:[];
+          window.v15TrackerMatchStats={polygons:0,markers:0,missing:0,total:window.v15TrackerData.length};
+          window.v15TrackerSites.clearLayers();
+          window.v15TrackerByKey={};
 
           var supported={"Bexar":[],"Comal":[],"Guadalupe":[],"Kendall":[],"Kerr":[],"Medina":[],"Blanco":[],"Webb":[]};
-          window.v15LandGlideData.forEach(function(rec){
+          window.v15TrackerData.forEach(function(rec){
             if(supported[rec.county])supported[rec.county].push(rec);
-            else v15AddMarker(rec,"LandGlide coordinate marker — county CAD geometry is not connected to this map yet");
+            else v15AddMarker(rec,"Tracker coordinate marker — county CAD geometry is not connected to this map yet");
           });
 
           var pending=0;
           Object.keys(supported).forEach(function(county){
             var records=supported[county],cfg=v15Config(county);
             if(!records.length||!cfg)return;
-            // Keep each ArcGIS request small. The Bexar service can time out on one
-            // large IN-clause plus full polygon geometry.
-            var chunkSize=county==="Bexar"?6:10;
+            var chunkSize=county==="Bexar"?4:10;
             for(var start=0;start<records.length;start+=chunkSize){
               (function(batch){
                 pending++;
@@ -3785,34 +3806,34 @@
                   }
                   batch.forEach(function(rec){
                     var key=v15Key(county,rec.parcelId);
-                    if(!matched[key])v15AddMarker(rec,err?"LandGlide coordinate marker — CAD query unavailable":"LandGlide coordinate marker — parcel ID was not matched in current CAD layer");
+                    if(!matched[key])v15AddMarker(rec,err?"Tracker coordinate marker — CAD query unavailable":"Tracker coordinate marker — parcel ID was not matched in current CAD layer");
                   });
                   pending--;
-                  if(pending===0){window.v15LandGlideLoaded=true;v15FocusFromUrl();}
+                  if(pending===0){window.v15TrackerLoaded=true;v15FocusFromUrl();}
                 });
               })(records.slice(start,start+chunkSize));
             }
           });
-          if(!pending){window.v15LandGlideLoaded=true;v15FocusFromUrl();}
+          if(!pending){window.v15TrackerLoaded=true;v15FocusFromUrl();}
         }
-        function v15LoadLandGlideSites(){
-          if(window.v15LandGlideLoaded||window.v15LandGlideLoading)return;
-          window.v15LandGlideLoading=true;
-          fetch("data/landglide_saved_sites.json",{cache:"no-store"})
+        function v15LoadTrackerSites(){
+          if(window.v15TrackerLoaded||window.v15TrackerLoading)return;
+          window.v15TrackerLoading=true;
+          fetch("data/tracker_sites.json",{cache:"no-store"})
             .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
-            .then(function(data){window.v15LandGlideLoading=false;v15RenderLandGlideSites(data.sites||[]);})
+            .then(function(data){window.v15TrackerLoading=false;v15RenderTrackerSites(data.sites||[]);})
             .catch(function(err){
-              window.v15LandGlideLoading=false;
-              sourceLoadErrors["LandGlide Saved Sites"]="Import dataset failed to load.";
+              window.v15TrackerLoading=false;
+              sourceLoadErrors["Tracker Sites"]="Tracker site dataset failed to load.";
               updateSourceStatus();
-              console.error("LandGlide import failed",err);
+              console.error("Tracker Sites load failed",err);
             });
         }
-        window.v15LandGlideSites.on("add",v15LoadLandGlideSites);
+        window.v15TrackerSites.on("add",v15LoadTrackerSites);
         setTimeout(function(){
           var p=new URLSearchParams(location.search);
-          if(p.get("importCounty")&&p.get("importParcel")){
-            try{window.v15LandGlideSites.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);}catch(e){}
+          if((p.get("county")&&p.get("parcel"))||(p.get("importCounty")&&p.get("importParcel"))){
+            try{window.v15TrackerSites.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);}catch(e){}
           }
         },0);
 
@@ -4431,7 +4452,7 @@
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16KerrParcels,"PARCEL DATA — Kerr CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16WebbParcels,"PARCEL DATA — Webb CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"LAND — H-E-B Owned Parcels");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v15LandGlideSites,"LAND — LandGlide Saved Sites");
+        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v15LandGlideSites,"LAND — Tracker Sites");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v10NewHousingPlats,"GROWTH — New Housing Plats");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3SewerService,"INFRASTRUCTURE — Existing Sewer Mains");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3BulverdeVerifiedSewer,"INFRASTRUCTURE — Approximate Utility Corridors");
@@ -4982,7 +5003,7 @@
           var researchLayers=[
             feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
             feature_group_370786adb15c6d6d865f189609798696,
-            v3Parcels,v3ComalParcels,v3GuadalupeParcels,window.v16KendallParcels,window.v16MedinaParcels,window.v16BlancoParcels,window.v16KerrParcels,window.v16WebbParcels,
+            v3Parcels,v3ComalParcels,v3GuadalupeParcels,window.v16KendallParcels,window.v16MedinaParcels,window.v16BlancoParcels,window.v16KerrParcels,window.v16WebbParcels,window.v15TrackerSites,
             v3HEBOwnedAllCounties,v10NewHousingPlats,v3SewerService,v3BulverdeVerifiedSewer,
             window.v13FutureRoads,v3AADT,v3FemaHazard,v3FloodplainBuffer,v3Rings
           ];
