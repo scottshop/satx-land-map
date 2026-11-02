@@ -3182,7 +3182,7 @@
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
                 this._baseLayersList.prepend(title);
                 var help=L.DomUtil.create('div','layer-help',container);
-                help.textContent='Tracker Sites: yellow = tracking / pursuing · green = LOI or under contract. County parcel lines appear at zoom 14+.';
+                help.textContent='Tracker Sites auto-syncs from Google Sheets every 30 sec while on. Yellow = tracking / pursuing · green = LOI or under contract.';
                 var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
                 updateSourceStatus();
                 return this;
@@ -3286,7 +3286,14 @@
           if(key)return key;
           key=window.prompt("Enter your private tracker key. You only do this once on this browser.")||"";
           key=String(key).trim();
-          if(key){try{localStorage.setItem("landTrackerKey",key);}catch(e){}}
+          if(key){
+            try{localStorage.setItem("landTrackerKey",key);}catch(e){}
+            setTimeout(function(){
+              try{
+                if(window.v15TrackerSites&&map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v15TrackerSites))v15RefreshTrackerSites(false);
+              }catch(e){}
+            },0);
+          }
           return key;
         }
         function v12ResetTrackerKey(){
@@ -3314,6 +3321,11 @@
               button.textContent="Sent — check tracker";
               button.classList.add("is-sent");
               button.disabled=true;
+              setTimeout(function(){
+                try{
+                  if(window.v15TrackerSites&&map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v15TrackerSites))v15RefreshTrackerSites(false);
+                }catch(e){}
+              },2500);
             })
             .catch(function(){
               button.textContent="Save failed — retry";
@@ -3735,6 +3747,8 @@
           var marker=L.circleMarker([lat,lng],{
             pane:"cadSelected",radius:8,color:meta.color,weight:3,opacity:1,fillColor:meta.fill,fillOpacity:.72
           });
+          marker.__trackerRec=rec;
+          marker.__trackerKind="marker";
           marker.bindTooltip("<b>"+v3esc(meta.label)+"</b> · "+v3esc(rec.dealSite||rec.owner||rec.parcelId),{sticky:true,className:"bcad-hover"});
           marker.bindPopup(function(){return v15Popup(rec,reason||"Tracker coordinate marker");},{maxWidth:360});
           marker.addTo(window.v15TrackerSites);
@@ -3747,10 +3761,15 @@
           var meta=v15StageMeta(rec.stage);
           var baseStyle={color:meta.color,weight:5,opacity:1,fillColor:meta.fill,fillOpacity:.28,lineJoin:"round"};
           var layer=L.geoJSON(feature,{pane:"cadSelected",style:baseStyle});
+          layer.__trackerRec=rec;
+          layer.__trackerKind="polygon";
           layer.bindTooltip("<b>"+v3esc(meta.label)+"</b> · "+v3esc(rec.dealSite||rec.owner||rec.parcelId),{sticky:true,className:"bcad-hover"});
           layer.bindPopup(function(){return v15Popup(rec,"Matched county CAD parcel polygon");},{maxWidth:360});
-          layer.on("mouseover",function(){layer.setStyle({color:meta.color,weight:7,opacity:1,fillColor:meta.fill,fillOpacity:.42});});
-          layer.on("mouseout",function(){layer.setStyle(baseStyle);});
+          layer.on("mouseover",function(){
+            var m=v15StageMeta(rec.stage);
+            layer.setStyle({color:m.color,weight:7,opacity:1,fillColor:m.fill,fillOpacity:.42});
+          });
+          layer.on("mouseout",function(){v15ApplyStageStyle(layer,rec);});
           layer.addTo(window.v15TrackerSites);
           window.v15TrackerByKey[key]=layer;
           window.v15TrackerMatchStats.polygons++;
@@ -3772,6 +3791,51 @@
             else if(layer.getLatLng)map_33cc2c2ac68d72d2971fbb7de3650b24.setView(layer.getLatLng(),16);
             layer.openPopup();
           }catch(e){}
+        }
+        function v15ApplyStageStyle(layer,rec){
+          if(!layer||!rec||!layer.setStyle)return;
+          var m=v15StageMeta(rec.stage);
+          if(layer.__trackerKind==="marker"){
+            layer.setStyle({color:m.color,weight:3,opacity:1,fillColor:m.fill,fillOpacity:.72});
+          }else{
+            layer.setStyle({color:m.color,weight:5,opacity:1,fillColor:m.fill,fillOpacity:.28,lineJoin:"round"});
+          }
+        }
+        function v15MergeSnapshotCoords(liveSites){
+          var snapByKey={};
+          (window.v15TrackerSnapshot||[]).forEach(function(r){snapByKey[v15Key(r.county,r.parcelId)]=r;});
+          return (Array.isArray(liveSites)?liveSites:[]).map(function(r){
+            var s=snapByKey[v15Key(r.county,r.parcelId)]||{};
+            var out={};
+            Object.keys(r||{}).forEach(function(k){out[k]=r[k];});
+            if(out.latitude==null&&s.latitude!=null)out.latitude=s.latitude;
+            if(out.longitude==null&&s.longitude!=null)out.longitude=s.longitude;
+            if(!out.source&&s.source)out.source=s.source;
+            return out;
+          });
+        }
+        function v15CanPatchInPlace(nextSites){
+          if(!window.v15TrackerData||window.v15TrackerData.length!==nextSites.length)return false;
+          var current={};
+          window.v15TrackerData.forEach(function(r){current[v15Key(r.county,r.parcelId)]=r;});
+          for(var i=0;i<nextSites.length;i++){
+            if(!current[v15Key(nextSites[i].county,nextSites[i].parcelId)])return false;
+          }
+          return true;
+        }
+        function v15PatchTrackerSites(nextSites){
+          var current={};
+          window.v15TrackerData.forEach(function(r){current[v15Key(r.county,r.parcelId)]=r;});
+          nextSites.forEach(function(n){
+            var key=v15Key(n.county,n.parcelId), rec=current[key];
+            if(!rec)return;
+            Object.keys(n).forEach(function(k){rec[k]=n[k];});
+            var layer=window.v15TrackerByKey[key];
+            if(layer)v15ApplyStageStyle(layer,rec);
+          });
+          window.v15TrackerLastSync=Date.now();
+          delete sourceLoadErrors["Tracker Sites"];
+          updateSourceStatus();
         }
         function v15RenderTrackerSites(sites){
           window.v15TrackerData=Array.isArray(sites)?sites:[];
@@ -3816,20 +3880,132 @@
           });
           if(!pending){window.v15TrackerLoaded=true;v15FocusFromUrl();}
         }
+        window.v15TrackerSnapshot=[];
+        window.v15TrackerLastSync=0;
+        window.v15TrackerRefreshTimer=null;
+        window.v15TrackerJsonpScript=null;
+        window.v15TrackerJsonpTimeout=null;
+
+        function v15CleanupTrackerJsonp(){
+          if(window.v15TrackerJsonpScript){
+            try{window.v15TrackerJsonpScript.remove();}catch(e){}
+            window.v15TrackerJsonpScript=null;
+          }
+          if(window.v15TrackerJsonpTimeout){
+            clearTimeout(window.v15TrackerJsonpTimeout);
+            window.v15TrackerJsonpTimeout=null;
+          }
+        }
+        function v15ScheduleTrackerRefresh(){
+          if(window.v15TrackerRefreshTimer)clearTimeout(window.v15TrackerRefreshTimer);
+          window.v15TrackerRefreshTimer=null;
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v15TrackerSites))return;
+          window.v15TrackerRefreshTimer=setTimeout(function(){v15RefreshTrackerSites(false);},30000);
+        }
+        function v15ApplyLiveTrackerPayload(payload){
+          if(!payload||payload.ok!==true||!Array.isArray(payload.sites))return false;
+          var merged=v15MergeSnapshotCoords(payload.sites);
+          if(v15CanPatchInPlace(merged)){
+            v15PatchTrackerSites(merged);
+          }else{
+            v15RenderTrackerSites(merged);
+            window.v15TrackerLastSync=Date.now();
+            delete sourceLoadErrors["Tracker Sites"];
+            updateSourceStatus();
+          }
+          return true;
+        }
+        function v15RefreshTrackerSites(promptForKey){
+          if(window.v15TrackerLoading)return;
+          var endpoint=v12TrackerEndpoint();
+          var key="";
+          try{key=localStorage.getItem("landTrackerKey")||"";}catch(e){}
+          if(!key&&promptForKey)key=v12TrackerKey();
+          if(!endpoint||!key){
+            v15ScheduleTrackerRefresh();
+            return;
+          }
+
+          window.v15TrackerLoading=true;
+          v15CleanupTrackerJsonp();
+          window.__landTrackerSitesCallback=function(payload){
+            v15CleanupTrackerJsonp();
+            window.v15TrackerLoading=false;
+            if(payload&&payload.ok===true){
+              v15ApplyLiveTrackerPayload(payload);
+            }else if(payload&&payload.error==="unauthorized"){
+              sourceLoadErrors["Tracker Sites"]="Tracker key rejected. Use Reset Tracker Key, then reopen Tracker Sites.";
+              updateSourceStatus();
+            }else{
+              sourceLoadErrors["Tracker Sites"]="Live tracker sync failed; showing last known tracker snapshot.";
+              updateSourceStatus();
+            }
+            v15ScheduleTrackerRefresh();
+          };
+
+          var src=endpoint+(endpoint.indexOf("?")>=0?"&":"?")+
+            "action=trackerSites&callback=__landTrackerSitesCallback&key="+encodeURIComponent(key)+"&_="+Date.now();
+          var script=document.createElement("script");
+          script.src=src;
+          script.async=true;
+          script.onerror=function(){
+            v15CleanupTrackerJsonp();
+            window.v15TrackerLoading=false;
+            sourceLoadErrors["Tracker Sites"]="Live tracker endpoint unavailable; showing last known tracker snapshot.";
+            updateSourceStatus();
+            v15ScheduleTrackerRefresh();
+          };
+          window.v15TrackerJsonpScript=script;
+          document.head.appendChild(script);
+          window.v15TrackerJsonpTimeout=setTimeout(function(){
+            v15CleanupTrackerJsonp();
+            window.v15TrackerLoading=false;
+            sourceLoadErrors["Tracker Sites"]="Live tracker sync timed out; showing last known tracker snapshot.";
+            updateSourceStatus();
+            v15ScheduleTrackerRefresh();
+          },12000);
+        }
         function v15LoadTrackerSites(){
           if(window.v15TrackerLoaded||window.v15TrackerLoading)return;
           window.v15TrackerLoading=true;
           fetch("data/tracker_sites.json",{cache:"no-store"})
             .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
-            .then(function(data){window.v15TrackerLoading=false;v15RenderTrackerSites(data.sites||[]);})
+            .then(function(data){
+              window.v15TrackerLoading=false;
+              window.v15TrackerSnapshot=Array.isArray(data.sites)?data.sites:[];
+              v15RenderTrackerSites(window.v15TrackerSnapshot);
+              window.v15TrackerLastSync=Date.now();
+              setTimeout(function(){v15RefreshTrackerSites(false);},0);
+            })
             .catch(function(err){
               window.v15TrackerLoading=false;
-              sourceLoadErrors["Tracker Sites"]="Tracker site dataset failed to load.";
+              sourceLoadErrors["Tracker Sites"]="Tracker snapshot failed to load.";
               updateSourceStatus();
-              console.error("Tracker Sites load failed",err);
+              console.error("Tracker Sites snapshot failed",err);
+              v15RefreshTrackerSites(true);
             });
         }
-        window.v15TrackerSites.on("add",v15LoadTrackerSites);
+        window.v15TrackerSites.on("add",function(){
+          if(window.v15TrackerLoaded)v15RefreshTrackerSites(false);
+          else v15LoadTrackerSites();
+        });
+        window.v15TrackerSites.on("remove",function(){
+          v15CleanupTrackerJsonp();
+          if(window.v15TrackerRefreshTimer)clearTimeout(window.v15TrackerRefreshTimer);
+          window.v15TrackerRefreshTimer=null;
+          delete sourceLoadErrors["Tracker Sites"];
+          updateSourceStatus();
+        });
+        window.addEventListener("focus",function(){
+          if(map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v15TrackerSites)&&Date.now()-window.v15TrackerLastSync>5000){
+            v15RefreshTrackerSites(false);
+          }
+        });
+        document.addEventListener("visibilitychange",function(){
+          if(!document.hidden&&map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v15TrackerSites)&&Date.now()-window.v15TrackerLastSync>5000){
+            v15RefreshTrackerSites(false);
+          }
+        });
         setTimeout(function(){
           var p=new URLSearchParams(location.search);
           if((p.get("county")&&p.get("parcel"))||(p.get("importCounty")&&p.get("importParcel"))){

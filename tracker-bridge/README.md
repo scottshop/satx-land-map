@@ -18,3 +18,30 @@ The public GitHub map never stores Google credentials or the private tracker key
 8. The first time you press **Save to Tracker** on the map, paste the generated tracker key. The browser stores it locally so you do not enter it again.
 
 The Apps Script checks **County + Parcel ID** before writing, so repeated clicks do not create duplicate deal rows.
+
+
+## Live Tracker Sites sync
+
+The map now supports a secure read endpoint:
+
+- `GET /exec?action=trackerSites&key=<TRACKER_KEY>`
+- Optional JSONP callback: `&callback=__landTrackerSitesCallback`
+
+The endpoint returns only the fields needed to draw and label active tracker sites:
+- deal/site
+- acreage
+- stage
+- next action + date
+- owner
+- county
+- parcel ID
+- map link
+
+It excludes offer/price, key deadlines, closing dates, deal-folder links, and notes.
+
+While the **Tracker Sites** layer is on, the map refreshes the Sheet every 30 seconds. Existing parcel geometry is recolored in place:
+- Pursuing / Tracking / Watch List → yellow
+- LOI / Under Contract / Contract → green
+- Closed / Dead → removed from Tracker Sites on the next sync
+
+After changing `Code.gs`, publish a new Apps Script Web App version while keeping the same public `/exec` URL in `data/tracker-config.js`.
