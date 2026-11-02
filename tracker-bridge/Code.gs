@@ -5,9 +5,9 @@
  * - Execute as: Me
  * - Who has access: Anyone
  *
- * Read-only Tracker Sites sync is public because it returns only map-safe
- * fields already displayed on the public land map. Write/save requests remain
- * protected by the private TRACKER_KEY in Apps Script Script Properties.
+ * Tracker Sites reads are public because they return only map-safe fields.
+ * Save-to-Tracker writes are append-only, strictly validated, duplicate-checked,
+ * and serialized. They cannot edit or delete existing tracker rows.
  */
 
 const TRACKER_SPREADSHEET_ID = '1BUdhXHCmsmaTCWZI5mYTmlabQ7rePN7acsLsbLLZJzI';
@@ -88,22 +88,38 @@ function doGet(e) {
 function doPost(e) {
   try {
     const p = (e && e.parameter) || {};
-    const expected = PropertiesService.getScriptProperties().getProperty('TRACKER_KEY');
-    if (!expected || !p.key || p.key !== expected) {
-      return json_({ ok: false, error: 'unauthorized' });
-    }
-
     const parcelId = clean_(p.parcelId);
     const county = clean_(p.county);
+    const mapLink = clean_(p.mapLink);
+    const allowedCounties = ['Bexar','Comal','Guadalupe','Kendall','Medina','Blanco','Kerr','Webb'];
+
     if (!parcelId || !county) {
       return json_({ ok: false, error: 'missing parcelId/county' });
     }
+    if (allowedCounties.indexOf(county) === -1) {
+      return json_({ ok: false, error: 'unsupported county' });
+    }
+    if (!/^[0-9A-Za-z-]{1,80}$/.test(parcelId)) {
+      return json_({ ok: false, error: 'invalid parcelId' });
+    }
+    if (
+      mapLink.indexOf('https://scottshop.github.io/satx-land-map/') !== 0 &&
+      mapLink.indexOf('https://satx-land-map.netlify.app/') !== 0
+    ) {
+      return json_({ ok: false, error: 'invalid map source' });
+    }
 
-    const ss = SpreadsheetApp.openById(TRACKER_SPREADSHEET_ID);
-    const sheet = ss.getSheetByName(TRACKER_SHEET_NAME);
-    if (!sheet) return json_({ ok: false, error: 'Deals sheet not found' });
+    const lock = LockService.getScriptLock();
+    if (!lock.tryLock(5000)) {
+      return json_({ ok: false, error: 'tracker busy; retry' });
+    }
 
-    const lastRow = Math.max(sheet.getLastRow(), FIRST_DATA_ROW - 1);
+    try {
+      const ss = SpreadsheetApp.openById(TRACKER_SPREADSHEET_ID);
+      const sheet = ss.getSheetByName(TRACKER_SHEET_NAME);
+      if (!sheet) return json_({ ok: false, error: 'Deals sheet not found' });
+
+      const lastRow = Math.max(sheet.getLastRow(), FIRST_DATA_ROW - 1);
     if (lastRow >= FIRST_DATA_ROW) {
       const existing = sheet
         .getRange(FIRST_DATA_ROW, 10, lastRow - FIRST_DATA_ROW + 1, 2)
@@ -143,9 +159,12 @@ function doPost(e) {
       clean_(p.notes)                                        // N Notes
     ]];
 
-    sheet.getRange(row, 1, 1, 14).setValues(values);
-    SpreadsheetApp.flush();
-    return json_({ ok: true, duplicate: false, row: row });
+      sheet.getRange(row, 1, 1, 14).setValues(values);
+      SpreadsheetApp.flush();
+      return json_({ ok: true, duplicate: false, row: row });
+    } finally {
+      lock.releaseLock();
+    }
   } catch (err) {
     return json_({ ok: false, error: String(err && err.message || err) });
   }
