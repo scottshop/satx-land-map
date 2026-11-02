@@ -32,7 +32,7 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>Number(f.properties.qualified_frontage_importance)>=2)),true,'Every highlighted parcel needs collector-or-better frontage');
     assert.equal(await page.evaluate(() => v6OpportunityData.every(f=>String(f.properties.qualified_frontage_road||'').trim().length>0)),true,'Every highlighted parcel needs a named qualifying frontage road');
     assert.equal(await page.evaluate(() => testMap.hasLayer(tile_layer_satellite_hybrid)), true);
-    for (const name of ['v3Parcels','v3ComalParcels','v3GuadalupeParcels','v16KendallParcels','v16MedinaParcels','v16BlancoParcels','v16KerrParcels','v16WebbParcels','v3SewerService','v3FemaHazard','v3AADT','v3FutureLandUse','v3Rings','v3VerifiedTargetGeometry','v13FutureRoads','v15LandGlideSites']) {
+    for (const name of ['v3Parcels','v3ComalParcels','v3GuadalupeParcels','v16KendallParcels','v16MedinaParcels','v16BlancoParcels','v16KerrParcels','v16WebbParcels','v3SewerService','v3FemaHazard','v3AADT','v3FutureLandUse','v3Rings','v3VerifiedTargetGeometry','v13FutureRoads','v15TrackerSites']) {
       assert.equal(await page.evaluate(n => testMap.hasLayer(window[n]), name), false, name + ' must default OFF');
     }
     console.log('PASS page/GeoJSON/defaults');
@@ -68,17 +68,24 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
       'Bexar,Blanco,Comal,Guadalupe,Kendall,Kerr,Medina,Webb',
       'Tracker county CAD registry should cover every county currently represented in the tracker');
 
-    const landGlideLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'LandGlide Saved Sites'});
-    assert.equal(await landGlideLabel.count(),1,'LandGlide Saved Sites toggle should exist');
-    const lgBox=landGlideLabel.locator('input');
-    if(await lgBox.isChecked())await lgBox.uncheck();
-    await lgBox.check();
-    await page.waitForFunction(()=>window.v15LandGlideLoaded && window.v15LandGlideData.length===76 && window.v15LandGlideSites.getLayers().length===76,null,{timeout:60000});
-    const lgStats=await page.evaluate(()=>window.v15LandGlideMatchStats);
-    assert.equal(lgStats.total,76,'LandGlide import should contain 76 unique parcels');
-    assert.equal(lgStats.polygons+lgStats.markers,76,'Every imported parcel should render as polygon or marker');
-    await lgBox.uncheck();
-    console.log('PASS LandGlide Saved Sites import',lgStats);
+    const trackerLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Tracker Sites'});
+    assert.equal(await trackerLabel.count(),1,'Tracker Sites toggle should exist');
+    assert.equal(await page.locator('.leaflet-control-layers label').filter({hasText:'LandGlide Saved Sites'}).count(),0,'Old LandGlide layer name should be removed');
+    assert.deepEqual(await page.evaluate(()=>v15StageMeta('Pursuing')), {label:'TRACKING',color:'#c59a00',fill:'#ffd400'});
+    assert.deepEqual(await page.evaluate(()=>v15StageMeta('LOI')), {label:'LOI',color:'#15803d',fill:'#22c55e'});
+    assert.equal(await page.evaluate(()=>v15StageMeta('Under Contract').fill),'#22c55e');
+    const trackerBox=trackerLabel.locator('input');
+    if(await trackerBox.isChecked())await trackerBox.uncheck();
+    await trackerBox.check();
+    await page.waitForFunction(()=>window.v15TrackerLoaded && window.v15TrackerData.length===81,null,{timeout:60000});
+    const trackerStats=await page.evaluate(()=>window.v15TrackerMatchStats);
+    assert.equal(trackerStats.total,81,'Tracker Sites should contain all 81 active tracker rows');
+    assert.equal(trackerStats.polygons+trackerStats.markers+trackerStats.missing,81,'Every tracker row should resolve to a polygon, fallback marker, or explicit missing count');
+    const trackerStages=await page.evaluate(()=>window.v15TrackerData.reduce((a,r)=>(a[r.stage]=(a[r.stage]||0)+1,a),{}));
+    assert.equal(trackerStages.Pursuing,78,'Tracker snapshot should have 78 Pursuing rows');
+    assert.equal(trackerStages.LOI,3,'Tracker snapshot should have 3 LOI rows');
+    await trackerBox.uncheck();
+    console.log('PASS Tracker Sites stage colors',trackerStats,trackerStages);
 
     const futureRoadsLabel = page.locator('.leaflet-control-layers label').filter({hasText: 'Future / New Roads'});
     assert.equal(await futureRoadsLabel.count(),1,'Future / New Roads toggle should exist');
