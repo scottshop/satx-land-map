@@ -3168,7 +3168,7 @@
                   var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
                   var group=parts.length>1?parts.shift():'RESEARCH';
                   span.textContent=' '+parts.join(' — ');
-                  var colors={'Exact Target Parcels':'#fff200','Tracker Sites':'#ffd400','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
+                  var colors={'Exact Target Parcels':'#fff200','Tracker Sites':'#ff2bd6','H-E-B Owned Parcels':'#e31b23','New Housing Plats':'#7c3aed','Existing Sewer Mains':'#00c8ff','Active Road Improvements':'#ff8c00','Future / New Roads':'#00d65a','Approximate Utility Corridors':'#7c3aed'};
                   if(colors[parts.join(' — ')]){span.style.borderLeft='4px '+(parts[0]==='Approximate Utility Corridors'?'dashed':'solid')+' '+colors[parts.join(' — ')];span.style.paddingLeft='6px';}
                   (groups[group]||(groups[group]=[])).push(label);
                 });
@@ -3182,7 +3182,7 @@
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
                 this._baseLayersList.prepend(title);
                 var help=L.DomUtil.create('div','layer-help',container);
-                help.textContent='Tracker Sites auto-syncs from Google Sheets every 30 sec while on. Yellow = tracking / pursuing · green = LOI or under contract.';
+                help.textContent='Tracker Sites auto-syncs from Google Sheets every 30 sec while on. Bright pink = tracking / pursuing · green = LOI or under contract.';
                 var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
                 updateSourceStatus();
                 return this;
@@ -3682,7 +3682,7 @@
 
         // ---- V15 TRACKER SITES ----
         // Deal-stage parcel view sourced from the Land Deal Tracker snapshot.
-        // Yellow = Tracking / Pursuing. Green = LOI or Under Contract.
+        // Bright pink = Tracking / Pursuing. Green = LOI or Under Contract.
         // Exact CAD polygons are resolved for every county currently represented in the tracker.
         window.v15TrackerSites=L.featureGroup();
         window.v15LandGlideSites=window.v15TrackerSites; // legacy alias
@@ -3700,7 +3700,7 @@
           if(s==="loi"||s==="under contract"||s==="contract"){
             return {label:s==="loi"?"LOI":"UNDER CONTRACT",color:"#15803d",fill:"#22c55e"};
           }
-          return {label:"TRACKING",color:"#c59a00",fill:"#ffd400"};
+          return {label:"TRACKING",color:"#d100b8",fill:"#ff2bd6"};
         }
         function v15Config(county){
           if(county==="Bexar")return {url:v3ParcelUrl+"/0",id:"Prop_id",numeric:true};
@@ -3732,7 +3732,7 @@
               "<dt>Next action</dt><dd>"+v3esc(next||"Not set")+"</dd>"+
               "<dt>Map geometry</dt><dd>"+v3esc(geometryType)+"</dd>"+
             "</dl>"+
-            "<div class='popup-source'>Deal status comes from the Land Deal Tracker. Yellow = tracking; green = LOI / contract.</div>"+
+            "<div class='popup-source'>Deal status comes from the Land Deal Tracker. Bright pink = tracking; green = LOI / contract.</div>"+
           "</div>";
         }
         function v15AddMarker(rec,reason){
