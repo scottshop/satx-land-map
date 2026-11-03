@@ -299,6 +299,17 @@
     .leaflet-control-layers{top:92px!important;left:8px!important;right:8px!important;width:auto!important;max-height:calc(100dvh - 104px)!important}
     .leaflet-control-layers-expanded{width:auto!important;min-width:0!important}
   }
+  body.v18-cad-loading::after{
+    content:"Loading " attr(data-cad-loading) "…";
+    position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+    z-index:12000;
+    background:rgba(15,23,42,.92);color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;padding:8px 12px;
+    font:800 10px/1 Arial;letter-spacing:.2px;
+    box-shadow:0 8px 24px rgba(0,0,0,.24);
+    pointer-events:none;
+  }
 </style>
 <script src="data/tracker-config.js"></script>
 </head>
@@ -3564,10 +3575,15 @@
           }
         }
 
+        // Shared Canvas renderer keeps large CAD polygon layers smoother than thousands of SVG paths.
+        var v18CadRenderer = L.canvas({padding:0.35});
+
         var v3Parcels = L.esri.featureLayer({
           url:v3ParcelUrl+"/0",
           pane:"cad", minZoom:14,
-          simplifyFactor:0.35, precision:5,
+          renderer:v18CadRenderer,
+          fields:["OBJECTID","Prop_id","Geo_id","Owner_name","Situs","Land_acres","Market_val","Land_hstd_val","Land_non_hstd_val","Last_Deed_Date","Ownership_Type","Legal_desc","CADLINK"],
+          simplifyFactor:0.55, precision:5,
           style:v3BexarBaseStyle,
           attribution:"BCAD parcels via San Antonio River Authority (Dec. 2025)"
         });
@@ -3632,7 +3648,9 @@
         var v3ComalParcels = L.esri.featureLayer({
           pane:"cad", minZoom:14,
           url:v3ComalCadUrl,
-          simplifyFactor:0.45,
+          renderer:v18CadRenderer,
+          fields:["OBJECTID","PROP_ID","PY_OWNER_N","LEGAL_ACRE","SITUS_ADDR","APPRAISED","CADLINK"],
+          simplifyFactor:0.60,
           precision:5,
           style:function(){
             return {color:"#8e44ad",weight:1.5,opacity:.85,fillColor:"#8e44ad",fillOpacity:.035};
@@ -3653,7 +3671,9 @@
         var v3GuadalupeParcels = L.esri.featureLayer({
           pane:"cad", minZoom:14,
           url:v3GuadalupeCadUrl,
-          simplifyFactor:0.45,
+          renderer:v18CadRenderer,
+          fields:["OBJECTID","PROP_ID","GEO_ID","OWNER_NAME","LEGAL_AREA","LGL_AREA_UNIT","SITUS_ADDR","MKT_VALUE"],
+          simplifyFactor:0.60,
           precision:5,
           style:function(){
             return {color:"#00a6a6",weight:1.5,opacity:.85,fillColor:"#00a6a6",fillOpacity:.035};
@@ -3666,6 +3686,25 @@
           return "Guadalupe CAD"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
         },{sticky:true});
         v3GuadalupeParcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Guadalupe",false);});
+
+        function v18BindCadLoadState(layer,label){
+          if(!layer)return;
+          layer.on("loading",function(){
+            document.body.classList.add("v18-cad-loading");
+            document.body.setAttribute("data-cad-loading",label+" parcels");
+          });
+          layer.on("load",function(){
+            document.body.classList.remove("v18-cad-loading");
+            document.body.removeAttribute("data-cad-loading");
+          });
+          layer.on("remove",function(){
+            document.body.classList.remove("v18-cad-loading");
+            document.body.removeAttribute("data-cad-loading");
+          });
+        }
+        v18BindCadLoadState(v3Parcels,"Bexar");
+        v18BindCadLoadState(v3ComalParcels,"Comal");
+        v18BindCadLoadState(v3GuadalupeParcels,"Guadalupe");
 
         // ---- V16 TRACKER COUNTY CAD COVERAGE ----
         // Every Texas county currently represented in the Land Deal Tracker has parcel outlines.
