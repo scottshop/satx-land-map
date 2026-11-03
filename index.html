@@ -4,6 +4,8 @@
     <!-- production trigger: 2026-09-30 cleanup merge -->
     
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="canonical" href="https://scottshop.github.io/satx-land-map/" />
+    <meta property="og:url" content="https://scottshop.github.io/satx-land-map/" />
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -3269,7 +3271,7 @@
           return String(window.LAND_TRACKER_WEBAPP_URL||"").trim();
         }
         function v12TrackerMapLink(county,parcelId){
-          var base=window.location.origin+window.location.pathname;
+          var base="https://scottshop.github.io/satx-land-map/";
           return base+"?county="+encodeURIComponent(county||"")+"&parcel="+encodeURIComponent(parcelId||"");
         }
         function v12ParcelTrackerData(p,county){
