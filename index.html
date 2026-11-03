@@ -503,6 +503,23 @@
             // V7: Street remains available in the basemap selector but is not loaded by default.
         
     
+            var tile_layer_topo = L.tileLayer(
+                "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "OpenTopoMap",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
             // Satellite imagery and labels are the acquisition basemap.
             var tile_layer_satellite = L.tileLayer(
                 "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -3299,7 +3316,7 @@
                 base_layers : {
                     "Satellite + Streets" : tile_layer_satellite_hybrid,
                     "Street" : tile_layer_aaae3922d3fdbfea43709c0f196149c0,
-                    "Light" : tile_layer_f07a431ff4dc7ff3c822055d0c4ef939,
+                    "Topo" : tile_layer_topo,
                 },
                 overlays :  {
                     "RESEARCH — Heat Map" : feature_group_8664419a099b0fb300dcdc7bb4f5e31c,
