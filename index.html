@@ -310,6 +310,9 @@
     box-shadow:0 8px 24px rgba(0,0,0,.24);
     pointer-events:none;
   }
+  .leaflet-cad-pane{transition:opacity .14s ease}
+  body.v23-cad-below-threshold .leaflet-cad-pane{opacity:0!important;pointer-events:none!important}
+
   #v22ParcelCard{
     position:fixed;left:50%;bottom:18px;transform:translate(-50%,calc(100% + 40px));
     z-index:11500;width:min(430px,calc(100vw - 24px));
@@ -462,6 +465,13 @@
             [['cad',410],['cadSelected',435],['ownership',440],['infrastructure',450],['diligence',405]].forEach(function(item){
               map_33cc2c2ac68d72d2971fbb7de3650b24.createPane(item[0]).style.zIndex=item[1];
             });
+
+            var v23CadMinZoom=15;
+            function v23SyncCadThreshold(){
+              document.body.classList.toggle("v23-cad-below-threshold",map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<v23CadMinZoom);
+            }
+            map_33cc2c2ac68d72d2971fbb7de3650b24.on("zoomend",v23SyncCadThreshold);
+            v23SyncCadThreshold();
 
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("click",function(e){
               if(!e||!e.latlng)return;
@@ -3646,7 +3656,7 @@
 
         var v3Parcels = L.esri.featureLayer({
           url:v21FastBexarUrl,
-          pane:"cad", minZoom:14,
+          pane:"cad", minZoom:15,
           renderer:v18CadRenderer,
           fields:["OBJECTID"],
           simplifyFactor:1.8,
@@ -3694,7 +3704,7 @@
         }
 
         function v20IdentifyBexar(latlng){
-          if(!latlng||!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3Parcels)||map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<14)return;
+          if(!latlng||!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3Parcels)||map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<15)return;
           L.esri.query({url:v21FastBexarUrl})
             .intersects(latlng)
             .fields(["OBJECTID","PropID","Geo_id","Situs","Owner_Name","legal_desc","legal_acre"])
@@ -3747,7 +3757,7 @@
         // Comal source: parcel ownership data from Comal Appraisal District (public ArcGIS service).
         var v3ComalCadUrl = "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/arcgis/rest/services/COMAL_PARCELS/FeatureServer/0";
         var v3ComalParcels = L.esri.featureLayer({
-          pane:"cad", minZoom:14,
+          pane:"cad", minZoom:15,
           url:v3ComalCadUrl,
           renderer:v18CadRenderer,
           fields:["OBJECTID","PROP_ID","PY_OWNER_N","LEGAL_ACRE","SITUS_ADDR","APPRAISED","CADLINK"],
@@ -3782,7 +3792,7 @@
         var v3GuadalupeParcels = L.layerGroup([v20GuadalupeParcelImage]);
 
         function v20IdentifyGuadalupe(latlng){
-          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3GuadalupeParcels)||map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<14)return;
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3GuadalupeParcels)||map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<15)return;
           L.esri.identifyFeatures({url:"https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer"})
             .on(map_33cc2c2ac68d72d2971fbb7de3650b24)
             .at(latlng)
@@ -3855,7 +3865,7 @@
         }
         function v16MakeTrackerParcelLayer(cfg){
           var layer=L.esri.featureLayer({
-            pane:"cad",minZoom:14,url:cfg.url,
+            pane:"cad",minZoom:15,url:cfg.url,
             simplifyFactor:.42,precision:5,style:v16ParcelStyle,
             attribution:cfg.attribution
           });
@@ -4930,7 +4940,7 @@
           var cfg=v9CadFocus[name]; if(!cfg)return;
           var map=map_33cc2c2ac68d72d2971fbb7de3650b24, center=map.getCenter();
           var bounds=L.latLngBounds(cfg.bounds), target=bounds.contains(center)?center:L.latLng(cfg.lat,cfg.lng);
-          if(map.getZoom()<14 || !bounds.contains(center))map.setView(target,14,{animate:false});
+          if(map.getZoom()<15 || !bounds.contains(center))map.setView(target,15,{animate:false});
         }
         document.addEventListener("change",function(e){
           var input=e.target;
