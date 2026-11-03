@@ -299,6 +299,17 @@
     .leaflet-control-layers{top:92px!important;left:8px!important;right:8px!important;width:auto!important;max-height:calc(100dvh - 104px)!important}
     .leaflet-control-layers-expanded{width:auto!important;min-width:0!important}
   }
+  body.v19-map-moving .leaflet-cad-pane,
+  body.v19-map-moving .leaflet-cadSelected-pane{
+    opacity:0!important;
+    pointer-events:none!important;
+  }
+  .leaflet-cad-pane,
+  .leaflet-cadSelected-pane{
+    transition:opacity .08s linear;
+    will-change:opacity;
+  }
+
   body.v18-cad-loading::after{
     content:"Loading " attr(data-cad-loading) "…";
     position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
@@ -309,42 +320,6 @@
     font:800 10px/1 Arial;letter-spacing:.2px;
     box-shadow:0 8px 24px rgba(0,0,0,.24);
     pointer-events:none;
-  }
-  .leaflet-cad-pane{transition:opacity .14s ease}
-  body.v23-cad-below-threshold .leaflet-cad-pane{opacity:0!important;pointer-events:none!important}
-
-  #v22ParcelCard{
-    position:fixed;left:50%;bottom:18px;transform:translate(-50%,calc(100% + 40px));
-    z-index:11500;width:min(430px,calc(100vw - 24px));
-    background:rgba(255,255,255,.98);color:#111827;
-    border:1px solid rgba(15,23,42,.14);border-radius:14px;
-    box-shadow:0 18px 50px rgba(0,0,0,.28);
-    font-family:Arial,sans-serif;opacity:0;pointer-events:none;
-    transition:transform .18s ease,opacity .18s ease;
-    backdrop-filter:blur(12px);
-  }
-  #v22ParcelCard.is-open{transform:translate(-50%,0);opacity:1;pointer-events:auto}
-  .v22Grab{width:38px;height:4px;border-radius:999px;background:#cbd5e1;margin:8px auto 3px}
-  .v22Body{padding:8px 14px 13px}
-  .v22Top{display:flex;align-items:flex-start;gap:10px}
-  .v22Meta{flex:1;min-width:0}
-  .v22Kicker{font:800 9px/1.2 Arial;letter-spacing:.8px;color:#64748b;text-transform:uppercase}
-  .v22Address{font:900 16px/1.15 Arial;color:#111827;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .v22Owner{font:600 11px/1.3 Arial;color:#475569;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .v22Close{border:0;background:#f1f5f9;color:#475569;width:28px;height:28px;border-radius:50%;font:800 16px/1 Arial;cursor:pointer}
-  .v22Facts{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
-  .v22Fact{background:#f8fafc;border:1px solid #e2e8f0;border-radius:999px;padding:5px 8px;font:800 10px Arial;color:#334155}
-  .v22Actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-  .v22Actions a,.v22Actions button{
-    border:1px solid #cbd5e1;background:#fff;color:#111827;border-radius:8px;
-    padding:7px 9px;font:800 10px Arial;text-decoration:none;cursor:pointer
-  }
-  .v22Actions .save-to-tracker{background:#111827!important;color:#fff!important;border-color:#111827!important}
-  .v22Legal{margin-top:9px;font:10px/1.35 Arial;color:#64748b;max-height:28px;overflow:hidden}
-  @media(max-width:700px){
-    #v22ParcelCard{bottom:8px;width:calc(100vw - 16px);border-radius:16px}
-    .v22Address{font-size:15px}
-    .v22Body{padding:8px 12px 12px}
   }
 </style>
 <script src="data/tracker-config.js"></script>
@@ -434,11 +409,6 @@
   <div id="v6OppList"><div class="v6Tiny">Loading exact parcel opportunities…</div></div>
 </div>
 
-<div id="v22ParcelCard" aria-live="polite" aria-label="Selected parcel">
-  <div class="v22Grab" aria-hidden="true"></div>
-  <div class="v22Body" id="v22ParcelCardBody"></div>
-</div>
-
 <div class="folium-map" id="map_33cc2c2ac68d72d2971fbb7de3650b24" ></div>
         
 </body>
@@ -466,15 +436,25 @@
               map_33cc2c2ac68d72d2971fbb7de3650b24.createPane(item[0]).style.zIndex=item[1];
             });
 
-            var v23CadMinZoom=15;
-            function v23SyncCadThreshold(){
-              document.body.classList.toggle("v23-cad-below-threshold",map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<v23CadMinZoom);
+            // Keep pan/zoom fluid by taking the heavy CAD polygon panes out of the paint cycle
+            // while the map is moving. They return immediately after the viewport settles.
+            var v19CadMotionTimer=null;
+            function v19CadMotionStart(){
+              if(v19CadMotionTimer){clearTimeout(v19CadMotionTimer);v19CadMotionTimer=null;}
+              document.body.classList.add("v19-map-moving");
             }
-            map_33cc2c2ac68d72d2971fbb7de3650b24.on("zoomend",v23SyncCadThreshold);
-            v23SyncCadThreshold();
-
+            function v19CadMotionEnd(){
+              if(v19CadMotionTimer)clearTimeout(v19CadMotionTimer);
+              v19CadMotionTimer=setTimeout(function(){
+                document.body.classList.remove("v19-map-moving");
+                v19CadMotionTimer=null;
+              },80);
+            }
+            map_33cc2c2ac68d72d2971fbb7de3650b24.on("movestart zoomstart",v19CadMotionStart);
+            map_33cc2c2ac68d72d2971fbb7de3650b24.on("moveend zoomend",v19CadMotionEnd);
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("click",function(e){
               if(!e||!e.latlng)return;
+              v20IdentifyBexar(e.latlng);
               v20IdentifyGuadalupe(e.latlng);
             });
 
@@ -3564,13 +3544,13 @@
 
         // Bexar parcel polygons — LandGlide-inspired interaction using authoritative BCAD/SARA data.
         function v3BexarBaseStyle(){
-          return {color:"#f5ef9a",weight:1.1,opacity:.92,fill:false,lineJoin:"round"};
+          return {color:"#f5ef9a",weight:1.35,opacity:.94,fillColor:"#fff7b2",fillOpacity:.018,lineJoin:"round"};
         }
         function v3BexarHoverStyle(){
-          return v3BexarBaseStyle();
+          return {color:"#fff7b2",weight:2.3,opacity:1,fillColor:"#fff7b2",fillOpacity:.08,lineJoin:"round"};
         }
         function v3BexarSelectedStyle(){
-          return {color:"#FFD400",weight:3.5,opacity:1,fillColor:"#FFD400",fillOpacity:.08,lineJoin:"round"};
+          return {color:"#ff645c",weight:4,opacity:1,fillColor:"#ff645c",fillOpacity:.13,lineJoin:"round"};
         }
         function v3BexarDate(v){
           if(v==null||String(v).trim()==="") return "Not reported";
@@ -3655,7 +3635,7 @@
 
         var v3Parcels = L.esri.featureLayer({
           url:v21FastBexarUrl,
-          pane:"cad", minZoom:15,
+          pane:"cad", minZoom:14,
           renderer:v18CadRenderer,
           fields:["OBJECTID","PropID","Geo_id","Situs","Owner_Name","legal_desc","legal_acre"],
           simplifyFactor:0.80,
@@ -3686,13 +3666,12 @@
           if(layer&&layer!==v3BexarSelectedParcel&&layer.setStyle)layer.setStyle(v3BexarBaseStyle());
         });
         v3Parcels.on("remove",function(){
-          v22HideParcelCard();
           v3BexarSelectedParcel=null;
           v3BexarSelection.clearLayers();
           if(map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3BexarSelection))map_33cc2c2ac68d72d2971fbb7de3650b24.removeLayer(v3BexarSelection);
         });
 
-        function v20IdentifyBexar(){ /* direct FeatureLayer click handling restored */ }
+        function v20IdentifyBexar(){ /* live FeatureLayer handles parcel clicks directly */ }
 
         // H-E-B ownership overlay — exact BCAD owner-name screen.
         // BCAD records H-E-B real-property ownership under HEB GROCERY COMPANY LP.
@@ -3726,7 +3705,7 @@
         // Comal source: parcel ownership data from Comal Appraisal District (public ArcGIS service).
         var v3ComalCadUrl = "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/arcgis/rest/services/COMAL_PARCELS/FeatureServer/0";
         var v3ComalParcels = L.esri.featureLayer({
-          pane:"cad", minZoom:15,
+          pane:"cad", minZoom:14,
           url:v3ComalCadUrl,
           renderer:v18CadRenderer,
           fields:["OBJECTID","PROP_ID","PY_OWNER_N","LEGAL_ACRE","SITUS_ADDR","APPRAISED","CADLINK"],
@@ -3761,7 +3740,7 @@
         var v3GuadalupeParcels = L.layerGroup([v20GuadalupeParcelImage]);
 
         function v20IdentifyGuadalupe(latlng){
-          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3GuadalupeParcels)||map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<15)return;
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3GuadalupeParcels)||map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<14)return;
           L.esri.identifyFeatures({url:"https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer"})
             .on(map_33cc2c2ac68d72d2971fbb7de3650b24)
             .at(latlng)
@@ -3834,7 +3813,7 @@
         }
         function v16MakeTrackerParcelLayer(cfg){
           var layer=L.esri.featureLayer({
-            pane:"cad",minZoom:15,url:cfg.url,
+            pane:"cad",minZoom:14,url:cfg.url,
             simplifyFactor:.42,precision:5,style:v16ParcelStyle,
             attribution:cfg.attribution
           });
@@ -4909,7 +4888,7 @@
           var cfg=v9CadFocus[name]; if(!cfg)return;
           var map=map_33cc2c2ac68d72d2971fbb7de3650b24, center=map.getCenter();
           var bounds=L.latLngBounds(cfg.bounds), target=bounds.contains(center)?center:L.latLng(cfg.lat,cfg.lng);
-          if(map.getZoom()<15 || !bounds.contains(center))map.setView(target,15,{animate:false});
+          if(map.getZoom()<14 || !bounds.contains(center))map.setView(target,14,{animate:false});
         }
         document.addEventListener("change",function(e){
           var input=e.target;
