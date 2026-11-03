@@ -475,7 +475,6 @@
 
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("click",function(e){
               if(!e||!e.latlng)return;
-              v20IdentifyBexar(e.latlng);
               v20IdentifyGuadalupe(e.latlng);
             });
 
@@ -3658,72 +3657,42 @@
           url:v21FastBexarUrl,
           pane:"cad", minZoom:15,
           renderer:v18CadRenderer,
-          fields:["OBJECTID"],
-          simplifyFactor:1.8,
-          precision:4,
-          interactive:false,
+          fields:["OBJECTID","PropID","Geo_id","Situs","Owner_Name","legal_desc","legal_acre"],
+          simplifyFactor:0.80,
+          precision:5,
           style:v3BexarBaseStyle,
           attribution:"BCAD parcels via ArcGIS Online hosted layer"
         });
 
-        function v22HideParcelCard(){
-          var card=document.getElementById("v22ParcelCard");
-          if(card)card.classList.remove("is-open");
-        }
-        function v22ShowBexarParcelCard(p){
-          var card=document.getElementById("v22ParcelCard"),body=document.getElementById("v22ParcelCardBody");
-          if(!card||!body)return;
-          var acres=Number(p.Land_acres);
-          var situs=p.Situs||"Address not reported";
-          var owner=p.Owner_name||"Owner not reported";
-          var pid=p.Prop_id||p.Geo_id||"Not reported";
-          var mapQuery=encodeURIComponent(situs+", Bexar County, TX");
-          body.innerHTML=
-            "<div class='v22Top'>"+
-              "<div class='v22Meta'>"+
-                "<div class='v22Kicker'>Bexar County · Selected Parcel</div>"+
-                "<div class='v22Address'>"+v3esc(situs)+"</div>"+
-                "<div class='v22Owner'>"+v3esc(owner)+"</div>"+
-              "</div>"+
-              "<button class='v22Close' type='button' aria-label='Close parcel card'>×</button>"+
-            "</div>"+
-            "<div class='v22Facts'>"+
-              "<span class='v22Fact'>"+(isFinite(acres)?acres.toFixed(2)+" AC":"Acreage N/A")+"</span>"+
-              "<span class='v22Fact'>Parcel "+v3esc(pid)+"</span>"+
-            "</div>"+
-            "<div class='v22Actions'>"+
-              v12TrackerButton(v12ParcelTrackerData(p,"Bexar"))+
-              "<a href='https://www.google.com/maps/search/?api=1&query="+mapQuery+"' target='_blank' rel='noopener'>Google Maps</a>"+
-              "<button type='button' class='copy-property-id' data-property-id='"+v3esc(pid)+"'>Copy ID</button>"+
-            "</div>"+
-            (p.Legal_desc?"<div class='v22Legal'>"+v3esc(p.Legal_desc)+"</div>":"");
-          var close=body.querySelector(".v22Close");
-          if(close)close.onclick=function(){v22HideParcelCard();v3BexarSelection.clearLayers();};
-          card.classList.add("is-open");
-          v12BindTrackerButtons(body);
-        }
+        v3Parcels.bindTooltip(function(layer){
+          var p=v21BexarNormalize(layer.feature&&layer.feature.properties||{}), acres=Number(p.Land_acres);
+          return "<div class='bcad-hover-title'>"+v3esc(p.Situs||p.Owner_name||"Bexar parcel")+"</div>"+
+                 "<div class='bcad-hover-meta'>"+v3esc(p.Owner_name||"Owner not reported")+
+                 (isFinite(acres)?" · "+acres.toFixed(2)+" ac":"")+"</div>";
+        },{sticky:true,direction:"top",opacity:.98,className:"bcad-hover"});
 
-        function v20IdentifyBexar(latlng){
-          if(!latlng||!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3Parcels)||map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<15)return;
-          L.esri.query({url:v21FastBexarUrl})
-            .intersects(latlng)
-            .fields(["OBJECTID","PropID","Geo_id","Situs","Owner_Name","legal_desc","legal_acre"])
-            .limit(1)
-            .run(function(err,fc){
-              if(err||!fc||!fc.features||!fc.features.length)return;
-              var feature=fc.features[0],p=v21BexarNormalize(feature.properties||{});
-              v20HighlightParcelFeature(feature,v3BexarSelectedStyle);
-              map_33cc2c2ac68d72d2971fbb7de3650b24.closePopup();
-              v22ShowBexarParcelCard(p);
-            });
-        }
+        v3Parcels.bindPopup(function(layer){
+          var p=v21BexarNormalize(layer.feature&&layer.feature.properties||{});
+          v3SelectBexarParcel(layer);
+          return v3BexarCard(p);
+        },{className:"bcad-popup",maxWidth:340,autoPanPadding:[28,28]});
 
+        v3Parcels.on("mouseover",function(e){
+          var layer=e&&e.layer;
+          if(layer&&layer!==v3BexarSelectedParcel&&layer.setStyle)layer.setStyle(v3BexarHoverStyle());
+        });
+        v3Parcels.on("mouseout",function(e){
+          var layer=e&&e.layer;
+          if(layer&&layer!==v3BexarSelectedParcel&&layer.setStyle)layer.setStyle(v3BexarBaseStyle());
+        });
         v3Parcels.on("remove",function(){
           v22HideParcelCard();
           v3BexarSelectedParcel=null;
           v3BexarSelection.clearLayers();
           if(map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3BexarSelection))map_33cc2c2ac68d72d2971fbb7de3650b24.removeLayer(v3BexarSelection);
         });
+
+        function v20IdentifyBexar(){ /* direct FeatureLayer click handling restored */ }
 
         // H-E-B ownership overlay — exact BCAD owner-name screen.
         // BCAD records H-E-B real-property ownership under HEB GROCERY COMPANY LP.
