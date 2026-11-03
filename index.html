@@ -299,6 +299,17 @@
     .leaflet-control-layers{top:92px!important;left:8px!important;right:8px!important;width:auto!important;max-height:calc(100dvh - 104px)!important}
     .leaflet-control-layers-expanded{width:auto!important;min-width:0!important}
   }
+  body.v19-map-moving .leaflet-cad-pane,
+  body.v19-map-moving .leaflet-cadSelected-pane{
+    opacity:0!important;
+    pointer-events:none!important;
+  }
+  .leaflet-cad-pane,
+  .leaflet-cadSelected-pane{
+    transition:opacity .08s linear;
+    will-change:opacity;
+  }
+
   body.v18-cad-loading::after{
     content:"Loading " attr(data-cad-loading) "…";
     position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
@@ -413,7 +424,7 @@
   "zoom": 9,
   "maxZoom": 20,
   "zoomControl": true,
-  "preferCanvas": false,
+  "preferCanvas": true,
 }
 
                 }
@@ -424,6 +435,23 @@
             [['cad',410],['cadSelected',435],['ownership',440],['infrastructure',450],['diligence',405]].forEach(function(item){
               map_33cc2c2ac68d72d2971fbb7de3650b24.createPane(item[0]).style.zIndex=item[1];
             });
+
+            // Keep pan/zoom fluid by taking the heavy CAD polygon panes out of the paint cycle
+            // while the map is moving. They return immediately after the viewport settles.
+            var v19CadMotionTimer=null;
+            function v19CadMotionStart(){
+              if(v19CadMotionTimer){clearTimeout(v19CadMotionTimer);v19CadMotionTimer=null;}
+              document.body.classList.add("v19-map-moving");
+            }
+            function v19CadMotionEnd(){
+              if(v19CadMotionTimer)clearTimeout(v19CadMotionTimer);
+              v19CadMotionTimer=setTimeout(function(){
+                document.body.classList.remove("v19-map-moving");
+                v19CadMotionTimer=null;
+              },80);
+            }
+            map_33cc2c2ac68d72d2971fbb7de3650b24.on("movestart zoomstart",v19CadMotionStart);
+            map_33cc2c2ac68d72d2971fbb7de3650b24.on("moveend zoomend",v19CadMotionEnd);
 
 
             
@@ -3576,7 +3604,7 @@
         }
 
         // Shared Canvas renderer keeps large CAD polygon layers smoother than thousands of SVG paths.
-        var v18CadRenderer = L.canvas({padding:0.35});
+        var v18CadRenderer = L.canvas({padding:0.12,tolerance:5});
 
         var v3Parcels = L.esri.featureLayer({
           url:v3ParcelUrl+"/0",
