@@ -3611,50 +3611,31 @@
         // Shared Canvas renderer keeps large CAD polygon layers smoother than thousands of SVG paths.
         var v18CadRenderer = L.canvas({padding:0.12,tolerance:5});
 
-        // V21 fast BCAD display — use ArcGIS Online hosted parcels for navigation.
-        // This source benchmarked materially faster than the SARA MapServer.
-        var v21FastBexarUrl="https://services.arcgis.com/g1fRTDLeMgspWrYp/ArcGIS/rest/services/BCAD_Parcels/FeatureServer/0";
-        function v21BexarNormalize(p){
-          p=p||{};
-          return {
-            OBJECTID:p.OBJECTID,
-            Prop_id:p.PropID,
-            Geo_id:p.Geo_id,
-            Owner_name:p.Owner_Name,
-            Situs:p.Situs,
-            Land_acres:p.legal_acre,
-            Market_val:"",
-            Land_hstd_val:"",
-            Land_non_hstd_val:"",
-            Last_Deed_Date:"",
-            Ownership_Type:"",
-            Legal_desc:p.legal_desc||"",
-            CADLINK:""
-          };
-        }
-
+        // V24 accurate BCAD parcel mode.
+        // Use authoritative SARA/BCAD geometry only at close zoom so boundaries stay accurate
+        // without loading the county-wide parcel mesh too early.
+        var v24AccurateBexarUrl=v3ParcelUrl+"/0";
         var v3Parcels = L.esri.featureLayer({
-          url:v21FastBexarUrl,
-          pane:"cad", minZoom:14,
+          url:v24AccurateBexarUrl,
+          pane:"cad", minZoom:16,
           renderer:v18CadRenderer,
-          fields:["OBJECTID","PropID","Geo_id","Situs","Owner_Name","legal_desc","legal_acre"],
-          simplifyFactor:0.80,
-          precision:5,
+          fields:["OBJECTID","Prop_id","Geo_id","Owner_name","Situs","Land_acres","Market_val","Land_hstd_val","Land_non_hstd_val","Last_Deed_Date","Ownership_Type","Legal_desc"],
+          simplifyFactor:0.08,
+          precision:6,
           style:v3BexarBaseStyle,
-          attribution:"BCAD parcels via ArcGIS Online hosted layer"
+          attribution:"BCAD parcels via San Antonio River Authority (Dec. 2025)"
         });
 
         v3Parcels.bindTooltip(function(layer){
-          var p=v21BexarNormalize(layer.feature&&layer.feature.properties||{}), acres=Number(p.Land_acres);
+          var p=layer.feature&&layer.feature.properties||{}, acres=Number(p.Land_acres);
           return "<div class='bcad-hover-title'>"+v3esc(p.Situs||p.Owner_name||"Bexar parcel")+"</div>"+
                  "<div class='bcad-hover-meta'>"+v3esc(p.Owner_name||"Owner not reported")+
                  (isFinite(acres)?" · "+acres.toFixed(2)+" ac":"")+"</div>";
         },{sticky:true,direction:"top",opacity:.98,className:"bcad-hover"});
 
         v3Parcels.bindPopup(function(layer){
-          var p=v21BexarNormalize(layer.feature&&layer.feature.properties||{});
           v3SelectBexarParcel(layer);
-          return v3BexarCard(p);
+          return v3BexarCard(layer.feature&&layer.feature.properties||{});
         },{className:"bcad-popup",maxWidth:340,autoPanPadding:[28,28]});
 
         v3Parcels.on("mouseover",function(e){
@@ -3670,8 +3651,6 @@
           v3BexarSelection.clearLayers();
           if(map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3BexarSelection))map_33cc2c2ac68d72d2971fbb7de3650b24.removeLayer(v3BexarSelection);
         });
-
-        function v20IdentifyBexar(){ /* live FeatureLayer handles parcel clicks directly */ }
 
         // H-E-B ownership overlay — exact BCAD owner-name screen.
         // BCAD records H-E-B real-property ownership under HEB GROCERY COMPANY LP.
@@ -4875,7 +4854,7 @@
         // If the user is already inside the selected county, preserve their center and only zoom in.
         // Otherwise, move to a practical county reference point at zoom 14.
         var v9CadFocus={
-          "Bexar CAD":{lat:29.4241,lng:-98.4936,bounds:[[29.10,-98.90],[29.80,-98.10]]},
+          "Bexar CAD":{lat:29.4241,lng:-98.4936,bounds:[[29.10,-98.90],[29.80,-98.10]],zoom:16},
           "Comal CAD":{lat:29.7030,lng:-98.1245,bounds:[[29.50,-98.60],[30.20,-97.95]]},
           "Guadalupe CAD":{lat:29.5688,lng:-97.9647,bounds:[[29.20,-98.25],[29.90,-97.55]]},
           "Kendall CAD":{lat:29.94,lng:-98.73,bounds:[[29.68,-99.08],[30.18,-98.42]]},
@@ -4888,7 +4867,8 @@
           var cfg=v9CadFocus[name]; if(!cfg)return;
           var map=map_33cc2c2ac68d72d2971fbb7de3650b24, center=map.getCenter();
           var bounds=L.latLngBounds(cfg.bounds), target=bounds.contains(center)?center:L.latLng(cfg.lat,cfg.lng);
-          if(map.getZoom()<14 || !bounds.contains(center))map.setView(target,14,{animate:false});
+          var z=cfg.zoom||14;
+          if(map.getZoom()<z || !bounds.contains(center))map.setView(target,z,{animate:false});
         }
         document.addEventListener("change",function(e){
           var input=e.target;
