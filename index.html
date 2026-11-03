@@ -238,11 +238,14 @@
     white-space:nowrap;
   }
   #v6TopToggle{background:#FFD400;color:#111827;border:1px solid #FFD400}
+  #v26ParcelsToggle{background:#fff;color:#111827;border:1px solid rgba(255,255,255,.9)}
+  #v26ParcelsToggle.is-active{background:#FFD400;color:#111827;border-color:#FFD400}
   #v17LayersToggle{background:#fff;color:#111827;border:1px solid rgba(255,255,255,.9)}
   #v17TrackerLink{
     background:#111827;color:#fff;border:1px solid rgba(255,255,255,.22);
   }
-  #v17TrackerLink:hover,#v17LayersToggle:hover{background:#f8fafc;color:#111827}
+  #v17TrackerLink:hover,#v17LayersToggle:hover,#v26ParcelsToggle:hover{background:#f8fafc;color:#111827}
+  #v26ParcelsToggle.is-active:hover{background:#FFD400;color:#111827}
   #v17TrackerLink .v17Dot{
     width:7px;height:7px;border-radius:50%;
     background:#ff2bd6;box-shadow:0 0 0 2px rgba(255,43,214,.18)
@@ -335,6 +338,7 @@
 <div id="v17TopTools" aria-label="Map tools">
   <button id="v7ModeToggle" data-mode="acquisition" aria-hidden="true" tabindex="-1">ACQUISITION</button>
   <button id="v6TopToggle" type="button">LAND FINDER</button>
+  <button id="v26ParcelsToggle" type="button" aria-pressed="false" title="Show all CAD parcel layers">PARCELS</button>
   <button id="v17LayersToggle" type="button" aria-expanded="false">LAYERS</button>
   <a id="v17TrackerLink" href="https://docs.google.com/spreadsheets/d/1BUdhXHCmsmaTCWZI5mYTmlabQ7rePN7acsLsbLLZJzI/edit" target="_blank" rel="noopener noreferrer" title="Open Land Deal Tracker">
     <span class="v17Dot" aria-hidden="true"></span><span>TRACKER ↗</span>
@@ -3337,7 +3341,7 @@
               _update:function(){
                 L.Control.Layers.prototype._update.call(this);
                 if(!this._container)return this;
-                var headings=['LAND','PARCEL DATA','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH'];
+                var headings=['LAND','GROWTH','INFRASTRUCTURE','DUE DILIGENCE','RESEARCH'];
                 var container=this._overlaysList, groups={};
                 Array.from(container.children).forEach(function(label){
                   var span=label.querySelector('input').nextElementSibling, text=span.textContent.trim(), parts=text.split(' — ');
@@ -3349,7 +3353,7 @@
                 });
                 container.textContent='';
                 this._groupCollapsed=this._groupCollapsed||{
-                  'LAND':false,'PARCEL DATA':true,'GROWTH':true,'INFRASTRUCTURE':true,'DUE DILIGENCE':true,'RESEARCH':true
+                  'LAND':false,'GROWTH':true,'INFRASTRUCTURE':true,'DUE DILIGENCE':true,'RESEARCH':true
                 };
                 var self=this;
                 headings.forEach(function(group){
@@ -3373,18 +3377,10 @@
                 var title=L.DomUtil.create('div','layer-heading');title.textContent='BASEMAPS';
                 this._baseLayersList.prepend(title);
                 var help=L.DomUtil.create('div','layer-help',container);
-                help.textContent='Pink = tracking · Green = LOI / contract · CAD lines @ zoom 14+';
+                help.textContent='Pink = tracking · Green = LOI / contract · Use PARCELS above for CAD boundaries';
                 var status=L.DomUtil.create('div','layer-service-status',container);status.setAttribute('role','status');
                 updateSourceStatus();
                 return this;
-              },
-              _checkDisabledLayers:function(){
-                L.Control.Layers.prototype._checkDisabledLayers.call(this);
-                var self=this;
-                (this._layerControlInputs||[]).forEach(function(input){
-                  var obj=self._getLayer(input.layerId);
-                  if(obj && /^PARCEL DATA — .* CAD$/.test(obj.name||""))input.disabled=false;
-                });
               }
             });
             let layer_control_b250c1d6f8951aadc14a9860adeeb93d = new GroupedLayers(
@@ -3892,6 +3888,13 @@
           Kendall:window.v16KendallParcels,Kerr:window.v16KerrParcels,
           Medina:window.v16MedinaParcels,Blanco:window.v16BlancoParcels,Webb:window.v16WebbParcels
         };
+
+        // V26: one master parcel layer for the top-right PARCELS button.
+        window.v26AllCadParcels=L.layerGroup([
+          v3Parcels,v3ComalParcels,v3GuadalupeParcels,
+          window.v16KendallParcels,window.v16KerrParcels,
+          window.v16MedinaParcels,window.v16BlancoParcels,window.v16WebbParcels
+        ]);
 
         // H-E-B ownership — Comal + Guadalupe CAD screening.
         // Multiple legal-name patterns are included because appraisal districts may abbreviate H-E-B differently.
@@ -4870,14 +4873,6 @@
         };
 
 
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3Parcels,"PARCEL DATA — Bexar CAD");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3ComalParcels,"PARCEL DATA — Comal CAD");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3GuadalupeParcels,"PARCEL DATA — Guadalupe CAD");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16KendallParcels,"PARCEL DATA — Kendall CAD");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16MedinaParcels,"PARCEL DATA — Medina CAD");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16BlancoParcels,"PARCEL DATA — Blanco CAD");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16KerrParcels,"PARCEL DATA — Kerr CAD");
-        layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v16WebbParcels,"PARCEL DATA — Webb CAD");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v3HEBOwnedAllCounties,"LAND — H-E-B Owned Parcels");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(window.v15LandGlideSites,"LAND — Tracker Sites");
         layer_control_b250c1d6f8951aadc14a9860adeeb93d.addOverlay(v10NewHousingPlats,"GROWTH — New Housing Plats");
@@ -4908,16 +4903,7 @@
           var z=cfg.zoom||14;
           if(map.getZoom()<z || !bounds.contains(center))map.setView(target,z,{animate:false});
         }
-        document.addEventListener("change",function(e){
-          var input=e.target;
-          if(!input || input.type!=="checkbox" || !input.checked || !input.closest(".leaflet-control-layers"))return;
-          var label=input.closest("label"); if(!label)return;
-          var text=(label.textContent||"").trim();
-          Object.keys(v9CadFocus).some(function(name){
-            if(text===name){setTimeout(function(){v9ActivateCadFromToggle(name);},0);return true;}
-            return false;
-          });
-        });
+
 
         [
           [v3Parcels,'Bexar CAD'],[v3ComalParcels,'Comal CAD'],[v20GuadalupeParcelImage,'Guadalupe CAD'],
@@ -5455,6 +5441,34 @@
 
         var modeButton=document.getElementById("v7ModeToggle");
         modeButton.onclick=function(){v7applyMode(modeButton.dataset.mode==="acquisition"?"research":"acquisition");};
+        var parcelsButton=document.getElementById("v26ParcelsToggle");
+        function v26SetParcelsOn(on){
+          var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
+          if(on){
+            if(!map.hasLayer(window.v26AllCadParcels))window.v26AllCadParcels.addTo(map);
+            var center=map.getCenter(),targetZoom=null;
+            Object.keys(v9CadFocus).some(function(name){
+              var cfg=v9CadFocus[name],bounds=L.latLngBounds(cfg.bounds);
+              if(bounds.contains(center)){targetZoom=cfg.zoom||14;return true;}
+              return false;
+            });
+            if(targetZoom!==null&&map.getZoom()<targetZoom)map.setView(center,targetZoom,{animate:false});
+          }else{
+            if(map.hasLayer(window.v26AllCadParcels))map.removeLayer(window.v26AllCadParcels);
+          }
+          if(parcelsButton){
+            parcelsButton.classList.toggle("is-active",!!on);
+            parcelsButton.setAttribute("aria-pressed",on?"true":"false");
+            parcelsButton.title=on?"Hide all CAD parcel layers":"Show all CAD parcel layers";
+          }
+        }
+        if(parcelsButton){
+          parcelsButton.onclick=function(evt){
+            evt.stopPropagation();
+            v26SetParcelsOn(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v26AllCadParcels));
+          };
+        }
+
         var layersButton=document.getElementById("v17LayersToggle");
         function v18SetLayersOpen(open){
           document.body.classList.toggle("v18-layers-open",!!open);
