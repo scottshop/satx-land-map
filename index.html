@@ -305,7 +305,6 @@
   body.v19-map-moving .leaflet-cad-pane,
   body.v19-map-moving .leaflet-cadSelected-pane{
     opacity:0!important;
-    pointer-events:none!important;
   }
   .leaflet-cad-pane,
   .leaflet-cadSelected-pane{
@@ -3685,6 +3684,34 @@
           v3BexarSelection.clearLayers();
           if(map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3BexarSelection))map_33cc2c2ac68d72d2971fbb7de3650b24.removeLayer(v3BexarSelection);
         });
+
+        // V27 click fallback: if Canvas polygon hit-testing misses, identify the parcel by map coordinate.
+        function v20IdentifyBexar(latlng){
+          var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
+          if(!latlng||!map.hasLayer(window.v26AllCadParcels)||map.getZoom()<16)return;
+          L.esri.query({url:v25FastAccurateBexarUrl})
+            .intersects(latlng)
+            .fields(["OBJECTID","PropID","Geo_id","Owner_Name","Situs","legal_acre","legal_desc"])
+            .limit(1)
+            .run(function(err,fc){
+              if(err||!fc||!fc.features||!fc.features.length)return;
+              var feature=fc.features[0],p=v25BexarNormalize(feature.properties||{});
+              v3BexarSelection.clearLayers();
+              L.geoJSON(feature,{
+                pane:"cadSelected",
+                interactive:false,
+                style:function(){
+                  var s=v3BexarSelectedStyle();s.pane="cadSelected";return s;
+                }
+              }).addTo(v3BexarSelection);
+              if(!map.hasLayer(v3BexarSelection))v3BexarSelection.addTo(map);
+              L.popup({className:"bcad-popup",maxWidth:340,autoPanPadding:[28,28]})
+                .setLatLng(latlng)
+                .setContent(v3BexarCard(p))
+                .openOn(map);
+              setTimeout(function(){v12BindTrackerButtons(document);},0);
+            });
+        }
 
         // H-E-B ownership overlay — exact BCAD owner-name screen.
         // BCAD records H-E-B real-property ownership under HEB GROCERY COMPANY LP.
