@@ -452,6 +452,11 @@
             }
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("movestart zoomstart",v19CadMotionStart);
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("moveend zoomend",v19CadMotionEnd);
+            map_33cc2c2ac68d72d2971fbb7de3650b24.on("click",function(e){
+              if(!e||!e.latlng)return;
+              v20IdentifyBexar(e.latlng);
+              v20IdentifyGuadalupe(e.latlng);
+            });
 
 
             
@@ -3606,41 +3611,48 @@
         // Shared Canvas renderer keeps large CAD polygon layers smoother than thousands of SVG paths.
         var v18CadRenderer = L.canvas({padding:0.12,tolerance:5});
 
-        var v3Parcels = L.esri.featureLayer({
-          url:v3ParcelUrl+"/0",
-          pane:"cad", minZoom:14,
-          renderer:v18CadRenderer,
-          fields:["OBJECTID","Prop_id","Geo_id","Owner_name","Situs","Land_acres","Market_val","Land_hstd_val","Land_non_hstd_val","Last_Deed_Date","Ownership_Type","Legal_desc"],
-          simplifyFactor:0.55, precision:5,
-          style:v3BexarBaseStyle,
+        // V20 hybrid CAD rendering: server-rendered map image for smooth navigation,
+        // parcel attributes/geometry queried only on click.
+        var v20BexarParcelImage = L.esri.dynamicMapLayer({
+          url:v3ParcelUrl,
+          layers:[0],
+          pane:"cad",
+          minZoom:14,
+          opacity:.92,
+          f:"image",
+          format:"png32",
+          transparent:true,
           attribution:"BCAD parcels via San Antonio River Authority (Dec. 2025)"
         });
+        var v3Parcels = L.layerGroup([v20BexarParcelImage]);
 
-        v3Parcels.bindTooltip(function(layer){
-          var p=layer.feature&&layer.feature.properties||{}, acres=Number(p.Land_acres);
-          return "<div class='bcad-hover-title'>"+v3esc(p.Situs||p.Owner_name||"Bexar parcel")+"</div>"+
-                 "<div class='bcad-hover-meta'>"+v3esc(p.Owner_name||"Owner not reported")+
-                 (isFinite(acres)?" · "+acres.toFixed(2)+" ac":"")+"</div>";
-        },{sticky:true,direction:"top",opacity:.98,className:"bcad-hover"});
-
-        v3Parcels.bindPopup(function(layer){
-          v3SelectBexarParcel(layer);
-          return v3BexarCard(layer.feature&&layer.feature.properties||{});
-        },{className:"bcad-popup",maxWidth:340,autoPanPadding:[28,28]});
-
-        v3Parcels.on("mouseover",function(e){
-          var layer=e&&e.layer;
-          if(layer&&layer!==v3BexarSelectedParcel&&layer.setStyle)layer.setStyle(v3BexarHoverStyle());
-        });
-        v3Parcels.on("mouseout",function(e){
-          var layer=e&&e.layer;
-          if(layer&&layer!==v3BexarSelectedParcel&&layer.setStyle)layer.setStyle(v3BexarBaseStyle());
-        });
-        v3Parcels.on("remove",function(){
-          v3BexarSelectedParcel=null;
+        function v20HighlightParcelFeature(feature,styleFn){
           v3BexarSelection.clearLayers();
-          if(map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3BexarSelection))map_33cc2c2ac68d72d2971fbb7de3650b24.removeLayer(v3BexarSelection);
-        });
+          if(!feature)return;
+          L.geoJSON(feature,{
+            pane:"cadSelected",
+            interactive:false,
+            style:function(){var s=styleFn?styleFn():v3BexarSelectedStyle();s.pane="cadSelected";return s;}
+          }).addTo(v3BexarSelection);
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3BexarSelection))v3BexarSelection.addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
+        }
+
+        function v20IdentifyBexar(latlng){
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3Parcels)||map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<14)return;
+          L.esri.identifyFeatures({url:v3ParcelUrl})
+            .on(map_33cc2c2ac68d72d2971fbb7de3650b24)
+            .at(latlng)
+            .layers("visible:0")
+            .returnGeometry(true)
+            .run(function(err,fc){
+              if(err||!fc||!fc.features||!fc.features.length)return;
+              var feature=fc.features[0],p=feature.properties||{};
+              v20HighlightParcelFeature(feature,v3BexarSelectedStyle);
+              L.popup({className:"bcad-popup",maxWidth:340,autoPanPadding:[28,28]})
+                .setLatLng(latlng).setContent(v3BexarCard(p)).openOn(map_33cc2c2ac68d72d2971fbb7de3650b24);
+              setTimeout(function(){v12BindTrackerButtons(document);},0);
+            });
+        }
 
         // H-E-B ownership overlay — exact BCAD owner-name screen.
         // BCAD records H-E-B real-property ownership under HEB GROCERY COMPANY LP.
@@ -3696,24 +3708,35 @@
         // Public GIS copies are less current than the live Guadalupe CAD property-search portal,
         // so the popup explicitly identifies this as a screening layer.
         var v3GuadalupeCadUrl = "https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer/83";
-        var v3GuadalupeParcels = L.esri.featureLayer({
-          pane:"cad", minZoom:14,
-          url:v3GuadalupeCadUrl,
-          renderer:v18CadRenderer,
-          fields:["OBJECTID","PROP_ID","GEO_ID","OWNER_NAME","LEGAL_AREA","LGL_AREA_UNIT","SITUS_ADDR","MKT_VALUE"],
-          simplifyFactor:0.60,
-          precision:5,
-          style:function(){
-            return {color:"#00a6a6",weight:1.5,opacity:.85,fillColor:"#00a6a6",fillOpacity:.035};
-          },
+        var v20GuadalupeParcelImage = L.esri.dynamicMapLayer({
+          url:"https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer",
+          layers:[83],
+          pane:"cad",
+          minZoom:14,
+          opacity:.92,
+          format:"png32",
+          transparent:true,
           attribution:"Guadalupe CAD parcel data via public ArcGIS service"
         });
-        v3GuadalupeParcels.bindTooltip(function(layer){
-          var p=layer.feature&&layer.feature.properties||{};
-          var ac=Number(p.LEGAL_AREA);
-          return "Guadalupe CAD"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
-        },{sticky:true});
-        v3GuadalupeParcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Guadalupe",false);});
+        var v3GuadalupeParcels = L.layerGroup([v20GuadalupeParcelImage]);
+
+        function v20IdentifyGuadalupe(latlng){
+          if(!map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(v3GuadalupeParcels)||map_33cc2c2ac68d72d2971fbb7de3650b24.getZoom()<14)return;
+          L.esri.identifyFeatures({url:"https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer"})
+            .on(map_33cc2c2ac68d72d2971fbb7de3650b24)
+            .at(latlng)
+            .layers("visible:83")
+            .returnGeometry(true)
+            .run(function(err,fc){
+              if(err||!fc||!fc.features||!fc.features.length)return;
+              var feature=fc.features[0],p=feature.properties||{};
+              v20HighlightParcelFeature(feature,function(){return {color:"#00d7d7",weight:4,opacity:1,fillColor:"#00a6a6",fillOpacity:.12,lineJoin:"round"};});
+              L.popup({maxWidth:340}).setLatLng(latlng)
+                .setContent(parcelPopup(p,"Guadalupe",false))
+                .openOn(map_33cc2c2ac68d72d2971fbb7de3650b24);
+              setTimeout(function(){v12BindTrackerButtons(document);},0);
+            });
+        }
 
         function v18BindCadLoadState(layer,label){
           if(!layer)return;
@@ -3730,9 +3753,9 @@
             document.body.removeAttribute("data-cad-loading");
           });
         }
-        v18BindCadLoadState(v3Parcels,"Bexar");
+        v18BindCadLoadState(v20BexarParcelImage,"Bexar");
         v18BindCadLoadState(v3ComalParcels,"Comal");
-        v18BindCadLoadState(v3GuadalupeParcels,"Guadalupe");
+        v18BindCadLoadState(v20GuadalupeParcelImage,"Guadalupe");
 
         // ---- V16 TRACKER COUNTY CAD COVERAGE ----
         // Every Texas county currently represented in the Land Deal Tracker has parcel outlines.
@@ -4860,7 +4883,7 @@
         });
 
         [
-          [v3Parcels,'Bexar CAD'],[v3ComalParcels,'Comal CAD'],[v3GuadalupeParcels,'Guadalupe CAD'],
+          [v20BexarParcelImage,'Bexar CAD'],[v3ComalParcels,'Comal CAD'],[v20GuadalupeParcelImage,'Guadalupe CAD'],
           [window.v16KendallParcels,'Kendall CAD'],[window.v16MedinaParcels,'Medina CAD'],[window.v16BlancoParcels,'Blanco CAD'],
           [window.v16KerrParcels,'Kerr CAD'],[window.v16WebbParcels,'Webb CAD'],
           [v3HEBOwnedParcels,'H-E-B Bexar'],[v3HEBComalParcels,'H-E-B Comal'],[v3HEBGuadalupeParcels,'H-E-B Guadalupe'],
