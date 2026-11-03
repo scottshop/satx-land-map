@@ -206,23 +206,118 @@
 .bcad-hover-meta{font-size:9px;color:#6b7280;margin-top:2px}
 @media(max-width:700px){#v7Header{right:10px}.leaflet-control-layers-expanded{max-height:calc(100dvh - 160px)}.v7Popup{width:250px}#v6Filters select{min-width:0}#v6TopPanel{max-height:calc(100dvh - 120px)!important}}
 </style>
+<style id="v18-clean-ui">
+  #v7Header{
+    top:12px;left:54px;
+    background:rgba(15,23,42,.90);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:10px;
+    padding:8px 11px 7px;
+    box-shadow:0 8px 24px rgba(0,0,0,.22);
+    backdrop-filter:blur(10px);
+  }
+  #v7Header .v7Title{font-size:14px;font-weight:900;letter-spacing:.1px}
+  #v7Header .v7Sub{font-size:9px;color:#cbd5e1;margin-top:2px;letter-spacing:.15px}
+  #v17TopTools{
+    position:fixed;top:12px;right:12px;z-index:11000;
+    display:flex;gap:6px;align-items:center;
+    padding:5px;
+    background:rgba(15,23,42,.88);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:11px;
+    box-shadow:0 8px 24px rgba(0,0,0,.22);
+    backdrop-filter:blur(10px);
+  }
+  #v17TopTools button,#v17TopTools a{
+    position:static!important;
+    min-height:32px;
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    border-radius:7px;padding:7px 10px;
+    font:800 10px/1 Arial;letter-spacing:.2px;
+    text-decoration:none;cursor:pointer;box-shadow:none;
+    white-space:nowrap;
+  }
+  #v6TopToggle{background:#FFD400;color:#111827;border:1px solid #FFD400}
+  #v17LayersToggle{background:#fff;color:#111827;border:1px solid rgba(255,255,255,.9)}
+  #v17TrackerLink{
+    background:#111827;color:#fff;border:1px solid rgba(255,255,255,.22);
+  }
+  #v17TrackerLink:hover,#v17LayersToggle:hover{background:#f8fafc;color:#111827}
+  #v17TrackerLink .v17Dot{
+    width:7px;height:7px;border-radius:50%;
+    background:#ff2bd6;box-shadow:0 0 0 2px rgba(255,43,214,.18)
+  }
+  #v7ModeToggle{display:none!important}
+
+  #v6TopPanel{
+    top:62px;right:12px;width:390px;
+    max-height:calc(100vh - 76px);
+    border:1px solid rgba(15,23,42,.16);
+    border-radius:12px;
+    box-shadow:0 18px 48px rgba(0,0,0,.30);
+  }
+
+  /* Leaflet layer control becomes a deliberate drawer opened from the top navigation. */
+  .leaflet-top.leaflet-right{top:0!important;right:0!important}
+  .leaflet-control-layers{
+    display:none!important;
+    position:fixed!important;
+    top:62px!important;right:12px!important;
+    margin:0!important;
+    width:278px!important;
+    max-height:calc(100vh - 76px)!important;
+    overflow:auto!important;
+    background:rgba(255,255,255,.98)!important;
+    border:1px solid rgba(15,23,42,.16)!important;
+    border-radius:12px!important;
+    box-shadow:0 18px 48px rgba(0,0,0,.30)!important;
+  }
+  body.v18-layers-open .leaflet-control-layers{display:block!important}
+  body.v18-layers-open .leaflet-control-layers-list{display:block!important}
+  body.v18-layers-open .leaflet-control-layers-toggle{display:none!important}
+  .leaflet-control-layers-expanded{
+    padding:10px 11px!important;
+    width:278px!important;
+    min-width:278px!important;
+    max-height:none!important;
+  }
+
+  .leaflet-control-zoom,.leaflet-control-fullscreen,.leaflet-control-measure{
+    box-shadow:0 5px 14px rgba(0,0,0,.18)!important
+  }
+
+  @media(max-width:700px){
+    #v7Header{top:8px;left:48px;right:8px;padding:7px 9px}
+    #v7Header .v7Title{font-size:12px}
+    #v7Header .v7Sub{display:none}
+    #v17TopTools{
+      top:50px;right:8px;left:8px;justify-content:flex-end;
+      padding:4px;border-radius:9px
+    }
+    #v17TopTools button,#v17TopTools a{min-height:30px;padding:6px 8px;font-size:9px}
+    #v6TopPanel{top:92px;left:8px!important;right:8px!important;width:auto!important;max-height:calc(100dvh - 104px)!important}
+    .leaflet-control-layers{top:92px!important;left:8px!important;right:8px!important;width:auto!important;max-height:calc(100dvh - 104px)!important}
+    .leaflet-control-layers-expanded{width:auto!important;min-width:0!important}
+  }
+</style>
 <script src="data/tracker-config.js"></script>
 </head>
 <body>
     
     
 <div id="v7Header">
-  <div class="v7Title">San Antonio Land Acquisition Map</div>
-  <div class="v7Sub">Bright yellow = PRIORITY · Every highlighted tract requires 100+ ft qualified commercial frontage</div>
+  <div class="v7Title">San Antonio Land Acquisition</div>
+  <div class="v7Sub">Priority parcels · Growth · Infrastructure · Tracker</div>
 </div>
 
 <div id="v17TopTools" aria-label="Map tools">
-  <button id="v7ModeToggle" data-mode="acquisition">ACQUISITION</button>
-  <button id="v6TopToggle">LAND FINDER</button>
+  <button id="v7ModeToggle" data-mode="acquisition" aria-hidden="true" tabindex="-1">ACQUISITION</button>
+  <button id="v6TopToggle" type="button">LAND FINDER</button>
+  <button id="v17LayersToggle" type="button" aria-expanded="false">LAYERS</button>
+  <a id="v17TrackerLink" href="https://docs.google.com/spreadsheets/d/1BUdhXHCmsmaTCWZI5mYTmlabQ7rePN7acsLsbLLZJzI/edit" target="_blank" rel="noopener noreferrer" title="Open Land Deal Tracker">
+    <span class="v17Dot" aria-hidden="true"></span><span>TRACKER ↗</span>
+  </a>
 </div>
-<a id="v17TrackerLink" href="https://docs.google.com/spreadsheets/d/1BUdhXHCmsmaTCWZI5mYTmlabQ7rePN7acsLsbLLZJzI/edit" target="_blank" rel="noopener noreferrer" title="Open Land Deal Tracker">
-  <span class="v17Dot" aria-hidden="true"></span><span>OPEN TRACKER ↗</span>
-</a>
 <div id="v6TopPanel">
   <div id="v6TopHead">
     <b>LAND FINDER</b>
@@ -5233,6 +5328,29 @@
 
         var modeButton=document.getElementById("v7ModeToggle");
         modeButton.onclick=function(){v7applyMode(modeButton.dataset.mode==="acquisition"?"research":"acquisition");};
+        var layersButton=document.getElementById("v17LayersToggle");
+        function v18SetLayersOpen(open){
+          document.body.classList.toggle("v18-layers-open",!!open);
+          if(layersButton)layersButton.setAttribute("aria-expanded",open?"true":"false");
+          var control=document.querySelector(".leaflet-control-layers");
+          if(control)control.classList.toggle("leaflet-control-layers-expanded",!!open);
+        }
+        if(layersButton){
+          layersButton.onclick=function(evt){
+            evt.stopPropagation();
+            v18SetLayersOpen(!document.body.classList.contains("v18-layers-open"));
+          };
+        }
+        document.addEventListener("click",function(evt){
+          if(!document.body.classList.contains("v18-layers-open"))return;
+          var control=document.querySelector(".leaflet-control-layers");
+          if((control&&control.contains(evt.target))||(layersButton&&layersButton.contains(evt.target)))return;
+          v18SetLayersOpen(false);
+        });
+        document.addEventListener("keydown",function(evt){
+          if(evt.key==="Escape")v18SetLayersOpen(false);
+        });
+
         v7applyMode("acquisition");
 </script>
 </html>
