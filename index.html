@@ -3544,13 +3544,13 @@
 
         // Bexar parcel polygons — LandGlide-inspired interaction using authoritative BCAD/SARA data.
         function v3BexarBaseStyle(){
-          return {color:"#f5ef9a",weight:1.35,opacity:.94,fillColor:"#fff7b2",fillOpacity:.018,lineJoin:"round"};
+          return {color:"#FFD400",weight:1.8,opacity:.95,fillColor:"#FFD400",fillOpacity:.03,lineJoin:"round"};
         }
         function v3BexarHoverStyle(){
-          return {color:"#fff7b2",weight:2.3,opacity:1,fillColor:"#fff7b2",fillOpacity:.08,lineJoin:"round"};
+          return {color:"#FFF176",weight:2.8,opacity:1,fillColor:"#FFD400",fillOpacity:.08,lineJoin:"round"};
         }
         function v3BexarSelectedStyle(){
-          return {color:"#ff645c",weight:4,opacity:1,fillColor:"#ff645c",fillOpacity:.13,lineJoin:"round"};
+          return {color:"#FFE44D",weight:4,opacity:1,fillColor:"#FFD400",fillOpacity:.10,lineJoin:"round"};
         }
         function v3BexarDate(v){
           if(v==null||String(v).trim()==="") return "Not reported";
@@ -3712,7 +3712,7 @@
           simplifyFactor:0.60,
           precision:5,
           style:function(){
-            return {color:"#8e44ad",weight:1.5,opacity:.85,fillColor:"#8e44ad",fillOpacity:.035};
+            return {color:"#FFD400",weight:1.8,opacity:.95,fillColor:"#FFD400",fillOpacity:.03};
           },
           attribution:"Comal CAD parcel data — public ArcGIS service"
         });
@@ -3749,7 +3749,7 @@
             .run(function(err,fc){
               if(err||!fc||!fc.features||!fc.features.length)return;
               var feature=fc.features[0],p=feature.properties||{};
-              v20HighlightParcelFeature(feature,function(){return {color:"#00d7d7",weight:4,opacity:1,fillColor:"#00a6a6",fillOpacity:.12,lineJoin:"round"};});
+              v20HighlightParcelFeature(feature,function(){return {color:"#FFE44D",weight:4,opacity:1,fillColor:"#FFD400",fillOpacity:.10,lineJoin:"round"};});
               L.popup({maxWidth:340}).setLatLng(latlng)
                 .setContent(parcelPopup(p,"Guadalupe",false))
                 .openOn(map_33cc2c2ac68d72d2971fbb7de3650b24);
@@ -3787,10 +3787,10 @@
           return "";
         }
         function v16ParcelStyle(){
-          return {color:"#f5ef9a",weight:1.45,opacity:.94,fillColor:"#fff7b2",fillOpacity:.018,lineJoin:"round"};
+          return {color:"#FFD400",weight:1.8,opacity:.95,fillColor:"#FFD400",fillOpacity:.03,lineJoin:"round"};
         }
         function v16ParcelHover(){
-          return {color:"#fff7b2",weight:2.5,opacity:1,fillColor:"#fff7b2",fillOpacity:.08,lineJoin:"round"};
+          return {color:"#FFF176",weight:2.8,opacity:1,fillColor:"#FFD400",fillOpacity:.08,lineJoin:"round"};
         }
         function v16TrackerParcelPopup(p,cfg){
           var id=v16First(p,cfg.idFields||[]);
