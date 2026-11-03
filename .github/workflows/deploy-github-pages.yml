@@ -45,7 +45,7 @@ jobs:
           echo "Checking $URL"
           for i in $(seq 1 18); do
             if curl -fsSL -H 'Cache-Control: no-cache' "$URL?verify=${GITHUB_SHA}-$i" -o /tmp/pages.html; then
-              if grep -q 'v8ActivateSatellite' /tmp/pages.html && grep -q 'production trigger: 2026-09-30 cleanup merge' /tmp/pages.html; then
+              if grep -q 'v8ActivateSatellite' /tmp/pages.html && grep -q 'v26ParcelsToggle' /tmp/pages.html && grep -q 'v25FastAccurateBexarUrl' /tmp/pages.html; then
                 echo "GitHub Pages is serving the current map."
                 exit 0
               fi
