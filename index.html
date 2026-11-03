@@ -3332,33 +3332,56 @@
           try{localStorage.removeItem("landTrackerKey");}catch(e){}
           window.alert("Tracker key cleared. The next Save to Tracker click will ask for it again.");
         }
+        function v12TrackerHasParcel(data){
+          var county=String((data&&data.county)||"").trim().toLowerCase();
+          var parcel=String((data&&data.parcelId)||"").trim();
+          return Array.isArray(window.v15TrackerData)&&window.v15TrackerData.some(function(r){
+            return String(r.county||"").trim().toLowerCase()===county && String(r.parcelId||"").trim()===parcel;
+          });
+        }
+        function v12ConfirmTrackerSave(button,data){
+          var started=Date.now(), checks=0;
+          function finish(ok,label){
+            if(ok){
+              button.textContent=label||"Saved to Tracker";
+              button.classList.add("is-sent");
+              button.disabled=true;
+            }else{
+              button.textContent="Save failed — retry";
+              button.classList.remove("is-sent");
+              button.disabled=false;
+            }
+          }
+          function check(){
+            if(v12TrackerHasParcel(data)){finish(true,"Saved to Tracker");return;}
+            if(Date.now()-started>15000){finish(false);return;}
+            checks++;
+            try{v15RefreshTrackerSites(false);}catch(e){}
+            setTimeout(check,checks<2?2200:3200);
+          }
+          setTimeout(check,1200);
+        }
         function v12SaveToTracker(button){
           if(!button||button.disabled)return;
           var endpoint=v12TrackerEndpoint();
           if(!endpoint){button.textContent="Tracker not connected";return;}
-          var key=v12TrackerKey();
-          if(!key){button.textContent="Tracker key required";return;}
           var data={};
           try{data=JSON.parse(decodeURIComponent(button.getAttribute("data-tracker-payload")||""));}catch(e){
             button.textContent="Save unavailable";return;
           }
           if(!data.parcelId||!data.county){button.textContent="Parcel ID missing";return;}
+          if(v12TrackerHasParcel(data)){
+            button.textContent="Already in Tracker";
+            button.classList.add("is-sent");
+            button.disabled=true;
+            return;
+          }
           var body=new URLSearchParams();
-          body.set("key",key);
           Object.keys(data).forEach(function(k){body.set(k,String(data[k]==null?"":data[k]));});
           button.disabled=true;
           button.textContent="Saving…";
           fetch(endpoint,{method:"POST",mode:"no-cors",body:body})
-            .then(function(){
-              button.textContent="Sent — check tracker";
-              button.classList.add("is-sent");
-              button.disabled=true;
-              setTimeout(function(){
-                try{
-                  if(window.v15TrackerSites&&map_33cc2c2ac68d72d2971fbb7de3650b24.hasLayer(window.v15TrackerSites))v15RefreshTrackerSites(false);
-                }catch(e){}
-              },2500);
-            })
+            .then(function(){v12ConfirmTrackerSave(button,data);})
             .catch(function(){
               button.textContent="Save failed — retry";
               button.disabled=false;
@@ -3389,7 +3412,7 @@
             ['Acres',acres==null?'Not reported':Number(acres).toFixed(2)],['Property ID',bexar?p.Prop_id:p.PROP_ID],
             ['Situs',p.Situs||p.SITUS_ADDR],['Value',v3money(bexar?p.Market_val:comal?p.APPRAISED:p.MKT_VALUE)]
           ],'Snapshot: '+date+'. Confirm current ownership and value with CAD.',p.CADLINK,
-            "<div class='v7PopupActions'>"+v12TrackerButton(v12ParcelTrackerData(p,county))+"<button type='button' class='reset-tracker-key'>Reset Tracker Key</button></div>");
+            "<div class='v7PopupActions'>"+v12TrackerButton(v12ParcelTrackerData(p,county))+"</div>");
         }
 
         function v3growth(now,old){
@@ -3440,7 +3463,6 @@
                 "<a href='https://www.google.com/maps/search/?api=1&query="+mapQuery+"' target='_blank' rel='noopener'>Google Maps</a>"+
                 "<button type='button' class='copy-property-id' data-property-id='"+v3esc(pid)+"'>Copy Property ID</button>"+
                 v12TrackerButton(v12ParcelTrackerData(p,"Bexar"))+
-                "<button type='button' class='reset-tracker-key'>Reset Tracker Key</button>"+
                 (cadLink?"<a href='"+v3esc(cadLink)+"' target='_blank' rel='noopener'>CAD Record</a>":"")+
               "</div>"+
               "<div class='bcad-note'>BCAD parcel screening data via SARA, December 2025 snapshot. Parcel lines are reference geometry; verify current ownership, legal description, survey and boundary information before acquisition.</div>"+
@@ -4907,7 +4929,6 @@
               "<a href='https://www.google.com/maps/search/?api=1&query="+mapQuery+"' target='_blank'>Google Maps</a>"+
               "<button type='button' class='copy-property-id' data-property-id='"+v6h(p.prop_id)+"'>Copy Property ID</button>"+
               v12TrackerButton(v12OpportunityTrackerData(p))+
-              "<button type='button' class='reset-tracker-key'>Reset Tracker Key</button>"+
             "</div>"+
             "<div style='font-size:9px;color:#777;margin-top:7px'>Opportunity snapshot: "+v6h(window.parcelSnapshotDate)+". "+v6h(geom)+". "+v6h(p.verification_notes||"Verify title, survey, access, flood and utility capacity.")+"</div>"+
           "</div>";
@@ -4923,11 +4944,6 @@
             };
           });
           v12BindTrackerButtons(root);
-          Array.prototype.forEach.call(root.querySelectorAll(".reset-tracker-key"),function(button){
-            if(button.dataset.resetBound==="1")return;
-            button.dataset.resetBound="1";
-            button.addEventListener("click",v12ResetTrackerKey);
-          });
         });
 
         function v6style(feature){

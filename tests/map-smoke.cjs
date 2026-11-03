@@ -93,6 +93,9 @@ const server = process.env.MAP_URL ? null : http.createServer((req, res) => {
     assert.equal(await page.evaluate(()=>typeof v15RefreshTrackerSites),'function','Live tracker refresh function should exist');
     assert.equal(await page.evaluate(()=>typeof v15ApplyLiveTrackerPayload),'function','Live tracker payload applier should exist');
     assert.equal(await page.evaluate(()=>String(v15RefreshTrackerSites).includes('landTrackerKey')),false,'Read-only tracker sync should not require the private tracker key');
+    assert.equal(await page.evaluate(()=>String(v12SaveToTracker).includes('v12TrackerKey()')),false,'Save to Tracker should not depend on a browser key');
+    assert.equal(await page.evaluate(()=>String(v12SaveToTracker).includes('v12ConfirmTrackerSave')),true,'Save to Tracker should verify the live tracker feed before reporting success');
+    assert.equal(await page.locator('.reset-tracker-key').count(),0,'Obsolete tracker-key reset controls should be removed');
 
     const livePatch=await page.evaluate(()=>{
       const payload=window.v15TrackerData.map(r=>Object.assign({},r));
