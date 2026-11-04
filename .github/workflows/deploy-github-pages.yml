@@ -31,6 +31,9 @@ jobs:
       - name: Check parcel detail accordions
         run: node tests/parcel-accordion.cjs
 
+      - name: Check housing development popup priority
+        run: node tests/housing-click-regression.cjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
