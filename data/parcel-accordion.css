@@ -47,3 +47,18 @@
  #lgDetails .lgDetailRow{grid-template-columns:minmax(100px,1fr) minmax(0,1.2fr);column-gap:8px}
  #lgDetails .lgDetailRow span,#lgDetails .lgDetailRow strong{font-size:12px}
 }
+#lgDetails .lgHeaderAcres{
+ display:flex;align-items:baseline;gap:7px;max-width:max-content;
+ margin:12px 0 2px;padding:9px 12px;border-radius:9px;
+ background:#eef7fc;border:1px solid #cfe5f2;color:#12658e
+}
+#lgDetails .lgHeaderAcres strong{font-size:23px;font-weight:850;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+#lgDetails .lgHeaderAcres span{font-size:10px;font-weight:850;letter-spacing:1.15px}
+#lgDetails .bcad-card-head .bcad-chips{margin-top:8px}
+#lgDetails .lgSectionEmpty{
+ margin:0;padding:2px 0 9px;color:#778596;font-size:11px;line-height:1.5
+}
+#lgDetails .lgSectionFootnote{
+ color:#6d8090;font-size:10px;line-height:1.5;padding:9px 0 1px;
+ margin:10px 0 0;border-top:1px solid #ecf0f2
+}
