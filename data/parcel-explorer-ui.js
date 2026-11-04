@@ -25,6 +25,12 @@
       '<input id="lgQuickSearch" type="search" autocomplete="off" aria-label="Search owner, address or parcel ID" placeholder="Owner, address, or parcel ID"/>'+
       '<button type="button" id="lgSearchSubmit" aria-label="Search parcels">'+svg(icon.search)+'</button>';
     document.body.appendChild(search);
+    var searchResults=document.createElement("div");
+    searchResults.id="lgSearchResults";
+    searchResults.setAttribute("role","listbox");
+    searchResults.setAttribute("aria-label","Parcel search results");
+    searchResults.hidden=true;
+    document.body.appendChild(searchResults);
     var drawer=document.createElement("aside");
     drawer.id="lgDrawer";
     drawer.setAttribute("aria-label","Selected parcel details");
@@ -47,7 +53,7 @@
     document.body.appendChild(rail);
     // Keep controls isolated so clicking them never identifies a map parcel.
     if(window.L && L.DomEvent){
-      [search,drawer,rail].forEach(function(el){
+      [search,searchResults,drawer,rail].forEach(function(el){
         L.DomEvent.disableClickPropagation(el);
         L.DomEvent.disableScrollPropagation(el);
       });
@@ -58,13 +64,52 @@
       if(!panel||!toggle)return;
       if(getComputedStyle(panel).display==="none")toggle.click();
     }
+    function renderQuickResults(){
+      var status=document.getElementById("v9SearchStatus");
+      var matches=window.v9ParcelSearchResults||[];
+      searchResults.innerHTML="";
+      var heading=document.createElement("div");
+      heading.className="lgResultHeading";
+      heading.textContent=(status&&status.textContent)||"Search results";
+      searchResults.appendChild(heading);
+      matches.slice(0,16).forEach(function(rec){
+        var p=rec.feature&&rec.feature.properties||{},cfg=rec.cfg||{};
+        var label=typeof v9SearchValue==="function"?v9SearchValue(p,cfg,"situs"):"";
+        var owner=typeof v9SearchValue==="function"?v9SearchValue(p,cfg,"owner"):"";
+        var id=typeof v9SearchValue==="function"?v9SearchValue(p,cfg,"id"):"";
+        var button=document.createElement("button");
+        button.type="button";
+        button.className="lgResult";
+        var title=document.createElement("strong");
+        title.textContent=label||cfg.county+" parcel "+id;
+        var secondary=document.createElement("small");
+        secondary.textContent=[cfg.county,"ID "+id,owner].filter(Boolean).join(" · ");
+        button.appendChild(title);button.appendChild(secondary);
+        button.addEventListener("click",function(){
+          searchResults.hidden=true;
+          if(!rec.layer)return;
+          try{
+            map.fitBounds(rec.layer.getBounds().pad(.35),{maxZoom:17});
+            rec.layer.openPopup();
+          }catch(e){}
+        });
+        searchResults.appendChild(button);
+      });
+      searchResults.hidden=false;
+    }
+    var list=document.getElementById("v9SearchResults");
+    if(list && typeof MutationObserver!=="undefined"){
+      new MutationObserver(renderQuickResults).observe(list,{childList:true});
+    }
     function doSearch(){
       var v=search.querySelector("#lgQuickSearch").value.trim();
       var input=document.getElementById("v9ParcelSearch");
       if(!input)return;
+      if(!v){showFinder();return;}
       input.value=v;
-      showFinder();
-      // The underlying Land Finder already handles all eight counties.
+      searchResults.innerHTML='<div class="lgResultHeading">Searching county parcels…</div>';
+      searchResults.hidden=false;
+      // The underlying Land Finder query is reused unchanged for all eight counties.
       var btn=document.getElementById("v9SearchBtn");
       if(btn)btn.click();
     }
@@ -72,6 +117,10 @@
     search.querySelector("#lgSearchSubmit").addEventListener("click",doSearch);
     search.querySelector("#lgQuickSearch").addEventListener("keydown",function(e){
       if(e.key==="Enter"){e.preventDefault();doSearch();}
+      if(e.key==="Escape")searchResults.hidden=true;
+    });
+    document.addEventListener("click",function(ev){
+      if(!search.contains(ev.target)&&!searchResults.contains(ev.target))searchResults.hidden=true;
     });
     rail.querySelector("#lgZoomIn").onclick=function(){map.zoomIn();};
     rail.querySelector("#lgZoomOut").onclick=function(){map.zoomOut();};
@@ -125,10 +174,11 @@
       // Only intercept parcel and tracker details: non-parcel map alerts
       // retain native Leaflet popups.
       var isParcel=!!(old.querySelector(".bcad-card")||
-        old.querySelector(".popup-facts")||
-        old.querySelector(".v7Popup")&&old.textContent.indexOf("PARCEL")>=0);
+        old.querySelector(".save-to-tracker")||
+        old.querySelector(".popup-facts")&&/CAD parcel|TRACKER SITE/i.test(old.textContent));
       if(!isParcel)return;
       var clone=old.cloneNode(true);
+      searchResults.hidden=true;
       details.innerHTML="";
       while(clone.firstChild)details.appendChild(clone.firstChild);
       drawer.classList.add("lgOpen");
