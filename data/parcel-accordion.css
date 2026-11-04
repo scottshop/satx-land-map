@@ -1,0 +1,49 @@
+/* CAD parcel property details: clean collapsible sections matching the user's reference.
+   All values are populated from county GIS; no LandGlide data is copied. */
+#lgDetails .lgAccordionGroup{margin:0;border-top:1px solid #ecf0f3;background:#fff}
+#lgDetails .lgAccordionSection{border-bottom:1px solid #e8edf2;background:#fff}
+#lgDetails .lgAccordionHeader{
+ width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+ padding:19px 17px;background:#fff;color:#111827;border:0;
+ font:750 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+ text-align:left;cursor:pointer
+}
+#lgDetails .lgAccordionHeader:hover,#lgDetails .lgAccordionHeader:focus-visible{background:#f8fafc}
+#lgDetails .lgAccordionHeader:focus-visible{outline:2px solid #548eff;outline-offset:-2px}
+#lgDetails .lgChevron{
+ flex:none;display:inline-flex;align-items:center;justify-content:center;
+ width:23px;height:23px;border:1px solid #d9e0ea;border-radius:5px;
+ color:#4f78e8;font:700 17px Arial;transition:transform .15s ease;
+ background:#fff
+}
+#lgDetails .lgAccordionSection:not(.open) .lgChevron{transform:rotate(180deg)}
+#lgDetails .lgAccordionSection:not(.open) .lgAccordionBody{display:none}
+#lgDetails .lgAccordionBody{padding:0 17px 19px}
+#lgDetails .lgDetailRow{
+ display:grid;grid-template-columns:minmax(100px,1fr) minmax(0,1.18fr);
+ column-gap:16px;row-gap:2px;align-items:start;padding:5px 0;
+ font:12px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif
+}
+#lgDetails .lgDetailRow span{color:#354355;min-width:0;font-size:12px;overflow-wrap:anywhere}
+#lgDetails .lgDetailRow strong{
+ min-width:0;text-align:right;color:#141b25;font-weight:700;font-size:12px;overflow-wrap:anywhere
+}
+#lgDetails .lgDetailRow strong.lgUnknown{color:#8b97a5;font-weight:500}
+#lgDetails .bcad-card-body{padding:0!important}
+#lgDetails .bcad-actions{padding:13px 16px 14px;margin:0!important}
+#lgDetails .bcad-note{margin:0;padding:12px 16px 17px}
+#lgDetails .v7Popup{padding:0!important}
+#lgDetails .v7Popup > b{display:block;font-size:10px;color:#567384;letter-spacing:.6px;text-transform:uppercase;padding:14px 17px 0}
+#lgDetails .lgPropSummary{padding:15px 17px 13px;border-bottom:1px solid #e8edf2}
+#lgDetails .lgPropPrimary{font-size:15px;font-weight:750;color:#171e26;line-height:1.35}
+#lgDetails .lgPropMetaLabel{font-size:11px;color:#83909f;margin:2px 0 10px}
+#lgDetails .lgPropMetaLabel:last-child{margin-bottom:0}
+#lgDetails .v7PopupActions{margin:0;padding:14px 16px}
+#lgDetails .popup-source{margin:0;padding:12px 17px 17px}
+#lgDetails .lg-detail-data{display:none!important}
+@media(max-width:700px){
+ #lgDetails .lgAccordionHeader{padding:16px}
+ #lgDetails .lgAccordionBody{padding:0 16px 17px}
+ #lgDetails .lgDetailRow{grid-template-columns:minmax(100px,1fr) minmax(0,1.2fr);column-gap:8px}
+ #lgDetails .lgDetailRow span,#lgDetails .lgDetailRow strong{font-size:12px}
+}
