@@ -268,11 +268,12 @@
       var full=fc.features[0].properties||{};
       if(prop&&String(full.Prop_id)!==String(prop))return;
       if(!prop&&geo&&String(full.Geo_id||"").trim()!==geo)return;
-      var combined=Object.assign({},initial,full);
+      var combined=Object.assign({},wrapper.__lgFullAttrs||initial,full);
       // Preserve the more detailed hosted situs (CITY, TX ZIP) when the
       // older SARA record only supplies a street name.
-      if(String(initial.Situs||"").split(",").length>=3 &&
-         String(full.Situs||"").split(",").length<3)combined.Situs=initial.Situs;
+      var existingSitus=String((wrapper.__lgFullAttrs||initial).Situs||"");
+      if(existingSitus.split(",").length>=3 &&
+         String(full.Situs||"").split(",").length<3)combined.Situs=existingSitus;
       wrapper.__lgFullAttrs=combined;
       render(wrapper,combined,"Bexar");
       var bcad=wrapper.querySelector(".bcad-card");
@@ -302,6 +303,33 @@
         }catch(e){}
       }
     });
+  }
+  function supplementHostedBexar(wrapper,initial,id){
+    if(!window.L||!L.esri||!window.v25FastAccurateBexarUrl)return;
+    // Fast polygon tiles deliberately omit mailing/tax attributes. Supplement
+    // missing GIS area and full site address only on an individually selected parcel.
+    var initialSitus=String(initial.Situs||"");
+    if(pick(initial,["ParcelArea"])&&initialSitus.split(",").length>=3)return;
+    var numeric=pick(initial,["Prop_id","PropID"]),geo=pick(initial,["Geo_id"]);
+    if(!/^[1-9]\d*$/.test(numeric)&&!/^[A-Za-z0-9-]+$/.test(geo))return;
+    var where=/^[1-9]\d*$/.test(numeric)?"PropID = "+Number(numeric):
+      "Geo_id = '"+geo.replace(/'/g,"''")+"'";
+    L.esri.query({url:v25FastAccurateBexarUrl}).where(where)
+      .fields(["PropID","Geo_id","Situs","ParcelArea","LandSqft","legal_desc",
+        "addr_line1","addr_line2","addr_line3","addr_city","addr_state","zip"])
+      .returnGeometry(false).limit(1).run(function(err,fc){
+        if(err||!fc||!fc.features||!fc.features.length||!wrapper.isConnected)return;
+        if(wrapper.dataset.lgSelected!==id)return;
+        var hosted=fc.features[0].properties||{};
+        if(numeric&&String(hosted.PropID)!==String(numeric))return;
+        if(!numeric&&geo&&String(hosted.Geo_id||"").trim()!==geo)return;
+        var combined=Object.assign({},wrapper.__lgFullAttrs||initial,hosted);
+        // Prioritize the more complete comma-separated address when present.
+        var current=String((wrapper.__lgFullAttrs||initial).Situs||"");
+        if(current.split(",").length>=3 && String(hosted.Situs||"").split(",").length<3)combined.Situs=current;
+        wrapper.__lgFullAttrs=combined;
+        render(wrapper,combined,"Bexar");
+      });
   }
   function supplementSanAntonioZoning(wrapper,latlng,id){
     if(!latlng||typeof latlng.lat!=="number"||typeof latlng.lng!=="number")return;
@@ -334,6 +362,7 @@
     render(root,attrs,county);
     if(county==="Bexar"){
       supplementBexar(root,attrs,id);
+      supplementHostedBexar(root,attrs,id);
       supplementSanAntonioZoning(root,selectedPoint,id);
     }
   };
