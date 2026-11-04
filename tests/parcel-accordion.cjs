@@ -12,14 +12,14 @@ const wired=fs.readFileSync(path.join(root,"data/parcel-explorer-ui.js"),"utf8")
 assert(index.includes('src="data/parcel-accordion.js"'));
 assert(index.includes('href="data/parcel-accordion.css"'));
 assert(index.includes("function v32ParcelDetailData(p,county)"));
-assert(wired.includes("window.v32RenderParcelAccordion(details)"));
+assert(wired.includes("window.v32RenderParcelAccordion(details, popup.getLatLng"));
 assert(css.includes("lgAccordionHeader")&&css.includes("lgDetailRow"));
 assert(css.includes(".lgAccordionSection:not(.open) .lgAccordionBody"));
 assert(source.includes(".returnGeometry(false)"),"Detail lookup must avoid transferring whole parcel geometry");
 // Expose one pure helper in a temporary VM; production source is unchanged.
 const injection=source.replace(
-  "  window.v32RenderParcelAccordion=function(root){",
-  "  window.__testPropertyFields=propertyFields;\n  window.v32RenderParcelAccordion=function(root){"
+  "  window.v32RenderParcelAccordion=function(root,selectedPoint){",
+  "  window.__testPropertyFields=propertyFields;\n  window.v32RenderParcelAccordion=function(root,selectedPoint){"
 );
 assert.notEqual(injection,source);
 const context={window:{}};vm.runInNewContext(injection,context,{filename:"parcel-accordion.js"});
@@ -43,8 +43,13 @@ assert.equal(entries.Location["School District"],"NORTHSIDE ISD");
 assert.equal(entries["Mailing Address"]["Street Address"],"4461 TALLEY RD");
 assert.equal(entries.Value["Market Total Value"],"$25,412,480");
 assert.equal(entries.Land["Legal Acres"],"596.882");
-assert.notEqual(entries.Land["Calculated Acres"],"");
-assert.equal(entries.Land["Zoning"],"","Unavailable zoning must not be fabricated");
+assert.notEqual(entries.Land["Calculated GIS Acres"],"");
+assert.equal(entries.Land["Zoning at Selected Point"],"","Unavailable zoning must not be fabricated");
+assert.equal(result.acres,"596.882");
+assert.equal(entries.Value["Market Land Value (calculated)"],"$25,367,480");
+assert.equal(entries.Value["Reported Improvement Value"],"$45,000");
+assert(source.includes("supplementSanAntonioZoning"),"Optional COSA point zoning lookup must exist");
+assert(css.includes("lgHeaderAcres"),"Prominent header acreage style must exist");
 const others=[
  ["Comal",{PROP_ID:60165,PY_OWNER_N:"COMAL OWNER",SITUS_ADDR:"100 MAIN ST",LEGAL_ACRE:2.2}],
  ["Guadalupe",{PROP_ID:57261,OWNER_NAME:"GUAD OWNER",SITUS_ADDR:"100 GUAD ST",LEGAL_AREA:3.2}],
