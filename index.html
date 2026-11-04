@@ -3452,6 +3452,8 @@
         function v12ParcelTrackerData(p,county){
           p=p||{};
           var bexar=county==="Bexar",comal=county==="Comal";
+          // Accept both SARA BCAD and hosted BCAD field names.
+          if(bexar)p=v25BexarNormalize(p);
           var acres=bexar?p.Land_acres:comal?p.LEGAL_ACRE:p.LEGAL_AREA;
           if(!bexar&&!comal&&p.LGL_AREA_UNIT&&p.LGL_AREA_UNIT!=="ACRES")acres="";
           var parcelId=bexar?(p.Prop_id||p.Geo_id):(p.PROP_ID||p.GEO_ID);
@@ -3561,6 +3563,7 @@
         }
         function parcelPopup(p,county,heb){
           var bexar=county==='Bexar',comal=county==='Comal';
+          if(bexar)p=v25BexarNormalize(p);
           var acres=bexar?p.Land_acres:comal?p.LEGAL_ACRE:p.LEGAL_AREA;
           if(!bexar&&!comal&&p.LGL_AREA_UNIT&&p.LGL_AREA_UNIT!=='ACRES')acres=null;
           var date=bexar?'December 2025':comal?'November 22, 2024 (data edit date)':'February 2022';
@@ -3949,7 +3952,11 @@
         function v16TrackerParcelData(p,cfg){
           p=p||{};
           var id=v16First(p,cfg.idFields||[]);
-          var owner=v16First(p,cfg.ownerFields||[]);
+          // Known owner-name aliases, not owner IDs: protects against mixed
+          // county GIS feature shapes without guessing owners.
+          var owner=v16First(p,(cfg.ownerFields||[]).concat(
+            ["Owner_name","Owner_Name","OWNER_NAME","PY_OWNER_N","owner_name","file_as_na"]
+          ));
           var acres=v16First(p,cfg.acreFields||[]);
           var addr=v16First(p,cfg.addressFields||[]);
           if(!addr&&cfg.addressParts){
@@ -3978,7 +3985,7 @@
           var link=v16First(p,cfg.linkFields||[]);
           return factPopup("CAD parcel · "+cfg.county,[
             ["County",cfg.county],
-            ["Owner",data.owner||"Not reported"],
+            ["Owner",data.owner||"Not reported by county GIS"],
             ["Acres",String(data.acres).trim()!==""&&isFinite(acres)?acres.toFixed(2):"Not reported"],
             ["Property ID",data.parcelId||"Not reported"],
             ["Situs",data.dealSite||"Not reported"],
@@ -4108,7 +4115,9 @@
           candidates.forEach(function(cfg){
             // A point query is inexpensive and avoids rendering thousands of
             // polygons merely to detect a click.
-            L.esri.query({url:cfg.url}).intersects(latlng).limit(1).run(function(err,fc){
+            var pointQuery=L.esri.query({url:cfg.url}).intersects(latlng).limit(1);
+            if(cfg.county==="Bexar")pointQuery.where("Prop_id > 0");
+            pointQuery.run(function(err,fc){
               if(match(cfg,err,fc)||request!==v30IdentifySerial||found)return;
               if(cfg.county==="Guadalupe"){
                 // MapServer's image-backed parcel service may require identify.
@@ -5504,14 +5513,14 @@
         function v9Sql(v){return String(v||"").trim().replace(/'/g,"''");}
         function v9SearchConfig(){
           return [
-            {county:"Bexar",url:v3ParcelUrl+"/0",id:"Prop_id",idNumeric:true,geo:"Geo_id",owner:"Owner_name",situs:"Situs",acres:"Land_acres"},
-            {county:"Comal",url:v3ComalCadUrl,id:"PROP_ID",idNumeric:true,owner:"PY_OWNER_N",situs:"SITUS_ADDR",acres:"LEGAL_ACRE"},
-            {county:"Guadalupe",url:v3GuadalupeCadUrl,id:"PROP_ID",idNumeric:false,geo:"GEO_ID",owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"},
-            {county:"Kendall",url:v16KendallCadUrl,id:"geo_id",idNumeric:false,owner:"file_as_na",situs:"situs_full",acres:"legal_acre"},
-            {county:"Kerr",url:v16KerrCadUrl,id:"prop_id",idNumeric:false,owner:"owner_name",situs:"addr_street",acres:"legal_acres"},
-            {county:"Medina",url:v16MedinaCadUrl,id:"PROP_ID",idNumeric:false,owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"},
-            {county:"Blanco",url:v16BlancoCadUrl,id:"Prop_ID",idNumeric:false,owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"},
-            {county:"Webb",url:v16WebbCadUrl,id:"Prop_ID",idNumeric:false,owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"}
+            {county:"Bexar",url:v3ParcelUrl+"/0",id:"Prop_id",idNumeric:true,geo:"Geo_id",owner:"Owner_name",situs:"Situs",acres:"Land_acres",value:"Market_val"},
+            {county:"Comal",url:v3ComalCadUrl,id:"PROP_ID",idNumeric:true,owner:"PY_OWNER_N",situs:"SITUS_ADDR",acres:"LEGAL_ACRE",value:"APPRAISED"},
+            {county:"Guadalupe",url:v3GuadalupeCadUrl,id:"PROP_ID",idNumeric:false,geo:"GEO_ID",owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA",value:"MKT_VALUE"},
+            {county:"Kendall",url:v16KendallCadUrl,id:"geo_id",idNumeric:false,owner:"file_as_na",situs:"situs_full",acres:"legal_acre",value:"market"},
+            {county:"Kerr",url:v16KerrCadUrl,id:"prop_id",idNumeric:false,owner:"owner_name",situs:"addr_street",acres:"legal_acres",value:"market_val"},
+            {county:"Medina",url:v16MedinaCadUrl,id:"PROP_ID",idNumeric:false,owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA",value:"MKT_VALUE"},
+            {county:"Blanco",url:v16BlancoCadUrl,id:"Prop_ID",idNumeric:false,owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA",value:"MKT_VALUE"},
+            {county:"Webb",url:v16WebbCadUrl,id:"Prop_ID",idNumeric:false,owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA",value:"MKT_VALUE"}
           ];
         }
         function v9SearchWhere(cfg,term){
@@ -5524,6 +5533,8 @@
         function v9SearchValue(p,cfg,kind){
           if(kind==="id")return p[cfg.id]||p[cfg.geo]||p.PROP_ID||p.Prop_ID||p.propidtxt||p.account_id||"";
           if(kind==="situs")return p[cfg.situs]||[p.addr_num,p.addr_street].filter(Boolean).join(" ")||"";
+          if(kind==="owner")return v16First(p,[cfg.owner,
+            "Owner_name","Owner_Name","OWNER_NAME","PY_OWNER_N","owner_name","file_as_na"]);
           return p[cfg[kind]]||"";
         }
         function v9SearchPopupConfig(cfg){
@@ -5531,8 +5542,9 @@
             county:cfg.county,
             idFields:[cfg.id,"PROP_ID","Prop_ID","propidtxt","prop_id","account_id","geo_id"],
             ownerFields:[cfg.owner],acreFields:[cfg.acres],
-            addressFields:[cfg.situs],addressParts:cfg.county==="Kerr"?["addr_num","addr_street"]:null,
-            valueFields:[],linkFields:[],note:cfg.county+" public parcel GIS"
+            addressFields:cfg.county==="Kerr"?["kcad_address",cfg.situs]:[cfg.situs],
+            addressParts:cfg.county==="Kerr"?["addr_num","addr_street"]:null,
+            valueFields:cfg.value?[cfg.value]:[],linkFields:[],note:cfg.county+" public parcel GIS"
           };
         }
         function v9SearchTrackerData(p,cfg){
