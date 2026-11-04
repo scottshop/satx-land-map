@@ -25,6 +25,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Check county CAD owner field mappings
+        run: node tests/cad-owner-regression.cjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
