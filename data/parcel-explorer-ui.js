@@ -190,7 +190,7 @@
       if(typeof window.v31HydrateBexarOwner==="function")window.v31HydrateBexarOwner(details);
       // Rebuild only the body of CAD parcel cards into expandable property sections.
       // Leave the summary, copy buttons, and verified Save to Tracker handler intact.
-      if(typeof window.v32RenderParcelAccordion==="function")window.v32RenderParcelAccordion(details);
+      if(typeof window.v32RenderParcelAccordion==="function")window.v32RenderParcelAccordion(details, popup.getLatLng&&popup.getLatLng());
       addShareAction();
       // The dock replaces the small balloon so the property boundary remains
       // visible, while retaining parcel selection/highlighting on the map.
