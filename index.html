@@ -149,6 +149,7 @@
 .v7PopupActions{display:flex;gap:6px;margin-top:8px}
 .v7PopupActions a,.v7PopupActions button{display:inline-block;border:1px solid #bbb;background:#fff;color:#111;border-radius:5px;padding:5px 7px;font:700 10px Arial;text-decoration:none;cursor:pointer}
 .leaflet-interactive{cursor:pointer}
+.leaflet-container.v30-parcel-pick.leaflet-grab:not(.leaflet-dragging){cursor:crosshair}
 @media (max-width:700px){
   #v7Header{left:48px;right:10px;padding:7px 9px}
   #v7Header .v7Title{font-size:13px}
@@ -460,10 +461,10 @@
             }
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("movestart zoomstart",v19CadMotionStart);
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("moveend zoomend",v19CadMotionEnd);
+            // Identify CAD parcels directly from click coordinates even when the Canvas
+            // renderer or Guadalupe's raster layer has no clickable vector at that pixel.
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("click",function(e){
-              if(!e||!e.latlng)return;
-              v20IdentifyBexar(e.latlng);
-              v20IdentifyGuadalupe(e.latlng);
+              if(e&&e.latlng)v30IdentifyAnyParcel(e.latlng);
             });
 
 
@@ -3950,6 +3951,80 @@
           window.v16KendallParcels,window.v16KerrParcels,
           window.v16MedinaParcels,window.v16BlancoParcels,window.v16WebbParcels
         ]);
+
+        // V30: Reliable click-to-identify across all eight county parcel sources.
+        // Drawing and hit-testing remain independent: a point query still opens a
+        // parcel card when a large CAD layer is displayed as Canvas or raster tiles.
+        window.v30SelectedCadParcel=L.featureGroup();
+        var v30IdentifySerial=0;
+        function v30ActiveParcelConfigs(latlng){
+          var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
+          if(map.getZoom()<14||!window.v16TrackerCadByCounty)return [];
+          var active=v9SearchConfig().filter(function(cfg){
+            var layer=window.v16TrackerCadByCounty[cfg.county];
+            return layer&&map.hasLayer(layer);
+          });
+          if(!active.length)return [];
+          if(active.length===1)return active;
+          // These bounds are just a fast request filter, not parcel geometry.
+          // Include a generous edge margin to retain county-border parcels.
+          var nearby=active.filter(function(cfg){
+            var focus=v9CadFocus[cfg.county+" CAD"];
+            return focus&&L.latLngBounds(focus.bounds).pad(.30).contains(latlng);
+          });
+          return nearby.length?nearby:active.filter(function(cfg){
+            var focus=v9CadFocus[cfg.county+" CAD"];
+            return focus&&L.latLngBounds(focus.bounds).pad(.80).contains(latlng);
+          });
+        }
+        function v30IdentifyAnyParcel(latlng){
+          var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
+          var candidates=v30ActiveParcelConfigs(latlng);
+          if(!candidates.length)return;
+          var request=++v30IdentifySerial,found=false;
+          function match(cfg,err,fc){
+            if(request!==v30IdentifySerial||found||err||!fc||!fc.features||!fc.features.length)return false;
+            var feature=fc.features[0],p=feature.properties||{};
+            if(!feature.geometry)return false;
+            found=true;
+            window.v30SelectedCadParcel.clearLayers();
+            L.geoJSON(feature,{
+              pane:"cadSelected",interactive:false,
+              style:{color:"#ff6554",weight:4,opacity:1,fillColor:"#ff6554",fillOpacity:.12,lineJoin:"round"}
+            }).addTo(window.v30SelectedCadParcel);
+            if(!map.hasLayer(window.v30SelectedCadParcel))window.v30SelectedCadParcel.addTo(map);
+            var content=cfg.county==="Bexar"?
+              v3BexarCard(v25BexarNormalize(p)):v9SearchPopup(p,cfg);
+            L.popup({className:cfg.county==="Bexar"?"bcad-popup":"",maxWidth:360,autoPanPadding:[28,28]})
+              .setLatLng(latlng).setContent(content).openOn(map);
+            return true;
+          }
+          candidates.forEach(function(cfg){
+            // A point query is inexpensive and avoids rendering thousands of
+            // polygons merely to detect a click.
+            L.esri.query({url:cfg.url}).intersects(latlng).limit(1).run(function(err,fc){
+              if(match(cfg,err,fc)||request!==v30IdentifySerial||found)return;
+              if(cfg.county==="Guadalupe"){
+                // MapServer's image-backed parcel service may require identify.
+                L.esri.identifyFeatures({
+                  url:"https://maps.pape-dawson.com/server1/rest/services/LandDevelopment/LANDDEVELOPMENT__Lennar_SiteSelection/MapServer"
+                }).on(map).at(latlng).layers("visible:83").returnGeometry(true)
+                  .run(function(identifyError,result){match(cfg,identifyError,result);});
+              }
+            });
+          });
+        }
+        function v30SyncParcelCursor(){
+          var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
+          var picking=v30ActiveParcelConfigs(map.getCenter()).length>0;
+          map.getContainer().classList.toggle("v30-parcel-pick",picking);
+          if(!picking){
+            v30IdentifySerial++;
+            window.v30SelectedCadParcel.clearLayers();
+          }
+        }
+        map_33cc2c2ac68d72d2971fbb7de3650b24.on("layeradd layerremove zoomend",v30SyncParcelCursor);
+        v30SyncParcelCursor();
 
         // H-E-B ownership — Comal + Guadalupe CAD screening.
         // Multiple legal-name patterns are included because appraisal districts may abbreviate H-E-B differently.
