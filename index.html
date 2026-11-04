@@ -3464,7 +3464,7 @@
             acres:acres==null?"":acres,
             stage:"Pursuing",
             nextAction:"Contact owner",
-            owner:owner||"",
+            owner:String(owner||"").trim(),
             county:county||"",
             parcelId:parcelId||"",
             mapLink:v12TrackerMapLink(county,parcelId),
