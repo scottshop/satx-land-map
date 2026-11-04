@@ -3760,6 +3760,7 @@
             Owner_name:owner,
             Situs:actual(p.Situs)||"",
             Land_acres:actual(p.legal_acre)||actual(p.Land_acres),
+            LandSqft:actual(p.LandSqft),
             Market_val:actual(p.Market_val),
             Land_hstd_val:actual(p.Land_hstd_val),
             Land_non_hstd_val:actual(p.Land_non_hstd_val),
@@ -3775,7 +3776,7 @@
           where:"PropID > 0", // exclude non-parcel GIS placeholders without ownership records
           pane:"cad", minZoom:16,
           renderer:v18CadRenderer,
-          fields:["OBJECTID","PropID","Geo_id","Owner_Name","Situs","legal_acre","legal_desc"],
+          fields:["OBJECTID","PropID","Geo_id","Owner_Name","Situs","legal_acre","legal_desc","LandSqft"],
           simplifyFactor:0.08,
           precision:6,
           style:v3BexarBaseStyle,
