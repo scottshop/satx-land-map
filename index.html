@@ -3784,7 +3784,8 @@
           where:"PropID > 0", // exclude non-parcel GIS placeholders without ownership records
           pane:"cad", minZoom:16,
           renderer:v18CadRenderer,
-          fields:["OBJECTID","PropID","Geo_id","Owner_Name","Situs","legal_acre","legal_desc","LandSqft","ParcelArea","addr_line1","addr_line2","addr_line3","addr_city","addr_state","zip","state_cd"],
+          // Keep bulk parcel tiles lean; mailing/tax/zoning fields are queried only when selected.
+          fields:["OBJECTID","PropID","Geo_id","Owner_Name","Situs","legal_acre","legal_desc","LandSqft","ParcelArea"],
           simplifyFactor:0.08,
           precision:6,
           style:v3BexarBaseStyle,
