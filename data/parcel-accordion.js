@@ -159,7 +159,18 @@
     var chevron=document.createElement("span");chevron.className="lgChevron";chevron.setAttribute("aria-hidden","true");chevron.textContent="⌃";
     button.appendChild(title);button.appendChild(chevron);
     var body=document.createElement("div");body.className="lgAccordionBody";
-    data.rows.forEach(function(pair){body.appendChild(row(pair[0],pair[1]));});
+    var available=data.rows.filter(function(pair){return pair[1]!==""&&pair[1]!==null&&pair[1]!==undefined;});
+    if(!available.length){
+      var missing=document.createElement("p");missing.className="lgSectionEmpty";
+      missing.textContent=data.name==="Sales History"?
+        "No transaction history is included in this county GIS record. Check recorded deeds with the county clerk.":
+        data.name==="Mailing Address"?
+        "No mailing address is provided in this county GIS record.":
+        "No additional information provided by this CAD layer.";
+      body.appendChild(missing);
+    } else {
+      available.forEach(function(pair){body.appendChild(row(pair[0],pair[1]));});
+    }
     button.onclick=function(){
       var expanded=el.classList.toggle("open");
       button.setAttribute("aria-expanded",expanded?"true":"false");
@@ -185,10 +196,18 @@
       summary.appendChild(v);summary.appendChild(l);
     }
     item(data.owner,"Owner");item(data.location.street,"Address");item(data.parcelId,"Parcel ID");
+    if(data.acres){
+      var acreBadge=document.createElement("div");acreBadge.className="lgHeaderAcres";
+      var n=document.createElement("strong");n.textContent=data.acres;
+      var label=document.createElement("span");label.textContent="ACRES";
+      acreBadge.appendChild(n);acreBadge.appendChild(label);summary.appendChild(acreBadge);
+    }
   }
   function render(target,attrs,county){
     if(!target||!target.isConnected)return;
-    var data=propertyFields(attrs,county);
+    var full=Object.assign({},attrs,target.__lgZoningFields||{});
+    target.__lgFullAttrs=full;
+    var data=propertyFields(full,county);
     ensureSummary(target,data);
     var bcad=target.querySelector(".bcad-card"),popup=target.querySelector(".v7Popup");
     var host=bcad?bcad.querySelector(".bcad-card-body"):popup;
@@ -208,9 +227,27 @@
     if(actions)host.insertBefore(group,actions);
     else host.appendChild(group);
     if(bcad){
-      if(data.owner){
-        var ownerEl=bcad.querySelector(".bcad-owner");
-        if(ownerEl)ownerEl.textContent=data.owner;
+      var ownerEl=bcad.querySelector(".bcad-owner");
+      if(ownerEl&&data.owner)ownerEl.textContent=data.owner;
+      var badge=bcad.querySelector(".lgHeaderAcres");
+      if(data.acres){
+        if(!badge){
+          badge=document.createElement("div");badge.className="lgHeaderAcres";
+          if(ownerEl)ownerEl.insertAdjacentElement("afterend",badge);
+          else bcad.querySelector(".bcad-card-head").appendChild(badge);
+        }
+        badge.innerHTML="";
+        var n=document.createElement("strong");n.textContent=data.acres;
+        var lbl=document.createElement("span");lbl.textContent="ACRES";
+        badge.appendChild(n);badge.appendChild(lbl);
+      }else if(badge)badge.remove();
+    }
+    if(county==="Bexar" && target.__lgZoningFields){
+      var land=group.querySelector('[data-section="Land"] .lgAccordionBody');
+      if(land){
+        var note=document.createElement("p");note.className="lgSectionFootnote";
+        note.textContent="Zoning data is for the selected point, not a parcel-wide determination. Source: COSA GIS zoning layer (2026 snapshot).";
+        land.appendChild(note);
       }
     }
   }
@@ -236,6 +273,7 @@
       // older SARA record only supplies a street name.
       if(String(initial.Situs||"").split(",").length>=3 &&
          String(full.Situs||"").split(",").length<3)combined.Situs=initial.Situs;
+      wrapper.__lgFullAttrs=combined;
       render(wrapper,combined,"Bexar");
       var bcad=wrapper.querySelector(".bcad-card");
       var owner=pick(combined,["Owner_name","Owner_Name"]);
@@ -265,7 +303,25 @@
       }
     });
   }
-  window.v32RenderParcelAccordion=function(root){
+  function supplementSanAntonioZoning(wrapper,latlng,id){
+    if(!latlng||typeof latlng.lat!=="number"||typeof latlng.lng!=="number")return;
+    if(!window.L||!L.esri)return;
+    // Query only once per selected parcel; no zoning layers are rendered to the map.
+    var source="https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__SanAntonio_External/MapServer/30";
+    L.esri.query({url:source}).intersects(latlng)
+      .fields(["Zoning","Base","BaseDescri","ZoningDeta","COSA_Zone"])
+      .returnGeometry(false).limit(1).run(function(err,fc){
+        if(err||!fc||!fc.features||!fc.features.length||!wrapper.isConnected)return;
+        if(wrapper.dataset.lgSelected!==id)return;
+        var p=fc.features[0].properties||{};
+        var code=pick(p,["Zoning","Base"]),description=pick(p,["BaseDescri","ZoningDeta"]);
+        if(!code&&!description)return;
+        var cityStatus=code==="OCL"?"Outside San Antonio city limits (at clicked point)":code;
+        wrapper.__lgZoningFields={ZONING:cityStatus,ZONING_DESC:description};
+        render(wrapper,wrapper.__lgFullAttrs||{},"Bexar");
+      });
+  }
+  window.v32RenderParcelAccordion=function(root,selectedPoint){
     if(!root)return;
     var anchor=root.querySelector(".lg-detail-data");
     if(!anchor)return;
@@ -276,6 +332,9 @@
     var id=[county,pick(attrs,["Prop_id","PropID","PROP_ID","Prop_ID","prop_id","geo_id","GEO_ID"])].join(":");
     root.dataset.lgSelected=id;
     render(root,attrs,county);
-    if(county==="Bexar")supplementBexar(root,attrs,id);
+    if(county==="Bexar"){
+      supplementBexar(root,attrs,id);
+      supplementSanAntonioZoning(root,selectedPoint,id);
+    }
   };
 })();
