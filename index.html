@@ -3597,10 +3597,11 @@
         }
         function v3BexarCard(p){
           var acres=Number(p.Land_acres), land=(Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0);
-          var situs=p.Situs||"Address not reported", owner=p.Owner_name||"Owner not reported", pid=p.Prop_id||p.Geo_id||"Not reported";
+          var situs=p.Situs||"Address not reported", owner=String(p.Owner_name||"").trim(), pid=p.Prop_id||p.Geo_id||"Not reported";
+          var ownerMissing=!owner; if(ownerMissing)owner="Checking county ownership…";
           var mapQuery=encodeURIComponent(situs+", Bexar County, TX");
           var cadLink=(p.CADLINK&&/^https?:\/\//i.test(String(p.CADLINK)))?String(p.CADLINK):"";
-          return "<div class='bcad-card'>"+
+          return "<div class='bcad-card' data-bcad-prop-id='"+v3esc(pid)+"' data-owner-missing='"+(ownerMissing?"1":"0")+"'>"+
             "<div class='bcad-card-head'>"+
               "<div class='bcad-kicker'>Bexar County · Parcel</div>"+
               "<div class='bcad-address'>"+v3esc(situs)+"</div>"+
@@ -3622,9 +3623,56 @@
                 v12TrackerButton(v12ParcelTrackerData(p,"Bexar"))+
                 (cadLink?"<a href='"+v3esc(cadLink)+"' target='_blank' rel='noopener'>CAD Record</a>":"")+
               "</div>"+
-              "<div class='bcad-note'>BCAD parcel screening data via SARA, December 2025 snapshot. Parcel lines are reference geometry; verify current ownership, legal description, survey and boundary information before acquisition.</div>"+
+              "<div class='bcad-note'>Boundaries and base data: BCAD hosted GIS (weekly). Missing owner names are checked against SARA's December 2025 BCAD records. Verify current ownership, legal description and survey with BCAD.</div>"+
             "</div>"+
           "</div>";
+        }
+
+        // Enrich only the parcel currently opened, so rendering/dragging
+        // remains fast and SARA never gets a bulk request for map tiles.
+        function v31HydrateBexarOwner(root){
+          var card=root&&root.querySelector(".bcad-card[data-owner-missing='1']");
+          if(!card)return;
+          var id=String(card.getAttribute("data-bcad-prop-id")||"").trim();
+          var ownerNode=card.querySelector(".bcad-owner");
+          if(!ownerNode)return;
+          if(!/^[1-9]\\d*$/.test(id)){
+            ownerNode.textContent="No property ID in the map source — verify BCAD";
+            return;
+          }
+          function applyOwner(owner){
+            if(!card.isConnected)return;
+            if(!owner){
+              ownerNode.textContent="Owner unavailable in connected CAD data";
+              return;
+            }
+            ownerNode.textContent=owner;
+            ownerNode.title="Owner from SARA BCAD snapshot (December 2025)";
+            var button=card.querySelector(".save-to-tracker");
+            if(button&&!button.disabled){
+              try{
+                var data=JSON.parse(decodeURIComponent(button.getAttribute("data-tracker-payload")||""));
+                data.owner=owner;
+                button.setAttribute("data-tracker-payload",encodeURIComponent(JSON.stringify(data)));
+              }catch(e){}
+            }
+            var note=card.querySelector(".bcad-note");
+            if(note)note.textContent+=" Owner supplemented from SARA BCAD December 2025.";
+            card.setAttribute("data-owner-missing","0");
+          }
+          if(window.v31BexarOwnerCache[id]){applyOwner(window.v31BexarOwnerCache[id]);return;}
+          L.esri.query({url:v3ParcelUrl+"/0"})
+            .where("Prop_id = "+Number(id))
+            .fields(["Prop_id","Owner_name"])
+            .limit(1)
+            .run(function(err,fc){
+              if(err||!fc||!fc.features||!fc.features.length){applyOwner("");return;}
+              var p=fc.features[0].properties||{};
+              if(String(p.Prop_id)!==id){applyOwner("");return;}
+              var owner=String(p.Owner_name||"").trim();
+              if(owner)window.v31BexarOwnerCache[id]=owner;
+              applyOwner(owner);
+            });
         }
 
         var v3BexarSelectedParcel=null;
@@ -3651,13 +3699,18 @@
         // Use ArcGIS Online hosted BCAD source (faster/more reliable in browser),
         // but keep close-zoom rendering with minimal simplification for boundary fidelity.
         var v25FastAccurateBexarUrl="https://services.arcgis.com/g1fRTDLeMgspWrYp/ArcGIS/rest/services/BCAD_Parcels/FeatureServer/0";
+        // Keep CAD ownership separate from geometry: the weekly hosted layer
+        // includes placeholder polygons with negative IDs and blank owners.
+        window.v31BexarOwnerCache=window.v31BexarOwnerCache||{};
         function v25BexarNormalize(p){
           p=p||{};
+          var id=p.PropID, owner=String(p.Owner_Name||"").trim();
+          if(!owner&&id>0)owner=window.v31BexarOwnerCache[String(id)]||"";
           return {
             OBJECTID:p.OBJECTID,
-            Prop_id:p.PropID,
+            Prop_id:id,
             Geo_id:p.Geo_id,
-            Owner_name:p.Owner_Name,
+            Owner_name:owner,
             Situs:p.Situs,
             Land_acres:p.legal_acre,
             Market_val:"",
@@ -3672,6 +3725,7 @@
 
         var v3Parcels = L.esri.featureLayer({
           url:v25FastAccurateBexarUrl,
+          where:"PropID > 0", // exclude non-parcel GIS placeholders without ownership records
           pane:"cad", minZoom:16,
           renderer:v18CadRenderer,
           fields:["OBJECTID","PropID","Geo_id","Owner_Name","Situs","legal_acre","legal_desc"],
@@ -3684,7 +3738,7 @@
         v3Parcels.bindTooltip(function(layer){
           var p=v25BexarNormalize(layer.feature&&layer.feature.properties||{}), acres=Number(p.Land_acres);
           return "<div class='bcad-hover-title'>"+v3esc(p.Situs||p.Owner_name||"Bexar parcel")+"</div>"+
-                 "<div class='bcad-hover-meta'>"+v3esc(p.Owner_name||"Owner not reported")+
+                 "<div class='bcad-hover-meta'>"+v3esc(p.Owner_name||"Owner unavailable in GIS")+
                  (isFinite(acres)?" · "+acres.toFixed(2)+" ac":"")+"</div>";
         },{sticky:true,direction:"top",opacity:.98,className:"bcad-hover"});
 
@@ -5283,6 +5337,7 @@
             };
           });
           v12BindTrackerButtons(root);
+          v31HydrateBexarOwner(root);
         });
 
         function v6style(feature){
