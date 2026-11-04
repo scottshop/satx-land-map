@@ -13,6 +13,15 @@
     if(raw===""||raw===null||raw===undefined)return "";
     var n=Number(raw);return Number.isFinite(n)?"$"+n.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:0}):String(raw);
   }
+  function asNumber(raw){
+    if(raw===null||raw===undefined||String(raw).trim()==="")return null;
+    var n=Number(raw);return Number.isFinite(n)?n:null;
+  }
+  function sumRawIfKnown(p,names){
+    var vals=names.map(function(n){return asNumber(p&&p[n]);}).filter(function(v){return v!==null;});
+    if(!vals.length)return null;
+    return vals.reduce(function(a,v){return a+v;},0);
+  }
   function fixed(raw){
     if(raw===""||raw===null||raw===undefined)return "";
     var n=Number(raw);return Number.isFinite(n)?n.toLocaleString("en-US",{maximumFractionDigits:3}):String(raw);
@@ -29,28 +38,41 @@
     return raw;
   }
   function addressParts(p,county){
-    var full=firstAddress(p), street=full, city=pick(p,["SITUS_CITY","situs_city","City"]), state=pick(p,["SITUS_STAT","situs_stat"]), zip=pick(p,["Situs_Zip","SITUS_ZIP","situs_zip"]);
-    // Hosted BCAD situs can be "STREET, CITY, TX 78253". SARA situs is often street only.
+    var full=firstAddress(p),street=full,
+      city=pick(p,["SITUS_CITY","situs_city","situs_city_name"]),
+      state=pick(p,["SITUS_STAT","situs_stat"]),
+      zip=pick(p,["Situs_Zip","SITUS_ZIP","situs_zip"]);
     var comma=full.split(",").map(function(v){return v.trim();});
     if(comma.length>=3){
       street=comma[0];
       if(!city)city=comma[1];
       var match=comma.slice(2).join(" ").match(/\b([A-Z]{2})\s+(\d{5})(?:-\d{4})?\b/);
       if(match){if(!state)state=match[1];if(!zip)zip=match[2];}
-    }else if(comma.length===2 && !city && !/\d{5}/.test(comma[1])){street=comma[0];city=comma[1];}
-    if(!state && county && ["Bexar","Comal","Guadalupe","Kendall","Kerr","Medina","Blanco","Webb"].indexOf(county)>=0)state="TX";
+    }else if(comma.length===2 && !city && !/\d{5}/.test(comma[1])){
+      street=comma[0];city=comma[1];
+    }
+    // SARA's City field is a tax-jurisdiction label, not necessarily a situs city.
+    // Use it for city only if it is present and no situs city is supplied.
+    if(!city)city=pick(p,["City"]);
+    if(!state && county)state="TX";
     return {street:street,city:city,state:state,zip:zip,county:county?county+" County":""};
   }
   function mailingParts(p,county){
-    var street;
-    if(county==="Bexar")street=pick(p,["Addr_line1","Addr_line2","Addr_line3"]);
-    else if(county==="Comal")street=pick(p,["PY_ADDR_LI","PY_ADDR__1","PY_ADDR__2","PY_ADDR__3"]);
-    else street=pick(p,["MAIL_ADDR","MAIL_LINE1","mail_line1","addr_line1","mail_line2","addr_line2"]);
-    if(!street)street=pick(p,["MAIL_LINE2","mail_line3","addr_line3"]);
-    var city=pick(p,["Addr_city","PY_ADDR_CI","MAIL_CITY","mail_city","addr_city"]);
-    var state=pick(p,["Addr_state","PY_ADDR_ST","MAIL_STAT","mail_state","addr_state"]);
-    var zip=pick(p,["Zip","PY_ADDR_ZI","MAIL_ZIP","mail_zip","addr_zip"]);
-    // Do not infer mailing address from the situs address; the owner may live elsewhere.
+    var lines;
+    if(county==="Bexar")lines=["Addr_line1","Addr_line2","Addr_line3","addr_line1","addr_line2","addr_line3"];
+    else if(county==="Comal")lines=["PY_ADDR_LI","PY_ADDR__1","PY_ADDR__2","PY_ADDR__3","PY_ADDR__4"];
+    else lines=["MAIL_ADDR","MAIL_LINE1","MAIL_LINE2","mail_line1","mail_line2","mail_line3","addr_line1","addr_line2"];
+    var chosen=[];
+    lines.forEach(function(k){
+      var x=pick(p,[k]);
+      if(x && chosen.indexOf(x)<0 && !/^(C\/O|ATTN)\s*$/i.test(x))chosen.push(x);
+    });
+    // Some county services repeat a full mailing address in MAIL_ADDR and MAIL_LINE1.
+    if(chosen.length>1 && county!=="Bexar" && county!=="Comal" && chosen[0].indexOf(chosen[1])!==-1)chosen=chosen.slice(0,1);
+    var street=chosen.join(", ");
+    var city=pick(p,["Addr_city","addr_city","PY_ADDR_CI","MAIL_CITY","mail_city"]);
+    var state=pick(p,["Addr_state","addr_state","PY_ADDR_ST","MAIL_STAT","mail_state"]);
+    var zip=pick(p,["Zip","zip","PY_ADDR_ZI","MAIL_ZIP","mail_zip"]);
     return {street:street,city:city,state:state,zip:zip};
   }
   function propertyFields(p,county){
@@ -58,39 +80,60 @@
     var owner=pick(p,["Owner_name","Owner_Name","OWNER_NAME","PY_OWNER_N","owner_name","file_as_na"]);
     var propId=pick(p,["Prop_id","PropID","PROP_ID","Prop_ID","prop_id","propidtxt","account_id","geo_id","GEO_ID"]);
     var location=addressParts(p,county),mail=mailingParts(p,county);
-    var area=pick(p,["Land_acres","legal_acre","LEGAL_ACRE","legal_acres","LEGAL_AREA"]);
-    var landRows=[
-      ["Legal Acres",fixed(area)],
-      ["Calculated Acres",fixed(p.LandSqft?Number(p.LandSqft)/43560:(p.Shape_STAr?Number(p.Shape_STAr)/43560:""))],
-      ["Zoning",pick(p,["ZONING","Zoning","zoning"])],
-      ["Zoning Description",pick(p,["ZONING_DESC","ZoneDesc","zone_desc"])],
-      ["Land Use Code",pick(p,["State_cd","STAT_LAND_USE","STAT_LAND_","LOC_LAND_USE","LOC_LAND_U","Property_use_cd"])],
-      ["Legal Description",pick(p,["Legal_desc","legal_desc","LEGAL_DESC"])]
-    ];
+    var legalAcres=pick(p,["Land_acres","legal_acre","LEGAL_ACRE","legal_acres","LEGAL_AREA"]);
+    var gisArea=pick(p,["ParcelArea","Shape_STAr","Shape__Area","Shape.STArea()"]);
+    var calculatedAcres=gisArea?fixed(Number(gisArea)/43560):
+      (pick(p,["LandSqft"])?fixed(Number(p.LandSqft)/43560):"");
+    var improvementFields=["Imprv_hstd_val","Imprv_non_hstd_val"];
+    var improvements=bexar?sumRawIfKnown(p,improvementFields):asNumber(pick(p,["IMP_VALUE"]));
     var market=pick(p,["Market_val","MKT_VALUE","APPRAISED","market","market_val"]);
+    var marketNumber=asNumber(market);
+    var landMarket=marketNumber!==null && improvements!==null && marketNumber>=improvements?
+      money(marketNumber-improvements):"";
     var taxyear=pick(p,["Prop_yr","TAX_YEAR","PROP_VAL_Y","owner_tax_","prop_val_yr"]);
+    var stateCode=pick(p,["State_cd","state_cd","STAT_LAND_USE","STAT_LAND_"]);
+    var cadUse=pick(p,["Property_use_cd","property_use_cd"]);
+    var useDescriptions={"001":"Single Family","002":"Rural",
+      "009":"Land (potential development land)","099":"Vacant Land",
+      "0990":"Land-Only Account","0991":"Pad Site"};
+    var zoning=pick(p,["ZONING","Zoning","zoning"]);
+    var zoneDescription=pick(p,["ZONING_DESC","ZoneDesc","zone_desc"]);
     var values=[
       ["Market Total Value",money(market)],
-      ["Reported Land Value",bexar?sumIfKnown(p,["Land_hstd_val","Land_non_hstd_val"]):money(pick(p,["LAND_VALUE","land_val","land_hstd_val"]))],
-      ["Reported Improvement Value",bexar?sumIfKnown(p,["Imprv_hstd_val","Imprv_non_hstd_val"]):money(pick(p,["IMP_VALUE"]))],
+      ["Market Land Value (calculated)",landMarket],
+      ["Reported Improvement Value",improvements!==null?money(improvements):""],
+      ["CAD Land Value",bexar?sumIfKnown(p,["Land_hstd_val","Land_non_hstd_val"]):
+        money(pick(p,["LAND_VALUE","land_val","land_hstd_val"]))],
       ["Agricultural Market Value",money(pick(p,["AG_Market","ag_market_val"]))],
       ["Agricultural Use Value",money(pick(p,["AG_Use_val"]))],
       ["Prior Market Value",money(pick(p,["Prior_Mkt_val"]))],
-      ["Assessment / Data Year",taxyear]
+      ["CAD Data Year",taxyear]
+    ];
+    var landRows=[
+      ["Legal Acres",fixed(legalAcres)],["Calculated GIS Acres",calculatedAcres],
+      ["Zoning at Selected Point",zoning],["Zoning Description",zoneDescription],
+      ["State Classification",stateCode],["CAD Property Use Code",cadUse],
+      ["CAD Property Use",bexar?useDescriptions[cadUse]||"":""],
+      ["Legal Description",pick(p,["Legal_desc","legal_desc","LEGAL_DESC"])]
     ];
     return {
-      owner:owner,parcelId:propId,location:location,mail:mail,county:county,
+      owner:owner,parcelId:propId,acres:fixed(legalAcres)||calculatedAcres,
+      county:county,location:location,mail:mail,
       sections:[
         {name:"Location",rows:[
-          ["Street Address",location.street],["City",location.city],["State",location.state],
-          ["Zip",location.zip],["Municipality",pick(p,["municipality","Municipality"])],
-          ["County",location.county],["School District",pick(p,["School","school_district","SCHOOL_DISTRICT"])]
+          ["Street Address",location.street],["City",location.city],
+          ["State",location.state],["Zip",location.zip],
+          ["Municipality (CAD tax entity)",pick(p,["City"])],
+          ["County",location.county],
+          ["School District",pick(p,["School","school_district","SCHOOL_DISTRICT"])]
         ]},
         {name:"Mailing Address",rows:[
-          ["Street Address",mail.street],["City",mail.city],["State",mail.state],["Zip",mail.zip]
+          ["Street Address",mail.street],["City",mail.city],
+          ["State",mail.state],["Zip",mail.zip]
         ]},
         {name:"Sales History",rows:[
-          ["Current Owner",owner],["Last Recorded Deed",pick(p,["Last_Deed_Date"])],
+          ["Current Owner",owner],
+          ["Last Recorded Deed",pick(p,["Last_Deed_Date"])],
           ["Previous Sale Date",pick(p,["Sale_Date","SALE_DATE","last_sale_date"])],
           ["Previous Sale Price",money(pick(p,["Sale_Price","SALE_PRICE","last_sale_price"]))]
         ]},
