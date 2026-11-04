@@ -443,7 +443,9 @@
             L.control.scale().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
             // Features own their clicks; empty map space retains normal dragging.
             L.Path.mergeOptions({bubblingMouseEvents:false});
-            [['cad',410],['cadSelected',435],['ownership',440],['infrastructure',450],['diligence',405]].forEach(function(item){
+            // Housing plats sit above CAD outlines so their features receive
+            // clicks even when the parcel overlay is also turned on.
+            [['cad',410],['cadSelected',435],['ownership',440],['infrastructure',450],['housing',475],['diligence',405]].forEach(function(item){
               map_33cc2c2ac68d72d2971fbb7de3650b24.createPane(item[0]).style.zIndex=item[1];
             });
 
@@ -466,10 +468,16 @@
             // Capture actual map-surface clicks before Canvas/SVG/raster layers can
             // swallow them. Let a bound feature popup win; if it doesn't open, perform
             // a coordinate identify. Native click filtering preserves drag-to-pan.
-            var v30LastPopupOpen=0;
+            var v30LastPopupOpen=0, v30LastHousingClick=0;
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("popupopen",function(){
               v30LastPopupOpen=Date.now();
             });
+            // Housing clicks must never fall through to parcel identification.
+            function v30MarkHousingClick(){
+              v30LastHousingClick=Date.now();
+              // Cancel any point-query response from a prior empty-map click.
+              if(typeof v30IdentifySerial==="number")v30IdentifySerial++;
+            }
             map_33cc2c2ac68d72d2971fbb7de3650b24.getContainer().addEventListener("click",function(ev){
               if(ev.button!==0)return;
               var target=ev.target;
@@ -481,7 +489,7 @@
               var latlng=map.mouseEventToLatLng(ev),clickedAt=Date.now();
               setTimeout(function(){
                 // A polygon with its own popup has already handled the click.
-                if(v30LastPopupOpen>=clickedAt)return;
+                if(v30LastPopupOpen>=clickedAt||v30LastHousingClick>=clickedAt)return;
                 v30IdentifyAnyParcel(latlng);
               },65);
             },true);
@@ -4789,7 +4797,7 @@
         }
         function v10HousingPlatLayer(layerId,status,color,where){
           var layer=L.esri.featureLayer({
-            pane:"diligence",
+            pane:"housing",
             minZoom:10,
             url:v3BexarDevUrl+"/"+layerId,
             where:where||"NBR_NEW_SINGLE_LOTS > 0 AND RETIRED_DT IS NULL",
@@ -4801,6 +4809,7 @@
             attribution:"Bexar County Public Works - Residential Plats"
           });
           layer.bindPopup(function(l){return v10HousingPlatPopup(l,status);},{maxWidth:360});
+          layer.on("click",v30MarkHousingClick);
           layer.bindTooltip(function(l){
             var p=l.feature.properties||{}, lots=Number(p.NBR_NEW_SINGLE_LOTS||0);
             return "<b>"+v3esc(p.PLAT_NM||status)+"</b><br>"+lots.toLocaleString()+" new-home lots · Bexar · "+v3esc(status);
@@ -4820,7 +4829,7 @@
         // Use 2022+ approvals so multi-year subdivisions that are still delivering homes are not missed.
         var v10SchertzHousingUrl="https://maps.schertz.com/hosting/rest/services/PublicFolder/CV_Workspace_View/MapServer/5";
         var v10SchertzHousingPlats=L.esri.featureLayer({
-          pane:"diligence",
+          pane:"housing",
           minZoom:10,
           url:v10SchertzHousingUrl,
           where:"TYPE = 0 AND APPROVEDDATE >= DATE '2022-01-01'",
@@ -4847,6 +4856,7 @@
             "<div class='popup-source'>City of Schertz GIS subdivision polygon. Filter: Residential subtype, approved 2022+. This source does not publish a housing-lot count, so no lot total is inferred.</div>"+
           "</div>";
         },{maxWidth:360});
+        v10SchertzHousingPlats.on("click",v30MarkHousingClick);
         v10SchertzHousingPlats.bindTooltip(function(layer){
           var p=layer.feature.properties||{}, acres=Number(p.SUBACRE);
           return "<b>"+v3esc(p.SUBDIVNAME||"Schertz residential subdivision")+"</b><br>"+
@@ -4862,7 +4872,7 @@
         // These are growth leads, not a guarantee of residential land use; verify the plat package before underwriting.
         var v11ComalHousingUrl="https://cceo.co.comal.tx.us/arcgissrv/rest/services/PublicSite/Active_Plats/FeatureServer/0";
         var v11ComalHousingPlats=L.esri.featureLayer({
-          pane:"diligence",
+          pane:"housing",
           minZoom:8,
           url:v11ComalHousingUrl,
           where:"STATUS <> 'CANCELLED' AND Total_Lots >= 5",
@@ -4870,7 +4880,7 @@
             var p=geojson.properties||{}, lots=Number(p.Total_Lots||0);
             var size=lots>=150?38:(lots>=75?34:(lots>=25?30:27));
             return L.marker(latlng,{
-              pane:"diligence",
+              pane:"housing",
               icon:L.divIcon({
                 className:"",
                 iconSize:[size,size],
@@ -4902,6 +4912,7 @@
             "<div class='popup-source'>Official Comal County Engineer's Office Active Plats feed. Screen: non-cancelled plats with 5+ lots. Marker is the county's general plat location, not an exact recorded boundary. Verify intended land use and the plat package before treating it as residential growth."+linkHtml+"</div>"+
           "</div>";
         },{maxWidth:380});
+        v11ComalHousingPlats.on("click",v30MarkHousingClick);
         v11ComalHousingPlats.bindTooltip(function(layer){
           var p=layer.feature.properties||{}, lots=Number(p.Total_Lots||0);
           return "<b>"+v3esc(p.Subdivision||"Comal County active plat")+"</b><br>"+
