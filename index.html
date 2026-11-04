@@ -354,10 +354,15 @@
       <div class="v9SearchRow">
         <input id="v9ParcelSearch" type="search" placeholder="Owner, address or parcel ID" autocomplete="off">
         <select id="v9CountySearch">
-          <option value="">All 3 counties</option>
+          <option value="">All 8 counties</option>
           <option value="Bexar">Bexar</option>
           <option value="Comal">Comal</option>
           <option value="Guadalupe">Guadalupe</option>
+          <option value="Kendall">Kendall</option>
+          <option value="Kerr">Kerr</option>
+          <option value="Medina">Medina</option>
+          <option value="Blanco">Blanco</option>
+          <option value="Webb">Webb</option>
         </select>
         <button id="v9SearchBtn" type="button">SEARCH</button>
       </div>
@@ -5283,34 +5288,57 @@
           var sel=document.getElementById("v9SavedFilterSelect");if(sel)sel.value=name;
         }
 
-        // Live CAD search across the three parcel sources. Results are temporary cyan outlines
-        // and never modify the acquisition-engine dataset.
+        // Search across every county represented by a CAD parcel layer.
+        // Results are temporary cyan outlines; acquisition filters remain unchanged.
         window.v9ParcelSearchLayer=L.featureGroup().addTo(map_33cc2c2ac68d72d2971fbb7de3650b24);
         window.v9ParcelSearchResults=[];
+        window.v9ParcelSearchFailures=[];
+        window.v9ParcelSearchSequence=0;
         function v9Sql(v){return String(v||"").trim().replace(/'/g,"''");}
         function v9SearchConfig(){
           return [
             {county:"Bexar",url:v3ParcelUrl+"/0",id:"Prop_id",idNumeric:true,geo:"Geo_id",owner:"Owner_name",situs:"Situs",acres:"Land_acres"},
-            {county:"Comal",url:v3ComalCadUrl,id:"PROP_ID",idNumeric:true,geo:"",owner:"PY_OWNER_N",situs:"SITUS_ADDR",acres:"LEGAL_ACRE"},
-            {county:"Guadalupe",url:v3GuadalupeCadUrl,id:"PROP_ID",idNumeric:false,geo:"GEO_ID",owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"}
+            {county:"Comal",url:v3ComalCadUrl,id:"PROP_ID",idNumeric:true,owner:"PY_OWNER_N",situs:"SITUS_ADDR",acres:"LEGAL_ACRE"},
+            {county:"Guadalupe",url:v3GuadalupeCadUrl,id:"PROP_ID",idNumeric:false,geo:"GEO_ID",owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"},
+            {county:"Kendall",url:v16KendallCadUrl,id:"geo_id",idNumeric:false,owner:"file_as_na",situs:"situs_full",acres:"legal_acre"},
+            {county:"Kerr",url:v16KerrCadUrl,id:"prop_id",idNumeric:false,owner:"owner_name",situs:"addr_street",acres:"legal_acres"},
+            {county:"Medina",url:v16MedinaCadUrl,id:"PROP_ID",idNumeric:false,owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"},
+            {county:"Blanco",url:v16BlancoCadUrl,id:"Prop_ID",idNumeric:false,owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"},
+            {county:"Webb",url:v16WebbCadUrl,id:"Prop_ID",idNumeric:false,owner:"OWNER_NAME",situs:"SITUS_ADDR",acres:"LEGAL_AREA"}
           ];
         }
         function v9SearchWhere(cfg,term){
           var t=v9Sql(term), q="'"+t+"'";
-          // Parcel IDs get an exact query. Keeping numeric IDs separate avoids mixed-type
-          // OR clauses on ArcGIS services, which can silently return zero features.
-          if(/^\d+$/.test(t))return cfg.id+(cfg.idNumeric?" = "+Number(t):" = "+q);
-          if(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+$/.test(t)&&cfg.geo)return "("+cfg.geo+" = "+q+" OR "+(!cfg.idNumeric?cfg.id+" = "+q:"1=0")+")";
+          // Search IDs exactly, including leading zeros on text-ID CAD services.
+          if(/^\\d+$/.test(t))return cfg.id+(cfg.idNumeric?" = "+Number(t):" = "+q);
+          if(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+$/.test(t))return (cfg.geo||cfg.id)+" = "+q;
           return "("+cfg.owner+" LIKE '%"+t+"%' OR "+cfg.situs+" LIKE '%"+t+"%')";
+        }
+        function v9SearchValue(p,cfg,kind){
+          if(kind==="id")return p[cfg.id]||p[cfg.geo]||p.PROP_ID||p.Prop_ID||p.propidtxt||p.account_id||"";
+          if(kind==="situs")return p[cfg.situs]||[p.addr_num,p.addr_street].filter(Boolean).join(" ")||"";
+          return p[cfg[kind]]||"";
+        }
+        function v9SearchPopup(p,cfg){
+          if(["Bexar","Comal","Guadalupe"].indexOf(cfg.county)!==-1)return parcelPopup(p,cfg.county,false);
+          return v16TrackerParcelPopup(p,{
+            county:cfg.county,idFields:[cfg.id,"propidtxt","account_id"],
+            ownerFields:[cfg.owner],acreFields:[cfg.acres],
+            addressFields:[cfg.situs],addressParts:cfg.county==="Kerr"?["addr_num","addr_street"]:null,
+            valueFields:[],linkFields:[],note:cfg.county+" public parcel GIS"
+          });
         }
         function v9RenderParcelSearchResults(){
           var box=document.getElementById("v9SearchResults"),status=document.getElementById("v9SearchStatus");
           if(!box)return;
-          var rows=window.v9ParcelSearchResults;
-          if(status)status.textContent=rows.length?rows.length+" matching parcels · click a result to zoom":"No matching parcels found.";
-          box.innerHTML=rows.slice(0,30).map(function(rec,i){
-            var p=rec.feature.properties||{},cfg=rec.cfg, acres=Number(p[cfg.acres]), pid=p[cfg.id], owner=p[cfg.owner]||"Owner not reported", situs=p[cfg.situs]||"Address not reported";
-            return "<div class='v9SearchResult' data-search-index='"+i+"'><b>"+v6h(situs)+"</b><span>"+v6h(cfg.county)+" · "+(isFinite(acres)?acres.toFixed(2)+" ac · ":"")+"ID "+v6h(pid)+" · "+v6h(owner)+"</span></div>";
+          var rows=window.v9ParcelSearchResults,failures=window.v9ParcelSearchFailures;
+          if(status)status.textContent=(rows.length?rows.length+" matching parcels · click a result to zoom":"No matching parcels found.")+
+            (failures.length?" CAD service unavailable: "+failures.join(", ")+". Results may be incomplete.":"");
+          box.innerHTML=rows.slice(0,60).map(function(rec,i){
+            var p=rec.feature.properties||{},cfg=rec.cfg, rawAcres=v9SearchValue(p,cfg,"acres"),acres=Number(rawAcres),
+              pid=v9SearchValue(p,cfg,"id"),owner=v9SearchValue(p,cfg,"owner")||"Owner not reported",
+              situs=v9SearchValue(p,cfg,"situs")||"Address not reported";
+            return "<div class='v9SearchResult' data-search-index='"+i+"'><b>"+v6h(situs)+"</b><span>"+v6h(cfg.county)+" · "+(rawAcres!==""&&isFinite(acres)?acres.toFixed(2)+" ac · ":"")+"ID "+v6h(pid)+" · "+v6h(owner)+"</span></div>";
           }).join("");
           Array.prototype.forEach.call(box.querySelectorAll(".v9SearchResult"),function(el){
             el.onclick=function(){
@@ -5321,21 +5349,25 @@
           });
         }
         function v9RunParcelSearch(){
-          var input=document.getElementById("v9ParcelSearch"), status=document.getElementById("v9SearchStatus");
+          var input=document.getElementById("v9ParcelSearch"),status=document.getElementById("v9SearchStatus");
           var term=String(input&&input.value||"").trim();
           if(term.length<2){if(status)status.textContent="Enter at least 2 characters.";return;}
           var county=(document.getElementById("v9CountySearch")||{}).value||"";
           var configs=v9SearchConfig().filter(function(x){return !county||x.county===county;});
-          window.v9ParcelSearchResults=[];window.v9ParcelSearchLayer.clearLayers();
-          if(status)status.textContent="Searching "+(county||"Bexar, Comal and Guadalupe")+"…";
+          var sequence=++window.v9ParcelSearchSequence;
+          window.v9ParcelSearchResults=[];window.v9ParcelSearchFailures=[];window.v9ParcelSearchLayer.clearLayers();
+          if(status)status.textContent="Searching "+(county||"all 8 counties")+"…";
           var pending=configs.length;
           configs.forEach(function(cfg){
             L.esri.query({url:cfg.url}).where(v9SearchWhere(cfg,term)).run(function(error,fc){
-              if(!error&&fc&&Array.isArray(fc.features)){
+              if(sequence!==window.v9ParcelSearchSequence)return;
+              if(error||!fc||!Array.isArray(fc.features)){
+                window.v9ParcelSearchFailures.push(cfg.county);
+              }else{
                 fc.features.slice(0,15).forEach(function(feature){
                   var p=feature.properties||{};
                   var layer=L.geoJSON(feature,{pane:"cadSelected",style:{color:"#22d3ee",weight:4,opacity:1,fillColor:"#22d3ee",fillOpacity:.10}});
-                  layer.bindPopup(function(){return parcelPopup(p,cfg.county,false);},{maxWidth:360});
+                  layer.bindPopup(function(){return v9SearchPopup(p,cfg);},{maxWidth:360});
                   layer.addTo(window.v9ParcelSearchLayer);
                   window.v9ParcelSearchResults.push({feature:feature,cfg:cfg,layer:layer});
                 });
