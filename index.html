@@ -3965,7 +3965,7 @@
             return layer&&map.hasLayer(layer);
           });
           if(!active.length)return [];
-          if(active.length===1)return active;
+          if(active.length===1||!v9CadFocus)return active;
           // These bounds are just a fast request filter, not parcel geometry.
           // Include a generous edge margin to retain county-border parcels.
           var nearby=active.filter(function(cfg){
@@ -4016,7 +4016,9 @@
         }
         function v30SyncParcelCursor(){
           var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
-          var picking=v30ActiveParcelConfigs(map.getCenter()).length>0;
+          var picking=map.getZoom()>=14&&Object.keys(window.v16TrackerCadByCounty||{}).some(function(county){
+            return map.hasLayer(window.v16TrackerCadByCounty[county]);
+          });
           map.getContainer().classList.toggle("v30-parcel-pick",picking);
           if(!picking){
             v30IdentifySerial++;
