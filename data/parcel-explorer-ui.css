@@ -1,0 +1,96 @@
+/* LandGlide-style parcel workflow, original layout for SATX Land Finder. */
+:root{--lg-ink:#17212d;--lg-muted:#6e7b89;--lg-line:#e7edf2;--lg-brand:#147cae;--lg-soft:#f7f9fc}
+#v7Header{display:none!important}
+#lgSearchBar{
+ position:fixed;top:13px;left:14px;z-index:11070;width:min(370px,calc(100vw - 30px));
+ height:49px;box-sizing:border-box;display:flex;align-items:center;gap:9px;
+ background:#fff;color:var(--lg-ink);border:1px solid rgba(25,46,66,.12);
+ border-radius:11px;box-shadow:0 5px 26px rgba(17,34,51,.20);
+ padding:0 8px 0 10px;font:13px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif
+}
+#lgSearchBar button{border:0;background:transparent;color:#344255;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;height:32px;width:33px;flex:none}
+#lgSearchBar button:hover{background:#eef3f7}
+#lgSearchBar .lgIcon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#lgSearchBar .lgSearchIcon{color:#697b8b;width:18px;height:18px;flex:none}
+#lgQuickSearch{border:none;background:transparent;outline:none;color:#263442;font-size:13px;font-family:inherit;min-width:0;flex:1;width:100%}
+#lgQuickSearch::placeholder{color:#778391}
+#lgSearchSubmit{background:#edf6fb!important;color:#116b9f!important}
+#lgDrawer{
+ position:fixed;top:72px;left:14px;z-index:11055;width:370px;max-width:calc(100vw - 28px);
+ max-height:calc(100dvh - 88px);display:none;flex-direction:column;
+ overflow:hidden;border-radius:12px;background:#fff;color:var(--lg-ink);
+ border:1px solid rgba(25,46,66,.10);box-shadow:0 13px 42px rgba(12,35,54,.27);
+ font:12px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif
+}
+#lgDrawer.lgOpen{display:flex}
+#lgDrawer .lgDrawerHandle{display:none}
+#lgDrawer .lgDrawerTop{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:11px 15px 9px;border-bottom:1px solid var(--lg-line);flex:none}
+#lgDrawer .lgEyebrow{font-size:10px;letter-spacing:.9px;font-weight:800;color:#698297;text-transform:uppercase}
+#lgDrawer .lgDrawerTop button{border:0;background:#f2f5f8;border-radius:50%;height:29px;width:29px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#4b5967;font-size:17px}
+#lgDrawer .lgDrawerTop button:hover{background:#e6ecf1}
+#lgDetails{overflow-y:auto;overscroll-behavior:contain;min-height:0;padding:0 0 2px;scrollbar-width:thin}
+#lgDetails .bcad-card{width:auto;max-width:none;border:0;font-family:inherit}
+#lgDetails .bcad-card-head{padding:15px 17px 12px}
+#lgDetails .bcad-kicker{color:#167ab1;font-size:10px;letter-spacing:.6px}
+#lgDetails .bcad-address{font-size:19px;margin:5px 0 4px;line-height:1.22;font-weight:750;letter-spacing:-.25px}
+#lgDetails .bcad-owner{font-size:14px;color:#24384a;font-weight:650;line-height:1.4}
+#lgDetails .bcad-chips{gap:7px}
+#lgDetails .bcad-chip{background:#f0f4f7;font-size:10px;color:#405468;border-radius:7px;padding:5px 8px}
+#lgDetails .bcad-card-body{padding:10px 17px 17px}
+#lgDetails .bcad-row{grid-template-columns:115px minmax(0,1fr);padding:9px 0;border-color:#eff2f4}
+#lgDetails .bcad-label{font-size:10px;color:#798593;font-weight:800}
+#lgDetails .bcad-value{font-size:12px;color:#253a4a}
+#lgDetails .bcad-actions,#lgDetails .v7PopupActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+#lgDetails .bcad-actions button,#lgDetails .bcad-actions a,#lgDetails .v7PopupActions button,#lgDetails .v7PopupActions a{
+ display:inline-flex;align-items:center;justify-content:center;min-height:33px;
+ border:1px solid #d4dee6;background:#fff;color:#256182;padding:7px 11px;
+ border-radius:18px;font:700 11px/1.2 inherit;box-sizing:border-box;text-decoration:none;cursor:pointer
+}
+#lgDetails .save-to-tracker{background:#126e9d!important;border-color:#126e9d!important;color:#fff!important;border-radius:18px!important;font-weight:750!important}
+#lgDetails .save-to-tracker.is-sent{background:#166534!important;border-color:#166534!important}
+#lgDetails .bcad-note{font-size:10px;line-height:1.5;color:#7c8995}
+#lgDetails .v7Popup{padding:15px 18px 20px;min-width:0;color:#263744}
+#lgDetails .v7Popup .popup-facts,#lgDetails .popup-facts{grid-template-columns:115px minmax(0,1fr);gap:0;margin:9px 0 12px}
+#lgDetails .popup-facts dt,#lgDetails .popup-facts dd{padding:9px 0;border-bottom:1px solid #edf0f3;overflow-wrap:anywhere}
+#lgDetails .popup-facts dt{font-size:11px;color:#758492;font-weight:750}
+#lgDetails .popup-facts dd{font-size:12px;color:#1e3445;font-weight:650}
+#lgDetails .popup-source{margin-top:10px;line-height:1.5;font-size:10px}
+#lgDetails .v7PopupHead{margin:0 0 14px}
+#lgDetails .v7PopupAcres{font-size:21px}
+#lgDetails .v7Thesis{background:#f1f8fb;border-left-color:#1584aa;border-radius:5px}
+#lgRail{position:fixed;z-index:11035;right:15px;bottom:85px;display:flex;flex-direction:column;gap:9px}
+#lgRail button{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #e5edf2;box-shadow:0 3px 13px rgba(14,34,55,.20);color:#31485a;cursor:pointer;font:600 23px Arial}
+#lgRail button:hover{background:#f1f7fb;color:#1378a5}
+#lgRail .lgIcon{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.leaflet-control-zoom{display:none!important}
+#v17TopTools{background:#fff!important;border-color:rgba(20,40,60,.12)!important;box-shadow:0 5px 20px rgba(15,31,48,.16)!important;backdrop-filter:none!important}
+#v17TopTools button,#v17TopTools a{font-size:10px!important;border-radius:8px!important}
+#v6TopToggle{background:#eff5fa!important;color:#185d81!important;border-color:#d5e3ed!important}
+#v26ParcelsToggle{background:#fff!important;color:#344456!important;border-color:#e0e7ed!important}
+#v26ParcelsToggle.is-active{background:#e7f5fc!important;color:#086c9d!important;border-color:#b7dfef!important}
+#v17LayersToggle{border-color:#e0e7ed!important}
+#v17TrackerLink{background:#123e59!important;color:#fff!important}
+#v6TopPanel{background:#fff!important;border-color:#e4eaef!important;box-shadow:0 10px 33px rgba(11,32,50,.20)!important}
+#v6TopHead{background:#143951;color:#fff}
+#v6TopHead .v9FinderLabel{color:#c4eaff}
+#v6TopPanel .v9SearchRow button,#v9BestFitBtn{background:#147cae!important;color:#fff!important;border-color:#147cae!important}
+#v6TopPanel .v9SearchResult{border-left-color:#1b86b6}
+#v17TopTools{right:14px!important;top:13px!important}
+#lgDrawer:focus{outline:none}
+@media(min-width:701px) and (max-width:1040px){
+ #lgSearchBar,#lgDrawer{width:315px}
+ #v17TopTools button,#v17TopTools a{padding:7px 7px!important;font-size:9px!important}
+}
+@media(max-width:700px){
+ #lgSearchBar{left:8px;right:8px;top:8px;width:auto;height:46px;border-radius:10px;z-index:11075}
+ #v17TopTools{top:61px!important;left:auto!important;right:8px!important;gap:3px!important}
+ #v17TopTools button,#v17TopTools a{min-height:30px!important;padding:5px 7px!important;font-size:9px!important}
+ #lgDrawer{left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;max-height:64dvh;border-radius:17px 17px 0 0;border:0;box-shadow:0 -5px 24px rgba(13,29,44,.28)}
+ #lgDrawer .lgDrawerHandle{display:block;align-self:center;width:45px;height:4px;background:#d8e1e7;border-radius:9px;margin-top:9px;flex:none}
+ #lgDrawer .lgDrawerTop{padding:8px 16px}
+ #lgDetails{padding-bottom:env(safe-area-inset-bottom,12px)}
+ #lgRail{right:10px;bottom:78px}
+ #lgRail button{width:39px;height:39px}
+ #v6TopPanel{top:102px!important;max-height:calc(100dvh - 112px)!important;z-index:11100}
+ body.lgDrawerVisible #lgRail{bottom:min(67dvh,510px)}
+}
