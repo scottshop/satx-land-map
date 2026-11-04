@@ -461,11 +461,28 @@
             }
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("movestart zoomstart",v19CadMotionStart);
             map_33cc2c2ac68d72d2971fbb7de3650b24.on("moveend zoomend",v19CadMotionEnd);
-            // Identify CAD parcels directly from click coordinates even when the Canvas
-            // renderer or Guadalupe's raster layer has no clickable vector at that pixel.
-            map_33cc2c2ac68d72d2971fbb7de3650b24.on("click",function(e){
-              if(e&&e.latlng)v30IdentifyAnyParcel(e.latlng);
+            // Capture actual map-surface clicks before Canvas/SVG/raster layers can
+            // swallow them. Let a bound feature popup win; if it doesn't open, perform
+            // a coordinate identify. Native click filtering preserves drag-to-pan.
+            var v30LastPopupOpen=0;
+            map_33cc2c2ac68d72d2971fbb7de3650b24.on("popupopen",function(){
+              v30LastPopupOpen=Date.now();
             });
+            map_33cc2c2ac68d72d2971fbb7de3650b24.getContainer().addEventListener("click",function(ev){
+              if(ev.button!==0)return;
+              var target=ev.target;
+              if(target&&target.closest&&target.closest(
+                "button,a,input,select,textarea,.leaflet-control,.leaflet-popup,#v6TopPanel,#v17TopTools"
+              ))return;
+              var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
+              if(map.dragging&&map.dragging.moved&&map.dragging.moved())return;
+              var latlng=map.mouseEventToLatLng(ev),clickedAt=Date.now();
+              setTimeout(function(){
+                // A polygon with its own popup has already handled the click.
+                if(v30LastPopupOpen>=clickedAt)return;
+                v30IdentifyAnyParcel(latlng);
+              },65);
+            },true);
 
 
             
