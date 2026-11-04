@@ -3636,7 +3636,7 @@
           var id=String(card.getAttribute("data-bcad-prop-id")||"").trim();
           var ownerNode=card.querySelector(".bcad-owner");
           if(!ownerNode)return;
-          if(!/^[1-9]\\d*$/.test(id)){
+          if(!/^[1-9]\d*$/.test(id)){
             ownerNode.textContent="No property ID in the map source — verify BCAD";
             return;
           }
