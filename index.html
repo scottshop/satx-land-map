@@ -326,6 +326,7 @@
   }
 </style>
 <link rel="stylesheet" href="data/parcel-explorer-ui.css">
+<link rel="stylesheet" href="data/parcel-accordion.css">
 <script src="data/tracker-config.js"></script>
 </head>
 <body>
@@ -3556,6 +3557,12 @@
           });
         }
 
+        // A safe, inert handoff of the selected CAD attributes to the detail drawer.
+        // Only clicked parcels carry attributes; map polygon rendering stays unchanged.
+        function v32ParcelDetailData(p,county){
+          var encoded=encodeURIComponent(JSON.stringify(p||{}));
+          return "<span class='lg-detail-data' hidden data-lg-county='"+v3esc(county)+"' data-lg-attrs='"+v3esc(encoded)+"'></span>";
+        }
         function factPopup(title, rows, note, url, actionsHtml){
           return "<div class='v7Popup'><b>"+v3esc(title)+"</b><dl class='popup-facts'>"+
             rows.map(function(row){return '<dt>'+v3esc(row[0])+'</dt><dd>'+v3esc(row[1]==null||String(row[1]).trim()===''?'Not reported':row[1])+'</dd>';}).join('')+
@@ -3573,7 +3580,7 @@
             ['Acres',acres==null?'Not reported':Number(acres).toFixed(2)],['Property ID',bexar?p.Prop_id:p.PROP_ID],
             ['Situs',p.Situs||p.SITUS_ADDR],['Value',v3money(bexar?p.Market_val:comal?p.APPRAISED:p.MKT_VALUE)]
           ],'Snapshot: '+date+'. Confirm current ownership and value with CAD.',p.CADLINK,
-            "<div class='v7PopupActions'>"+v12TrackerButton(v12ParcelTrackerData(p,county))+"</div>");
+            "<div class='v7PopupActions'>"+v12TrackerButton(v12ParcelTrackerData(p,county))+"</div>"+v32ParcelDetailData(p,county));
         }
 
         function v3growth(now,old){
@@ -3608,6 +3615,7 @@
           var mapQuery=encodeURIComponent(situs+", Bexar County, TX");
           var cadLink=(p.CADLINK&&/^https?:\/\//i.test(String(p.CADLINK)))?String(p.CADLINK):"";
           return "<div class='bcad-card' data-bcad-prop-id='"+v3esc(pid)+"' data-owner-missing='"+(ownerMissing?"1":"0")+"'>"+
+            v32ParcelDetailData(p,"Bexar")+
             "<div class='bcad-card-head'>"+
               "<div class='bcad-kicker'>Bexar County · Parcel</div>"+
               "<div class='bcad-address'>"+v3esc(situs)+"</div>"+
@@ -3992,7 +4000,7 @@
             ["Situs",data.dealSite||"Not reported"],
             ["Market value",String(valueRaw).trim()!==""&&isFinite(value)&&value>0?v3money(value):"Not reported"]
           ],cfg.note+(cfg.vintage?" · "+cfg.vintage:""),/^https?:\/\//i.test(String(link||""))?link:null,
-          "<div class='v7PopupActions'>"+v12TrackerButton(data)+"</div>");
+          "<div class='v7PopupActions'>"+v12TrackerButton(data)+"</div>"+v32ParcelDetailData(p,cfg.county));
         }
         function v16MakeTrackerParcelLayer(cfg){
           var layer=L.esri.featureLayer({
@@ -5786,4 +5794,5 @@
         v7applyMode("acquisition");
 </script>
 <script src="data/parcel-explorer-ui.js" defer></script>
+<script src="data/parcel-accordion.js" defer></script>
 </html>
