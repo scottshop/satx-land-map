@@ -28,6 +28,9 @@ jobs:
       - name: Check county CAD owner field mappings
         run: node tests/cad-owner-regression.cjs
 
+      - name: Check parcel detail accordions
+        run: node tests/parcel-accordion.cjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
