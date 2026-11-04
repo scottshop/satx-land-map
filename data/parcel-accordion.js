@@ -176,7 +176,13 @@
     var prop=pick(initial,["Prop_id","PropID"]),geo=pick(initial,["Geo_id"]);
     if(!/^[1-9]\d*$/.test(prop)&&!/^[A-Za-z0-9-]+$/.test(geo))return;
     var where=/^[1-9]\d*$/.test(prop)?"Prop_id = "+Number(prop):"Geo_id = '"+geo.replace(/'/g,"''")+"'";
-    L.esri.query({url:v3ParcelUrl+"/0"}).where(where).limit(1).run(function(err,fc){
+    L.esri.query({url:v3ParcelUrl+"/0"}).where(where)
+      .fields(["Prop_id","Geo_id","Owner_name","Addr_line1","Addr_line2","Addr_line3",
+        "Addr_city","Addr_state","Zip","Land_acres","Market_val","Land_hstd_val",
+        "Land_non_hstd_val","Imprv_hstd_val","Imprv_non_hstd_val","AG_Market",
+        "AG_Use_val","Prior_Mkt_val","Last_Deed_Date","School","City","Situs",
+        "Situs_Zip","Ownership_Type","Prop_yr","State_cd","Property_use_cd","Legal_desc"])
+      .returnGeometry(false).limit(1).run(function(err,fc){
       if(err||!fc||!fc.features||!fc.features.length||!wrapper.isConnected)return;
       if(wrapper.dataset.lgSelected!==id)return;
       var full=fc.features[0].properties||{};
