@@ -61,7 +61,7 @@
     var area=pick(p,["Land_acres","legal_acre","LEGAL_ACRE","legal_acres","LEGAL_AREA"]);
     var landRows=[
       ["Legal Acres",fixed(area)],
-      ["Calculated Acres",fixed(p.Shape_STAr?Number(p.Shape_STAr)/43560:"")],
+      ["Calculated Acres",fixed(p.LandSqft?Number(p.LandSqft)/43560:(p.Shape_STAr?Number(p.Shape_STAr)/43560:""))],
       ["Zoning",pick(p,["ZONING","Zoning","zoning"])],
       ["Zoning Description",pick(p,["ZONING_DESC","ZoneDesc","zone_desc"])],
       ["Land Use Code",pick(p,["State_cd","STAT_LAND_USE","STAT_LAND_","LOC_LAND_USE","LOC_LAND_U","Property_use_cd"])],
@@ -189,6 +189,10 @@
       if(prop&&String(full.Prop_id)!==String(prop))return;
       if(!prop&&geo&&String(full.Geo_id||"").trim()!==geo)return;
       var combined=Object.assign({},initial,full);
+      // Preserve the more detailed hosted situs (CITY, TX ZIP) when the
+      // older SARA record only supplies a street name.
+      if(String(initial.Situs||"").split(",").length>=3 &&
+         String(full.Situs||"").split(",").length<3)combined.Situs=initial.Situs;
       render(wrapper,combined,"Bexar");
       var bcad=wrapper.querySelector(".bcad-card");
       var owner=pick(combined,["Owner_name","Owner_Name"]);
