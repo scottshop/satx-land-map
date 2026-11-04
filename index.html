@@ -5310,7 +5310,7 @@
         function v9SearchWhere(cfg,term){
           var t=v9Sql(term), q="'"+t+"'";
           // Search IDs exactly, including leading zeros on text-ID CAD services.
-          if(/^\\d+$/.test(t))return cfg.id+(cfg.idNumeric?" = "+Number(t):" = "+q);
+          if(/^\d+$/.test(t))return cfg.id+(cfg.idNumeric?" = "+Number(t):" = "+q);
           if(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+$/.test(t))return (cfg.geo||cfg.id)+" = "+q;
           return "("+cfg.owner+" LIKE '%"+t+"%' OR "+cfg.situs+" LIKE '%"+t+"%')";
         }
