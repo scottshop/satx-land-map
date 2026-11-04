@@ -3837,24 +3837,47 @@
         function v16ParcelHover(){
           return {color:"#fff7b2",weight:2.5,opacity:1,fillColor:"#fff7b2",fillOpacity:.08,lineJoin:"round"};
         }
-        function v16TrackerParcelPopup(p,cfg){
+        // Build a county-aware tracker record for every supported CAD layer.
+        // Preserve the appraisal district's original parcel ID (including leading zeros).
+        function v16TrackerParcelData(p,cfg){
+          p=p||{};
           var id=v16First(p,cfg.idFields||[]);
           var owner=v16First(p,cfg.ownerFields||[]);
-          var acresRaw=v16First(p,cfg.acreFields||[]), acres=Number(acresRaw);
+          var acres=v16First(p,cfg.acreFields||[]);
           var addr=v16First(p,cfg.addressFields||[]);
           if(!addr&&cfg.addressParts){
-            addr=cfg.addressParts.map(function(k){return p&&p[k];}).filter(function(v){return v!=null&&String(v).trim()!=="";}).join(" ");
+            addr=cfg.addressParts.map(function(k){return p[k];}).filter(function(v){
+              return v!=null&&String(v).trim()!=="";
+            }).join(" ");
           }
+          if(p.LGL_AREA_UNIT&&String(p.LGL_AREA_UNIT).toUpperCase()!=="ACRES")acres="";
+          var county=cfg.county||"";
+          return {
+            dealSite:addr||county+" parcel "+id,
+            acres:acres,
+            stage:"Pursuing",
+            nextAction:"Contact owner",
+            owner:owner,
+            county:county,
+            parcelId:String(id),
+            mapLink:v12TrackerMapLink(county,id),
+            notes:"Saved from San Antonio Land Acquisition Map"
+          };
+        }
+        function v16TrackerParcelPopup(p,cfg){
+          var data=v16TrackerParcelData(p,cfg);
+          var acres=Number(data.acres);
           var valueRaw=v16First(p,cfg.valueFields||[]), value=Number(valueRaw);
           var link=v16First(p,cfg.linkFields||[]);
           return factPopup("CAD parcel · "+cfg.county,[
             ["County",cfg.county],
-            ["Owner",owner||"Not reported"],
-            ["Acres",String(acresRaw).trim()!==""&&isFinite(acres)?acres.toFixed(2):"Not reported"],
-            ["Property ID",id||"Not reported"],
-            ["Situs",addr||"Not reported"],
+            ["Owner",data.owner||"Not reported"],
+            ["Acres",String(data.acres).trim()!==""&&isFinite(acres)?acres.toFixed(2):"Not reported"],
+            ["Property ID",data.parcelId||"Not reported"],
+            ["Situs",data.dealSite||"Not reported"],
             ["Market value",String(valueRaw).trim()!==""&&isFinite(value)&&value>0?v3money(value):"Not reported"]
-          ],cfg.note+(cfg.vintage?" · "+cfg.vintage:""),/^https?:\/\//i.test(String(link||""))?link:null);
+          ],cfg.note+(cfg.vintage?" · "+cfg.vintage:""),/^https?:\/\//i.test(String(link||""))?link:null,
+          "<div class='v7PopupActions'>"+v12TrackerButton(data)+"</div>");
         }
         function v16MakeTrackerParcelLayer(cfg){
           var layer=L.esri.featureLayer({
@@ -5319,14 +5342,22 @@
           if(kind==="situs")return p[cfg.situs]||[p.addr_num,p.addr_street].filter(Boolean).join(" ")||"";
           return p[cfg[kind]]||"";
         }
-        function v9SearchPopup(p,cfg){
-          if(["Bexar","Comal","Guadalupe"].indexOf(cfg.county)!==-1)return parcelPopup(p,cfg.county,false);
-          return v16TrackerParcelPopup(p,{
-            county:cfg.county,idFields:[cfg.id,"propidtxt","account_id"],
+        function v9SearchPopupConfig(cfg){
+          return {
+            county:cfg.county,
+            idFields:[cfg.id,"PROP_ID","Prop_ID","propidtxt","prop_id","account_id","geo_id"],
             ownerFields:[cfg.owner],acreFields:[cfg.acres],
             addressFields:[cfg.situs],addressParts:cfg.county==="Kerr"?["addr_num","addr_street"]:null,
             valueFields:[],linkFields:[],note:cfg.county+" public parcel GIS"
-          });
+          };
+        }
+        function v9SearchTrackerData(p,cfg){
+          if(["Bexar","Comal","Guadalupe"].indexOf(cfg.county)!==-1)return v12ParcelTrackerData(p,cfg.county);
+          return v16TrackerParcelData(p,v9SearchPopupConfig(cfg));
+        }
+        function v9SearchPopup(p,cfg){
+          if(["Bexar","Comal","Guadalupe"].indexOf(cfg.county)!==-1)return parcelPopup(p,cfg.county,false);
+          return v16TrackerParcelPopup(p,v9SearchPopupConfig(cfg));
         }
         function v9RenderParcelSearchResults(){
           var box=document.getElementById("v9SearchResults"),status=document.getElementById("v9SearchStatus");
@@ -5338,15 +5369,19 @@
             var p=rec.feature.properties||{},cfg=rec.cfg, rawAcres=v9SearchValue(p,cfg,"acres"),acres=Number(rawAcres),
               pid=v9SearchValue(p,cfg,"id"),owner=v9SearchValue(p,cfg,"owner")||"Owner not reported",
               situs=v9SearchValue(p,cfg,"situs")||"Address not reported";
-            return "<div class='v9SearchResult' data-search-index='"+i+"'><b>"+v6h(situs)+"</b><span>"+v6h(cfg.county)+" · "+(rawAcres!==""&&isFinite(acres)?acres.toFixed(2)+" ac · ":"")+"ID "+v6h(pid)+" · "+v6h(owner)+"</span></div>";
+            return "<div class='v9SearchResult' data-search-index='"+i+"'><b>"+v6h(situs)+"</b><span>"+v6h(cfg.county)+" · "+(rawAcres!==""&&isFinite(acres)?acres.toFixed(2)+" ac · ":"")+"ID "+v6h(pid)+" · "+v6h(owner)+"</span>"+
+              "<div class='v7PopupActions'>"+v12TrackerButton(v9SearchTrackerData(p,cfg))+"</div></div>";
           }).join("");
           Array.prototype.forEach.call(box.querySelectorAll(".v9SearchResult"),function(el){
-            el.onclick=function(){
+            el.onclick=function(event){
+              // Saving from a result must not also zoom the map.
+              if(event.target.closest&&event.target.closest(".save-to-tracker"))return;
               var rec=window.v9ParcelSearchResults[Number(el.getAttribute("data-search-index"))];
               if(!rec||!rec.layer)return;
               try{map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(rec.layer.getBounds().pad(.35),{maxZoom:17});rec.layer.openPopup();}catch(e){}
             };
           });
+          v12BindTrackerButtons(box);
         }
         function v9RunParcelSearch(){
           var input=document.getElementById("v9ParcelSearch"),status=document.getElementById("v9SearchStatus");
