@@ -3596,7 +3596,9 @@
           return isNaN(d.getTime())?String(v):d.toLocaleDateString();
         }
         function v3BexarCard(p){
-          var acres=Number(p.Land_acres), land=(Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0);
+          var acres=p.Land_acres==null?NaN:Number(p.Land_acres);
+          var landReported=p.Land_hstd_val!=null||p.Land_non_hstd_val!=null;
+          var land=(Number(p.Land_hstd_val)||0)+(Number(p.Land_non_hstd_val)||0);
           var situs=p.Situs||"Address not reported", owner=String(p.Owner_name||"").trim(), pid=p.Prop_id||p.Geo_id||"Not reported";
           var ownerMissing=!owner; if(ownerMissing)owner="Checking county ownership…";
           var mapQuery=encodeURIComponent(situs+", Bexar County, TX");
@@ -3613,7 +3615,7 @@
             "</div>"+
             "<div class='bcad-card-body'>"+
               "<div class='bcad-row'><div class='bcad-label'>Market value</div><div class='bcad-value'>"+v3money(p.Market_val)+"</div></div>"+
-              "<div class='bcad-row'><div class='bcad-label'>Land value</div><div class='bcad-value'>"+v3money(land)+"</div></div>"+
+              "<div class='bcad-row'><div class='bcad-label'>Land value</div><div class='bcad-value'>"+(landReported?v3money(land):"Not reported")+"</div></div>"+
               "<div class='bcad-row'><div class='bcad-label'>Last deed</div><div class='bcad-value'>"+v3esc(v3BexarDate(p.Last_Deed_Date))+"</div></div>"+
               "<div class='bcad-row'><div class='bcad-label'>Ownership</div><div class='bcad-value'>"+v3esc(p.Ownership_Type||"Not reported")+"</div></div>"+
               "<div class='bcad-row'><div class='bcad-label'>Legal</div><div class='bcad-value'>"+v3esc(p.Legal_desc||"Not reported")+"</div></div>"+
@@ -3636,8 +3638,10 @@
           var id=String(card.getAttribute("data-bcad-prop-id")||"").trim();
           var ownerNode=card.querySelector(".bcad-owner");
           if(!ownerNode)return;
-          if(!/^[1-9]\d*$/.test(id)){
-            ownerNode.textContent="No property ID in the map source — verify BCAD";
+          var numericId=/^[1-9]\d*$/.test(id);
+          var geoId=/^[A-Za-z0-9-]+$/.test(id)&&id.indexOf("-")>=0;
+          if(!numericId&&!geoId){
+            ownerNode.textContent="Owner unavailable — verify with BCAD";
             return;
           }
           function applyOwner(owner){
@@ -3661,16 +3665,40 @@
             card.setAttribute("data-owner-missing","0");
           }
           if(window.v31BexarOwnerCache[id]){applyOwner(window.v31BexarOwnerCache[id]);return;}
+          var where=numericId?"Prop_id = "+Number(id):"Geo_id = '"+id.replace(/'/g,"''")+"'";
           L.esri.query({url:v3ParcelUrl+"/0"})
-            .where("Prop_id = "+Number(id))
-            .fields(["Prop_id","Owner_name"])
+            .where(where)
+            .fields(["Prop_id","Geo_id","Owner_name","Land_acres","Market_val"])
             .limit(1)
             .run(function(err,fc){
               if(err||!fc||!fc.features||!fc.features.length){applyOwner("");return;}
               var p=fc.features[0].properties||{};
-              if(String(p.Prop_id)!==id){applyOwner("");return;}
+              if(numericId&&String(p.Prop_id)!==id){applyOwner("");return;}
+              if(geoId&&String(p.Geo_id||"").trim()!==id){applyOwner("");return;}
               var owner=String(p.Owner_name||"").trim();
-              if(owner)window.v31BexarOwnerCache[id]=owner;
+              if(owner){
+                window.v31BexarOwnerCache[id]=owner;
+                if(p.Prop_id>0)window.v31BexarOwnerCache[String(p.Prop_id)]=owner;
+              }
+              // When the fast map source lacks a numeric ID, replace the
+              // displayed geographic ID with the actual BCAD property ID.
+              if(p.Prop_id>0&&geoId&&card.isConnected){
+                var chip=card.querySelector(".bcad-chip:last-child");
+                if(chip)chip.textContent="ID "+p.Prop_id+" · GEO "+id;
+                card.setAttribute("data-bcad-prop-id",String(p.Prop_id));
+                var copy=card.querySelector(".copy-property-id");
+                if(copy)copy.dataset.propertyId=String(p.Prop_id);
+                var button=card.querySelector(".save-to-tracker");
+                if(button&&!button.disabled){
+                  try{
+                    var data=JSON.parse(decodeURIComponent(button.getAttribute("data-tracker-payload")||""));
+                    data.parcelId=String(p.Prop_id);
+                    data.mapLink=v12TrackerMapLink("Bexar",p.Prop_id);
+                    if(p.Land_acres!=null)data.acres=p.Land_acres;
+                    button.setAttribute("data-tracker-payload",encodeURIComponent(JSON.stringify(data)));
+                  }catch(e){}
+                }
+              }
               applyOwner(owner);
             });
         }
@@ -3702,24 +3730,31 @@
         // Keep CAD ownership separate from geometry: the weekly hosted layer
         // includes placeholder polygons with negative IDs and blank owners.
         window.v31BexarOwnerCache=window.v31BexarOwnerCache||{};
+        // Both parcel endpoints are used on clicks:
+        // Hosted BCAD: PropID / Owner_Name / legal_acre
+        // SARA BCAD: Prop_id / Owner_name / Land_acres
+        // Do not discard SARA fields when opening a coordinate-identified parcel.
         function v25BexarNormalize(p){
           p=p||{};
-          var id=p.PropID, owner=String(p.Owner_Name||"").trim();
+          function actual(v){return v!=null&&String(v).trim()!==""?v:null;}
+          var id=actual(p.PropID)||actual(p.Prop_id)||"",
+              geo=actual(p.Geo_id)||"",
+              owner=String(actual(p.Owner_Name)||actual(p.Owner_name)||"").trim();
           if(!owner&&id>0)owner=window.v31BexarOwnerCache[String(id)]||"";
           return {
             OBJECTID:p.OBJECTID,
             Prop_id:id,
-            Geo_id:p.Geo_id,
+            Geo_id:geo,
             Owner_name:owner,
-            Situs:p.Situs,
-            Land_acres:p.legal_acre,
-            Market_val:"",
-            Land_hstd_val:"",
-            Land_non_hstd_val:"",
-            Last_Deed_Date:"",
-            Ownership_Type:"",
-            Legal_desc:p.legal_desc||"",
-            CADLINK:""
+            Situs:actual(p.Situs)||"",
+            Land_acres:actual(p.legal_acre)||actual(p.Land_acres),
+            Market_val:actual(p.Market_val),
+            Land_hstd_val:actual(p.Land_hstd_val),
+            Land_non_hstd_val:actual(p.Land_non_hstd_val),
+            Last_Deed_Date:actual(p.Last_Deed_Date),
+            Ownership_Type:actual(p.Ownership_Type),
+            Legal_desc:actual(p.legal_desc)||actual(p.Legal_desc)||"",
+            CADLINK:actual(p.CADLINK)||""
           };
         }
 
