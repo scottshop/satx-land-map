@@ -3738,6 +3738,7 @@
         var v3BexarSelectedParcel=null;
         var v3BexarSelection=L.featureGroup();
         function v3SelectBexarParcel(layer){
+          if(typeof v9ClearParcelSearchHighlight==="function")v9ClearParcelSearchHighlight();
           v3BexarSelectedParcel=layer||null;
           v3BexarSelection.clearLayers();
           if(layer&&layer.feature){
@@ -3916,6 +3917,7 @@
           return "Comal CAD"+(isFinite(ac)?" · "+ac.toFixed(2)+" AC":"");
         },{sticky:true});
         v3ComalParcels.bindPopup(function(layer){return parcelPopup(layer.feature.properties||{},"Comal",false);});
+        v3ComalParcels.on("click",function(){if(typeof v9ClearParcelSearchHighlight==="function")v9ClearParcelSearchHighlight();});
 
         // Guadalupe source: Guadalupe CAD parcel extract distributed through a public ArcGIS service.
         // Public GIS copies are less current than the live Guadalupe CAD property-search portal,
@@ -3943,6 +3945,7 @@
             .run(function(err,fc){
               if(err||!fc||!fc.features||!fc.features.length)return;
               var feature=fc.features[0],p=feature.properties||{};
+              if(typeof v9ClearParcelSearchHighlight==="function")v9ClearParcelSearchHighlight();
               v20HighlightParcelFeature(feature,function(){return {color:"#00d7d7",weight:4,opacity:1,fillColor:"#00a6a6",fillOpacity:.12,lineJoin:"round"};});
               L.popup({maxWidth:340}).setLatLng(latlng)
                 .setContent(parcelPopup(p,"Guadalupe",false))
@@ -4046,6 +4049,7 @@
           layer.bindPopup(function(x){return v16TrackerParcelPopup(x.feature&&x.feature.properties||{},cfg);},{maxWidth:340});
           layer.on("mouseover",function(e){if(e&&e.layer&&e.layer.setStyle)e.layer.setStyle(v16ParcelHover());});
           layer.on("mouseout",function(e){if(e&&e.layer&&e.layer.setStyle)e.layer.setStyle(v16ParcelStyle());});
+          layer.on("click",function(){if(typeof v9ClearParcelSearchHighlight==="function")v9ClearParcelSearchHighlight();});
           return layer;
         }
 
@@ -4139,6 +4143,7 @@
             var feature=fc.features[0],p=feature.properties||{};
             if(!feature.geometry)return false;
             found=true;
+            if(typeof v9ClearParcelSearchHighlight==="function")v9ClearParcelSearchHighlight();
             window.v30SelectedCadParcel.clearLayers();
             L.geoJSON(feature,{
               pane:"cadSelected",interactive:false,
@@ -5552,6 +5557,21 @@
         window.v9ParcelSearchResults=[];
         window.v9ParcelSearchFailures=[];
         window.v9ParcelSearchSequence=0;
+        window.v9ActiveSearchResult=null;
+        function v9ClearParcelSearchHighlight(){
+          window.v9ActiveSearchResult=null;
+          if(window.v9ParcelSearchLayer)window.v9ParcelSearchLayer.clearLayers();
+        }
+        function v9ShowParcelSearchHighlight(rec,openPopup){
+          if(!rec||!rec.layer)return;
+          v9ClearParcelSearchHighlight();
+          window.v9ActiveSearchResult=rec;
+          rec.layer.addTo(window.v9ParcelSearchLayer);
+          try{
+            map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(rec.layer.getBounds().pad(.35),{maxZoom:17});
+            if(openPopup!==false)rec.layer.openPopup();
+          }catch(e){}
+        }
         function v9Sql(v){return String(v||"").trim().replace(/'/g,"''");}
         function v9SearchConfig(){
           return [
@@ -5616,7 +5636,7 @@
               if(event.target.closest&&event.target.closest(".save-to-tracker"))return;
               var rec=window.v9ParcelSearchResults[Number(el.getAttribute("data-search-index"))];
               if(!rec||!rec.layer)return;
-              try{map_33cc2c2ac68d72d2971fbb7de3650b24.fitBounds(rec.layer.getBounds().pad(.35),{maxZoom:17});rec.layer.openPopup();}catch(e){}
+              v9ShowParcelSearchHighlight(rec,true);
             };
           });
           v12BindTrackerButtons(box);
@@ -5628,7 +5648,7 @@
           var county=(document.getElementById("v9CountySearch")||{}).value||"";
           var configs=v9SearchConfig().filter(function(x){return !county||x.county===county;});
           var sequence=++window.v9ParcelSearchSequence;
-          window.v9ParcelSearchResults=[];window.v9ParcelSearchFailures=[];window.v9ParcelSearchLayer.clearLayers();
+          window.v9ParcelSearchResults=[];window.v9ParcelSearchFailures=[];v9ClearParcelSearchHighlight();
           if(status)status.textContent="Searching "+(county||"all 8 counties")+"…";
           var pending=configs.length;
           configs.forEach(function(cfg){
@@ -5641,12 +5661,14 @@
                   var p=feature.properties||{};
                   var layer=L.geoJSON(feature,{pane:"cadSelected",style:{color:"#22d3ee",weight:4,opacity:1,fillColor:"#22d3ee",fillOpacity:.10}});
                   layer.bindPopup(function(){return v9SearchPopup(p,cfg);},{maxWidth:360});
-                  layer.addTo(window.v9ParcelSearchLayer);
                   window.v9ParcelSearchResults.push({feature:feature,cfg:cfg,layer:layer});
                 });
               }
               pending--;
-              if(pending===0)v9RenderParcelSearchResults();
+              if(pending===0){
+                v9RenderParcelSearchResults();
+                if(window.v9ParcelSearchResults.length===1)v9ShowParcelSearchHighlight(window.v9ParcelSearchResults[0],false);
+              }
             });
           });
         }
@@ -5684,6 +5706,7 @@
               var layer=L.geoJSON(f,{style:v6style,pane:"v6ExactParcelPane",interactive:true});
               layer.bindPopup(function(){return v6popup(p);},{maxWidth:390});
               layer.bindTooltip("#"+p.rank+" · "+(p.acquisition_category||"WATCH")+" · "+p.acres+" AC · "+(p.owner||"Target parcel"),{sticky:true});
+              layer.on("click",function(){if(typeof v9ClearParcelSearchHighlight==="function")v9ClearParcelSearchHighlight();});
               layer.on("mouseover",function(){var s=v6style(f);s.weight=(Number(s.weight)||3)+1.5;s.fillOpacity=Math.max(Number(s.fillOpacity)||0,.20);layer.setStyle(s);});
               layer.on("mouseout",function(){layer.setStyle(v6style(f));});
               layer.addTo(window.v6OpportunityLayer);
