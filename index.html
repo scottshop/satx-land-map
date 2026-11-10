@@ -3556,14 +3556,26 @@
               button.disabled=false;
             });
         }
-        function v12BindTrackerButtons(root){
-          if(!root)return;
-          Array.prototype.forEach.call(root.querySelectorAll(".save-to-tracker"),function(button){
-            if(button.dataset.trackerBound==="1")return;
-            button.dataset.trackerBound="1";
-            button.addEventListener("click",function(){v12SaveToTracker(button);});
-          });
+        // Tracker save uses one delegated handler so dynamically-created parcel cards,
+        // Leaflet popups, search results, and future county layers all work automatically.
+        var v12TrackerDelegationInstalled=false;
+        function v12EnsureTrackerDelegation(){
+          if(v12TrackerDelegationInstalled)return;
+          v12TrackerDelegationInstalled=true;
+          document.addEventListener("click",function(event){
+            var target=event.target&&event.target.closest?event.target.closest(".save-to-tracker"):null;
+            if(!target)return;
+            event.preventDefault();
+            event.stopPropagation();
+            v12SaveToTracker(target);
+          },true);
         }
+        function v12BindTrackerButtons(root){
+          // Legacy compatibility: callers may still invoke this after opening a popup.
+          // Delegation means no per-button listener is necessary.
+          v12EnsureTrackerDelegation();
+        }
+        v12EnsureTrackerDelegation();
 
         // A safe, inert handoff of the selected CAD attributes to the detail drawer.
         // Only clicked parcels carry attributes; map polygon rendering stays unchanged.
