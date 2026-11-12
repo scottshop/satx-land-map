@@ -1,47 +1,57 @@
-# Map → Land Deal Tracker bridge
+# Land Deal Tracker web app bridge
 
-This folder contains the private-side Google Apps Script code for the **Save to Tracker** button.
+This folder contains the Google Apps Script code behind **Save to Tracker**
+and the live **Tracker Sites** map layer.
 
-The public GitHub map never stores Google credentials or the private tracker key.
+## Current tracker schema
 
-## One-time setup
+The source of truth is the existing **Land Deal Tracker** Google Sheet,
+**Deals** tab. Its header row includes:
 
-1. Open the **Land Deal Tracker** Google Sheet.
-2. Go to **Extensions → Apps Script**.
-3. Replace the default code with `Code.gs` from this folder.
-4. In the script, replace `PASTE_SPREADSHEET_ID` with the spreadsheet ID from the Sheet URL.
-5. Run `setupTrackerKey()` once and copy the generated key from the execution log.
-6. Choose **Deploy → New deployment → Web app**.
-   - Execute as: **Me**
-   - Who has access: **Anyone**
-7. Copy the deployed `/exec` URL into `data/tracker-config.js`.
-8. The first time you press **Save to Tracker** on the map, paste the generated tracker key. The browser stores it locally so you do not enter it again.
+- A: Location / Intersection
+- B: Priority (checkbox)
+- C: Size (AC)
+- D: Attachments
+- E: Stage
+- I: Contact Made? (checkbox)
+- K: Owner Contact
+- L: Notes
+- M: Map Link
 
-The Apps Script checks **County + Parcel ID** before writing, so repeated clicks do not create duplicate deal rows.
+The Apps Script resolves columns by **header text**, not fixed positions.
+County and Parcel ID are extracted from the Map Link query parameters
+(`county/parcel` or legacy `importCounty/importParcel`).
 
+Do **not** revert the script to the original 14-column Deal / Site format,
+which would misinterpret these columns and corrupt future saves.
 
-## Live Tracker Sites sync
+## Deploy an update without changing the public URL
 
-The map now supports a secure read endpoint:
+1. Open the **Land Deal Tracker** Sheet and select **Extensions → Apps Script**.
+2. Update `Code.gs` with the reviewed file here.
+3. Select **Deploy → Manage deployments** and edit the existing active Web App.
+4. Choose **New version** and deploy, preserving **Execute as Me** and
+   **Who has access: Anyone**.
+5. **Keep the existing deployment URL** configured in `data/tracker-config.js`.
+   Do not create a new deployment.
 
-- `GET /exec?action=trackerSites&key=<TRACKER_KEY>`
-- Optional JSONP callback: `&callback=__landTrackerSitesCallback`
+The API supports:
+- `GET /exec?action=trackerSites&callback=<safeCallbackName>` to read map-safe
+  active records (no notes, prices, or attachment URLs).
+- `POST /exec` with form fields `county`, `parcelId`, `mapLink`,
+  `dealSite`, `acres`, `owner`, and `notes`.
 
-The endpoint returns only the fields needed to draw and label active tracker sites:
-- deal/site
-- acreage
-- stage
-- next action + date
-- owner
-- county
-- parcel ID
-- map link
+The bridge checks County + Parcel ID before writing, then places new deals in
+the next truly empty deal row, ignoring empty template rows containing FALSE
+checkbox values. It preserves existing deals, attachment cells, checkbox
+defaults, and Google Maps links on the Location cells.
 
-It excludes offer/price, key deadlines, closing dates, deal-folder links, and notes.
+## Test
 
-While the **Tracker Sites** layer is on, the map refreshes the Sheet every 30 seconds. Existing parcel geometry is recolored in place:
-- Pursuing / Tracking / Watch List → yellow
-- LOI / Under Contract / Contract → green
-- Closed / Dead → removed from Tracker Sites on the next sync
+```sh
+node tests/tracker-bridge.cjs
+```
 
-After changing `Code.gs`, publish a new Apps Script Web App version while keeping the same public `/exec` URL in `data/tracker-config.js`.
+Also confirm that the live endpoint returns the correct `county` and
+`parcelId`, not dates or contact names. The map verifies saves with its
+own live JSONP callback rather than depending on the Tracker Sites toggle.
