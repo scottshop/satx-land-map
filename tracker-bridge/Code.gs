@@ -150,7 +150,10 @@ function doPost(e) {
     const existing=cell.getValues()[0];
     const values=existing.slice();
     const acres=Number(p.acres);
-    values[col.site-1]=clean_(p.dealSite)||county+' parcel '+parcelId;
+    // New clients send a HYPERLINK-formula fallback for older deployments.
+    // Prefer the plain display text on upgraded deployments, so the native
+    // rich-text Location hyperlink can be renamed directly in the Sheet.
+    values[col.site-1]=clean_(p.locationText)||clean_(p.dealSite)||county+' parcel '+parcelId;
     values[col.acres-1]=clean_(p.acres)!==''&&isFinite(acres)&&acres>=0?acres.toFixed(2)+' AC':'';
     values[col.stage-1]='Pursuing';
     if(col.owner)values[col.owner-1]=clean_(p.owner);
@@ -159,6 +162,21 @@ function doPost(e) {
     // Do not change existing priority/contact-made checkbox defaults, other columns,
     // or any pre-existing attachment link.
     cell.setValues([values]);
+    // Google Maps links are attached to the visible Location text as native
+    // rich-text links, not HYPERLINK formulas. The user can rename the site
+    // directly in the Sheet without losing the coordinate destination.
+    const latitude=Number(p.latitude),longitude=Number(p.longitude);
+    if(clean_(p.latitude)!=='' && clean_(p.longitude)!=='' &&
+       isFinite(latitude) && isFinite(longitude) &&
+       latitude>=25 && latitude<=37 && longitude>=-107 && longitude<=-93) {
+      const coord=latitude.toFixed(8)+','+longitude.toFixed(8);
+      const mapsUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(coord);
+      const rich=SpreadsheetApp.newRichTextValue()
+        .setText(values[col.site-1])
+        .setLinkUrl(mapsUrl)
+        .build();
+      sheet.getRange(row,col.site).setRichTextValue(rich);
+    }
     SpreadsheetApp.flush();
     return json_({ok:true,duplicate:false,row:row});
   } catch(err) {

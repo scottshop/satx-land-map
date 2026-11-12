@@ -23,6 +23,7 @@ for(let row=2;row<=234;row++){
   cells.push(a);
 }
 let writes=0;
+const richLinks={};
 const sheet={
  getLastColumn:()=>14,
  getLastRow:()=>234,
@@ -30,14 +31,16 @@ const sheet={
  getRange:(row,col,n=1,w=1)=>({
    getDisplayValues:()=>Array.from({length:n},(_,i)=>cells[row+i-1].slice(col-1,col+w-1).map(v=>v===false?'FALSE':String(v??''))),
    getValues:()=>Array.from({length:n},(_,i)=>cells[row+i-1].slice(col-1,col+w-1)),
-   setValues:(v)=>{v.forEach((x,i)=>x.forEach((item,j)=>cells[row+i-1][col+j-1]=item));writes++;return this;}
+   setValues:(v)=>{v.forEach((x,i)=>x.forEach((item,j)=>cells[row+i-1][col+j-1]=item));writes++;return this;},
+   setRichTextValue:(v)=>{cells[row-1][col-1]=v.text;richLinks[row]=v.uri;return this;}
  })
 };
 const ContentService={
  MimeType:{JSON:'json',JAVASCRIPT:'js'},
  createTextOutput:(text)=>({text,setMimeType:function(){return this;}})
 };
-const context={SpreadsheetApp:{openById:()=>({getSheetByName:()=>sheet}),flush:()=>{}},
+const context={SpreadsheetApp:{openById:()=>({getSheetByName:()=>sheet}),flush:()=>{},
+ newRichTextValue:()=>({text:'',uri:'',setText:function(v){this.text=v;return this;},setLinkUrl:function(v){this.uri=v;return this;},build:function(){return this;}})},
  LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock:()=>{}})},
  ContentService,console,Date,
  Utilities:{getUuid:()=> '12345678-aaaa-bbbb-cccc-12345678bbbb'},
@@ -59,10 +62,11 @@ const duplicate=post({county:'Bexar',parcelId:'619202',mapLink:cells[3][12]});
 assert.equal(duplicate.duplicate,true);
 assert.equal(writes,0);
 const mapLink='https://scottshop.github.io/satx-land-map/?county=Guadalupe&parcel=001245';
-const added=post({county:'Guadalupe',parcelId:'001245',mapLink,dealSite:'NWC Test & IH-10',acres:'12.34',owner:'Known landowner',notes:'Test save'});
+const added=post({county:'Guadalupe',parcelId:'001245',mapLink,locationText:'NWC Test & IH-10',dealSite:'=HYPERLINK("https://www.google.com/maps/search/?api=1&query=29.47390609%2C-98.29319984","NWC Test & IH-10")',acres:'12.34',owner:'Known landowner',notes:'Test save',latitude:'29.47390609',longitude:'-98.29319984'});
 assert.equal(added.ok,true);
 assert.equal(added.row,77);
 assert.equal(cells[76][0],'NWC Test & IH-10');
+assert.equal(richLinks[77],'https://www.google.com/maps/search/?api=1&query=29.47390609%2C-98.29319984');
 assert.equal(cells[76][2],'12.34 AC');
 assert.equal(cells[76][4],'Pursuing');
 assert.equal(cells[76][10],'Known landowner');
@@ -78,4 +82,4 @@ assert.equal(post({county:'Guadalupe',parcelId:'001245',mapLink}).duplicate,true
 assert.equal(writes,1);
 assert.equal(post({county:'Comal',parcelId:'001245',mapLink}).ok,false);
 assert.equal(writes,1);
-console.log('PASS tracker bridge read, append, preserve checkboxes, and duplicate detection');
+console.log('PASS tracker bridge read, coordinate Location hyperlink, append, preserve checkboxes, and duplicate detection');
