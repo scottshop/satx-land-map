@@ -3501,34 +3501,103 @@
           var payload=encodeURIComponent(JSON.stringify(data||{}));
           return "<button type='button' class='save-to-tracker' data-tracker-payload='"+v3esc(payload)+"'>Save to Tracker</button>";
         }
-        function v12TrackerHasParcel(data){
+        function v12TrackerHasParcel(data,sites){
+          var rows=Array.isArray(sites)?sites:window.v15TrackerData;
           var county=String((data&&data.county)||"").trim().toLowerCase();
           var parcel=String((data&&data.parcelId)||"").trim();
-          return Array.isArray(window.v15TrackerData)&&window.v15TrackerData.some(function(r){
-            return String(r.county||"").trim().toLowerCase()===county && String(r.parcelId||"").trim()===parcel;
+          return Array.isArray(rows)&&rows.some(function(r){
+            return String(r.county||"").trim().toLowerCase()===county &&
+              String(r.parcelId||"").trim()===parcel;
           });
         }
+        // Confirm against a dedicated live JSONP request. The regular Tracker
+        // Sites layer can be disabled or mid-refresh; its cache is not proof
+        // that an Apps Script POST failed.
+        var v12TrackerVerifySeq=0;
         function v12ConfirmTrackerSave(button,data){
-          var started=Date.now(), checks=0;
-          function finish(ok,label){
+          var started=Date.now(),done=false;
+          function finish(ok){
+            if(done)return;
+            done=true;
             if(ok){
-              button.textContent=label||"Saved to Tracker";
+              button.textContent="Saved to Tracker";
               button.classList.add("is-sent");
               button.disabled=true;
             }else{
-              button.textContent="Save failed — retry";
+              button.textContent="Save not confirmed — retry";
               button.classList.remove("is-sent");
               button.disabled=false;
+              button.title="The tracker did not confirm the save. It may have succeeded; the server checks for duplicates on retry.";
             }
           }
-          function check(){
-            if(v12TrackerHasParcel(data)){finish(true,"Saved to Tracker");return;}
-            if(Date.now()-started>15000){finish(false);return;}
-            checks++;
-            try{v15RefreshTrackerSites(false);}catch(e){}
-            setTimeout(check,checks<2?2200:3200);
+          function verify(){
+            if(done)return;
+            if(v12TrackerHasParcel(data)){finish(true);return;}
+            if(Date.now()-started>65000){finish(false);return;}
+            var callback="__landTrackerSaveVerify"+(++v12TrackerVerifySeq);
+            var script=document.createElement("script");
+            var timeout=null,settled=false;
+            function cleanup(){
+              if(settled)return false;
+              settled=true;
+              clearTimeout(timeout);
+              try{script.remove();}catch(e){}
+              try{delete window[callback];}catch(e){window[callback]=undefined;}
+              return true;
+            }
+            function retry(){
+              if(done)return;
+              setTimeout(verify,2200);
+            }
+            window[callback]=function(payload){
+              if(!cleanup())return;
+              if(payload&&payload.ok===true&&Array.isArray(payload.sites)){
+                if(v12TrackerHasParcel(data,payload.sites)){
+                  try{v15ApplyLiveTrackerPayload(payload);}catch(e){}
+                  finish(true);
+                  return;
+                }
+                // Sync the live layer when useful, but do not rely on its cache.
+                try{if(window.v15TrackerLoaded)v15ApplyLiveTrackerPayload(payload);}catch(e){}
+              }
+              retry();
+            };
+            script.onerror=function(){if(cleanup())retry();};
+            script.src=v12TrackerEndpoint()+
+              (v12TrackerEndpoint().indexOf("?")>=0?"&":"?")+
+              "action=trackerSites&callback="+callback+"&_="+Date.now();
+            timeout=setTimeout(function(){if(cleanup())retry();},22000);
+            document.head.appendChild(script);
           }
-          setTimeout(check,1200);
+          button.textContent="Verifying in Tracker…";
+          setTimeout(verify,1000);
+        }
+        // Block writes to an old Apps Script deployment whose positional
+        // column mapping would corrupt rows after the tracker layout change.
+        window.v12TrackerBridgeReady=false;
+        function v12VerifyTrackerBridge(callbackDone){
+          if(window.v12TrackerBridgeReady){callbackDone(true);return;}
+          var cb="__landTrackerBridgeCheck"+(++v12TrackerVerifySeq);
+          var script=document.createElement("script"),done=false,timer=null;
+          function settle(ok){
+            if(done)return;
+            done=true;
+            clearTimeout(timer);
+            try{script.remove();}catch(e){}
+            try{delete window[cb];}catch(e){window[cb]=undefined;}
+            if(ok)window.v12TrackerBridgeReady=true;
+            callbackDone(ok);
+          }
+          window[cb]=function(payload){
+            settle(!!(payload&&payload.ok===true&&
+              payload.schemaVersion==="header-mapped-2026-11-12"));
+          };
+          script.onerror=function(){settle(false);};
+          script.src=v12TrackerEndpoint()+
+            (v12TrackerEndpoint().indexOf("?")>=0?"&":"?")+
+            "action=trackerSites&callback="+cb+"&_="+Date.now();
+          timer=setTimeout(function(){settle(false);},25000);
+          document.head.appendChild(script);
         }
         function v12SaveToTracker(button){
           if(!button||button.disabled)return;
@@ -3545,16 +3614,25 @@
             button.disabled=true;
             return;
           }
-          var body=new URLSearchParams();
-          Object.keys(data).forEach(function(k){body.set(k,String(data[k]==null?"":data[k]));});
           button.disabled=true;
-          button.textContent="Saving…";
-          fetch(endpoint,{method:"POST",mode:"no-cors",body:body})
-            .then(function(){v12ConfirmTrackerSave(button,data);})
-            .catch(function(){
-              button.textContent="Save failed — retry";
+          button.textContent="Checking Tracker…";
+          v12VerifyTrackerBridge(function(ready){
+            if(!ready){
+              button.textContent="Tracker bridge needs update";
+              button.title="The Google Apps Script deployment still uses old tracker columns. Save is blocked to protect the Sheet.";
               button.disabled=false;
-            });
+              return;
+            }
+            var body=new URLSearchParams();
+            Object.keys(data).forEach(function(k){body.set(k,String(data[k]==null?"":data[k]));});
+            button.textContent="Saving…";
+            fetch(endpoint,{method:"POST",mode:"no-cors",body:body})
+              .then(function(){v12ConfirmTrackerSave(button,data);})
+              .catch(function(){
+                button.textContent="Save request failed — retry";
+                button.disabled=false;
+              });
+          });
         }
         // Tracker save uses one delegated handler so dynamically-created parcel cards,
         // Leaflet popups, search results, and future county layers all work automatically.
