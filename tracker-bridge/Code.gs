@@ -150,7 +150,10 @@ function doPost(e) {
     const existing=cell.getValues()[0];
     const values=existing.slice();
     const acres=Number(p.acres);
-    values[col.site-1]=clean_(p.dealSite)||county+' parcel '+parcelId;
+    // New clients send a HYPERLINK-formula fallback for older deployments.
+    // Prefer the plain display text on upgraded deployments, so the native
+    // rich-text Location hyperlink can be renamed directly in the Sheet.
+    values[col.site-1]=clean_(p.locationText)||clean_(p.dealSite)||county+' parcel '+parcelId;
     values[col.acres-1]=clean_(p.acres)!==''&&isFinite(acres)&&acres>=0?acres.toFixed(2)+' AC':'';
     values[col.stage-1]='Pursuing';
     if(col.owner)values[col.owner-1]=clean_(p.owner);
