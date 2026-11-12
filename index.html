@@ -3676,6 +3676,16 @@
           }
           data.latitude=savePoint.latitude;
           data.longitude=savePoint.longitude;
+          // The existing Apps Script deployment accepts a HYPERLINK formula
+          // as a Sheets cell value. This keeps coordinate links working
+          // immediately. The next bridge version uses locationText to write a
+          // native editable rich-text link (which survives renaming).
+          var locationText=String(data.dealSite||((data.county||"County")+" parcel "+data.parcelId)).trim();
+          var googleMapsUrl="https://www.google.com/maps/search/?api=1&query="+
+            encodeURIComponent(savePoint.latitude+","+savePoint.longitude);
+          data.locationText=locationText;
+          data.dealSite='=HYPERLINK("'+googleMapsUrl+'","'+
+            locationText.replace(/"/g,'""')+'")';
           if(v12TrackerHasParcel(data)){
             button.textContent="Already in Tracker";
             button.classList.add("is-sent");
