@@ -159,6 +159,21 @@ function doPost(e) {
     // Do not change existing priority/contact-made checkbox defaults, other columns,
     // or any pre-existing attachment link.
     cell.setValues([values]);
+    // Google Maps links are attached to the visible Location text as native
+    // rich-text links, not HYPERLINK formulas. The user can rename the site
+    // directly in the Sheet without losing the coordinate destination.
+    const latitude=Number(p.latitude),longitude=Number(p.longitude);
+    if(clean_(p.latitude)!=='' && clean_(p.longitude)!=='' &&
+       isFinite(latitude) && isFinite(longitude) &&
+       latitude>=25 && latitude<=37 && longitude>=-107 && longitude<=-93) {
+      const coord=latitude.toFixed(8)+','+longitude.toFixed(8);
+      const mapsUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(coord);
+      const rich=SpreadsheetApp.newRichTextValue()
+        .setText(values[col.site-1])
+        .setLinkUrl(mapsUrl)
+        .build();
+      sheet.getRange(row,col.site).setRichTextValue(rich);
+    }
     SpreadsheetApp.flush();
     return json_({ok:true,duplicate:false,row:row});
   } catch(err) {
