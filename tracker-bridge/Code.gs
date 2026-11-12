@@ -107,7 +107,7 @@ function doGet(e) {
         mapLink:clean_(r[col.mapLink-1])
       };
     }).filter(Boolean);
-    return output_(p.callback,{ok:true,sites:sites,generatedAt:new Date().toISOString()});
+    return output_(p.callback,{ok:true,schemaVersion:'header-mapped-2026-11-12',sites:sites,generatedAt:new Date().toISOString()});
   } catch(err) {
     return output_(p.callback,{ok:false,error:String(err&&err.message||err)});
   }
