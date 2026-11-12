@@ -3599,6 +3599,66 @@
           timer=setTimeout(function(){settle(false);},25000);
           document.head.appendChild(script);
         }
+        // Capture actual parcel coordinates, not a guessed address or generic
+        // intersection name. Search cards carry CAD GeoJSON geometry; parcel
+        // popups carry the clicked map coordinate.
+        function v12TrackerValidPoint(lat,lng){
+          lat=Number(lat);lng=Number(lng);
+          if(!isFinite(lat)||!isFinite(lng)||lat<25||lat>37||lng< -107||lng> -93)return null;
+          return {latitude:lat.toFixed(8),longitude:lng.toFixed(8)};
+        }
+        function v12TrackerGeometryPoint(feature){
+          var geom=feature&&feature.geometry;
+          if(!geom)return null;
+          if(geom.type==="Point"&&Array.isArray(geom.coordinates)){
+            return v12TrackerValidPoint(geom.coordinates[1],geom.coordinates[0]);
+          }
+          var rings=[];
+          if(geom.type==="Polygon")rings=[geom.coordinates&&geom.coordinates[0]];
+          if(geom.type==="MultiPolygon")rings=(geom.coordinates||[]).map(function(poly){return poly&&poly[0];});
+          var best=null,largest=0;
+          rings.forEach(function(ring){
+            if(!Array.isArray(ring)||ring.length<3)return;
+            var area=0,cx=0,cy=0;
+            for(var i=0;i<ring.length;i++){
+              var a=ring[i],b=ring[(i+1)%ring.length];
+              if(!a||!b)continue;
+              var cross=Number(a[0])*Number(b[1])-Number(b[0])*Number(a[1]);
+              area+=cross;
+              cx+=(Number(a[0])+Number(b[0]))*cross;
+              cy+=(Number(a[1])+Number(b[1]))*cross;
+            }
+            if(Math.abs(area)<1e-12)return;
+            var point=v12TrackerValidPoint(cy/(3*area),cx/(3*area));
+            if(point&&Math.abs(area)>largest){largest=Math.abs(area);best=point;}
+          });
+          return best;
+        }
+        function v12TrackerPointForButton(button){
+          var hit=button&&button.closest&&button.closest(".v9SearchResult");
+          if(hit){
+            var idx=Number(hit.getAttribute("data-search-index"));
+            var rec=window.v9ParcelSearchResults&&window.v9ParcelSearchResults[idx];
+            var point=rec&&v12TrackerGeometryPoint(rec.feature);
+            if(point)return point;
+            if(rec&&rec.layer){
+              var center=rec.layer.getBounds&&rec.layer.getBounds().getCenter();
+              if(!center&&rec.layer.getLatLng)center=rec.layer.getLatLng();
+              if(center)return v12TrackerValidPoint(center.lat,center.lng);
+            }
+          }
+          var popup=button&&button.closest&&button.closest(".leaflet-popup");
+          if(popup){
+            var map=map_33cc2c2ac68d72d2971fbb7de3650b24;
+            var active=map&&map._popup;
+            if(active&&active.getLatLng&&
+               (!active.getElement||active.getElement()===popup)){
+              var ll=active.getLatLng();
+              if(ll)return v12TrackerValidPoint(ll.lat,ll.lng);
+            }
+          }
+          return null;
+        }
         function v12SaveToTracker(button){
           if(!button||button.disabled)return;
           var endpoint=v12TrackerEndpoint();
@@ -3608,6 +3668,14 @@
             button.textContent="Save unavailable";return;
           }
           if(!data.parcelId||!data.county){button.textContent="Parcel ID missing";return;}
+          var savePoint=v12TrackerPointForButton(button);
+          if(!savePoint){
+            button.textContent="Parcel coordinates unavailable";
+            button.title="Open this parcel on the map and save from its popup so the location can link to exact coordinates.";
+            return;
+          }
+          data.latitude=savePoint.latitude;
+          data.longitude=savePoint.longitude;
           if(v12TrackerHasParcel(data)){
             button.textContent="Already in Tracker";
             button.classList.add("is-sent");
