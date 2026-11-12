@@ -1,191 +1,169 @@
 /**
- * San Antonio Land Map -> Land Deal Tracker bridge.
- *
- * Deploy as a Web App:
- * - Execute as: Me
- * - Who has access: Anyone
- *
- * Tracker Sites reads are public because they return only map-safe fields.
- * Save-to-Tracker writes are append-only, strictly validated, duplicate-checked,
- * and serialized. They cannot edit or delete existing tracker rows.
+ * San Antonio Land Map -> Google Land Deal Tracker bridge.
+ * Deploy as a Google Apps Script Web App: execute as owner, access anyone.
+ * Column positions are resolved by header names so tracker layout changes
+ * do not corrupt new saves or the live map feed.
  */
-
 const TRACKER_SPREADSHEET_ID = '1BUdhXHCmsmaTCWZI5mYTmlabQ7rePN7acsLsbLLZJzI';
 const TRACKER_SHEET_NAME = 'Deals';
-const FIRST_DATA_ROW = 4;
-const LAST_TEMPLATE_ROW = 203;
+const HEADER_ROW = 1;
+const FIRST_DATA_ROW = HEADER_ROW + 1;
+const ALLOWED_COUNTIES = ['Bexar','Comal','Guadalupe','Kendall','Medina','Blanco','Kerr','Webb'];
 
 function setupTrackerKey() {
-  const key = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
-  PropertiesService.getScriptProperties().setProperty('TRACKER_KEY', key);
-  console.log('TRACKER_KEY=' + key);
+  const key = Utilities.getUuid().replace(/-/g,'') + Utilities.getUuid().replace(/-/g,'');
+  PropertiesService.getScriptProperties().setProperty('TRACKER_KEY',key);
   return key;
 }
 
-function doGet(e) {
-  try {
-    const p = (e && e.parameter) || {};
-    if (clean_(p.action) !== 'trackerSites') {
-      return json_({ ok: true, service: 'land-deal-tracker-bridge' });
-    }
-
-    const ss = SpreadsheetApp.openById(TRACKER_SPREADSHEET_ID);
-    const sheet = ss.getSheetByName(TRACKER_SHEET_NAME);
-    if (!sheet) return output_(p.callback, { ok: false, error: 'Deals sheet not found' });
-
-    const lastRow = Math.max(sheet.getLastRow(), FIRST_DATA_ROW - 1);
-    if (lastRow < FIRST_DATA_ROW) {
-      return output_(p.callback, {
-        ok: true,
-        sites: [],
-        generatedAt: new Date().toISOString()
-      });
-    }
-
-    const rows = sheet
-      .getRange(FIRST_DATA_ROW, 1, lastRow - FIRST_DATA_ROW + 1, 14)
-      .getDisplayValues();
-
-    const sites = rows
-      .map(function(r, i) {
-        const stage = clean_(r[2]);
-        const county = clean_(r[9]);
-        const parcelId = clean_(r[10]);
-        if (!county || !parcelId) return null;
-
-        const stageLower = stage.toLowerCase();
-        if (stageLower === 'closed' || stageLower === 'dead') return null;
-
-        return {
-          row: FIRST_DATA_ROW + i,
-          dealSite: clean_(r[0]),
-          acres: clean_(r[1]),
-          stage: stage || 'Pursuing',
-          nextAction: clean_(r[4]),
-          nextActionDate: clean_(r[5]),
-          owner: clean_(r[8]),
-          county: county,
-          parcelId: parcelId,
-          mapLink: clean_(r[11])
-        };
-      })
-      .filter(Boolean);
-
-    return output_(p.callback, {
-      ok: true,
-      sites: sites,
-      generatedAt: new Date().toISOString()
-    });
-  } catch (err) {
-    const p = (e && e.parameter) || {};
-    return output_(p.callback, {
-      ok: false,
-      error: String(err && err.message || err)
-    });
-  }
+function clean_(value) {
+  return String(value == null ? '' : value).trim().slice(0,2000);
 }
-
-function doPost(e) {
-  try {
-    const p = (e && e.parameter) || {};
-    const parcelId = clean_(p.parcelId);
-    const county = clean_(p.county);
-    const mapLink = clean_(p.mapLink);
-    const allowedCounties = ['Bexar','Comal','Guadalupe','Kendall','Medina','Blanco','Kerr','Webb'];
-
-    if (!parcelId || !county) {
-      return json_({ ok: false, error: 'missing parcelId/county' });
-    }
-    if (allowedCounties.indexOf(county) === -1) {
-      return json_({ ok: false, error: 'unsupported county' });
-    }
-    if (!/^[0-9A-Za-z-]{1,80}$/.test(parcelId)) {
-      return json_({ ok: false, error: 'invalid parcelId' });
-    }
-    if (
-      mapLink.indexOf('https://scottshop.github.io/satx-land-map/') !== 0 &&
-      mapLink.indexOf('https://satx-land-map.netlify.app/') !== 0
-    ) {
-      return json_({ ok: false, error: 'invalid map source' });
-    }
-
-    const lock = LockService.getScriptLock();
-    if (!lock.tryLock(5000)) {
-      return json_({ ok: false, error: 'tracker busy; retry' });
-    }
-
-    try {
-      const ss = SpreadsheetApp.openById(TRACKER_SPREADSHEET_ID);
-      const sheet = ss.getSheetByName(TRACKER_SHEET_NAME);
-      if (!sheet) return json_({ ok: false, error: 'Deals sheet not found' });
-
-      const lastRow = Math.max(sheet.getLastRow(), FIRST_DATA_ROW - 1);
-    if (lastRow >= FIRST_DATA_ROW) {
-      const existing = sheet
-        .getRange(FIRST_DATA_ROW, 10, lastRow - FIRST_DATA_ROW + 1, 2)
-        .getDisplayValues();
-
-      for (let i = 0; i < existing.length; i++) {
-        if (
-          clean_(existing[i][0]).toLowerCase() === county.toLowerCase() &&
-          clean_(existing[i][1]) === parcelId
-        ) {
-          return json_({ ok: true, duplicate: true, row: FIRST_DATA_ROW + i });
-        }
-      }
-    }
-
-    let row = FIRST_DATA_ROW;
-    while (row <= LAST_TEMPLATE_ROW && clean_(sheet.getRange(row, 1).getDisplayValue())) row++;
-    if (row > LAST_TEMPLATE_ROW) {
-      return json_({ ok: false, error: 'tracker row capacity reached' });
-    }
-
-    const acresNum = Number(p.acres);
-    const values = [[
-      clean_(p.dealSite) || (county + ' parcel ' + parcelId), // A Deal / Site
-      isFinite(acresNum) ? acresNum : '',                    // B Acres
-      'Pursuing',                                            // C Stage
-      '',                                                    // D Offer / Price
-      clean_(p.nextAction) || 'Contact owner',               // E Next Action
-      '',                                                    // F Next Action Date
-      '',                                                    // G Key Deadline
-      '',                                                    // H Closing Date
-      clean_(p.owner),                                       // I Owner / Contact
-      county,                                                // J County
-      parcelId,                                              // K Parcel ID
-      clean_(p.mapLink),                                     // L Map Link
-      '',                                                    // M Deal Folder
-      clean_(p.notes)                                        // N Notes
-    ]];
-
-      sheet.getRange(row, 1, 1, 14).setValues(values);
-      SpreadsheetApp.flush();
-      return json_({ ok: true, duplicate: false, row: row });
-    } finally {
-      lock.releaseLock();
-    }
-  } catch (err) {
-    return json_({ ok: false, error: String(err && err.message || err) });
-  }
+function headerKey_(value) {
+  return clean_(value).toLowerCase().replace(/[^a-z0-9]/g,'');
 }
-
-function output_(callback, obj) {
-  const cb = clean_(callback);
-  if (cb && /^[A-Za-z_$][0-9A-Za-z_$\.]*$/.test(cb)) {
-    return ContentService
-      .createTextOutput(cb + '(' + JSON.stringify(obj) + ');')
+function json_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+function output_(callback,obj) {
+  const cb=clean_(callback);
+  if(cb && /^[A-Za-z_$][0-9A-Za-z_$]*$/.test(cb)) {
+    return ContentService.createTextOutput(cb+'('+JSON.stringify(obj)+');')
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
   return json_(obj);
 }
-
-function clean_(value) {
-  return String(value == null ? '' : value).trim().slice(0, 2000);
+function trackerSheet_() {
+  const sheet=SpreadsheetApp.openById(TRACKER_SPREADSHEET_ID).getSheetByName(TRACKER_SHEET_NAME);
+  if(!sheet) throw new Error('Deals sheet not found');
+  return sheet;
 }
-
-function json_(obj) {
-  return ContentService
-    .createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
+function trackerColumns_(sheet) {
+  const labels=sheet.getRange(HEADER_ROW,1,1,sheet.getLastColumn()).getDisplayValues()[0];
+  const lookup={};
+  labels.forEach(function(label,i){if(label && !lookup[headerKey_(label)])lookup[headerKey_(label)]=i+1;});
+  function column(aliases,required) {
+    for(let i=0;i<aliases.length;i++)if(lookup[headerKey_(aliases[i])])return lookup[headerKey_(aliases[i])];
+    if(required)throw new Error('Tracker column missing: '+aliases[0]);
+    return 0;
+  }
+  return {
+    site:column(['Location / Intersection','Deal / Site'],true),
+    priority:column(['Priority'],false),
+    acres:column(['Size (AC)','Acres'],true),
+    attachment:column(['Attachments'],false),
+    stage:column(['Stage'],true),
+    owner:column(['Owner Contact','Owner / Contact'],false),
+    notes:column(['Notes'],false),
+    mapLink:column(['Map Link'],true)
+  };
+}
+function parseMapParcel_(link) {
+  const raw=clean_(link);
+  if(!/^https:\/\/(scottshop\.github\.io\/satx-land-map|satx-land-map\.netlify\.app)\/?(?:\?|$)/i.test(raw))return null;
+  const query=raw.split('?')[1];
+  if(!query)return null;
+  const p={};
+  query.split('#')[0].split('&').forEach(function(part) {
+    const pair=part.split('=');
+    try {
+      const k=decodeURIComponent(pair[0]||'').toLowerCase();
+      p[k]=decodeURIComponent((pair.slice(1).join('=')||'').replace(/\+/g,' '));
+    } catch(e) {}
+  });
+  const county=clean_(p.county||p.importcounty);
+  const parcelId=clean_(p.parcel||p.importparcel);
+  const canonicalCounty=ALLOWED_COUNTIES.find(function(x){return x.toLowerCase()===county.toLowerCase();});
+  if(!canonicalCounty||!/^[0-9A-Za-z-]{1,80}$/.test(parcelId))return null;
+  return {county:canonicalCounty,parcelId:parcelId};
+}
+function trackerKey_(county,parcelId) {
+  return clean_(county).toLowerCase()+'|'+clean_(parcelId);
+}
+function readTracker_(sheet,col) {
+  const last=Math.max(sheet.getLastRow(),FIRST_DATA_ROW-1);
+  if(last<FIRST_DATA_ROW)return [];
+  const count=last-FIRST_DATA_ROW+1;
+  const data=sheet.getRange(FIRST_DATA_ROW,1,count,sheet.getLastColumn()).getDisplayValues();
+  return data.map(function(r,i){return {row:FIRST_DATA_ROW+i,values:r,ref:parseMapParcel_(r[col.mapLink-1])};});
+}
+function doGet(e) {
+  const p=(e&&e.parameter)||{};
+  try {
+    if(clean_(p.action)!=='trackerSites')return json_({ok:true,service:'land-deal-tracker-bridge',version:'header-mapped-2026-11-12'});
+    const sheet=trackerSheet_(),col=trackerColumns_(sheet);
+    const sites=readTracker_(sheet,col).map(function(item) {
+      const r=item.values,ref=item.ref;
+      if(!ref||!clean_(r[col.site-1]))return null;
+      const stage=clean_(r[col.stage-1])||'Pursuing';
+      if(/^(closed|dead)$/i.test(stage))return null;
+      return {
+        row:item.row,dealSite:clean_(r[col.site-1]),
+        acres:clean_(r[col.acres-1]),stage:stage,
+        nextAction:'',nextActionDate:'',
+        owner:col.owner?clean_(r[col.owner-1]):'',
+        county:ref.county,parcelId:ref.parcelId,
+        mapLink:clean_(r[col.mapLink-1])
+      };
+    }).filter(Boolean);
+    return output_(p.callback,{ok:true,sites:sites,generatedAt:new Date().toISOString()});
+  } catch(err) {
+    return output_(p.callback,{ok:false,error:String(err&&err.message||err)});
+  }
+}
+function doPost(e) {
+  const p=(e&&e.parameter)||{};
+  const parcelId=clean_(p.parcelId);
+  const county=clean_(p.county);
+  const mapLink=clean_(p.mapLink);
+  if(!parcelId||!county)return json_({ok:false,error:'missing parcelId/county'});
+  if(ALLOWED_COUNTIES.indexOf(county)<0)return json_({ok:false,error:'unsupported county'});
+  if(!/^[0-9A-Za-z-]{1,80}$/.test(parcelId))return json_({ok:false,error:'invalid parcelId'});
+  const mapRef=parseMapParcel_(mapLink);
+  if(!mapRef||mapRef.county!==county||mapRef.parcelId!==parcelId)
+    return json_({ok:false,error:'invalid or mismatched map link'});
+  const lock=LockService.getScriptLock();
+  if(!lock.tryLock(10000))return json_({ok:false,error:'tracker busy; retry'});
+  try {
+    const sheet=trackerSheet_(),col=trackerColumns_(sheet);
+    const entries=readTracker_(sheet,col);
+    for(let i=0;i<entries.length;i++) {
+      const ref=entries[i].ref;
+      if(ref&&trackerKey_(ref.county,ref.parcelId)===trackerKey_(county,parcelId))
+        return json_({ok:true,duplicate:true,row:entries[i].row});
+    }
+    // Priority and Contact Made? are checkbox-backed template cells, often FALSE
+    // hundreds of rows past the last actual deal. Never use getLastRow()+1 here.
+    let row=0;
+    for(let i=0;i<entries.length;i++) {
+      const item=entries[i],v=item.values;
+      const businessCols=[col.site,col.acres,col.attachment,col.stage,col.owner,col.notes,col.mapLink].filter(Boolean);
+      if(businessCols.every(function(c){return !clean_(v[c-1]);})) {row=item.row;break;}
+    }
+    if(!row) {
+      row=Math.max(sheet.getLastRow()+1,FIRST_DATA_ROW);
+      if(row>sheet.getMaxRows())sheet.insertRowsAfter(sheet.getMaxRows(),row-sheet.getMaxRows());
+    }
+    const width=sheet.getLastColumn();
+    const cell=sheet.getRange(row,1,1,width);
+    const existing=cell.getValues()[0];
+    const values=existing.slice();
+    const acres=Number(p.acres);
+    values[col.site-1]=clean_(p.dealSite)||county+' parcel '+parcelId;
+    values[col.acres-1]=clean_(p.acres)!==''&&isFinite(acres)&&acres>=0?acres.toFixed(2)+' AC':'';
+    values[col.stage-1]='Pursuing';
+    if(col.owner)values[col.owner-1]=clean_(p.owner);
+    if(col.notes)values[col.notes-1]=clean_(p.notes)||'Saved from San Antonio Land Acquisition Map';
+    values[col.mapLink-1]=mapLink;
+    // Do not change existing priority/contact-made checkbox defaults, other columns,
+    // or any pre-existing attachment link.
+    cell.setValues([values]);
+    SpreadsheetApp.flush();
+    return json_({ok:true,duplicate:false,row:row});
+  } catch(err) {
+    return json_({ok:false,error:String(err&&err.message||err)});
+  } finally {
+    lock.releaseLock();
+  }
 }
