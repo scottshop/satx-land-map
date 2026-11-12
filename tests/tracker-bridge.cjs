@@ -62,7 +62,7 @@ const duplicate=post({county:'Bexar',parcelId:'619202',mapLink:cells[3][12]});
 assert.equal(duplicate.duplicate,true);
 assert.equal(writes,0);
 const mapLink='https://scottshop.github.io/satx-land-map/?county=Guadalupe&parcel=001245';
-const added=post({county:'Guadalupe',parcelId:'001245',mapLink,dealSite:'NWC Test & IH-10',acres:'12.34',owner:'Known landowner',notes:'Test save',latitude:'29.47390609',longitude:'-98.29319984'});
+const added=post({county:'Guadalupe',parcelId:'001245',mapLink,locationText:'NWC Test & IH-10',dealSite:'=HYPERLINK("https://www.google.com/maps/search/?api=1&query=29.47390609%2C-98.29319984","NWC Test & IH-10")',acres:'12.34',owner:'Known landowner',notes:'Test save',latitude:'29.47390609',longitude:'-98.29319984'});
 assert.equal(added.ok,true);
 assert.equal(added.row,77);
 assert.equal(cells[76][0],'NWC Test & IH-10');
