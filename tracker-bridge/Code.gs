@@ -9,6 +9,7 @@ const TRACKER_SHEET_NAME = 'Deals';
 const HEADER_ROW = 1;
 const FIRST_DATA_ROW = HEADER_ROW + 1;
 const ALLOWED_COUNTIES = ['Bexar','Comal','Guadalupe','Kendall','Medina','Blanco','Kerr','Webb'];
+const TRACKER_ATTACHMENTS_ROOT_ID = '1pxwxPuEeklingY-NyOGq4CnAn0YwZ8di';
 
 function setupTrackerKey() {
   const key = Utilities.getUuid().replace(/-/g,'') + Utilities.getUuid().replace(/-/g,'');
@@ -59,6 +60,54 @@ function trackerColumns_(sheet) {
     mapLink:column(['Map Link'],true)
   };
 }
+/** A deal gets its own folder, but an existing attachment link is never replaced. */
+function ensureTrackerFolder_(sheet,col,row,siteLabel) {
+  if(!col.attachment || !clean_(siteLabel))return false;
+  const linkCell=sheet.getRange(row,col.attachment);
+  if(clean_(linkCell.getDisplayValue()))return false;
+  const safeName=clean_(siteLabel).replace(/[\\/\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').slice(0,120) || 'Deal';
+  const folderName=safeName+' — deal '+row;
+  const root=DriveApp.getFolderById(TRACKER_ATTACHMENTS_ROOT_ID);
+  const found=root.getFoldersByName(folderName);
+  const folder=found.hasNext()?found.next():root.createFolder(folderName);
+  linkCell.setFormula('=HYPERLINK("https://drive.google.com/drive/folders/'+folder.getId()+'","📎 Files")');
+  return true;
+}
+
+/** Repair existing or API-created rows that do not yet have a folder link. */
+function reconcileTrackerFolders() {
+  const sheet=trackerSheet_(),col=trackerColumns_(sheet);
+  let createdOrLinked=0;
+  readTracker_(sheet,col).forEach(function(item) {
+    const site=clean_(item.values[col.site-1]);
+    if(site && ensureTrackerFolder_(sheet,col,item.row,site))createdOrLinked++;
+  });
+  SpreadsheetApp.flush();
+  return createdOrLinked;
+}
+
+/** Install once as the spreadsheet owner to cover manual edits and API writes. */
+function setupTrackerFolderAutomation() {
+  const handlers=ScriptApp.getProjectTriggers().map(function(t){return t.getHandlerFunction();});
+  if(handlers.indexOf('onTrackerDealEdit_')<0)
+    ScriptApp.newTrigger('onTrackerDealEdit_').forSpreadsheet(TRACKER_SPREADSHEET_ID).onEdit().create();
+  if(handlers.indexOf('reconcileTrackerFolders')<0)
+    ScriptApp.newTrigger('reconcileTrackerFolders').timeBased().everyHours(1).create();
+  return reconcileTrackerFolders();
+}
+function onTrackerDealEdit_(e) {
+  if(!e || !e.range)return;
+  const sheet=e.range.getSheet();
+  if(sheet.getName()!==TRACKER_SHEET_NAME)return;
+  const col=trackerColumns_(sheet);
+  if(e.range.getColumn()>col.site || e.range.getLastColumn()<col.site)return;
+  const first=Math.max(FIRST_DATA_ROW,e.range.getRow());
+  for(let row=first;row<=e.range.getLastRow();row++) {
+    const site=clean_(sheet.getRange(row,col.site).getDisplayValue());
+    if(site)ensureTrackerFolder_(sheet,col,row,site);
+  }
+}
+
 function parseMapParcel_(link) {
   const raw=clean_(link);
   if(!/^https:\/\/(scottshop\.github\.io\/satx-land-map|satx-land-map\.netlify\.app)\/?(?:\?|$)/i.test(raw))return null;
@@ -130,8 +179,10 @@ function doPost(e) {
     const entries=readTracker_(sheet,col);
     for(let i=0;i<entries.length;i++) {
       const ref=entries[i].ref;
-      if(ref&&trackerKey_(ref.county,ref.parcelId)===trackerKey_(county,parcelId))
+      if(ref&&trackerKey_(ref.county,ref.parcelId)===trackerKey_(county,parcelId)) {
+        ensureTrackerFolder_(sheet,col,entries[i].row,entries[i].values[col.site-1]);
         return json_({ok:true,duplicate:true,row:entries[i].row});
+      }
     }
     // Priority and Contact Made? are checkbox-backed template cells, often FALSE
     // hundreds of rows past the last actual deal. Never use getLastRow()+1 here.
@@ -177,6 +228,7 @@ function doPost(e) {
         .build();
       sheet.getRange(row,col.site).setRichTextValue(rich);
     }
+    ensureTrackerFolder_(sheet,col,row,values[col.site-1]);
     SpreadsheetApp.flush();
     return json_({ok:true,duplicate:false,row:row});
   } catch(err) {
