@@ -34,6 +34,9 @@ jobs:
       - name: Check housing development popup priority
         run: node tests/housing-click-regression.cjs
 
+      - name: Check tracker Save-to-Tracker folder creation
+        run: node tests/tracker-bridge.cjs
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
