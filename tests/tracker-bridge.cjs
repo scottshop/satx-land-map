@@ -93,7 +93,7 @@ assert.equal(cells[76][8],false);
 assert.equal(cells[76][3],'📎 Files');
 assert.equal(folders.length,1);
 assert.equal(folders[0].name,'NWC Test & IH-10 — deal 77');
-assert.match(folderLinks[77],/drive\\.google\\.com\\/drive\\/folders\\/test-folder-1/);
+assert.equal(folderLinks[77].includes('drive.google.com/drive/folders/test-folder-1'),true);
 live=get();
 assert.equal(live.sites.length,76);
 assert.equal(live.sites.find(x=>x.parcelId==='001245').county,'Guadalupe');
