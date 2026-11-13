@@ -24,13 +24,28 @@ for(let row=2;row<=234;row++){
 }
 let writes=0;
 const richLinks={};
+const folderLinks={};
+const folders=[];
+const rootFolder={
+ getFoldersByName:(name)=>{
+   const matches=folders.filter(f=>f.name===name);let i=0;
+   return {hasNext:()=>i<matches.length,next:()=>matches[i++]};
+ },
+ createFolder:(name)=>{
+   const folder={name,id:'test-folder-'+(folders.length+1),getId(){return this.id;}};
+   folders.push(folder);return folder;
+ }
+};
 const sheet={
+ getName:()=> 'Deals',
  getLastColumn:()=>14,
  getLastRow:()=>234,
  getMaxRows:()=>234,
  getRange:(row,col,n=1,w=1)=>({
    getDisplayValues:()=>Array.from({length:n},(_,i)=>cells[row+i-1].slice(col-1,col+w-1).map(v=>v===false?'FALSE':String(v??''))),
    getValues:()=>Array.from({length:n},(_,i)=>cells[row+i-1].slice(col-1,col+w-1)),
+   getDisplayValue:()=>String(cells[row-1][col-1]??''),
+   setFormula:(formula)=>{cells[row-1][col-1]='📎 Files';folderLinks[row]=formula;},
    setValues:(v)=>{v.forEach((x,i)=>x.forEach((item,j)=>cells[row+i-1][col+j-1]=item));writes++;return this;},
    setRichTextValue:(v)=>{cells[row-1][col-1]=v.text;richLinks[row]=v.uri;return this;}
  })
@@ -42,6 +57,7 @@ const ContentService={
 const context={SpreadsheetApp:{openById:()=>({getSheetByName:()=>sheet}),flush:()=>{},
  newRichTextValue:()=>({text:'',uri:'',setText:function(v){this.text=v;return this;},setLinkUrl:function(v){this.uri=v;return this;},build:function(){return this;}})},
  LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock:()=>{}})},
+ DriveApp:{getFolderById:(id)=>{assert.equal(id,'1pxwxPuEeklingY-NyOGq4CnAn0YwZ8di');return rootFolder;}},
  ContentService,console,Date,
  Utilities:{getUuid:()=> '12345678-aaaa-bbbb-cccc-12345678bbbb'},
  PropertiesService:{getScriptProperties:()=>({setProperty:()=>{}})}
@@ -74,12 +90,27 @@ assert.equal(cells[76][11],'Test save');
 assert.equal(cells[76][12],mapLink);
 assert.equal(cells[76][1],false);
 assert.equal(cells[76][8],false);
-assert.equal(cells[76][3],'');
+assert.equal(cells[76][3],'📎 Files');
+assert.equal(folders.length,1);
+assert.equal(folders[0].name,'NWC Test & IH-10 — deal 77');
+assert.match(folderLinks[77],/drive\\.google\\.com\\/drive\\/folders\\/test-folder-1/);
 live=get();
 assert.equal(live.sites.length,76);
 assert.equal(live.sites.find(x=>x.parcelId==='001245').county,'Guadalupe');
 assert.equal(post({county:'Guadalupe',parcelId:'001245',mapLink}).duplicate,true);
 assert.equal(writes,1);
+assert.equal(folders.length,1);
+// Sheet-owner edits are covered by an installable onEdit trigger.
+cells[77][0]='Manual SEC & Loop 1604';
+context.onTrackerDealEdit_({range:{
+  getSheet:()=>sheet,getColumn:()=>1,getLastColumn:()=>1,
+  getRow:()=>78,getLastRow:()=>78
+}});
+assert.equal(cells[77][3],'📎 Files');
+assert.equal(folders.length,2);
+assert.equal(folders[1].name,'Manual SEC & Loop 1604 — deal 78');
+assert.equal(context.reconcileTrackerFolders(),0);
+assert.equal(folders.length,2);
 assert.equal(post({county:'Comal',parcelId:'001245',mapLink}).ok,false);
 assert.equal(writes,1);
-console.log('PASS tracker bridge read, coordinate Location hyperlink, append, preserve checkboxes, and duplicate detection');
+console.log('PASS tracker bridge map save, Drive folder creation, manual-entry repair, and duplicate safety');
