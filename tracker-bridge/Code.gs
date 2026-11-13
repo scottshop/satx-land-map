@@ -65,7 +65,7 @@ function ensureTrackerFolder_(sheet,col,row,siteLabel) {
   if(!col.attachment || !clean_(siteLabel))return false;
   const linkCell=sheet.getRange(row,col.attachment);
   if(clean_(linkCell.getDisplayValue()))return false;
-  const safeName=clean_(siteLabel).replace(/[\\/\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').slice(0,120) || 'Deal';
+  const safeName=clean_(siteLabel).replace(/\s+/g,' ').slice(0,120) || 'Deal';
   const folderName=safeName+' — deal '+row;
   const root=DriveApp.getFolderById(TRACKER_ATTACHMENTS_ROOT_ID);
   const found=root.getFoldersByName(folderName);
